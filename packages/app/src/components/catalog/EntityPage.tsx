@@ -55,6 +55,7 @@ import {
 
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
+import { MatomoPage } from '@appdev-platform/plugin-matomo';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -177,6 +178,9 @@ const websiteEntityPage = (
     <EntityLayout.Route path="/ci-cd" title="CI/CD">
       {cicdContent}
     </EntityLayout.Route>
+    <EntityLayout.Route path="/matomo" title="Matomo">
+      <MatomoPage />
+    </EntityLayout.Route>
 
     <EntityLayout.Route path="/dependencies" title="Dependencies">
       <Grid container spacing={3} alignItems="stretch">
@@ -219,7 +223,6 @@ const componentPage = (
     <EntitySwitch.Case if={isComponentType('service')}>
       {serviceEntityPage}
     </EntitySwitch.Case>
-
     <EntitySwitch.Case if={isComponentType('website')}>
       {websiteEntityPage}
     </EntitySwitch.Case>
