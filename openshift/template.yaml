@@ -1,0 +1,120 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+parameters:
+  - name: NAMESPACE
+    value: one-platform--backstage-plugins-dev
+  - name: NAME
+    value: backstage-plugins
+  - name: CMDB_CODE
+    value: ONEP-003
+  - name: GIT_URI
+    value: https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins
+  - name: GIT_REF
+    value: main
+  - name: IMAGE
+    value: images.paas.redhat.com/app-dev-platform/backstage-plugins:latest
+  - name: ROUTER_HOSTNAME
+    value: one-platform-console-plugin-dev.apps.int.spoke.preprod.us-east-1.aws.paas.redhat.com
+  - name: SECRET_NAME
+    value: backstage-secrets
+  - name: CA_CONFIG_MAP
+    value: redhat-ca-bundle
+
+objects:
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: ${NAME}
+      namespace: ${NAMESPACE}
+      labels:
+        app: backstage
+        app.kubernetes.io/part-of: ${NAME}
+        app.openshift.io/runtime: nodejs
+        app.openshift.io/runtime-version: 18-lts
+      annotations:
+        app.openshift.io/vcs-uri: ${GIT_URI}
+        app.openshift.io/vcs-ref: ${GIT_REF}
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          app: ${NAME}
+      template:
+        metadata:
+          labels:
+            app: ${NAME}
+            paas.redhat.com/appcode: ${CMDB_CODE}
+        spec:
+          volumes:
+            - name: ca-certs
+              projected:
+                sources:
+                  - configMap:
+                      name: ${CA_CONFIG_MAP}
+          containers:
+          - name: backstage
+            image: ${IMAGE}
+            env:
+              - name: APP_CONFIG_app_baseUrl
+                value: "https://${ROUTER_HOSTNAME}"
+              - name: APP_CONFIG_backend_baseUrl
+                value: "https://${ROUTER_HOSTNAME}"
+              - name: APP_CONFIG_cors_origin
+                value: "https://${ROUTER_HOSTNAME}"
+              - name: APP_CONFIG_companyname
+                value: "App Dev Plugins"
+              - name: APP_CONFIG_organization_name
+                value: "App Dev Platform"
+              - name: NODE_EXTRA_CA_CERTS
+                value: "/var/run/secrets/redhat/ca-bundle.crt"
+            envFrom:
+              - secretRef:
+                  name: ${SECRET_NAME}
+            volumeMounts:
+              - name: ca-certs
+                readOnly: true
+                mountPath: /var/run/secrets/redhat
+            resources:
+              limits:
+                memory: "512Mi"
+                cpu: "500m"
+            ports:
+            - name: http
+              containerPort: 7007
+              protocol: TCP
+
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: ${NAME}
+      labels:
+        paas.redhat.com/appcode: ${CMDB_CODE}
+    spec:
+      selector:
+        app: ${NAME}
+      ports:
+      - name: http
+        protocol: TCP
+        port: 7007
+        targetPort: 7007
+
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
+      name: ${NAME}
+      labels:
+        shard: internal
+        paas.redhat.com/appcode: ${CMDB_CODE}
+    spec:
+      host: ${ROUTER_HOSTNAME}
+      to:
+        kind: Service
+        name: ${NAME}
+        port: 
+        weight: 100
+      port:
+        targetPort: http
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+      wildcardPolicy: None
