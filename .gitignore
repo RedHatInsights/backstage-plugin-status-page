@@ -1,6 +1,9 @@
 # macOS
 .DS_Store
 
+# openshift secrets
+openshift/secrets.yaml
+
 # Logs
 logs
 *.log
