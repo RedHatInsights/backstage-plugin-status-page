@@ -48,9 +48,12 @@ integrations:
 proxy:
   ### Example for how to add a proxy endpoint for the frontend.
   ### A typical reason to do this is to handle HTTPS and CORS for internal services.
-  # '/test':
-  #   target: 'https://example.com'
-  #   changeOrigin: true
+  '/spaship':
+    target: ${SPASHIP_API_URL}
+    changeOrigin: true
+    allowedMethods: ['GET']
+    headers:
+      Authorization: Bearer ${SPASHIP_API_TOKEN}
 
 matomo:
   api_token: ${MATOMO_API_TOKEN}

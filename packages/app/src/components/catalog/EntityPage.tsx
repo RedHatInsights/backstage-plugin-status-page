@@ -56,6 +56,7 @@ import {
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { MatomoPage } from '@appdev-platform/plugin-matomo';
+import { SpashipPage } from '@appdev-platform/plugin-spaship';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -181,7 +182,9 @@ const websiteEntityPage = (
     <EntityLayout.Route path="/matomo" title="Matomo">
       <MatomoPage />
     </EntityLayout.Route>
-
+    <EntityLayout.Route path="/spaship" title="SPAship">
+      <SpashipPage />
+    </EntityLayout.Route>
     <EntityLayout.Route path="/dependencies" title="Dependencies">
       <Grid container spacing={3} alignItems="stretch">
         <Grid item md={6}>

@@ -1,0 +1,1 @@
+export { SpashipPage } from './SpashipPage';
