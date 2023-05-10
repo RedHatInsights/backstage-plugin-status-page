@@ -1,0 +1,27 @@
+stages:
+  - test
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .yarn/
+    - .npm/
+
+test:
+  image: cypress/browsers:node-18.16.0-chrome-113.0.5672.92-1-ff-113.0-edge-113.0.1774.35-1
+  stage: test
+  variables:
+    CYPRESS_baseUrl: "$CYPRESS_BASE_URL"
+  script:
+    - cd cypress/
+    - yarn --frozen-lockfile
+    - yarn test
+  artifacts:
+    when: always
+    paths:
+      - cypress/videos/**/*.mp4
+      - cypress/screenshots/**/*.png
+    expire_in: 1 day
+  when: manual
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
