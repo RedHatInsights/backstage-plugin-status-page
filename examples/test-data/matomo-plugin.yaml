@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: example-website-for-matomo-plugin
+  annotations:
+    matomo.io/site-id: "2"
+spec:
+  type: website
+  lifecycle: experimental
+  owner: guests
+  system: examples
