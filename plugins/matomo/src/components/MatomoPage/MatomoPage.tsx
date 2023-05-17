@@ -1,18 +1,23 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
-import { MissingAnnotationEmptyState } from '@backstage/core-components';
+import {
+  InfoCard,
+  MissingAnnotationEmptyState,
+} from '@backstage/core-components';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
+  Box,
   Card,
   CardContent,
-  Container,
+  CircularProgress,
   FormControl,
   Grid,
   InputLabel,
   MenuItem,
   Select,
   Typography,
+  Tooltip as MuiTooltip,
 } from '@material-ui/core';
 import { Table, TableColumn } from '@backstage/core-components';
 import {
@@ -37,6 +42,9 @@ import {
   useGetUserVisitSummary,
   useGetUserVisitByTime,
 } from '../../hooks';
+import { StatsCard } from './StatsCard';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { Assessment, ContactMail } from '@material-ui/icons';
 
 const visitColumns: TableColumn[] = [
   {
@@ -80,6 +88,25 @@ const geoColumns: TableColumn[] = [
   },
 ];
 
+const Center = ({ children }: { children: ReactNode }) => (
+  <div
+    style={{
+      height: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    }}
+  >
+    {children}
+  </div>
+);
+
+const EmptyState = () => (
+  <Typography variant="h1" component="div" style={{ textAlign: 'center' }}>
+    N/A
+  </Typography>
+);
+
 const getMatomoConfig = (entity: Entity) =>
   entity.metadata.annotations?.['matomo.io/site-id'];
 
@@ -89,20 +116,18 @@ export const MatomoHomePage = () => {
   const [lineGraphRange, setLineGraphRange] = useState('last10');
 
   const { entity } = useEntity();
+  const config = useApi(configApiRef);
   const matomoSiteId = getMatomoConfig(entity);
+
+  const matomoContact = config.getOptionalString('matomo.contact_us');
+  const matomoInstanceUrl = config.getOptionalString('matomo.instance_url');
   const isMatomoConfigured = Boolean(matomoSiteId);
 
   // visitor data
-  const { data: visitSummary } = useGetUserVisitSummary(
-    matomoSiteId,
-    period,
-    range,
-  );
-  const { data: visitByTime } = useGetUserVisitByTime(
-    matomoSiteId,
-    period,
-    lineGraphRange,
-  );
+  const { data: visitSummary, isLoading: isVisitSummaryLoading } =
+    useGetUserVisitSummary(matomoSiteId, period, range);
+  const { data: visitByTime, isLoading: isVisitByTimeLoading } =
+    useGetUserVisitByTime(matomoSiteId, period, lineGraphRange);
 
   const { data: geoMetrics, isLoading: isGeoMetricsLoading } =
     useGetUserGeoMetrics(matomoSiteId, period, range);
@@ -110,11 +135,8 @@ export const MatomoHomePage = () => {
     useGetUserDeviceMetrics(matomoSiteId, period, range);
   const { data: actionMetrics, isLoading: isActionMetricsLoading } =
     useGetUserActionMetrics(matomoSiteId, period, range);
-  const { data: actionByPageURL } = useGetUserActionByPageURL(
-    matomoSiteId,
-    period,
-    range,
-  );
+  const { data: actionByPageURL, isLoading: isActionByPageUrlLoading } =
+    useGetUserActionByPageURL(matomoSiteId, period, range);
 
   const visitPieChart = [
     { name: 'visitors', value: visitSummary?.reportData?.nb_visits },
@@ -129,78 +151,120 @@ export const MatomoHomePage = () => {
   }
 
   return (
-    <Container>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'end',
-          marginBottom: '1rem',
-        }}
-      >
-        <div style={{ marginRight: '1rem' }}>
-          <FormControl variant="outlined" size="small">
-            <InputLabel id="period">Period</InputLabel>
-            <Select
-              labelId="period"
-              label="period"
-              value={period}
-              onChange={evt => setPeriod(evt.target.value as string)}
+    <>
+      <InfoCard>
+        <Box display="flex" alignItems="center" justifyContent="space-between">
+          <Box>
+            <Typography
+              variant="h6"
+              component="div"
+              style={{ fontSize: '0.75rem', marginBottom: '0.5rem' }}
             >
-              <MenuItem value="day">Day</MenuItem>
-              <MenuItem value="week">Week</MenuItem>
-              <MenuItem value="month">Month</MenuItem>
-              <MenuItem value="year">Year</MenuItem>
-            </Select>
-          </FormControl>
-        </div>
-        <div>
-          <FormControl variant="outlined" size="small">
-            <InputLabel id="range">Date</InputLabel>
-            <Select
-              label="range"
-              labelId="range"
-              value={range}
-              onChange={evt => setRange(evt.target.value as string)}
-            >
-              <MenuItem value="today">Today</MenuItem>
-              <MenuItem value="yesterday">Yesterday</MenuItem>
-              <MenuItem value="lastWeek">Last Week</MenuItem>
-              <MenuItem value="lastMonth">Last Month</MenuItem>
-              <MenuItem value="lastYear">Last Year</MenuItem>
-            </Select>
-          </FormControl>
-        </div>
-      </div>
-      <Grid container spacing={2}>
+              Matomo Site ID: {matomoSiteId}
+            </Typography>
+            <Grid container spacing={2}>
+              {Boolean(matomoContact) && (
+                <Grid item>
+                  <MuiTooltip title="Contact Us">
+                    <a target="_blank" rel="noopener" href={matomoContact}>
+                      <ContactMail
+                        fontSize="large"
+                        style={{ color: 'rgba(0, 0, 0, 0.54)' }}
+                      />
+                    </a>
+                  </MuiTooltip>
+                </Grid>
+              )}
+              {Boolean(matomoInstanceUrl) && (
+                <Grid item>
+                  <MuiTooltip title="Matomo Instance">
+                    <a target="_blank" rel="noopener" href={matomoInstanceUrl}>
+                      <Assessment
+                        fontSize="large"
+                        style={{ color: 'rgba(0, 0, 0, 0.54)' }}
+                      />
+                    </a>
+                  </MuiTooltip>
+                </Grid>
+              )}
+            </Grid>
+          </Box>
+          <Box display="flex" alignItems="center" justifyContent="end">
+            <div style={{ marginRight: '1rem' }}>
+              <FormControl variant="outlined" size="small">
+                <InputLabel id="period">Period</InputLabel>
+                <Select
+                  labelId="period"
+                  label="period"
+                  value={period}
+                  onChange={evt => setPeriod(evt.target.value as string)}
+                >
+                  <MenuItem value="day">Day</MenuItem>
+                  <MenuItem value="week">Week</MenuItem>
+                  <MenuItem value="month">Month</MenuItem>
+                  <MenuItem value="year">Year</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div>
+              <FormControl variant="outlined" size="small">
+                <InputLabel id="range">Range</InputLabel>
+                <Select
+                  label="range"
+                  labelId="range"
+                  value={range}
+                  onChange={evt => setRange(evt.target.value as string)}
+                >
+                  <MenuItem value="today">Today</MenuItem>
+                  <MenuItem value="yesterday">Yesterday</MenuItem>
+                  <MenuItem value="lastWeek">Last Week</MenuItem>
+                  <MenuItem value="lastMonth">Last Month</MenuItem>
+                  <MenuItem value="lastYear">Last Year</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+          </Box>
+        </Box>
+      </InfoCard>
+      <Grid style={{ marginTop: '1rem' }} container spacing={2}>
         <Grid item xs={12} md={4}>
-          <Card>
+          <Card style={{ height: '370px' }}>
             <CardContent>
               <Typography variant="h5" component="div">
                 Visit Summary
               </Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={visitPieChart}
-                    dataKey="value"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={120}
-                    fill="#8884d8"
-                  >
-                    <Cell fill="#0277bd" />
-                    <Cell fill="#ff8f00" />
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+              {isVisitSummaryLoading ? (
+                <Center>
+                  <CircularProgress size={64} />
+                </Center>
+              ) : Boolean(visitSummary?.reportData?.nb_visits) ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <PieChart>
+                    <Pie
+                      data={visitPieChart}
+                      dataKey="value"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={120}
+                      fill="#8884d8"
+                    >
+                      <Cell fill="#0277bd" />
+                      <Cell fill="#ff8f00" />
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <Center>
+                  <EmptyState />
+                </Center>
+              )}
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} md={8}>
-          <Card>
+          <Card style={{ height: '370px' }}>
             <CardContent>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Typography variant="h5" component="div">
@@ -224,87 +288,58 @@ export const MatomoHomePage = () => {
                   </FormControl>
                 </div>
               </div>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart
-                  data={visitByTime}
-                  margin={{ top: 20, right: 20, bottom: 5, left: 0 }}
-                >
-                  <Line type="monotone" dataKey="visitors" stroke="#0277bd" />
-                  <Line
-                    type="monotone"
-                    dataKey="uniqVisitors"
-                    stroke="#ff8f00"
-                    name="unique visitors"
-                  />
-                  <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                  <Tooltip />
-                  <Legend />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                </LineChart>
-              </ResponsiveContainer>
+              {isVisitByTimeLoading ? (
+                <Center>
+                  <CircularProgress size={64} />
+                </Center>
+              ) : Boolean(visitByTime) ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart
+                    data={visitByTime}
+                    margin={{ top: 20, right: 20, bottom: 5, left: 0 }}
+                  >
+                    <Line type="monotone" dataKey="visitors" stroke="#0277bd" />
+                    <Line
+                      type="monotone"
+                      dataKey="uniqVisitors"
+                      stroke="#ff8f00"
+                      name="unique visitors"
+                    />
+                    <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                    <Tooltip />
+                    <Legend />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <Center>
+                  <EmptyState />
+                </Center>
+              )}
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Card style={{ height: '300px' }}>
-            <CardContent>
-              <Typography
-                style={{ paddingTop: '4rem', textAlign: 'center' }}
-                variant="h5"
-                component="div"
-              >
-                Avg Time On Site
-              </Typography>
-              <Typography
-                variant="h1"
-                component="div"
-                style={{ textAlign: 'center' }}
-              >
-                {visitSummary?.reportData?.avg_time_on_site}
-              </Typography>
-            </CardContent>
-          </Card>
+          <StatsCard
+            title="Avg Time On Site"
+            subTitle={visitSummary?.reportData?.avg_time_on_site}
+            isLoading={isVisitSummaryLoading}
+          />
         </Grid>
         <Grid item xs={12} md={4}>
-          <Card style={{ height: '300px' }}>
-            <CardContent>
-              <Typography
-                style={{ paddingTop: '4rem', textAlign: 'center' }}
-                variant="h5"
-                component="div"
-              >
-                Bounce Rate
-              </Typography>
-              <Typography
-                variant="h1"
-                component="div"
-                style={{ textAlign: 'center' }}
-              >
-                {visitSummary?.reportData?.bounce_rate}
-              </Typography>
-            </CardContent>
-          </Card>
+          <StatsCard
+            title="Bounce Rate"
+            subTitle={visitSummary?.reportData?.bounce_rate}
+            isLoading={isVisitSummaryLoading}
+          />
         </Grid>
         <Grid item xs={12} md={4}>
-          <Card style={{ height: '300px' }}>
-            <CardContent>
-              <Typography
-                style={{ paddingTop: '4rem', textAlign: 'center' }}
-                variant="h5"
-                component="div"
-              >
-                Actions/Visit
-              </Typography>
-              <Typography
-                variant="h1"
-                component="div"
-                style={{ textAlign: 'center' }}
-              >
-                {visitSummary?.reportData?.nb_actions_per_visit}
-              </Typography>
-            </CardContent>
-          </Card>
+          <StatsCard
+            title="Actions/Visit"
+            subTitle={visitSummary?.reportData?.nb_actions_per_visit}
+            isLoading={isVisitSummaryLoading}
+          />
         </Grid>
         <Grid container item xs={12}>
           <Grid item xs={4}>
@@ -318,68 +353,83 @@ export const MatomoHomePage = () => {
           </Grid>
           <Grid container item xs={8}>
             <Grid item xs={12}>
-              <Card>
+              <Card style={{ height: '310px' }}>
                 <CardContent>
                   <Typography variant="h5" component="div">
                     Visit By Page URL
                   </Typography>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <LineChart
-                      data={actionByPageURL?.reportData}
-                      margin={{ top: 20, right: 20, bottom: 5, left: 0 }}
-                    >
-                      <Line
-                        type="monotone"
-                        dataKey="nb_visits"
-                        name="Visits"
-                        stroke="#0277bd"
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="nb_hits"
-                        stroke="#ff8f00"
-                        name="Page Hits"
-                      />
-                      <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                      <Tooltip />
-                      <Legend />
-                      <XAxis dataKey="label" />
-                      <YAxis />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  {isActionByPageUrlLoading ? (
+                    <Center>
+                      <CircularProgress size={64} />
+                    </Center>
+                  ) : Boolean(actionByPageURL?.length) ? (
+                    <ResponsiveContainer width="100%" height={250}>
+                      <LineChart
+                        data={actionByPageURL}
+                        margin={{ top: 20, right: 20, bottom: 5, left: 0 }}
+                      >
+                        <Line
+                          type="monotone"
+                          dataKey="nb_visits"
+                          name="Visits"
+                          stroke="#0277bd"
+                        />
+                        <Line
+                          type="monotone"
+                          dataKey="nb_hits"
+                          stroke="#ff8f00"
+                          name="Page Hits"
+                        />
+                        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                        <Tooltip />
+                        <Legend />
+                        <XAxis dataKey="label" />
+                        <YAxis />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <Center>
+                      <EmptyState />
+                    </Center>
+                  )}
                 </CardContent>
               </Card>
             </Grid>
             <Grid item xs={12}>
-              <Card>
+              <Card style={{ height: '280px' }}>
                 <CardContent>
                   <Typography variant="h5" component="div">
                     Time By Page URL
                   </Typography>
-                  <ResponsiveContainer width="100%" height={210}>
-                    <LineChart
-                      data={actionByPageURL?.reportData}
-                      margin={{ top: 20, right: 20, bottom: 5, left: 0 }}
-                    >
-                      <Line
-                        type="monotone"
-                        dataKey="avg_time_on_page"
-                        name="Avg. Page Time"
-                        stroke="#0277bd"
-                      />
-                      <Line
-                        type="monotone"
-                        dataKey="bounce_rate"
-                        stroke="#ff8f00"
-                        name="Bounce Rate"
-                      />
-                      <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                      <Tooltip />
-                      <Legend />
-                      <XAxis dataKey="label" />
-                      <YAxis />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  {isActionByPageUrlLoading ? (
+                    <Center>
+                      <CircularProgress size={64} />
+                    </Center>
+                  ) : Boolean(actionByPageURL?.length) ? (
+                    <ResponsiveContainer width="100%" height={210}>
+                      <LineChart
+                        data={actionByPageURL}
+                        margin={{ top: 20, right: 20, bottom: 5, left: 0 }}
+                      >
+                        <Line
+                          type="monotone"
+                          dataKey="avg_time_on_page"
+                          name="Avg. Page Time(s)"
+                          stroke="#0277bd"
+                        />
+
+                        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                        <Tooltip />
+                        <Legend />
+                        <XAxis dataKey="label" />
+                        <YAxis />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <Center>
+                      <EmptyState />
+                    </Center>
+                  )}
                 </CardContent>
               </Card>
             </Grid>
@@ -404,7 +454,7 @@ export const MatomoHomePage = () => {
           />
         </Grid>
       </Grid>
-    </Container>
+    </>
   );
 };
 
