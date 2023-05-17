@@ -26,6 +26,16 @@ proxy:
       Authorization: Bearer ${SPASHIP_API_TOKEN}
 ```
 
+3. Add the SPAship meta details like contact etc
+
+```yaml
+spaship:
+  spaUrl: ${SPASHIP_MANAGER_URL}
+  slackUrl: ${SPASHIP_SLACK_URL}
+  contactMail: ${SPASHIP_MAIL}
+  githubUrl: ${SPASHIP_GITHUB_URL}
+```
+
 ### Entity Pages
 
 1. Add the plugin as a tab to website entity pages

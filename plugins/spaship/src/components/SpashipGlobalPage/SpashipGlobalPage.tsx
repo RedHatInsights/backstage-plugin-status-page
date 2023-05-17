@@ -14,6 +14,7 @@ import {
   HeaderLabel,
   InfoCard,
 } from '@backstage/core-components';
+import { EmptyState } from '../EmptyState';
 
 import {
   useGetDeploymentCountByEnv,
@@ -36,8 +37,17 @@ import {
   YAxis,
 } from 'recharts';
 import { lineCharts } from '../colorPalette';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { Center } from '../Center';
 
 export const SpashipGlobal = () => {
+  const config = useApi(configApiRef);
+
+  const spashipManagerUrl = config.getOptionalString('spaship.spaUrl');
+  const spashipSlackUrl = config.getOptionalString('spaship.slackUrl');
+  const spashipGithubUrl = config.getOptionalString('spaship.githubUrl');
+  const spashipContactMail = config.getOptionalString('spaship.contactMail');
+
   const { data: deploymentCount, isLoading: isDeploymentCountLoading } =
     useGetDeploymentCountByEnv();
   const {
@@ -52,7 +62,10 @@ export const SpashipGlobal = () => {
     isLoading: isActivityStreamLoading,
   } = useGetActiviyStream();
 
-  const { data: deploymentHistoryByMonth } = useGetDeploymentHistoryByMonth();
+  const {
+    data: deploymentHistoryByMonth,
+    isLoading: isDeploymentHistoryByMonthLoading,
+  } = useGetDeploymentHistoryByMonth();
 
   // deployment time
   const { data: deploymentTime30Days } = useGetDeploymentTime();
@@ -69,8 +82,50 @@ export const SpashipGlobal = () => {
 
   return (
     <Page themeId="tool">
-      <Header title="SPAship" subtitle="SPAship deployment status">
+      <Header title="SPAship" subtitle="SPAship Deployment Status">
         <HeaderLabel label="Owner" value="SPAship" />
+        {spashipGithubUrl && (
+          <HeaderLabel
+            label="Github"
+            value={
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={spashipGithubUrl}
+              >
+                #spaship
+              </a>
+            }
+          />
+        )}
+        {spashipSlackUrl && (
+          <HeaderLabel
+            label="Slack"
+            value={
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={spashipSlackUrl}
+              >
+                #forum-spaship
+              </a>
+            }
+          />
+        )}
+        {spashipContactMail && (
+          <HeaderLabel
+            label="Mail"
+            value={
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={spashipContactMail}
+              >
+                #spaship
+              </a>
+            }
+          />
+        )}
       </Header>
       <Content>
         <Grid container>
@@ -163,29 +218,39 @@ export const SpashipGlobal = () => {
                   </InfoCard>
                 </div>
                 <InfoCard title="Deployment History By A Month">
-                  <ResponsiveContainer width="100%" height={210}>
-                    <LineChart
-                      data={deploymentHistoryByMonth}
-                      margin={{ top: 20, right: 20, bottom: 5, left: 0 }}
-                    >
-                      <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                      <Tooltip />
-                      <Legend />
-                      <XAxis dataKey="date" />
-                      {Object.keys(deploymentHistoryByMonth?.[0] || {})
-                        .filter(key => key !== 'date')
-                        .map((env, index) => (
-                          <Line
-                            type="monotone"
-                            dataKey={env}
-                            name={env}
-                            key={env}
-                            stroke={lineCharts[lineCharts.length % index]}
-                          />
-                        ))}
-                      <YAxis />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  {isDeploymentHistoryByMonthLoading ? (
+                    <Center>
+                      <CircularProgress size={64} />
+                    </Center>
+                  ) : Object.keys(deploymentHistoryByMonth || {})?.length ? (
+                    <ResponsiveContainer width="100%" height={210}>
+                      <LineChart
+                        data={deploymentHistoryByMonth}
+                        margin={{ top: 20, right: 20, bottom: 5, left: 0 }}
+                      >
+                        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                        <Tooltip />
+                        <Legend />
+                        <XAxis dataKey="date" />
+                        {Object.keys(deploymentHistoryByMonth?.[0] || {})
+                          .filter(key => key !== 'date')
+                          .map((env, index) => (
+                            <Line
+                              type="monotone"
+                              dataKey={env}
+                              name={env}
+                              key={env}
+                              stroke={lineCharts[lineCharts.length % index]}
+                            />
+                          ))}
+                        <YAxis />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <Center>
+                      <EmptyState />
+                    </Center>
+                  )}
                 </InfoCard>
               </div>
             )}
@@ -214,6 +279,7 @@ export const SpashipGlobal = () => {
               )}
               {activityStream?.pages.map((activities, index) => (
                 <ActivityStream
+                  spashipUrl={spashipManagerUrl}
                   activities={activities}
                   isGlobal
                   key={`activity-stream-page-${index + 1}`}
@@ -221,7 +287,7 @@ export const SpashipGlobal = () => {
               ))}
               <Button
                 variant="contained"
-                style={{ marginTop: '1rem', width: '100%' }}
+                style={{ marginTop: '2rem', width: '100%' }}
                 color="primary"
                 disabled={!hasNextPage || isFetchingNextPage}
                 onClick={() => fetchNextPage()}

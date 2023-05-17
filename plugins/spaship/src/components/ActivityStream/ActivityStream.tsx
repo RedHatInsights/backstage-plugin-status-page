@@ -1,5 +1,5 @@
 import React from 'react';
-import { Chip, Grid } from '@material-ui/core';
+import { Chip, Grid, Box } from '@material-ui/core';
 import {
   Check as CheckIcon,
   Dialpad as CubesIcon,
@@ -11,9 +11,10 @@ import {
   SyncAlt as SyncAltIcon,
   Delete as TrashIcon,
 } from '@material-ui/icons';
+import dayjs from 'dayjs';
 import { TActivityStream } from '../../hooks/types';
 
-type Props = TActivityStream & { isGlobal: boolean };
+type Props = TActivityStream & { isGlobal: boolean; spashipUrl: string };
 
 const toPascalCase = (sentence: string) =>
   sentence
@@ -31,8 +32,9 @@ const activities = {
     message,
     propertyIdentifier,
     isGlobal,
+    spashipUrl,
   }: Props): JSX.Element => (
-    <div>
+    <div style={{ lineHeight: '2rem' }}>
       Deployment
       <Chip
         color="primary"
@@ -45,24 +47,40 @@ const activities = {
       for
       {isGlobal && (
         <>
-          <Chip
-            color="primary"
-            style={{ marginBottom: 0, marginLeft: '0.5rem' }}
-            icon={<CubesIcon style={{ fontSize: 16 }} />}
-            variant="outlined"
-            size="small"
-            label={propertyIdentifier}
-          />
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href={`${spashipUrl}/properties/${propertyIdentifier}`}
+          >
+            <Chip
+              color="primary"
+              style={{
+                marginBottom: 0,
+                marginLeft: '0.5rem',
+                cursor: 'pointer',
+              }}
+              icon={<CubesIcon style={{ fontSize: 16 }} />}
+              variant="outlined"
+              size="small"
+              label={propertyIdentifier}
+            />
+          </a>
           {' -> '}
         </>
       )}
-      <Chip
-        icon={<CubesIcon style={{ fontSize: 16 }} />}
-        style={{ marginBottom: 0, marginLeft: '0.5rem' }}
-        color="primary"
-        size="small"
-        label={props.applicationIdentifier}
-      />
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href={`${spashipUrl}/properties/${propertyIdentifier}/${props.applicationIdentifier}`}
+      >
+        <Chip
+          icon={<CubesIcon style={{ fontSize: 16 }} />}
+          style={{ marginBottom: 0, marginLeft: '0.5rem', cursor: 'pointer' }}
+          color="primary"
+          size="small"
+          label={props.applicationIdentifier}
+        />
+      </a>
       in
       <Chip
         label={props.env}
@@ -74,7 +92,7 @@ const activities = {
       env with
       <Chip
         label={message}
-        style={{ marginBottom: 0, marginLeft: '0.5rem', marginTop: '1rem' }}
+        style={{ marginBottom: 0, marginLeft: '0.5rem' }}
         icon={<OutlinedClockIcon style={{ fontSize: 16 }} />}
         color="primary"
         size="small"
@@ -353,12 +371,14 @@ const activities = {
 const DeploymentKind = ({
   activity,
   isGlobal,
+  spashipUrl,
 }: {
   activity: TActivityStream;
   isGlobal: boolean;
+  spashipUrl?: string;
 }) => {
   if (Object.prototype.hasOwnProperty.call(activities, activity.action)) {
-    return activities[activity.action]({ ...activity, isGlobal });
+    return activities[activity.action]({ ...activity, isGlobal, spashipUrl });
   }
   return <div>Activity message - {activity.message}</div>;
 };
@@ -366,9 +386,11 @@ const DeploymentKind = ({
 export const ActivityStream = ({
   activities,
   isGlobal = false,
+  spashipUrl,
 }: {
   activities: TActivityStream[];
   isGlobal?: boolean;
+  spashipUrl?: string;
 }) => {
   return (
     <Grid container spacing={3}>
@@ -379,10 +401,17 @@ export const ActivityStream = ({
           key={activity._id}
           style={{
             boxShadow: '0 1px 1px rgba(0,0,0,0.23)',
-            padding: '1.25rem',
+            padding: '1rem',
           }}
         >
-          <DeploymentKind activity={activity} isGlobal={isGlobal} />
+          <DeploymentKind
+            activity={activity}
+            isGlobal={isGlobal}
+            spashipUrl={spashipUrl}
+          />
+          <Box marginTop="1rem" fontSize="12px" fontWeight="500">
+            {dayjs(activity.createdAt).format('MMM DD YY, hh:mm a')}
+          </Box>
         </Grid>
       ))}
     </Grid>

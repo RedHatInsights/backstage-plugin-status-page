@@ -88,7 +88,9 @@ export const useGetActiviyStream = (
   const config = useApi(configApiRef);
   const backendUrl = config.getString('backend.baseUrl');
 
-  const params = new URLSearchParams();
+  const params = new URLSearchParams({
+    action: 'APPLICATION_DEPLOYED',
+  });
   Object.keys(filters).forEach(key => {
     if (Boolean(filters[key as keyof TApiFilter])) {
       params.append(key, filters[key as keyof TApiFilter] as string);
@@ -98,9 +100,9 @@ export const useGetActiviyStream = (
   return useInfiniteQuery<TActivityStream[]>({
     queryKey: apiKeys.activityStream(filters),
     queryFn: async ({ pageParam = 0 }): Promise<TActivityStream[]> => {
-      params.append('skip', pageParam);
+      params.set('skip', pageParam);
       const res = await fetch(
-        `${backendUrl}/api/proxy/spaship/v1/analytics/activity-stream?${pageParam}`,
+        `${backendUrl}/api/proxy/spaship/v1/analytics/activity-stream?${params}`,
       );
       const data = await res.json();
       return data?.data;
