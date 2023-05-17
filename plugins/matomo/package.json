@@ -10,6 +10,7 @@
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
+  "configSchema": "config.d.ts",
   "backstage": {
     "role": "frontend-plugin"
   },
@@ -50,6 +51,7 @@
     "msw": "^1.0.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ]
 }

@@ -39,3 +39,11 @@ metadata:
   annotations:
     matomo.io/site-id: '<YOUR_MATOMO_SITE_ID'
 ```
+
+3. Add `contact us` and `matomo instance url` for user guidance
+
+```yaml
+matomo:
+  instance_url: ${MATOMO_INSTANCE_URL}
+  contact_us: ${MATOMO_CONTACT_URL}
+```

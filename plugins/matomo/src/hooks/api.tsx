@@ -198,6 +198,20 @@ export const useGetUserActionByPageURL = (
       );
       return res.json();
     },
+    select: report =>
+      report.reportData.map(({ bounce_rate, avg_time_on_page, ...data }) => {
+        const avgTimeStr = avg_time_on_page.split(':');
+        const avgTime =
+          parseInt(avgTimeStr[0], 10) * 3600 +
+          parseInt(avgTimeStr[1], 10) * 60 +
+          parseInt(avgTimeStr[2], 10);
+
+        return {
+          ...data,
+          bounce_rate: bounce_rate.slice(0, -1),
+          avg_time_on_page: avgTime,
+        };
+      }),
   });
 };
 

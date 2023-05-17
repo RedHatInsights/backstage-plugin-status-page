@@ -58,6 +58,9 @@ proxy:
 matomo:
   api_token: ${MATOMO_API_TOKEN}
   api_url: ${MATOMO_API_URL}
+  instance_url: ${MATOMO_INSTANCE_URL}
+  contact_us: ${MATOMO_CONTACT_URL}
+
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 # Note: After experimenting with basic setup, use CI/CD to generate docs
 # and an external cloud storage when deploying TechDocs for production use-case.
