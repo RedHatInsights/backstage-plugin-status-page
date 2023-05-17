@@ -56,7 +56,7 @@ proxy:
       Authorization: Bearer ${SPASHIP_API_TOKEN}
 
 spaship:
-  spaUrl: ${SPASHIP_MANAGER_URL}
+  managerHost: ${SPASHIP_MANAGER_URL}
   slackUrl: ${SPASHIP_SLACK_URL}
   contactMail: ${SPASHIP_MAIL}
   githubUrl: ${SPASHIP_GITHUB_URL}

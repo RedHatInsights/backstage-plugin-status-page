@@ -39,11 +39,12 @@ import {
 import { lineCharts } from '../colorPalette';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Center } from '../Center';
+import { OpenInNew } from '@material-ui/icons';
 
 export const SpashipGlobal = () => {
   const config = useApi(configApiRef);
 
-  const spashipManagerUrl = config.getOptionalString('spaship.spaUrl');
+  const spashipManagerUrl = config.getOptionalString('spaship.managerHost');
   const spashipSlackUrl = config.getOptionalString('spaship.slackUrl');
   const spashipGithubUrl = config.getOptionalString('spaship.githubUrl');
   const spashipContactMail = config.getOptionalString('spaship.contactMail');
@@ -82,7 +83,23 @@ export const SpashipGlobal = () => {
 
   return (
     <Page themeId="tool">
-      <Header title="SPAship" subtitle="SPAship Deployment Status">
+      <Header
+        title={
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+            }}
+            href={spashipManagerUrl}
+          >
+            <Typography variant="h4">SPAship</Typography>
+            <OpenInNew style={{ fontSize: 14, marginLeft: '0.25rem' }} />
+          </a>
+        }
+        subtitle="Overall Deployment Status"
+      >
         <HeaderLabel label="Owner" value="SPAship" />
         {spashipGithubUrl && (
           <HeaderLabel

@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React from 'react';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
@@ -35,7 +36,8 @@ import { EmptyState } from '../EmptyState';
 import { ActivityStream } from '../ActivityStream';
 import { lineCharts } from '../colorPalette';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { ChatBubble, ContactMail } from '@material-ui/icons';
+import ChatBubble from '@material-ui/icons/ChatBubble';
+import ContactMail from '@material-ui/icons/ContactMail';
 
 const getSpashipConfig = (entity: Entity) => ({
   propertyId: entity.metadata.annotations?.['spaship.io/property-id'],
@@ -45,7 +47,7 @@ const getSpashipConfig = (entity: Entity) => ({
 const Spaship = () => {
   const config = useApi(configApiRef);
   const theme = useTheme();
-  const spashipManagerUrl = config.getOptionalString('spaship.spaUrl');
+  const spashipManagerUrl = config.getOptionalString('spaship.managerHost');
   const spashipSlackUrl = config.getOptionalString('spaship.slackUrl');
   const spashipContactMail = config.getOptionalString('spaship.contactMail');
 

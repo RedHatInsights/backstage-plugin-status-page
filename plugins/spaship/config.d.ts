@@ -1,7 +1,7 @@
 export interface Config {
   spaship: {
     /** @visibility frontend */
-    spaUrl: string;
+    managerHost: string;
     /** @visibility frontend */
     slackUrl: string;
     /** @visibility frontend */
