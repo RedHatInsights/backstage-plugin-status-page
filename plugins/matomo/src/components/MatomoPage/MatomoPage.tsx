@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { ReactNode, useState } from 'react';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
@@ -34,17 +35,12 @@ import {
   Cell,
 } from 'recharts';
 
-import {
-  useGetUserActionByPageURL,
-  useGetUserDeviceMetrics,
-  useGetUserActionMetrics,
-  useGetUserGeoMetrics,
-  useGetUserVisitSummary,
-  useGetUserVisitByTime,
-} from '../../hooks';
 import { StatsCard } from './StatsCard';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { Assessment, ContactMail } from '@material-ui/icons';
+import Assessment from '@material-ui/icons/Assessment';
+import ContactMail from '@material-ui/icons/ContactMail';
+import { matomoApiRef, transformVisitByTime } from '../../api';
+import useAsync from 'react-use/lib/useAsync';
 
 const visitColumns: TableColumn[] = [
   {
@@ -117,6 +113,7 @@ export const MatomoHomePage = () => {
 
   const { entity } = useEntity();
   const config = useApi(configApiRef);
+  const matomoApi = useApi(matomoApiRef);
   const matomoSiteId = getMatomoConfig(entity);
 
   const matomoContact = config.getOptionalString('matomo.contact_us');
@@ -124,19 +121,70 @@ export const MatomoHomePage = () => {
   const isMatomoConfigured = Boolean(matomoSiteId);
 
   // visitor data
-  const { data: visitSummary, isLoading: isVisitSummaryLoading } =
-    useGetUserVisitSummary(matomoSiteId, period, range);
-  const { data: visitByTime, isLoading: isVisitByTimeLoading } =
-    useGetUserVisitByTime(matomoSiteId, period, lineGraphRange);
+  const { loading: isVisitSummaryLoading, value: visitSummary } =
+    useAsync(async () => {
+      if (matomoSiteId) {
+        return await matomoApi.getUserVisitMetrics(matomoSiteId, period, range);
+      }
+      return undefined;
+    }, [matomoSiteId, period, range]);
 
-  const { data: geoMetrics, isLoading: isGeoMetricsLoading } =
-    useGetUserGeoMetrics(matomoSiteId, period, range);
-  const { data: deviceMetrics, isLoading: isDeviceMetricsLoading } =
-    useGetUserDeviceMetrics(matomoSiteId, period, range);
-  const { data: actionMetrics, isLoading: isActionMetricsLoading } =
-    useGetUserActionMetrics(matomoSiteId, period, range);
-  const { data: actionByPageURL, isLoading: isActionByPageUrlLoading } =
-    useGetUserActionByPageURL(matomoSiteId, period, range);
+  const { loading: isVisitByTimeLoading, value: visitByTime } =
+    useAsync(async () => {
+      if (matomoSiteId) {
+        const data = await matomoApi.getUserVisitMetrics(
+          matomoSiteId,
+          period,
+          lineGraphRange,
+        );
+        return transformVisitByTime(data.reportData);
+      }
+      return undefined;
+    }, [matomoSiteId, period, lineGraphRange]);
+
+  const { loading: isGeoMetricsLoading, value: geoMetrics } =
+    useAsync(async () => {
+      if (matomoSiteId) {
+        return await matomoApi.getUserGeoMetrics(matomoSiteId, period, range);
+      }
+      return undefined;
+    }, [matomoSiteId, period, range]);
+
+  const { loading: isDeviceMetricsLoading, value: deviceMetrics } =
+    useAsync(async () => {
+      if (matomoSiteId) {
+        return await matomoApi.getUserDeviceMetrics(
+          matomoSiteId,
+          period,
+          range,
+        );
+      }
+      return undefined;
+    }, [matomoSiteId, period, range]);
+
+  const { loading: isActionMetricsLoading, value: actionMetrics } =
+    useAsync(async () => {
+      if (matomoSiteId) {
+        return await matomoApi.getUserActionMetrics(
+          matomoSiteId,
+          period,
+          range,
+        );
+      }
+      return undefined;
+    }, [matomoSiteId, period, range]);
+
+  const { loading: isActionByPageUrlLoading, value: actionByPageURL } =
+    useAsync(async () => {
+      if (matomoSiteId) {
+        return await matomoApi.getUserActionByPageURL(
+          matomoSiteId,
+          period,
+          range,
+        );
+      }
+      return undefined;
+    }, [matomoSiteId, period, range]);
 
   const visitPieChart = [
     { name: 'visitors', value: visitSummary?.reportData?.nb_visits },

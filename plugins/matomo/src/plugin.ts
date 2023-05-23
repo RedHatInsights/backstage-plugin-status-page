@@ -1,7 +1,10 @@
 import {
+  configApiRef,
+  createApiFactory,
   createPlugin,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
+import { MatomoApiClient, matomoApiRef } from './api';
 
 import { rootRouteRef } from './routes';
 
@@ -10,6 +13,15 @@ export const matomoPlugin = createPlugin({
   routes: {
     root: rootRouteRef,
   },
+  apis: [
+    createApiFactory({
+      api: matomoApiRef,
+      deps: {
+        configApi: configApiRef,
+      },
+      factory: ({ configApi }) => new MatomoApiClient({ configApi }),
+    }),
+  ],
 });
 
 export const MatomoPage = matomoPlugin.provide(
