@@ -1,4 +1,5 @@
 import { getVoidLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
 
@@ -10,6 +11,12 @@ describe('createRouter', () => {
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
+      config: new ConfigReader({
+        matomo: {
+          api_token: '',
+          api_url: '',
+        },
+      }),
     });
     app = express().use(router);
   });
