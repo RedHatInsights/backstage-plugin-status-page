@@ -15,8 +15,8 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { config } = options;
 
-  const matomoToken = config.get('matomo.api_token') as string;
-  const matomoApiUrl = config.get('matomo.api_url') as string;
+  const matomoToken = config.getString('matomo.api_token');
+  const matomoApiUrl = config.getString('matomo.api_url');
   if (!matomoToken || !matomoApiUrl) {
     throw new Error(
       'Missing matomo config in app-config.yaml. Add matomo.api_token and api_url in config',
