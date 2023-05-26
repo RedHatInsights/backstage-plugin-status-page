@@ -6,7 +6,7 @@ import {
   TGeoMetrics,
   TUserVisitMetrics,
   TUserVisitReportData,
-} from '../hooks/types';
+} from './types';
 
 type Metric = { value: number; metric: string };
 
