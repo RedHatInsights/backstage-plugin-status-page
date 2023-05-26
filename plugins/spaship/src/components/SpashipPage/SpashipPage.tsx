@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React from 'react';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
@@ -16,7 +17,10 @@ import {
   Typography,
   Button,
   CircularProgress,
+  Box,
+  Tooltip as MuiTooltip,
 } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import {
   CartesianGrid,
   Legend,
@@ -27,8 +31,13 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { Center } from '../Center';
+import { EmptyState } from '../EmptyState';
 import { ActivityStream } from '../ActivityStream';
 import { lineCharts } from '../colorPalette';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import ChatBubble from '@material-ui/icons/ChatBubble';
+import ContactMail from '@material-ui/icons/ContactMail';
 
 const getSpashipConfig = (entity: Entity) => ({
   propertyId: entity.metadata.annotations?.['spaship.io/property-id'],
@@ -36,6 +45,12 @@ const getSpashipConfig = (entity: Entity) => ({
 });
 
 const Spaship = () => {
+  const config = useApi(configApiRef);
+  const theme = useTheme();
+  const spashipManagerUrl = config.getOptionalString('spaship.managerHost');
+  const spashipSlackUrl = config.getOptionalString('spaship.slackUrl');
+  const spashipContactMail = config.getOptionalString('spaship.contactMail');
+
   const { entity } = useEntity();
   const spashipConf = getSpashipConfig(entity);
   const isMissingSpashipConf = !spashipConf.appId || !spashipConf.propertyId;
@@ -85,7 +100,77 @@ const Spaship = () => {
   return (
     <Page themeId="tool">
       <Content>
-        <Grid container>
+        <InfoCard>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Box>
+              <Typography
+                variant="h6"
+                component="div"
+                style={{
+                  fontSize: '0.75rem',
+                  whiteSpace: 'nowrap',
+                  marginBottom: '0.5rem',
+                }}
+              >
+                Property Identifier:{' '}
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: theme.palette.primary.main }}
+                  href={`${spashipManagerUrl}/properties/${spashipConf.propertyId}`}
+                >
+                  {spashipConf.propertyId}
+                </a>
+                <br />
+                Application Identifier:{' '}
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: theme.palette.primary.main }}
+                  href={`${spashipManagerUrl}/properties/${spashipConf.propertyId}/${spashipConf.appId}`}
+                >
+                  {spashipConf.appId}
+                </a>
+              </Typography>
+            </Box>
+            <Grid
+              justifyContent="flex-end"
+              alignItems="center"
+              container
+              spacing={2}
+            >
+              {Boolean(spashipContactMail) && (
+                <Grid item>
+                  <MuiTooltip title="Contact Us">
+                    <a target="_blank" rel="noopener" href={spashipContactMail}>
+                      <ContactMail
+                        fontSize="large"
+                        style={{ color: 'rgba(0, 0, 0, 0.54)' }}
+                      />
+                    </a>
+                  </MuiTooltip>
+                </Grid>
+              )}
+              {Boolean(spashipSlackUrl) && (
+                <Grid item>
+                  <MuiTooltip title="Chat With Us">
+                    <a target="_blank" rel="noopener" href={spashipSlackUrl}>
+                      <ChatBubble
+                        fontSize="large"
+                        style={{ color: 'rgba(0, 0, 0, 0.54)' }}
+                      />
+                    </a>
+                  </MuiTooltip>
+                </Grid>
+              )}
+            </Grid>
+          </Box>
+        </InfoCard>
+        <Grid container style={{ marginTop: '1rem' }}>
           <Grid item xs={12} md={6}>
             {isDeploymentCountLoading || isDeploymentHistoryLoading ? (
               <div
@@ -167,29 +252,39 @@ const Spaship = () => {
                   </InfoCard>
                 </div>
                 <InfoCard title="Deployment History By A Month">
-                  <ResponsiveContainer width="100%" height={210}>
-                    <LineChart
-                      data={deploymentHistoryByMonth}
-                      margin={{ top: 20, right: 20, bottom: 5, left: 0 }}
-                    >
-                      <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                      <Tooltip />
-                      <Legend />
-                      <XAxis dataKey="date" />
-                      {Object.keys(deploymentHistoryByMonth?.[0] || {})
-                        .filter(key => key !== 'date')
-                        .map((env, index) => (
-                          <Line
-                            type="monotone"
-                            dataKey={env}
-                            name={env}
-                            key={env}
-                            stroke={lineCharts[lineCharts.length % index]}
-                          />
-                        ))}
-                      <YAxis />
-                    </LineChart>
-                  </ResponsiveContainer>
+                  {isDeploymentHistoryLoading ? (
+                    <Center>
+                      <CircularProgress size={64} />
+                    </Center>
+                  ) : Object.keys(deploymentHistoryByMonth || {})?.length ? (
+                    <ResponsiveContainer width="100%" height={210}>
+                      <LineChart
+                        data={deploymentHistoryByMonth}
+                        margin={{ top: 20, right: 20, bottom: 5, left: 0 }}
+                      >
+                        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                        <Tooltip />
+                        <Legend />
+                        <XAxis dataKey="date" />
+                        {Object.keys(deploymentHistoryByMonth?.[0] || {})
+                          .filter(key => key !== 'date')
+                          .map((env, index) => (
+                            <Line
+                              type="monotone"
+                              dataKey={env}
+                              name={env}
+                              key={env}
+                              stroke={lineCharts[lineCharts.length % index]}
+                            />
+                          ))}
+                        <YAxis />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <Center>
+                      <EmptyState />
+                    </Center>
+                  )}
                 </InfoCard>
               </div>
             )}
@@ -220,12 +315,13 @@ const Spaship = () => {
                 <ActivityStream
                   activities={activities}
                   isGlobal
+                  spashipUrl={spashipManagerUrl}
                   key={`activity-stream-page-${index + 1}`}
                 />
               ))}
               <Button
                 variant="contained"
-                style={{ marginTop: '1rem', width: '100%' }}
+                style={{ marginTop: '2rem', width: '100%' }}
                 color="primary"
                 disabled={!hasNextPage}
                 onClick={() => fetchNextPage()}
