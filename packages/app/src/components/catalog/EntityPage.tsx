@@ -57,6 +57,10 @@ import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { MatomoPage } from '@appdev-platform/plugin-matomo';
 import { SpashipPage } from '@appdev-platform/plugin-spaship';
+import {
+  ServiceDetailsCard,
+  isAppCodeAvailable,
+} from '@appdev-platform/backstage-plugin-cmdb';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -119,12 +123,21 @@ const overviewContent = (
     <Grid item md={6}>
       <EntityAboutCard variant="gridItem" />
     </Grid>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={isAppCodeAvailable}>
+        <Grid item lg={4} md={6} xs={12}>
+          <ServiceDetailsCard variant="gridItem" />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
     <Grid item md={6} xs={12}>
       <EntityCatalogGraphCard variant="gridItem" height={400} />
     </Grid>
 
     <Grid item md={4} xs={12}>
-      <EntityLinksCard />
+      <EntityLinksCard variant="gridItem" />
     </Grid>
     <Grid item md={8} xs={12}>
       <EntityHasSubcomponentsCard variant="gridItem" />
