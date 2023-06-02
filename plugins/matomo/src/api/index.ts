@@ -107,7 +107,7 @@ export class MatomoApiClient implements MatomoAPI {
     period: string,
     date: string,
   ): Promise<TGeoMetrics> {
-    const backendUrl = this.configApi.getString('backendUrl');
+    const backendUrl = this.configApi.getString('backend.baseUrl');
     const res = await fetch(`${backendUrl}/api/matomo?module=API&format=json`, {
       method: 'POST',
       body: new URLSearchParams({
@@ -122,6 +122,7 @@ export class MatomoApiClient implements MatomoAPI {
         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
       },
     });
+    console.log('-----');
     return res.json();
   }
 
@@ -130,7 +131,7 @@ export class MatomoApiClient implements MatomoAPI {
     period: string,
     date: string,
   ): Promise<TDeviceMetrics> {
-    const backendUrl = this.configApi.getString('backendUrl');
+    const backendUrl = this.configApi.getString('backend.baseUrl');
     const res = await fetch(`${backendUrl}/api/matomo?module=API&format=json`, {
       method: 'POST',
       body: new URLSearchParams({
