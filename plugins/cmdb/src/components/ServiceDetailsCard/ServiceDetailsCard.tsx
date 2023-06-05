@@ -5,8 +5,6 @@ import {
   InfoCard,
   InfoCardVariants,
 } from '@backstage/core-components';
-import { IconButton } from '@material-ui/core';
-import Cached from '@material-ui/icons/Cached';
 import { ServiceDetailsContent } from './ServiceDetailsContent';
 import { getAppCodeFromEntity } from '../../utils/getAppCodeFromEntity';
 import { useServiceDetails } from '../../hooks';
@@ -23,6 +21,7 @@ export interface Props {
 export const ServiceDetailsCard = (props: Props) => {
   const { entity } = useEntity();
   const configApi = useApi(configApiRef);
+  const serviceNowHost = configApi.getOptionalString('cmdb.host');
 
   const { loading, serviceDetails } = useServiceDetails(
     getAppCodeFromEntity(entity),
@@ -34,18 +33,21 @@ export const ServiceDetailsCard = (props: Props) => {
   );
 
   const serviceDashboardUrl = useMemo(() => {
-    const serviceNowHost = configApi.getString('cmdb.host');
-    return getServiceNowDashboardUrl(serviceNowHost, serviceDetails?.sys_id);
-  }, [configApi, serviceDetails?.sys_id]);
+    if (!serviceNowHost) {
+      return;
+    }
+    // eslint-disable-next-line consistent-return
+    return {
+      link: getServiceNowDashboardUrl(serviceNowHost, serviceDetails?.sys_id),
+      title: 'View on ServiceNow',
+    };
+  }, [serviceDetails?.sys_id, serviceNowHost]);
 
   return (
     <InfoCard
       title="CMDB Details"
       variant={props.variant}
-      deepLink={{
-        link: serviceDashboardUrl,
-        title: 'View on Service Now',
-      }}
+      deepLink={serviceDashboardUrl}
     >
       {loading ? (
         <CardSkeleton />

@@ -5,7 +5,7 @@ metadata:
   name: example-service-for-cmdb-plugin
   description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor nisl vitae lacus ultrices dictum. Vivamus quis pretium ipsum. Morbi dui risus, auctor non enim quis, vehicula blandit massa. Proin sem turpis, pharetra sit amet vulputate vel, feugiat eget quam. Mauris eget lacus nisi. Nunc accumsan nibh a dui suscipit molestie. Nunc eget neque pellentesque, commodo tellus vitae, ullamcorper sem. Cras urna odio, aliquet et augue eu, gravida iaculis tortor. Duis faucibus euismod sodales.
   annotations:
-    service-now.com/appcode: ONEP-003
+    servicenow.com/appcode: ONEP-003
 spec:
   type: service
   lifecycle: experimental

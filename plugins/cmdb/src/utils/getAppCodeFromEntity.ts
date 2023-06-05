@@ -1,7 +1,7 @@
 import { Entity } from '@backstage/catalog-model';
 
 /** @public */
-export const APP_CODE_ANNOTATION = 'service-now.com/appcode';
+export const APP_CODE_ANNOTATION = 'servicenow.com/appcode';
 
 /** @public */
 export const isAppCodeAvailable = (entity: Entity) =>

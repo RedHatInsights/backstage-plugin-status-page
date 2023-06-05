@@ -8,15 +8,11 @@ export const CardSkeleton = () => (
       <Skeleton animation="wave" height={16} />
       <Skeleton animation="wave" height={32} />
     </Grid>
-    <Grid item md={4} xs={12}>
+    <Grid item md={6} xs={12}>
       <Skeleton animation="wave" height={16} />
       <Skeleton animation="wave" height={32} />
     </Grid>
-    <Grid item md={4} xs={12}>
-      <Skeleton animation="wave" height={16} />
-      <Skeleton animation="wave" height={32} />
-    </Grid>
-    <Grid item md={4} xs={12}>
+    <Grid item md={6} xs={12}>
       <Skeleton animation="wave" height={16} />
       <Skeleton animation="wave" height={32} />
     </Grid>

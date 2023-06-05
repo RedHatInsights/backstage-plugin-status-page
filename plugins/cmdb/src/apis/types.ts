@@ -4,7 +4,6 @@ export type BusinessApplication = {
   name: string;
   u_application_id: string;
   business_criticality: string;
-  operational_status: string;
   owned_by: {
     link: string;
     value: string;

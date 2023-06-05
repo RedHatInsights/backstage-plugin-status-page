@@ -6,7 +6,7 @@ This plugin exposes a card component with CMDB Details of a Business Application
 
 ![CMDB Plugin Card Component](docs/CMDB%20Plugin%20Card.png)
 
-This plugin is designed to work with all Entity kinds which contain the annotation: `service-now.com/appcode`.
+This plugin is designed to work with all Entity kinds which contain the annotation: `servicenow.com/appcode`.
 
 > **Note:** This plugin has been developed and tested with the [Tokyo release of the ServiceNow Platform](https://www.servicenow.com/company/media/press-room/now-platform-tokyo-release-business-transformation.html).
 > You can find more information aboubt the Tokyo release on the [ServiceNow Product Documentation](https://docs.servicenow.com/bundle/tokyo-release-notes/page/release-notes/family-release-notes.html)
@@ -70,5 +70,5 @@ kind: Component
 metadata:
   # ...
   annotations:
-    service-now.com/appcode: <CMDB_APP_CODE>  # eg. APP-001
+    servicenow.com/appcode: <CMDB_APP_CODE>  # eg. APP-001
 ```

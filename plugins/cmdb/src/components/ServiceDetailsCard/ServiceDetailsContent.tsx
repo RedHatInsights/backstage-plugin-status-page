@@ -2,13 +2,9 @@ import React from 'react';
 import { Avatar, Chip, Grid, Typography } from '@material-ui/core';
 import { ServiceDetailsField } from './ServiceDetailsField';
 import { EntityPeekAheadPopover } from '@backstage/plugin-catalog-react';
-import { Link, StatusAborted, StatusOK } from '@backstage/core-components';
+import { Link } from '@backstage/core-components';
 import { BusinessApplication, ServiceNowUser } from '../../apis';
 import Skeleton from '@material-ui/lab/Skeleton/Skeleton';
-
-const OperationalStatuses: { [x: string]: string } = {
-  '1': 'Operational',
-};
 
 export interface ServiceDetailsContentProps {
   details: BusinessApplication;
@@ -28,25 +24,17 @@ export const ServiceDetailsContent = ({
       value={details.name}
     />
 
-    <ServiceDetailsField label="App Code" gridSizes={{ xs: 4 }}>
+    <ServiceDetailsField label="App Code" gridSizes={{ xs: 12, md: 6 }}>
       <Chip size="medium" label={details.u_application_id} />
     </ServiceDetailsField>
 
     <ServiceDetailsField
       label="Service Criticality"
-      gridSizes={{ md: 4 }}
+      gridSizes={{ xs: 12, md: 6 }}
       value={details.business_criticality}
     />
 
-    <ServiceDetailsField label="Status" gridSizes={{ xs: 4 }}>
-      {OperationalStatuses[details.operational_status] ? (
-        <StatusOK>{OperationalStatuses[details.operational_status]}</StatusOK>
-      ) : (
-        <StatusAborted>Unknown</StatusAborted>
-      )}
-    </ServiceDetailsField>
-
-    <ServiceDetailsField label="Service Owner" gridSizes={{ xs: 6 }}>
+    <ServiceDetailsField label="Service Owner" gridSizes={{ xs: 12, md: 6 }}>
       {!owner ? (
         <Skeleton animation="wave" width="80%" height={32} />
       ) : (
@@ -60,7 +48,7 @@ export const ServiceDetailsContent = ({
       )}
     </ServiceDetailsField>
 
-    <ServiceDetailsField label="Delegate" gridSizes={{ xs: 6 }}>
+    <ServiceDetailsField label="Delegate" gridSizes={{ xs: 12, md: 6 }}>
       {!delegate ? (
         <Skeleton animation="wave" width="80%" height={32} />
       ) : (
