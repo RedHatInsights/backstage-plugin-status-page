@@ -9,7 +9,7 @@ This plugin exposes a card component with CMDB Details of a Business Application
 This plugin is designed to work with all Entity kinds which contain the annotation: `servicenow.com/appcode`.
 
 > **Note:** This plugin has been developed and tested with the [Tokyo release of the ServiceNow Platform](https://www.servicenow.com/company/media/press-room/now-platform-tokyo-release-business-transformation.html).
-> You can find more information aboubt the Tokyo release on the [ServiceNow Product Documentation](https://docs.servicenow.com/bundle/tokyo-release-notes/page/release-notes/family-release-notes.html)
+> You can find more information about the Tokyo release on the [ServiceNow Product Documentation](https://docs.servicenow.com/bundle/tokyo-release-notes/page/release-notes/family-release-notes.html)
 
 ## Getting started
 
