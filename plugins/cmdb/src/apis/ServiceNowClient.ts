@@ -24,7 +24,7 @@ export class ServiceNowClient implements ServiceNowApi {
     const apiUrl = new URL(this.cmdbTableName, await this.getBaseUrl());
     apiUrl.searchParams.append('sysparm_query', `u_application_id=${appCode}`);
 
-    const response = await fetch(apiUrl);
+    const response = await fetch(apiUrl.toString());
 
     if (response.status >= 400 && response.status < 600) {
       throw new Error('Failed to fetch application details');
@@ -39,7 +39,7 @@ export class ServiceNowClient implements ServiceNowApi {
       await this.getBaseUrl(),
     );
 
-    const response = await fetch(apiUrl);
+    const response = await fetch(apiUrl.toString());
 
     if (response.status >= 400 && response.status < 600) {
       throw new Error('Failed to fetch user details');

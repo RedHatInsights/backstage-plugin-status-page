@@ -43,6 +43,11 @@ catalog:
     # Test data for SPAship plugin
     - type: file
       target: ./examples/test-data/spaship-plugin.yaml
+    # Test data for CMDB plugin
+    - type: file
+      target: ./examples/test-data/cmdb-plugin.yaml
+      rules:
+        - allow: [Component, User]
 
     # Local example template
     - type: file
