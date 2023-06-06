@@ -1,0 +1,33 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: example-service-for-cmdb-plugin
+  description: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor nisl vitae lacus ultrices dictum. Vivamus quis pretium ipsum. Morbi dui risus, auctor non enim quis, vehicula blandit massa. Proin sem turpis, pharetra sit amet vulputate vel, feugiat eget quam. Mauris eget lacus nisi. Nunc accumsan nibh a dui suscipit molestie. Nunc eget neque pellentesque, commodo tellus vitae, ullamcorper sem. Cras urna odio, aliquet et augue eu, gravida iaculis tortor. Duis faucibus euismod sodales.
+  annotations:
+    servicenow.com/appcode: ONEP-003
+spec:
+  type: service
+  lifecycle: experimental
+  owner: user:mdeshmuk
+  system: examples
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: npatil
+spec:
+  memberOf: [guests]
+  profile:
+    displayName: Nilesh Patil
+    email: npatil@redhat.com
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: mdeshmuk
+spec:
+  memberOf: [guests]
+  profile:
+    displayName: Mayur Deshmukh
+    email: mdeshmuk@redhat.com

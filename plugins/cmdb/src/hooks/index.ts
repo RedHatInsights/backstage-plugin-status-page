@@ -1,0 +1,1 @@
+export { useServiceDetails } from './useServiceDetails';
