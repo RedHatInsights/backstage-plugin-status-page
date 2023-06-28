@@ -55,8 +55,8 @@ import {
 
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
-import { MatomoPage } from '@appdev-platform/plugin-matomo';
-import { SpashipPage } from '@appdev-platform/plugin-spaship';
+import { MatomoPage } from '@appdev-platform/backstage-plugin-matomo';
+import { SpashipPage } from '@appdev-platform/backstage-plugin-spaship';
 import {
   ServiceDetailsCard,
   isAppCodeAvailable,

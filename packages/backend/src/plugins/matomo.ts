@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createRouter } from '@appdev-platform/plugin-matomo-backend';
+import { createRouter } from '@appdev-platform/backstage-plugin-matomo-backend';
 import { PluginEnvironment } from '../types';
 
 export default async function createPlugin(
