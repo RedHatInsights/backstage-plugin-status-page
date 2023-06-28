@@ -61,6 +61,7 @@ import {
   ServiceDetailsCard,
   isAppCodeAvailable,
 } from '@appdev-platform/backstage-plugin-cmdb';
+import { LighthousePage } from '@appdev-platform/backstage-plugin-lighthouse';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -197,6 +198,9 @@ const websiteEntityPage = (
     </EntityLayout.Route>
     <EntityLayout.Route path="/spaship" title="SPAship">
       <SpashipPage />
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/lighthouse" title="Lighthouse">
+      <LighthousePage />
     </EntityLayout.Route>
     <EntityLayout.Route path="/dependencies" title="Dependencies">
       <Grid container spacing={3} alignItems="stretch">

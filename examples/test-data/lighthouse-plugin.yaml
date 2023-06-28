@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: example-website-for-lighthouse-plugin
+  annotations:
+    lighthouse.io/project-name: 'redhat.com'
+spec:
+  type: website
+  lifecycle: experimental
+  owner: guests
+  system: examples

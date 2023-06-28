@@ -1,0 +1,1 @@
+export { LighthousePage } from './LighthousePage';
