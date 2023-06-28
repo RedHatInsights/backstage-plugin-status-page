@@ -20,6 +20,7 @@
   "dependencies": {
     "@appdev-platform/backstage-plugin-cmdb": "^0.1.0",
     "@appdev-platform/backstage-plugin-lighthouse": "^0.1.0",
+    "@appdev-platform/plugin-analytics-module-matomo": "^0.1.0",
     "@appdev-platform/plugin-matomo": "^0.1.0",
     "@appdev-platform/plugin-spaship": "^0.1.0",
     "@backstage/app-defaults": "^1.2.1",

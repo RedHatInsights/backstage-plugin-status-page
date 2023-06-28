@@ -122,7 +122,6 @@ export class MatomoApiClient implements MatomoAPI {
         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
       },
     });
-    console.log('-----');
     return res.json();
   }
 
