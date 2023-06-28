@@ -60,6 +60,14 @@ proxy:
     allowedMethods: ['GET']
     headers:
       Authorization: ${SERVICE_NOW_API_TOKEN}
+  '/lighthouse':
+    target: ${LIGHTHOUSE_INSTANCE_URL}
+    changeOrigin: true
+    allowedMethods: ['GET']
+
+lighthouse:
+  instance_url: ${LIGHTHOUSE_INSTANCE_URL}
+  contact_us: ${LIGHTHOUSE_CONTACT_URL}
 
 spaship:
   managerHost: ${SPASHIP_MANAGER_URL}
@@ -105,6 +113,9 @@ catalog:
     - type: file
       target: ../../examples/entities.yaml
 
+    # Test data for lighthouse plugin
+    - type: file
+      target: ../../examples/test-data/lighthouse-plugin.yaml
     # Test data for Matomo plugin
     - type: file
       target: ../../examples/test-data/matomo-plugin.yaml
