@@ -1,6 +1,10 @@
 app:
   title: Scaffolded Backstage App
   baseUrl: http://localhost:3000
+  analytics:
+    matomo:
+      instanceUrl: ${ANALYTICS_MATOMO_INSTANCE_URL}
+      siteId: ${ANALYTICS_MATOMO_SITE_ID}
 
 organization:
   name: My Company
@@ -21,6 +25,8 @@ backend:
     connect-src: ["'self'", 'http:', 'https:']
     # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
     # Default Helmet Content-Security-Policy values can be removed by setting the key to false
+    script-src:
+      ["'self'", "'unsafe-eval'", 'https://${ANALYTICS_MATOMO_INSTANCE_URL}']
   cors:
     origin: http://localhost:3000
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
