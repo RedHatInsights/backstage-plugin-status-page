@@ -4,8 +4,5 @@ services:
     image: images.paas.redhat.com/app-dev-platform/backstage-plugins:latest
     platform: linux/amd64
     env_file: ./.env
-    volumes:
-      - ./examples:/app/examples
-      - ./app-config.production.yaml:/app/app-config.production.yaml
     ports:
       - 7007:7007
