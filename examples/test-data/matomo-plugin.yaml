@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: example-website-for-matomo-plugin
   annotations:
-    matomo.io/site-id: "2"
+    matomo.io/site-id: "3"
 spec:
   type: website
   lifecycle: experimental
