@@ -3,7 +3,7 @@ kind: Component
 metadata:
   name: example-website-for-lighthouse-plugin
   annotations:
-    lighthouse.io/project-name: 'redhat.com'
+    lighthouse.io/project-name: 'one.redhat.com'
 spec:
   type: website
   lifecycle: experimental
