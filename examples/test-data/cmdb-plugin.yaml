@@ -9,7 +9,7 @@ metadata:
 spec:
   type: service
   lifecycle: experimental
-  owner: user:mdeshmuk
+  owner: user:default/mdeshmuk
   system: examples
 ---
 apiVersion: backstage.io/v1alpha1

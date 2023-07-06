@@ -22,6 +22,7 @@ export const ServiceDetailsCard = (props: Props) => {
   const { entity } = useEntity();
   const configApi = useApi(configApiRef);
   const serviceNowHost = configApi.getOptionalString('cmdb.host');
+  const userNamespace = configApi.getOptionalString('cmdb.userNamespace');
 
   const { loading, serviceDetails } = useServiceDetails(
     getAppCodeFromEntity(entity),
@@ -63,6 +64,7 @@ export const ServiceDetailsCard = (props: Props) => {
             details={serviceDetails}
             owner={owner}
             delegate={delegate}
+            namespace={userNamespace}
           />,
         )
       )}

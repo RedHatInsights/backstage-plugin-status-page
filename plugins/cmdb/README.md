@@ -36,6 +36,7 @@ proxy:
 
 cmdb:
   host: ${SERVICE_NOW_HOST}
+  userNamespace: mynamespace        # This field is optional (the backstage DEFAULT_NAMESPACE is used if it's not specified)
 ```
 
 3. Also add the 

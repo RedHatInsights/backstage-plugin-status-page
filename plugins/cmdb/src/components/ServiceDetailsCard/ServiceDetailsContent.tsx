@@ -5,17 +5,20 @@ import { EntityPeekAheadPopover } from '@backstage/plugin-catalog-react';
 import { Link } from '@backstage/core-components';
 import { BusinessApplication, ServiceNowUser } from '../../apis';
 import Skeleton from '@material-ui/lab/Skeleton/Skeleton';
+import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 
 export interface ServiceDetailsContentProps {
   details: BusinessApplication;
   owner?: ServiceNowUser;
   delegate?: ServiceNowUser;
+  namespace?: string;
 }
 
 export const ServiceDetailsContent = ({
   details,
   owner,
   delegate,
+  namespace,
 }: ServiceDetailsContentProps) => (
   <Grid container spacing={2}>
     <ServiceDetailsField
@@ -38,7 +41,7 @@ export const ServiceDetailsContent = ({
       {!owner ? (
         <Skeleton animation="wave" width="80%" height={32} />
       ) : (
-        <EntityPeekAheadPopover entityRef={`user:${owner.user_name}`}>
+        <EntityPeekAheadPopover entityRef={`user:${namespace ?? DEFAULT_NAMESPACE}/${owner.user_name}`}>
           <Chip
             variant="outlined"
             label={owner.name}
@@ -52,7 +55,7 @@ export const ServiceDetailsContent = ({
       {!delegate ? (
         <Skeleton animation="wave" width="80%" height={32} />
       ) : (
-        <EntityPeekAheadPopover entityRef={`user:${delegate.user_name}`}>
+        <EntityPeekAheadPopover entityRef={`user:${namespace ?? DEFAULT_NAMESPACE}/${delegate.user_name}`}>
           <Chip
             variant="outlined"
             label={delegate.name}
