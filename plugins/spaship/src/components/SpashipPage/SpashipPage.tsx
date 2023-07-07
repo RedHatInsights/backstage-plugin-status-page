@@ -251,7 +251,7 @@ const Spaship = () => {
                     <Typography variant="h1">{deploymentCount?.eph}</Typography>
                   </InfoCard>
                 </div>
-                <InfoCard title="Deployment History By A Month">
+                <InfoCard title="Deployment History For Last 30 Days">
                   {isDeploymentHistoryLoading ? (
                     <Center>
                       <CircularProgress size={64} />
@@ -274,7 +274,7 @@ const Spaship = () => {
                               dataKey={env}
                               name={env}
                               key={env}
-                              stroke={lineCharts[lineCharts.length % index]}
+                              stroke={lineCharts[index % lineCharts.length]}
                             />
                           ))}
                         <YAxis />
