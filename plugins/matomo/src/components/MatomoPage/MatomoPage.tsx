@@ -226,7 +226,11 @@ export const MatomoHomePage = () => {
               {Boolean(matomoInstanceUrl) && (
                 <Grid item>
                   <MuiTooltip title="Matomo Instance">
-                    <a target="_blank" rel="noopener" href={matomoInstanceUrl}>
+                    <a
+                      target="_blank"
+                      rel="noopener"
+                      href={`${matomoInstanceUrl}?idSite=${matomoSiteId}`}
+                    >
                       <Assessment
                         fontSize="large"
                         style={{ color: 'rgba(0, 0, 0, 0.54)' }}
