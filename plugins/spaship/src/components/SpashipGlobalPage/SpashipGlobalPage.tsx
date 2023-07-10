@@ -39,7 +39,7 @@ import {
 import { lineCharts } from '../colorPalette';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Center } from '../Center';
-import { OpenInNew } from '@material-ui/icons';
+import OpenInNew from '@material-ui/icons/OpenInNew';
 
 export const SpashipGlobal = () => {
   const config = useApi(configApiRef);
@@ -84,6 +84,7 @@ export const SpashipGlobal = () => {
   return (
     <Page themeId="tool">
       <Header
+        pageTitleOverride="SPAship"
         title={
           <a
             target="_blank"
@@ -234,7 +235,7 @@ export const SpashipGlobal = () => {
                     <Typography variant="h1">{deploymentCount?.eph}</Typography>
                   </InfoCard>
                 </div>
-                <InfoCard title="Deployment History By A Month">
+                <InfoCard title="Deployment History For Last 30 Days">
                   {isDeploymentHistoryByMonthLoading ? (
                     <Center>
                       <CircularProgress size={64} />
@@ -257,7 +258,7 @@ export const SpashipGlobal = () => {
                               dataKey={env}
                               name={env}
                               key={env}
-                              stroke={lineCharts[lineCharts.length % index]}
+                              stroke={lineCharts[index % lineCharts.length]}
                             />
                           ))}
                         <YAxis />
