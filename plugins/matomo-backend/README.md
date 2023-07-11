@@ -9,13 +9,13 @@ Plugin will inject the auth token and ensure that the request are only read only
 1. First install the backend plugin
 
 ```bash
-yarn add --cwd packages/backend  @appdev-platform/plugin-matomo-backend
+yarn add --cwd packages/backend  @appdev-platform/backstage-plugin-matomo-backend
 ```
 
 2. Then create a new file `packages/backend/src/plugins/matomo.ts`, and add the following
 
 ```ts
-import { createRouter } from '@appdev-platform/plugin-matomo-backend';
+import { createRouter } from '@appdev-platform/backstage-plugin-matomo-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 

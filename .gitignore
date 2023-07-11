@@ -38,6 +38,9 @@ node_modules/
 dist
 dist-types
 
+# Built npm packages
+plugins/**/*.tgz
+
 # Temporary change files created by Vim
 *.swp
 
