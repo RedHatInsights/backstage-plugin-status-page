@@ -12,7 +12,7 @@ This plugin contains no other functionality.
 
 ```sh
 # From your Backstage root directory
-yarn add --cwd packages/app @appdev-platform/plugin-analytics-module-matomo
+yarn add --cwd packages/app @appdev-platform/backstage-plugin-analytics-module-matomo
 ```
 
 2. Wire up the API implementation to your App:
@@ -24,7 +24,7 @@ import {
   configApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { MatomoAnalytics } from '@appdev-platform/plugin-analytics-module-matomo';
+import { MatomoAnalytics } from '@appdev-platform/backstage-plugin-analytics-module-matomo';
 
 export const apis: AnyApiFactory[] = [
   // Instantiate and register the GA Analytics API Implementation.

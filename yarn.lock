@@ -67,7 +67,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-cmdb@^0.1.0, @appdev-platform/backstage-plugin-cmdb@workspace:plugins/cmdb":
+"@appdev-platform/backstage-plugin-cmdb@^0.2.0, @appdev-platform/backstage-plugin-cmdb@workspace:plugins/cmdb":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-cmdb@workspace:plugins/cmdb"
   dependencies:
@@ -145,7 +145,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-matomo@^0.1.0, @appdev-platform/backstage-plugin-matomo@workspace:plugins/matomo":
+"@appdev-platform/backstage-plugin-matomo@^0.1.1, @appdev-platform/backstage-plugin-matomo@workspace:plugins/matomo":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-matomo@workspace:plugins/matomo"
   dependencies:
@@ -176,7 +176,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-spaship@^0.1.0, @appdev-platform/backstage-plugin-spaship@workspace:plugins/spaship":
+"@appdev-platform/backstage-plugin-spaship@^0.1.1, @appdev-platform/backstage-plugin-spaship@workspace:plugins/spaship":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-spaship@workspace:plugins/spaship"
   dependencies:
@@ -11190,10 +11190,10 @@ __metadata:
   resolution: "app@workspace:packages/app"
   dependencies:
     "@appdev-platform/backstage-plugin-analytics-module-matomo": ^1.0.0
-    "@appdev-platform/backstage-plugin-cmdb": ^0.1.0
+    "@appdev-platform/backstage-plugin-cmdb": ^0.2.0
     "@appdev-platform/backstage-plugin-lighthouse": ^0.1.0
-    "@appdev-platform/backstage-plugin-matomo": ^0.1.0
-    "@appdev-platform/backstage-plugin-spaship": ^0.1.0
+    "@appdev-platform/backstage-plugin-matomo": ^0.1.1
+    "@appdev-platform/backstage-plugin-spaship": ^0.1.1
     "@backstage/app-defaults": ^1.4.0
     "@backstage/catalog-model": ^1.4.0
     "@backstage/cli": ^0.22.8
@@ -28731,11 +28731,11 @@ __metadata:
 
 "typescript@patch:typescript@~4.8.2#~builtin<compat/typescript>":
   version: 4.8.4
-  resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=1a91c8"
+  resolution: "typescript@patch:typescript@npm%3A4.8.4#~builtin<compat/typescript>::version=4.8.4&hash=0102e9"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: c981e82b77a5acdcc4e69af9c56cdecf5b934a87a08e7b52120596701e389a878b8e3f860e73ffb287bf649cc47a8c741262ce058148f71de4cdd88bb9c75153
+  checksum: 301459fc3eb3b1a38fe91bf96d98eb55da88a9cb17b4ef80b4d105d620f4d547ba776cc27b44cc2ef58b66eda23fe0a74142feb5e79a6fb99f54fc018a696afa
   languageName: node
   linkType: hard
 
