@@ -21,7 +21,8 @@
     "lint:all": "backstage-cli repo lint",
     "prettier:check": "prettier --check .",
     "create-plugin": "backstage-cli create-plugin --scope internal",
-    "new": "backstage-cli new --scope internal"
+    "new": "backstage-cli new --scope internal",
+    "allure:report": "allure generate allure-results --clean -o allure-report"
   },
   "workspaces": {
     "packages": [
@@ -31,12 +32,18 @@
   },
   "devDependencies": {
     "@backstage/cli": "^0.22.8",
+    "@reportportal/agent-js-playwright": "5.1.2",
     "@spotify/prettier-config": "^12.0.0",
     "concurrently": "^6.0.0",
     "lerna": "^4.0.0",
     "node-gyp": "^9.0.0",
     "prettier": "^2.3.2",
-    "typescript": "~4.6.4"
+    "typescript": "~4.6.4",
+    "@playwright/test": "^1.34.3",
+    "@types/cypress": "^1.1.3",
+    "allure-commandline": "^2.17.2",
+    "allure-playwright": "^2.4.0",
+    "dotenv": "^16.1.4"
   },
   "resolutions": {
     "@types/react": "^17",

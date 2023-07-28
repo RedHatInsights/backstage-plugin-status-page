@@ -1,31 +1,45 @@
-default:
-  tags:
-    - docker
 
+
+image: mcr.microsoft.com/playwright:v1.35.0-jammy
+variables:
+  TEST_URL: BASE_URL
+  ENV_NAME: ENV_NAME 
+  MATOMO_TEST_URL: $MATOMO_TEST_URL
+  BRANCH_NAME: $CI_COMMIT_BRANCH
+  BUILD_NUMBER: $CI_PIPELINE_ID
+  SLACK_CHANNEL_LINK: $SLACK_CHANNEL_LINK
+  REPORT_PORTAL_KEY: $REPORT_PORTAL_KEY
+  REPORT_PORTAL_PROJECTNAME: $REPORT_PORTAL_PROJECTNAME
+  REPORT_PORTAL_URL: $REPORT_PORTAL_URL
 stages:
-  - test
-
-cache:
-  key: ${CI_COMMIT_REF_SLUG}
-  paths:
-    - .yarn/
-    - .npm/
-
+  - test 
 test:
-  image: cypress/browsers:node-18.16.0-chrome-113.0.5672.92-1-ff-113.0-edge-113.0.1774.35-1
   stage: test
-  variables:
-    CYPRESS_baseUrl: "$CYPRESS_BASE_URL"
+  tags: [shared]
+  before_script:
+    - apt-get update
+    - apt-get install build-essential -y
+    - apt-get install libnss3-tools
+    - apt-get install openjdk-8-jre-headless -y
+    - mkdir -p $HOME/.pki/nssdb
+    - cp ReportPortal.pem /usr/local/share/ca-certificates/
+    - certutil -d $HOME/.pki/nssdb -N --empty-password
+    - curl -k https://certs.corp.redhat.com/certs/2015-IT-Root-CA.pem --create-dirs -o  /usr/local/share/ca-certificates/2015-IT-Root-CA.pem
+    - curl -k https://certs.corp.redhat.com/certs/2022-IT-Root-CA.pem --create-dirs -o  /usr/local/share/ca-certificates/2022-IT-Root-CA.pem
+    - certutil -d sql:$HOME/.pki/nssdb -A -t "C,," -n root.implodingduck.local -i '/usr/local/share/ca-certificates/2015-IT-Root-CA.pem';
+    - certutil -d sql:$HOME/.pki/nssdb -A -t "C,," -n ITCertificate -i '/usr/local/share/ca-certificates/2022-IT-Root-CA.pem';
+    - certutil -d sql:$HOME/.pki/nssdb -A -t "C,," -n ReportPortalCertificate -i '/usr/local/share/ca-certificates/ReportPortal.pem';
+    - openssl x509 -in ReportPortal.pem -inform pem -out ReportPortal.der -outform der
+    - keytool -importcert -alias startssl -keystore /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts -storepass changeit -file ReportPortal.der -noprompt
+
   script:
-    - cd cypress/
-    - yarn --frozen-lockfile
-    - yarn test
+    - yarn install
+    - yarn playwright install
+    - npx playwright install msedge
+    - source playwright/set-env.sh
+    - yarn playwright test --workers 6
   artifacts:
+    paths:  
+      - ./playwright-report/
     when: always
-    paths:
-      - cypress/videos/**/*.mp4
-      - cypress/screenshots/**/*.png
-    expire_in: 1 day
-  when: manual
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+ 
