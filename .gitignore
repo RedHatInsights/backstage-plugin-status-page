@@ -55,3 +55,9 @@ site
 
 # vscode database functionality support files
 *.session.sql
+#testing files
+
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
