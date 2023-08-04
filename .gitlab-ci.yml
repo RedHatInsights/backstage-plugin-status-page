@@ -3,7 +3,6 @@
 image: mcr.microsoft.com/playwright:latest
 variables:
   TEST_URL: BASE_URL
-  ENV_NAME: ENV_NAME 
   MATOMO_TEST_URL: $MATOMO_TEST_URL
   BRANCH_NAME: $CI_COMMIT_BRANCH
   BUILD_NUMBER: $CI_PIPELINE_ID
