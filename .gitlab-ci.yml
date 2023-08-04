@@ -1,6 +1,6 @@
 
 
-image: mcr.microsoft.com/playwright:v1.35.0-jammy
+image: mcr.microsoft.com/playwright:latest
 variables:
   TEST_URL: BASE_URL
   ENV_NAME: ENV_NAME 
