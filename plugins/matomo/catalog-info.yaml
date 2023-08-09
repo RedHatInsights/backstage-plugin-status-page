@@ -1,0 +1,22 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: matomo-plugin
+  title: Matomo Plugin Backstage
+  description: Backstage Plugin for Matomo
+  namespace: devex
+  tags: 
+    - backstage
+    - idp
+    - developers
+    - plugin
+    - matomo
+  links:
+    - url: hhttps://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-matomo
+      title: Backstage Matomo Plugin NPM Package
+spec:
+  type: library
+  lifecycle: production
+  owner: group:redhat/one-platform-devs
+  system: devex/appdev-platform
