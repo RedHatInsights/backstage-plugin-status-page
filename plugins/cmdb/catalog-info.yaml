@@ -1,0 +1,23 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: cmdb-plugin
+  title: Configuration Management Database Plugin Backstage
+  description: Backstage Plugin for Configuration Management Database
+  namespace: devex
+  tags: 
+    - backstage
+    - idp
+    - developers
+    - cmdb
+    - managment
+    - database
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-cmdb
+      title: Backstage CMDB Plugin NPM Package
+spec:
+  type: library
+  lifecycle: production
+  owner: group:redhat/one-platform-devs
+  system: devex/appdev-platform

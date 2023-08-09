@@ -1,13 +1,14 @@
 apiVersion: backstage.io/v1alpha1
-kind: Component
+kind: Location
 metadata:
   name: backstage-plugins
-  description: An example of a Backstage application.
-  # Example for optional annotations
-  # annotations:
-  #   github.com/project-slug: backstage/backstage
-  #   backstage.io/techdocs-ref: dir:.
 spec:
-  type: website
-  owner: john@example.com
-  lifecycle: experimental
+  owner: group:redhat/one-platform-devs
+  lifecycle: producion
+  targets:
+    - ./plugins/analytics-module-matomo/catalog-info.yaml
+    - ./plugins/cmdb/catalog-info.yaml
+    - ./plugins/lighthouse/catalog-info.yaml
+    - ./plugins/matomo/catalog-info.yaml
+    - ./plugins/matomo-backend/catalog-info.yaml
+    - ./plugins/spaship/catalog-info.yaml
