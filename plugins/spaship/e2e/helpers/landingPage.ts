@@ -5,8 +5,8 @@ export class LandingPage {
     this.exampleWebsite = page.locator(
       "xpath=//a[normalize-space()='example-website']",
     );
-    this.matomoWebsite = page.locator(
-      "xpath=//a[normalize-space()='example-website-for-matomo-plugin']",
+    this.spashipWebsite = page.locator(
+      "xpath=//a[normalize-space()='example-website-for-spaship-plugin']",
     );
   }
   async checkHeaderVisibility() {
@@ -15,10 +15,10 @@ export class LandingPage {
   async goToSite(url) {
     await this.page.goto(url);
   }
-  async openTheExampleWebsiteMatomoTab() {
+  async openTheExampleWebsiteTab() {
     await this.exampleWebsite.click();
   }
-  async getMatomoWebsite() {
-    await this.matomoWebsite.click();
+  async getSPAshipWebsite() {
+    await this.spashipWebsite.click();
   }
 }
