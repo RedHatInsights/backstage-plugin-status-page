@@ -74,6 +74,6 @@ export class SPAshipPage {
       "//p[text()='Github']/following-sibling::span/a",
     );
     const githubLinkValue = await githubLink.getAttribute('href');
-    expect(githubLinkValue).toContain(process.env.GITHUB_LINK);
+    expect(githubLinkValue).toContain(process.env.SPASHIP_GITHUB_LINK);
   }
 }
