@@ -35,6 +35,10 @@ test.describe('BackStage SPAShip Plugin', async () => {
     ).toBeVisible();
     await spashipPage.checkConfigOptions();
     await spashipPage.checkValues();
+    await expect(page.locator("(//div[text()='Property Identifier:']/a)[1]")).not.toBeNull();
+    await expect(
+      page.locator("(//div[text()='Application Identifier:']/a)[2]"),
+    ).not.toBeNull();
     const activityStreamElementsCount = await page
       .locator(
         "//span[normalize-space()='Activity Stream']/parent::div/parent::div/following-sibling::div/div/div",
