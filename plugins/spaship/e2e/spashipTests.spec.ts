@@ -35,6 +35,12 @@ test.describe('BackStage SPAShip Plugin', async () => {
     ).toBeVisible();
     await spashipPage.checkConfigOptions();
     await spashipPage.checkValues();
+    const activityStreamElementsCount = await page
+      .locator(
+        "//span[normalize-space()='Activity Stream']/parent::div/parent::div/following-sibling::div/div/div",
+      )
+      .count();
+    expect(activityStreamElementsCount).toBeGreaterThanOrEqual(1);
   });
   test('SPAship GLobal plugin', async ({ page }) => {
     const Landing = new LandingPage(page);
@@ -44,5 +50,11 @@ test.describe('BackStage SPAShip Plugin', async () => {
     await page.getByLabel('SPAship').click();
     await spashipPage.checkValues();
     await spashipPage.checkGlobalPluginLinks();
+    const activityStreamElementsCount = await page
+      .locator(
+        "//span[text()='Activity Stream']/parent::div/parent::div/following-sibling::div/div/div",
+      )
+      .count();
+    expect(activityStreamElementsCount).toBeGreaterThanOrEqual(1);
   });
 });
