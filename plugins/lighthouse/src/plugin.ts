@@ -9,7 +9,7 @@ import { LighthouseApiClient, lighthouseApiRef } from './api';
 import { rootRouteRef } from './routes';
 
 export const lighthousePlugin = createPlugin({
-  id: 'lighthouse',
+  id: 'lighthouse-ci',
   routes: {
     root: rootRouteRef,
   },
