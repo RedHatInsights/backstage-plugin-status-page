@@ -1,0 +1,77 @@
+.card-title {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+}
+
+.list-proxy-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.new-proxy-btn {
+    padding: 0.5rem 1rem;
+    background-color: rgb(0, 110, 255);
+    border-radius: 0.5rem;
+    border:none;
+    color: whitesmoke;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: rgb(156, 156, 156) 3px 2px 8px 2px;
+    transition: 0.5s;
+}
+
+.new-proxy-btn:hover { 
+    background-color: rgb(0, 85, 197);
+    cursor: pointer;
+}
+
+.edit-btn {
+    background:none;
+    border: 0.01rem silver solid;
+    border-radius: 0.2rem;
+    padding: 0.3rem 0.5rem; 
+    transition: 0.5s;
+}
+
+.edit-btn:hover {
+    cursor: pointer;
+    background-color: rgb(236, 236, 236);
+}
+
+.delete-proxy-btn {
+    background:none;
+    border: 0.01rem silver solid;
+    border-radius: 0.2rem;
+    transition: 0.5s;
+    padding: 0.3rem 0.5rem; 
+    color: rgb(172, 76, 76);
+}
+
+.delete-proxy-btn:hover {
+    cursor: pointer;
+    color: rgb(206, 26, 26);
+
+}
+
+.search-input {
+    justify-content: center;
+    display: flex;
+    box-shadow: rgb(189, 189, 189) 2px 2px 8px 2px;
+    border-radius: 0.7rem;
+    padding: 0.5rem;
+}
+
+.search-input input {
+    border-radius: 0.3rem;
+    border: 0;
+    transition: 0.2s;
+    outline: none;
+    width: 10rem;
+    font-size: 1rem;
+    padding: 0.3rem 0.5rem;
+    text-align: center;
+    color: rgb(75, 75, 75);
+}
+.search-input input[type=text]:focus {
+    border: 0;
+  }
