@@ -22,6 +22,7 @@
     "@appdev-platform/backstage-plugin-cmdb": "^0.2.0",
     "@appdev-platform/backstage-plugin-lighthouse": "^0.1.1",
     "@appdev-platform/backstage-plugin-matomo": "^0.1.1",
+    "@appdev-platform/backstage-plugin-proxy-manager": "^0.1.0",
     "@appdev-platform/backstage-plugin-spaship": "^0.1.1",
     "@backstage/app-defaults": "^1.4.0",
     "@backstage/catalog-model": "^1.4.0",

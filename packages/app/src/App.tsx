@@ -34,6 +34,7 @@ import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { SpashipGlobalPage } from '@appdev-platform/backstage-plugin-spaship';
+import { ProxyManagerPage } from '@appdev-platform/backstage-plugin-proxy-manager';
 
 const app = createApp({
   apis,
@@ -93,6 +94,7 @@ const routes = (
     <Route path="/settings" element={<UserSettingsPage />} />
     <Route path="/catalog-graph" element={<CatalogGraphPage />} />
     <Route path="/spaship" element={<SpashipGlobalPage />} />
+    <Route path="/proxy-manager" element={<ProxyManagerPage />} />
   </FlatRoutes>
 );
 

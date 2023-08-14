@@ -27,6 +27,7 @@ import {
 } from '@backstage/core-components';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
+import { HydraProxyIcon } from '@appdev-platform/backstage-plugin-proxy-manager';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -77,6 +78,9 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         </SidebarScrollWrapper>
         <SidebarScrollWrapper>
           <SidebarItem icon={SpashipIcon} to="spaship" text="SPAship" />
+        </SidebarScrollWrapper>
+        <SidebarScrollWrapper>
+          <SidebarItem icon={HydraProxyIcon} to="proxy-manager" text="Hydra Proxy" />
         </SidebarScrollWrapper>
       </SidebarGroup>
       <SidebarSpace />

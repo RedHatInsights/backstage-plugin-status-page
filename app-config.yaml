@@ -90,6 +90,9 @@ matomo:
 cmdb:
   host: ${SERVICE_NOW_HOST}
 
+proxyManager:
+  apiBaseUrl: ${PROXY_MANAGER_API_BASE_URL}
+
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 # Note: After experimenting with basic setup, use CI/CD to generate docs
 # and an external cloud storage when deploying TechDocs for production use-case.
@@ -103,7 +106,14 @@ techdocs:
 
 auth:
   # see https://backstage.io/docs/auth/ to learn about auth providers
-  providers: {}
+  environment: development
+  providers:
+    oauth2:
+      development:
+        authorizationUrl: ${AUTH_SSO_AUTHORIZATION_URL}
+        tokenUrl: ${AUTH_SSO_TOKEN_URL}
+        clientId: ${AUTH_SSO_CLIENT_ID}
+        clientSecret: ${AUTH_SSO_CLIENT_SECRET}
 
 scaffolder:
   # see https://backstage.io/docs/features/software-templates/configuration for software template options
