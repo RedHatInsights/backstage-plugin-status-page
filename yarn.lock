@@ -95,7 +95,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-lighthouse@^0.1.1, @appdev-platform/backstage-plugin-lighthouse@workspace:plugins/lighthouse":
+"@appdev-platform/backstage-plugin-lighthouse@^0.1.2, @appdev-platform/backstage-plugin-lighthouse@workspace:plugins/lighthouse":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-lighthouse@workspace:plugins/lighthouse"
   dependencies:
@@ -10437,14 +10437,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^16.11.26, @types/node@npm:^16.9.2":
-  version: 16.18.39
-  resolution: "@types/node@npm:16.18.39"
-  checksum: eac9b202b76013256cb517ca8d3e3f61df206edb1615ca8d8df4c80616e92879fe4d3f8570a11d60f4216a82724a3265d5888b24c6994c80b057a0423c9ff1d2
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^16.18.39":
+"@types/node@npm:^16.11.26, @types/node@npm:^16.18.39, @types/node@npm:^16.9.2":
   version: 16.18.39
   resolution: "@types/node@npm:16.18.39"
   checksum: eac9b202b76013256cb517ca8d3e3f61df206edb1615ca8d8df4c80616e92879fe4d3f8570a11d60f4216a82724a3265d5888b24c6994c80b057a0423c9ff1d2
@@ -11611,7 +11604,7 @@ __metadata:
   dependencies:
     "@appdev-platform/backstage-plugin-analytics-module-matomo": ^1.0.0
     "@appdev-platform/backstage-plugin-cmdb": ^0.2.0
-    "@appdev-platform/backstage-plugin-lighthouse": ^0.1.1
+    "@appdev-platform/backstage-plugin-lighthouse": ^0.1.2
     "@appdev-platform/backstage-plugin-matomo": ^0.1.1
     "@appdev-platform/backstage-plugin-proxy-manager": ^0.1.0
     "@appdev-platform/backstage-plugin-spaship": ^0.1.1
@@ -27255,17 +27248,6 @@ __metadata:
   linkType: hard
 
 "semver@npm:^7.1.1, semver@npm:^7.1.2, semver@npm:^7.1.3, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.5.3":
-  version: 7.5.4
-  resolution: "semver@npm:7.5.4"
-  dependencies:
-    lru-cache: ^6.0.0
-  bin:
-    semver: bin/semver.js
-  checksum: 12d8ad952fa353b0995bf180cdac205a4068b759a140e5d3c608317098b3575ac2f1e09182206bf2eb26120e1c0ed8fb92c48c592f6099680de56bb071423ca3
-  languageName: node
-  linkType: hard
-
-"semver@npm:^7.5.3":
   version: 7.5.4
   resolution: "semver@npm:7.5.4"
   dependencies:
