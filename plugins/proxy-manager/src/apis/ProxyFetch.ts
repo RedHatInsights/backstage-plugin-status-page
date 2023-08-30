@@ -22,7 +22,7 @@ export const fetchAll = async (apiBaseUrl: string, accessToken: string) => {
       });
 
     return res;
-  } catch (err) {
+  } catch (err: any) {
     toast.error(err, {
       position: toast.POSITION.TOP_RIGHT,
     });

@@ -29,12 +29,13 @@ import { Root } from './components/Root';
 
 import { AlertDisplay, OAuthRequestDialog } from '@backstage/core-components';
 import { createApp } from '@backstage/app-defaults';
-import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
+import { AppRouter, FeatureFlagged, FlatRoutes } from '@backstage/core-app-api';
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { SpashipGlobalPage } from '@appdev-platform/backstage-plugin-spaship';
 import { ProxyManagerPage } from '@appdev-platform/backstage-plugin-proxy-manager';
+import { CatalogPage } from '@appdev-platform/backstage-plugin-catalog-index';
 
 const app = createApp({
   apis,
@@ -58,7 +59,15 @@ const app = createApp({
 const routes = (
   <FlatRoutes>
     <Route path="/" element={<Navigate to="catalog" />} />
-    <Route path="/catalog" element={<CatalogIndexPage />} />
+
+    <FeatureFlagged without="appdev-catalog-index">
+      <Route path="/catalog" element={<CatalogIndexPage />} />
+    </FeatureFlagged>
+    <FeatureFlagged with="appdev-catalog-index">
+      <Route path="/catalog" element={<CatalogIndexPage />}>
+        <CatalogPage />
+      </Route>
+    </FeatureFlagged>
     <Route
       path="/catalog/:namespace/:kind/:name"
       element={<CatalogEntityPage />}
@@ -95,6 +104,7 @@ const routes = (
     <Route path="/catalog-graph" element={<CatalogGraphPage />} />
     <Route path="/spaship" element={<SpashipGlobalPage />} />
     <Route path="/proxy-manager" element={<ProxyManagerPage />} />
+    <Route path="/catalog-index" element={<CatalogIndexPage />} />
   </FlatRoutes>
 );
 
