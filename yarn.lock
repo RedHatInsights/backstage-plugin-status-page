@@ -123,7 +123,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-lighthouse@^0.1.1, @appdev-platform/backstage-plugin-lighthouse@workspace:plugins/lighthouse":
+"@appdev-platform/backstage-plugin-lighthouse@^0.1.2, @appdev-platform/backstage-plugin-lighthouse@workspace:plugins/lighthouse":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-lighthouse@workspace:plugins/lighthouse"
   dependencies:
@@ -11832,7 +11832,7 @@ __metadata:
     "@appdev-platform/backstage-plugin-analytics-module-matomo": ^1.0.0
     "@appdev-platform/backstage-plugin-catalog-index": ^0.1.0
     "@appdev-platform/backstage-plugin-cmdb": ^0.2.0
-    "@appdev-platform/backstage-plugin-lighthouse": ^0.1.1
+    "@appdev-platform/backstage-plugin-lighthouse": ^0.1.2
     "@appdev-platform/backstage-plugin-matomo": ^0.1.1
     "@appdev-platform/backstage-plugin-proxy-manager": ^0.1.0
     "@appdev-platform/backstage-plugin-spaship": ^0.1.1

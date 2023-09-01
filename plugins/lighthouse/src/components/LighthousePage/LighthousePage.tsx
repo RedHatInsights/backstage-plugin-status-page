@@ -184,7 +184,7 @@ export const LighthouseHomePage = () => {
       ({ branch }) => selectedBranch === branch,
     );
     if (newBuild?.[0]?.id) setSelectedBuildId(newBuild[0].id);
-    // eslint-disable-next-line react-hooks/exhaustive-dep
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedBranch]);
 
   if (!isLhConfigured) {
