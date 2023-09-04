@@ -1,0 +1,14 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: example-website-for-jira-server-plugin
+  annotations:
+    jira/project-key: "DEE"
+    jira/component: "GraphQL"
+    jira/token-type: Bearer
+spec:
+  type: service
+  lifecycle: experimental
+  owner: guests
+  system: examples

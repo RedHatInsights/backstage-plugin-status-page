@@ -52,6 +52,8 @@ catalog:
       target: ./examples/test-data/cmdb-plugin.yaml
       rules:
         - allow: [Component, User]
+    - type: file
+      target: ../../examples/test-data/jira-server-plugin.yaml
 
     # Local example template
     - type: file
