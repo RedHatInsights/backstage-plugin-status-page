@@ -15,6 +15,8 @@ stages:
 test:
   stage: test
   tags: [shared]
+  only:
+  - schedules
   before_script:
     - apt-get update
     - apt-get install build-essential -y
