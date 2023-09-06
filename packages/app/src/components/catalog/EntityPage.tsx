@@ -39,7 +39,7 @@ import {
   EntityOwnershipCard,
 } from '@backstage/plugin-org';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
-import { EmptyState } from '@backstage/core-components';
+import { EmptyState, MissingAnnotationEmptyState } from '@backstage/core-components';
 import {
   Direction,
   EntityCatalogGraphCard,
@@ -59,6 +59,8 @@ import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { MatomoPage } from '@appdev-platform/backstage-plugin-matomo';
 import { SpashipPage } from '@appdev-platform/backstage-plugin-spaship';
+import { EntityJiraOverviewCard, isJiraAvailable } from '@appdev-platform/backstage-plugin-jira-server';
+
 import {
   ServiceDetailsCard,
   isAppCodeAvailable,
@@ -127,6 +129,24 @@ const entityWarningContent = (
     </EntitySwitch>
   </>
 );
+const jiraContent = (
+  <>
+    <EntitySwitch>
+      <EntitySwitch.Case if={isJiraAvailable}>
+        <Grid item md={12}>
+          <EntityJiraOverviewCard />
+        </Grid>
+      </EntitySwitch.Case>
+
+      <EntitySwitch.Case>
+        <MissingAnnotationEmptyState 
+          annotation={["jira/project-key","jira/component"]} 
+          readMoreUrl="https://roadie.io/backstage/plugins/jira/"
+        />
+      </EntitySwitch.Case>
+    </EntitySwitch>
+  </>
+);
 
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
@@ -191,6 +211,12 @@ const serviceEntityPage = (
     <EntityLayout.Route path="/docs" title="Docs">
       {techdocsContent}
     </EntityLayout.Route>
+
+    {/* Jira plugin Configuration */}
+    <EntityLayout.Route path='/jira' title='Jira'>
+      {jiraContent}
+    </EntityLayout.Route>
+
   </EntityLayout>
 );
 
