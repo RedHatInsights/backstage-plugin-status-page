@@ -26,6 +26,7 @@ test.describe('Matomo Test App', async () => {
     await expect(
       page.locator("//div[@id='root']/div/main/article/div[2]/div/div"),
     ).toHaveCount(9);
+    await page.isVisible("text='Matomo Site ID:")
     await matomo.selectTheFilter();
     await expect(page.locator("div[class*='MuiTypography-h1']")).toBeDefined();
     const instanceLink = await page.locator("a[title='Matomo Instance']");
