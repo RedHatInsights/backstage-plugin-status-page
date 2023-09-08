@@ -67,6 +67,11 @@ import {
 } from '@appdev-platform/backstage-plugin-cmdb';
 import { LighthousePage } from '@appdev-platform/backstage-plugin-lighthouse';
 
+import {
+  ContactDetailsCard,
+  isContactDetailsAvailable,
+} from '@appdev-platform/backstage-plugin-contact-details';
+
 const techdocsContent = (
   <EntityTechdocsContent>
     <TechDocsAddons>
@@ -161,6 +166,11 @@ const overviewContent = (
           <ServiceDetailsCard variant="gridItem" />
         </Grid>
       </EntitySwitch.Case>
+      <EntitySwitch.Case if={isContactDetailsAvailable}>
+        <Grid item md={4} xs={12}>
+          <ContactDetailsCard />
+        </Grid>
+      </EntitySwitch.Case>
     </EntitySwitch>
 
     <Grid item md={6} xs={12}>
@@ -251,6 +261,11 @@ const websiteEntityPage = (
 
     <EntityLayout.Route path="/docs" title="Docs">
       {techdocsContent}
+    </EntityLayout.Route>
+
+    {/* Jira plugin Configuration */}
+    <EntityLayout.Route path='/jira' title='Jira'>
+      {jiraContent}
     </EntityLayout.Route>
   </EntityLayout>
 );

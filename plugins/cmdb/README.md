@@ -39,8 +39,6 @@ cmdb:
   userNamespace: mynamespace        # This field is optional (the backstage DEFAULT_NAMESPACE is used if it's not specified)
 ```
 
-3. Also add the 
-
 3. Add the `ServiceDetailsCard` to the overview tab of the Catalog Entity Page.
 
 ```tsx

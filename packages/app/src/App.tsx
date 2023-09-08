@@ -111,7 +111,6 @@ const routes = (
     <Route path="/catalog-graph" element={<CatalogGraphPage />} />
     <Route path="/spaship" element={<SpashipGlobalPage />} />
     <Route path="/proxy-manager" element={<ProxyManagerPage />} />
-    <Route path="/catalog-index" element={<CatalogIndexPage />} />
   </FlatRoutes>
 );
 
