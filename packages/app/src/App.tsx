@@ -54,16 +54,23 @@ const app = createApp({
       catalogIndex: catalogPlugin.routes.catalogIndex,
     });
   },
+  featureFlags: [
+    {
+      name: 'default-catalog-index',
+      pluginId: 'catalog-index',
+      description: 'Fall back to the default catalog index page.',
+    },
+  ],
 });
 
 const routes = (
   <FlatRoutes>
     <Route path="/" element={<Navigate to="catalog" />} />
 
-    <FeatureFlagged without="appdev-catalog-index">
+    <FeatureFlagged with="default-catalog-index">
       <Route path="/catalog" element={<CatalogIndexPage />} />
     </FeatureFlagged>
-    <FeatureFlagged with="appdev-catalog-index">
+    <FeatureFlagged without="default-catalog-index">
       <Route path="/catalog" element={<CatalogIndexPage />}>
         <CatalogPage />
       </Route>

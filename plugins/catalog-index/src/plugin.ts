@@ -7,11 +7,6 @@ export const catalogIndexPlugin = createPlugin({
   routes: {
     root: rootRouteRef,
   },
-  featureFlags: [
-    {
-      name: 'appdev-catalog-index',
-    }
-  ]
 });
 
 export const CatalogPage = catalogIndexPlugin.provide(

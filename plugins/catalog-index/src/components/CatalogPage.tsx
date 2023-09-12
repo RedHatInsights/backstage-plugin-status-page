@@ -9,20 +9,19 @@ import {
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { EntityListProvider } from '@backstage/plugin-catalog-react';
 import { catalogPlugin } from '@backstage/plugin-catalog';
-import { Typography, makeStyles } from '@material-ui/core';
+import { Container, Typography, makeStyles } from '@material-ui/core';
 import { CatalogList } from './CatalogList';
-import { CatalogToolbar } from './CatalogToolbar';
+import { capitalizeWord } from '../utils/capitalizeWord';
 
 const useStyles = makeStyles({
   heading: {
     fontSize: '2rem',
-    textTransform: 'capitalize',
   },
 });
 
 /** @public */
 export const CatalogPage = () => {
-  const [kind, setKind] = useState('');
+  const [kind, setKind] = useState('Component');
   const [count, setCount] = useState(0);
   const { heading } = useStyles();
 
@@ -34,26 +33,27 @@ export const CatalogPage = () => {
   );
 
   const handleDispatch = (values: any) => {
-    setKind(values.kind);
+    setKind(capitalizeWord(values.kind));
     setCount(values.count);
   };
 
   return (
-    <PageWithHeader title={`${orgName} Catalog`} themeId="home">
+    <PageWithHeader title={`${orgName} Catalog`} pageTitleOverride={`${orgName} Catalog`} themeId="home">
       <EntityListProvider>
         <Content>
-          <ContentHeader
-            titleComponent={
-              <Typography variant="h2" className={heading}>
-                All {kind}s ({count})
-              </Typography>
-            }
-          >
-            <CreateButton title="Create" to={createComponentLink?.()} />
-            <SupportButton />
-          </ContentHeader>
-          <CatalogToolbar />
-          <CatalogList dispatchActiveKind={handleDispatch} />
+          <Container>
+            <ContentHeader
+              titleComponent={
+                <Typography variant="h2" className={heading}>
+                  All {kind}s ({count})
+                </Typography>
+              }
+            >
+              <CreateButton title="Create" to={createComponentLink?.()} />
+              <SupportButton />
+            </ContentHeader>
+            <CatalogList dispatchActiveKind={handleDispatch} />
+          </Container>
         </Content>
       </EntityListProvider>
     </PageWithHeader>
