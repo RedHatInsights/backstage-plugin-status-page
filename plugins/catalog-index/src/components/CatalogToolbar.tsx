@@ -1,17 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   EntityKindPicker,
   EntitySearchBar,
   EntityTypePicker,
-  useEntityList,
 } from '@backstage/plugin-catalog-react';
-import {
-  Box,
-  TablePagination,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { Box, Typography, makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -22,35 +15,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const CatalogToolbar = () => {
-  const [page, setPage] = useState(0);
-  const [rowsPerpage, setRowsPerPage] = useState(10);
+interface CatalogToolbarProps {
+  children?: React.ReactNode;
+}
+
+export const CatalogToolbar = ({ children }: CatalogToolbarProps) => {
   const { container, textLabel } = useStyles();
-  const alertApi = useApi(alertApiRef);
-
-  const { error, entities } = useEntityList();
-
-  const handleChangePage = (
-    _: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
-    newPage: number,
-  ) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  if (error) {
-    alertApi.post({
-      message: error.message,
-      display: 'transient',
-      severity: 'error',
-    });
-  }
 
   return (
     <Box
@@ -75,19 +45,7 @@ export const CatalogToolbar = () => {
         <EntityTypePicker />
       </Box>
 
-      {entities.length > rowsPerpage && (
-        <Box alignSelf="flex-end" flexGrow={1} marginBottom={2}>
-          <TablePagination
-            component="div"
-            count={entities.length ?? 0}
-            page={page}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerpage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            labelRowsPerPage="Rows:"
-          />
-        </Box>
-      )}
+      {children}
     </Box>
   );
 };

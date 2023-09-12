@@ -13,12 +13,15 @@ import CodeIcon from '@material-ui/icons/CodeOutlined';
 import ResourceIcon from '@material-ui/icons/AccountTreeOutlined';
 import { GraphQLIcon } from './icons/graphql';
 import { OpenAPIIcon } from './icons/openapi';
+import { LibraryIcon } from './icons/library';
 
 const getComponentIcon = (componentType: string) => {
   if (componentType === 'website') {
     return <WebsiteIcon />;
   } else if (componentType === 'service') {
     return <ServiceIcon />;
+  } else if (componentType === 'library') {
+    return <LibraryIcon />;
   }
   return <ExtensionIcon />;
 };
