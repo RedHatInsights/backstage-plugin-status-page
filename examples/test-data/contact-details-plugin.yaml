@@ -1,0 +1,69 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: example-service-for-contact-details-plugin
+spec:
+  type: service
+  lifecycle: production
+  owner: guests
+  system: examples
+  contacts:
+    - label: Manager
+      users:
+        - 'user:redhat/npatil'
+    - label: Project Manager
+      users:
+        - 'user:redhat/shrpande'
+    - label: Team
+      group: 'group:redhat/one-platform-devs'
+    - label: QEs
+      users:
+        - 'user:redhat/mmaheshw'
+        - 'user:redhat/stummulw'
+    - label: DevOps
+      users:
+        - 'user:redhat/rarai'
+        - 'user:redhat/rcoffman'
+        - 'user:redhat/mdeshmuk'
+    - label: Escalation
+      users:
+        - 'user:redhat/mdeshmuk'
+        - 'user:redhat/roommen'
+        - 'user:redhat/npatil'
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: one-platform-devs
+  namespace: redhat
+spec:
+  type: team
+  profile:
+    displayName: One Platform Developers
+    email: one-platform-devs@redhat.com
+  children: []
+  members:
+    - user:redhat/mdesmuk
+    - user:redhat/roommen
+    - user:redhat/denair
+    - user:redhat/yoswal
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: npatil
+  namespace: redhat
+spec:
+  memberOf: [one-platform-devs]
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: mdeshmuk
+  namespace: redhat
+spec:
+  memberOf: [guests]
+  profile:
+    displayName: Mayur Deshmukh
+    email: mdeshmuk@redhat.com

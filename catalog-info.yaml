@@ -8,6 +8,7 @@ spec:
   targets:
     - ./plugins/analytics-module-matomo/catalog-info.yaml
     - ./plugins/cmdb/catalog-info.yaml
+    - ./plugins/contact-details/catalog-info.yaml
     - ./plugins/lighthouse/catalog-info.yaml
     - ./plugins/matomo/catalog-info.yaml
     - ./plugins/matomo-backend/catalog-info.yaml
