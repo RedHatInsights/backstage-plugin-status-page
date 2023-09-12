@@ -19,4 +19,4 @@ spec:
   type: library
   lifecycle: production
   owner: group:redhat/one-platform-devs
-  system: devex/appdev-platform
+  system: devex/redhat-experience-platform
