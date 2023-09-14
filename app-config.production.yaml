@@ -53,8 +53,11 @@ catalog:
       rules:
         - allow: [Component, User]
     - type: file
-      target: ../../examples/test-data/jira-server-plugin.yaml
-
+      target: ./examples/test-data/jira-server-plugin.yaml
+    - type: file
+      target: ./examples/test-data/contact-details-plugin.yaml
+      rules:
+        - allow: [Component, Group, User]
     # Local example template
     - type: file
       target: ./examples/template/template.yaml

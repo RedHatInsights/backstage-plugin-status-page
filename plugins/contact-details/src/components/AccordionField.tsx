@@ -16,7 +16,11 @@ import {
   EntityRefLink,
   catalogApiRef,
 } from '@backstage/plugin-catalog-react';
-import { parseEntityRef } from '@backstage/catalog-model';
+import {
+  DEFAULT_NAMESPACE,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import UserIcon from '@material-ui/icons/PersonOutlineRounded';
 import AddIcon from '@material-ui/icons/AddOutlined';
 import { useApi } from '@backstage/core-plugin-api';
@@ -67,18 +71,6 @@ export const AccordionField = (props: CardFieldProps) => {
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
 
-  const renderDetails = () => {
-    return userRefs?.map(userRef => {
-      const entity = parseEntityRef(userRef);
-
-      return (
-        <EntityPeekAheadPopover entityRef={userRef}>
-          <Chip icon={<UserIcon />} label={entity.name} />
-        </EntityPeekAheadPopover>
-      );
-    });
-  };
-
   /**
    * MAGIC:
    * Using 2 different useEffects here because having `values` and the catalog API call
@@ -91,7 +83,12 @@ export const AccordionField = (props: CardFieldProps) => {
       if (values.length > 1) {
         setSecondaryLabel(`+ ${values.length} people`);
       } else {
-        setSecondaryLabel(parseEntityRef(values[0]).name);
+        setSecondaryLabel(
+          parseEntityRef(values[0], {
+            defaultKind: 'user',
+            defaultNamespace: DEFAULT_NAMESPACE,
+          }).name,
+        );
       }
     }
   }, [values, variant]);
@@ -106,9 +103,33 @@ export const AccordionField = (props: CardFieldProps) => {
         }
       };
       getGroupMembers();
-      setSecondaryLabel(parseEntityRef(value!).name);
+      setSecondaryLabel(
+        parseEntityRef(value!, {
+          defaultKind: 'group',
+          defaultNamespace: DEFAULT_NAMESPACE,
+        }).name,
+      );
     }
   }, [catalogApi, value, variant]);
+
+  const Details = () => {
+    return (
+      <>
+        {userRefs?.map(userRef => {
+          const entity = parseEntityRef(userRef, {
+            defaultKind: 'user',
+            defaultNamespace: DEFAULT_NAMESPACE,
+          });
+
+          return (
+            <EntityPeekAheadPopover entityRef={stringifyEntityRef(entity)}>
+              <Chip icon={<UserIcon />} label={entity.name} />
+            </EntityPeekAheadPopover>
+          );
+        })}
+      </>
+    );
+  };
 
   return (
     <Grid item xs={12}>
@@ -123,7 +144,7 @@ export const AccordionField = (props: CardFieldProps) => {
         </AccordionSummary>
         <AccordionDetails>
           <Box display="flex" flexWrap="wrap">
-            {renderDetails()}
+            <Details />
             {variant === 'group' && value && showMoreLink && (
               <Chip
                 icon={<AddIcon />}
