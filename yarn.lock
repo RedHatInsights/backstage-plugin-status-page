@@ -123,7 +123,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-contact-details@^0.1.0, @appdev-platform/backstage-plugin-contact-details@workspace:plugins/contact-details":
+"@appdev-platform/backstage-plugin-contact-details@^0.1.1, @appdev-platform/backstage-plugin-contact-details@workspace:plugins/contact-details":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-contact-details@workspace:plugins/contact-details"
   dependencies:
@@ -11778,7 +11778,7 @@ __metadata:
     "@appdev-platform/backstage-plugin-analytics-module-matomo": ^1.0.0
     "@appdev-platform/backstage-plugin-catalog-index": ^0.2.0
     "@appdev-platform/backstage-plugin-cmdb": ^0.2.0
-    "@appdev-platform/backstage-plugin-contact-details": ^0.1.0
+    "@appdev-platform/backstage-plugin-contact-details": ^0.1.1
     "@appdev-platform/backstage-plugin-jira-server": ^0.1.0
     "@appdev-platform/backstage-plugin-lighthouse": ^0.1.2
     "@appdev-platform/backstage-plugin-matomo": ^0.1.1
