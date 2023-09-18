@@ -15,6 +15,7 @@ import {
 import { fetchAll } from '../../apis/ProxyFetch';
 import './proxy-list.css';
 import { Skeleton } from '@material-ui/lab';
+import TablePagination from '@mui/material/TablePagination';
 import { ToastContainer } from 'react-toastify';
 import Search from '@material-ui/icons/Search';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
@@ -27,6 +28,8 @@ export const ProxyList = () => {
   const [proxies, setProxies] = useState<any>([]);
   const [pageVariables, setPageVariable] = useState({
     loadingProxy: false,
+    page: 1,
+    rowPerPage: 10,
   });
 
   const tableColumns = [
@@ -61,12 +64,21 @@ export const ProxyList = () => {
   );
 
   const filterProxies = (query: string) => {
+    setPageVariable({
+      ...pageVariables,
+      page: 1,
+    });
     if (!query) {
       setProxies(proxyBackup);
     } else {
       setProxies(
         [...proxyBackup].filter((proxy: any) => {
-          return proxy?.baseUrl?.includes(query);
+          if (
+            proxy?.baseUrl?.toLowerCase().includes(query.toLowerCase()) ||
+            proxy?.upstreamHost?.toLowerCase().includes(query.toLowerCase())
+          ) {
+            return true;
+          } else return false;
         }),
       );
     }
@@ -122,33 +134,39 @@ export const ProxyList = () => {
                       })
                   ) : proxies && proxies.length ? (
                     proxies?.map((proxy: any, index: number) => {
-                      return (
-                        <TableRow key={index}>
-                          <TableCell align="left" width="15%">
-                            <span style={{ fontWeight: 'bold' }}>
-                              {proxy?.baseUrl}
-                            </span>
-                          </TableCell>
-                          <TableCell align="left" width="25%">
-                            {proxy?.upstreamHost}
-                          </TableCell>
-                          <TableCell align="left" width="15%">
-                            {proxy?.authenticationType}
-                          </TableCell>
-                          <TableCell align="left" width="10%">
-                            {proxy?.isInternal ? 'Internal' : 'External'}
-                          </TableCell>
-                          <TableCell align="left" width="10%">
-                            <Chip
-                              label={proxy?.isActive ? 'Enabled' : 'Disabled'}
-                              color={proxy?.isActive ? 'primary' : 'default'}
-                            />
-                          </TableCell>
-                          <TableCell align="left" width="10%">
-                            {proxy?.createdBy}
-                          </TableCell>
-                        </TableRow>
-                      );
+                      if (
+                        index >
+                          (pageVariables.page - 1) * pageVariables.rowPerPage -
+                            1 &&
+                        index < pageVariables.page * pageVariables.rowPerPage
+                      )
+                        return (
+                          <TableRow key={index}>
+                            <TableCell align="left" width="15%">
+                              <span style={{ fontWeight: 'bold' }}>
+                                {proxy?.baseUrl}
+                              </span>
+                            </TableCell>
+                            <TableCell align="left" width="25%">
+                              {proxy?.upstreamHost}
+                            </TableCell>
+                            <TableCell align="left" width="15%">
+                              {proxy?.authenticationType || 'N/A'}
+                            </TableCell>
+                            <TableCell align="left" width="10%">
+                              {proxy?.isInternal ? 'Internal' : 'External'}
+                            </TableCell>
+                            <TableCell align="left" width="10%">
+                              <Chip
+                                label={proxy?.isActive ? 'Enabled' : 'Disabled'}
+                                color={proxy?.isActive ? 'primary' : 'default'}
+                              />
+                            </TableCell>
+                            <TableCell align="left" width="10%">
+                              {proxy?.createdBy}
+                            </TableCell>
+                          </TableRow>
+                        );
                     })
                   ) : (
                     <TableRow>
@@ -159,6 +177,30 @@ export const ProxyList = () => {
                   )}
                 </TableBody>
               </Table>
+              <div
+                style={{
+                  margin: 'auto',
+                  justifyContent: 'flex-end',
+                  display: 'flex',
+                }}
+              >
+                <TablePagination
+                  component="div"
+                  count={proxies.length}
+                  page={pageVariables.page - 1}
+                  onPageChange={(event, num) => {
+                    setPageVariable({ ...pageVariables, page: num + 1 });
+                  }}
+                  rowsPerPage={pageVariables.rowPerPage}
+                  onRowsPerPageChange={event => {
+                    setPageVariable({
+                      ...pageVariables,
+                      rowPerPage: parseInt(event.target.value, 10),
+                      page: 1,
+                    });
+                  }}
+                />
+              </div>
             </Typography>
           </InfoCard>
         </Grid>
