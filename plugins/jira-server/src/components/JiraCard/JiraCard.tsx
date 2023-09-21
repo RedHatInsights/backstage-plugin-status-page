@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Avatar,
   Box,
@@ -19,6 +19,7 @@ import {
   TableHead,
   TableRow,
   TablePagination,
+  Button,
 } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import { InfoCard, Progress } from '@backstage/core-components';
@@ -100,6 +101,10 @@ export const JiraCard = (props: EntityProps & JiraCardOptionalProps) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
+  useEffect(() => {
+    setPage(0);
+  }, [tickets]);
+
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -114,41 +119,45 @@ export const JiraCard = (props: EntityProps & JiraCardOptionalProps) => {
       title="Jira"
       subheader={
         project && (
-          <Box>
-            <CardProjectDetails project={project} component={component} />
-            <Box display="inline-flex" pl={1}>
-              <IconButton
-                aria-label="more"
-                aria-controls="long-menu"
-                aria-haspopup="true"
-                onClick={handleClick}
-              >
-                <MoreVertIcon />
-              </IconButton>
-              <Menu
-                id="simple-menu"
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={changeType}>
-                  <Checkbox checked={type === 'all'} />
-                  <>Show empty issue types</>
-                </MenuItem>
-              </Menu>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            width="100%"
+            alignItems="center"
+          >
+            <Box>
+              <CardProjectDetails project={project} component={component} />
+              <Box display="inline-flex" pl={1}>
+                <IconButton
+                  aria-label="more"
+                  aria-controls="long-menu"
+                  aria-haspopup="true"
+                  onClick={handleClick}
+                >
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu
+                  id="simple-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                >
+                  <MenuItem onClick={changeType}>
+                    <Checkbox checked={type === 'all'} />
+                    <>Show empty issue types</>
+                  </MenuItem>
+                </Menu>
+              </Box>
+            </Box>
+            <Box>
+              <Button variant="outlined" size="small" href={`${project?.url}/browse/${projectKey}`} target="_blank">
+                Go to Project
+              </Button>
             </Box>
           </Box>
         )
       }
-      deepLink={{
-        link: `${project?.url}/browse/${projectKey}`,
-        title: 'Go to project',
-        onClick: event => {
-          event.preventDefault();
-          window.open(`${project?.url}/browse/${projectKey}`);
-        },
-      }}
     >
       {projectLoading && !(project && issues) ? <Progress /> : null}
       {projectError ? (
