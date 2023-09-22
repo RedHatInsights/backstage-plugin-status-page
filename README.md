@@ -11,6 +11,7 @@ If you have a use case for a new plugin, please create [a new issue](/issues/new
 ## Creating a new plugin
 
 Run the following command to start a new plugin and follow the instructions:
+
 ```
 yarn new
 ```
@@ -64,3 +65,44 @@ Please read [following guidelines](https://semantic-release.gitbook.io/semantic-
 | <pre>perf(pencil): remove graphiteWidth option<br><br>BREAKING CHANGE: The graphiteWidth option has been removed.<br>The default graphite width of 10mm is always used for performance reasons.</pre> | Breaking Release (`v⬆️.0.0`) <br>(Note that the `BREAKING CHANGE:` token must be **in the footer** of the commit) |
 
 Commit messages are used to populate a `CHANGELOG.md` file for each individual package (if the commit is relevant for that particular package folder).
+
+# Running e2e Tests in playwright
+
+UI tests for Red Hat Experience Platform Plugin using Playwright
+
+## Pre-requisites
+
+NodeJs
+
+## Setup
+
+- Setup Environment variables and other authentication related info
+
+```
+source playwright/set-env.sh
+```
+
+## Execute tests:
+
+- For headless execution:
+
+```sh
+npx playwright test
+```
+
+## Execute single test:
+
+```sh
+npx playwright test <testfilename.js>
+```
+
+## Open the playright runner
+
+npx playwright codegen
+
+## Reports
+
+`Report Portal has been configured`
+
+- https://reportportal-hydra.apps.ocp-c1.prod.psi.redhat.com/ui/#backstage_plugins_tests/dashboard/72
+
