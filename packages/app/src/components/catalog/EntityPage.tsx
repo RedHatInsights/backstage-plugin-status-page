@@ -39,7 +39,10 @@ import {
   EntityOwnershipCard,
 } from '@backstage/plugin-org';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
-import { EmptyState, MissingAnnotationEmptyState } from '@backstage/core-components';
+import {
+  EmptyState,
+  MissingAnnotationEmptyState,
+} from '@backstage/core-components';
 import {
   Direction,
   EntityCatalogGraphCard,
@@ -59,7 +62,10 @@ import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { MatomoPage } from '@appdev-platform/backstage-plugin-matomo';
 import { SpashipPage } from '@appdev-platform/backstage-plugin-spaship';
-import { EntityJiraOverviewCard, isJiraAvailable } from '@appdev-platform/backstage-plugin-jira-server';
+import {
+  EntityJiraOverviewCard,
+  isJiraAvailable,
+} from '@appdev-platform/backstage-plugin-jira-server';
 
 import {
   ServiceDetailsCard,
@@ -71,6 +77,7 @@ import {
   ContactDetailsCard,
   isContactDetailsAvailable,
 } from '@appdev-platform/backstage-plugin-contact-details';
+import { EntityFeedbackPage } from '@appdev-platform/backstage-plugin-feedback';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -116,7 +123,7 @@ const entityWarningContent = (
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>
-    
+
     <EntitySwitch>
       <EntitySwitch.Case if={hasRelationWarnings}>
         <Grid item xs={12}>
@@ -144,8 +151,8 @@ const jiraContent = (
       </EntitySwitch.Case>
 
       <EntitySwitch.Case>
-        <MissingAnnotationEmptyState 
-          annotation={["jira/project-key","jira/component"]} 
+        <MissingAnnotationEmptyState
+          annotation={['jira/project-key', 'jira/component']}
           readMoreUrl="https://roadie.io/backstage/plugins/jira/"
         />
       </EntitySwitch.Case>
@@ -223,10 +230,13 @@ const serviceEntityPage = (
     </EntityLayout.Route>
 
     {/* Jira plugin Configuration */}
-    <EntityLayout.Route path='/jira' title='Jira'>
+    <EntityLayout.Route path="/jira" title="Jira">
       {jiraContent}
     </EntityLayout.Route>
 
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackPage />
+    </EntityLayout.Route>
   </EntityLayout>
 );
 
@@ -264,8 +274,11 @@ const websiteEntityPage = (
     </EntityLayout.Route>
 
     {/* Jira plugin Configuration */}
-    <EntityLayout.Route path='/jira' title='Jira'>
+    <EntityLayout.Route path="/jira" title="Jira">
       {jiraContent}
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackPage />
     </EntityLayout.Route>
   </EntityLayout>
 );
@@ -285,6 +298,10 @@ const defaultEntityPage = (
 
     <EntityLayout.Route path="/docs" title="Docs">
       {techdocsContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackPage />
     </EntityLayout.Route>
   </EntityLayout>
 );
@@ -333,6 +350,10 @@ const apiPage = (
           <EntityApiDefinitionCard />
         </Grid>
       </Grid>
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackPage />
     </EntityLayout.Route>
   </EntityLayout>
 );

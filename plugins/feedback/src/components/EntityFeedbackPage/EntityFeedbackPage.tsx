@@ -1,0 +1,176 @@
+import React, { useState, useEffect } from 'react';
+import { Progress } from '@backstage/core-components';
+import Button from '@material-ui/core/Button';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { useApi, identityApiRef } from '@backstage/core-plugin-api';
+import Grid from '@material-ui/core/Grid';
+import { FeedbackTable } from '../FeedbackTable';
+import { CreateFeedbackModal } from '../CreateFeedbackModal/CreateFeedbackModal';
+import {
+  ButtonGroup,
+  CircularProgress,
+  Dialog,
+  Snackbar,
+  Theme,
+  Tooltip,
+  Zoom,
+  createStyles,
+  makeStyles,
+} from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import Add from '@material-ui/icons/Add';
+import ArrowForwardRounded from '@material-ui/icons/ArrowForwardRounded';
+import Sync from '@material-ui/icons/Sync';
+import { FeedbackDetailsModal } from '../FeedbackDetailsModal';
+import { CustomEmptyState } from './CustomEmptyState';
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    buttonGroup: {
+      textAlign: 'center',
+      whiteSpace: 'nowrap',
+      marginTop: theme.spacing(1),
+    },
+  }),
+);
+
+export const EntityFeedbackPage = () => {
+  const classes = useStyles();
+  const { entity } = useEntity();
+  const user = useApi(identityApiRef);
+
+  const [modalProps, setModalProps] = useState<{
+    projectEntity: string;
+    userEntity: string;
+  }>();
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState<{
+    message: string;
+    open: boolean;
+    severity: 'success' | 'error';
+  }>({
+    message: '',
+    open: false,
+    severity: 'success',
+  });
+  const [reload, setReload] = useState(false);
+  useEffect(() => {
+    setReload(false);
+  }, [snackbarOpen, reload]);
+
+  const projectEntity =
+    `${entity.kind}:${entity.metadata.namespace}/${entity.metadata.name}`.toLowerCase();
+
+  const pluginConfig = {
+    'feedback/type': entity.metadata.annotations!['feedback/type'],
+    'feedback/host': entity.metadata.annotations!['feedback/host'],
+    'feedback/mail-to': entity.metadata.annotations!['feedback/email-to'],
+    'jira/project-key': entity.metadata.annotations!['jira/project-key'],
+  };
+
+  async function handleModalOpen() {
+    const userEntity = (await user.getBackstageIdentity()).userEntityRef;
+    setModalProps({
+      projectEntity,
+      userEntity,
+    });
+
+    return setModalOpen(true);
+  }
+
+  const handleModalClose = (event: any, reason: string, respObj?: any) => {
+    setModalOpen(false);
+    if (respObj) {
+      setReload(true);
+      if (respObj.error) {
+        setSnackbarOpen({
+          message: respObj.error,
+          severity: 'error',
+          open: true,
+        });
+      } else if (respObj.message) {
+        setSnackbarOpen({
+          message: respObj.message,
+          severity: 'success',
+          open: true,
+        });
+      }
+    }
+  };
+
+  const handleSnackbarClose = (
+    event?: React.SyntheticEvent,
+    reason?: string,
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen({ ...snackbarOpen, open: false });
+  };
+
+  const handleResyncClick = (event: React.BaseSyntheticEvent) => {
+    setReload(true);
+  };
+
+  // const { data, isLoading } = fetchData(Boolean(searchText));
+
+  return pluginConfig['feedback/mail-to'] === undefined ? (
+    <CustomEmptyState {...pluginConfig} />
+  ) : (
+    <Grid container justifyContent="flex-end">
+      <FeedbackDetailsModal />
+      <Grid item>
+        <ButtonGroup
+          className={classes.buttonGroup}
+          color="primary"
+          variant="outlined"
+        >
+          <Button startIcon={<Add />} onClick={handleModalOpen}>
+            Create
+          </Button>
+          {pluginConfig['feedback/type'] === 'JIRA' && (
+            <Button
+              endIcon={<ArrowForwardRounded />}
+              href={`${pluginConfig['feedback/host']}/projects/${pluginConfig['jira/project-key']}/summary`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Go to Jira project
+            </Button>
+          )}
+          <Tooltip title="Refresh" arrow TransitionComponent={Zoom}>
+            <Button onClick={handleResyncClick}>
+              {!reload ? <Sync /> : <CircularProgress size="1.5rem" />}
+            </Button>
+          </Tooltip>
+        </ButtonGroup>
+      </Grid>
+      <Dialog
+        open={modalOpen}
+        onClose={(event, reason) => handleModalClose(event, reason, '')}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+        fullWidth
+        maxWidth="md"
+      >
+        <CreateFeedbackModal
+          {...modalProps!}
+          handleModalCloseFn={handleModalClose}
+        />
+      </Dialog>
+      <Grid item xs={12}>
+        {reload ? <Progress /> : <FeedbackTable projectId={projectEntity} />}
+      </Grid>
+      <Snackbar
+        open={snackbarOpen?.open}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert severity={snackbarOpen.severity} onClose={handleSnackbarClose}>
+          {snackbarOpen?.message}
+        </Alert>
+      </Snackbar>
+    </Grid>
+  );
+};
