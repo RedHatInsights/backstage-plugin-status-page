@@ -14,3 +14,5 @@ spec:
     - ./plugins/matomo-backend/catalog-info.yaml
     - ./plugins/spaship/catalog-info.yaml
     - ./plugins/jira-server/catalog-info.yaml
+    - ./plugins/feedback/catalog-info.yaml
+    - ./plugins/feedback-backend/catalog-info.yaml

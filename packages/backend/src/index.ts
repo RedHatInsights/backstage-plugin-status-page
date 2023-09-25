@@ -29,6 +29,7 @@ import proxy from './plugins/proxy';
 import techdocs from './plugins/techdocs';
 import search from './plugins/search';
 import matomo from './plugins/matomo';
+import feedback from './plugins/feedback';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
@@ -87,6 +88,7 @@ async function main() {
   const searchEnv = useHotMemoize(module, () => createEnv('search'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
   const matomoEnv = useHotMemoize(module, () => createEnv('matomo'));
+  const feedbackEnv = useHotMemoize(module, () => createEnv('feedback'));
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -96,6 +98,7 @@ async function main() {
   apiRouter.use('/proxy', await proxy(proxyEnv));
   apiRouter.use('/search', await search(searchEnv));
   apiRouter.use('/matomo', await matomo(matomoEnv));
+  apiRouter.use('/feedback', await feedback(feedbackEnv));
 
   // Add backends ABOVE this line; this 404 handler is the catch-all fallback
   apiRouter.use(notFoundHandler());

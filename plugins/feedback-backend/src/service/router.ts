@@ -1,0 +1,219 @@
+import {
+  PluginEndpointDiscovery,
+  errorHandler,
+  DatabaseManager,
+} from '@backstage/backend-common';
+import { CatalogClient } from '@backstage/catalog-client';
+
+import { Config } from '@backstage/config';
+import express from 'express';
+import Router from 'express-promise-router';
+import { Logger } from 'winston';
+import { DatabaseFeedbackStore } from '../database/feedbackStore';
+import { FeedbackModel } from '../model/feedback.model';
+import { Entity } from '@backstage/catalog-model';
+import { createJiraTicket } from '../api';
+import { NodeMailer } from './emails';
+
+export interface RouterOptions {
+  logger: Logger;
+  config: Config;
+  discovery: PluginEndpointDiscovery;
+}
+
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
+  const { logger, config, discovery } = options;
+
+  const router = Router();
+  const feedbackDB = await DatabaseFeedbackStore.create({
+    database: DatabaseManager.fromConfig(options.config).forPlugin('feedback'),
+    skipMigrations: false,
+  });
+
+  const mailer = new NodeMailer(config, logger);
+  const catalogClient = new CatalogClient({ discoveryApi: discovery });
+
+  router.use(express.json());
+
+  router.post('/', async (req, res) => {
+    if (req.body.summary === undefined) {
+      return res.status(500).json({ error: 'Summary field??' });
+    }
+
+    const reqData: FeedbackModel = req.body;
+
+    reqData.createdAt = new Date().toISOString();
+    reqData.updatedBy = reqData.createdBy;
+    reqData.updatedAt = reqData.createdAt;
+
+    const entityRef: Entity | undefined = await catalogClient.getEntityByRef(
+      reqData.projectId!,
+    );
+
+    const respObj = await feedbackDB.storeFeedbackGetUuid(reqData);
+
+    const feedbackType =
+      reqData.feedbackType === 'FEEDBACK' ? 'Feedback' : 'Issue';
+
+    if (respObj === 0) {
+      return res.status(500).json({
+        error: `Failed to create ${feedbackType}`,
+      });
+    }
+
+    reqData.feedbackId = respObj.feedbackId;
+    res.status(201).json({
+      message: `${feedbackType} created sucessfully`,
+      data: respObj,
+    });
+
+    if (entityRef?.metadata.annotations) {
+      const annotations = entityRef.metadata.annotations;
+      const type = annotations['feedback/type'];
+      const replyTo = annotations['feedback/email-to'];
+
+      if (type.toUpperCase() === 'JIRA') {
+        let host = annotations['feedback/host'];
+
+        // if host is undefined then
+        // use the first host from config
+        const serviceConfig =
+          config
+            .getConfigArray('feedback.integrations.jira')
+            .find(hostConfig => host === hostConfig.getString('host')) ||
+          config.getConfigArray('feedback.integrations.jira')[0];
+        host = serviceConfig.getString('host');
+        const authToken = serviceConfig.getString('token');
+
+        const projectKey = entityRef.metadata.annotations!['jira/project-key'];
+        const appTitle = config.getString('app.title');
+        const resp = await createJiraTicket(
+          host,
+          authToken,
+          projectKey,
+          reqData.summary!,
+          reqData.description!.concat(
+            `\n\n\n*Submitted from ${appTitle}*\n[View here|${reqData.url}?id=${reqData.feedbackId}]`,
+          ),
+          reqData.tag!.toLowerCase().split(' ').join('-'),
+        );
+        reqData.ticketUrl = `${host}/browse/${resp.key}`;
+        await feedbackDB.updateFeedback(reqData);
+      }
+
+      if (type.toUpperCase() === 'MAIL' || replyTo) {
+        const toAddress = (
+          (await catalogClient.getEntityByRef(reqData.createdBy!))?.spec
+            ?.profile as { email: string }
+        ).email;
+        mailer.sendMail({
+          to: toAddress,
+          replyTo: replyTo,
+          subject: `${reqData.tag} - ${feedbackType} reported for ${
+            reqData.projectId?.split('/')[1]
+          }`,
+          body: `
+<div style="font-size:1.3rem" >
+  Hi ${reqData.createdBy?.split('/')[1]},
+  <br/> 
+  We have recieved your feedback for 
+    <b>
+      ${reqData.projectId?.split('/')[1]}
+    </b>, 
+  and here are the details:
+  <br/>
+  <br/>
+  Summary: ${reqData.summary}
+  <br/>
+  <br/>
+  Description: ${reqData.description}
+  <br/>
+  <br/>
+  Submitted at: ${reqData.createdAt} 
+  <br/>
+  <br/>
+  <a href="${reqData.url}?id=${reqData.feedbackId}">
+    View on Platform
+  </a>
+</div>`,
+        });
+      }
+    }
+    return 1;
+  });
+
+  router.get('/', async (req, res) => {
+    const projectId = req.query.projectId
+      ? req.query.projectId.toString()
+      : 'all';
+    const page = req.query.page ? parseInt(req.query.page.toString(), 10) : 1;
+    const pageSize = req.query.pageSize
+      ? parseInt(req.query.pageSize.toString(), 10)
+      : 10;
+    logger.info(`${projectId} |${page} |${pageSize} `);
+
+    const feedbackData = await feedbackDB.getAllFeedbacks(
+      projectId,
+      page,
+      pageSize,
+    );
+
+    res
+      .status(200)
+      .json({ ...feedbackData, currentPage: page, pageSize: pageSize });
+  });
+
+  router.get('/:id', async (req, res) => {
+    const feedbackId = req.params.id;
+
+    if (await feedbackDB.checkFeedbackId(feedbackId)) {
+      const feedback: FeedbackModel = await feedbackDB.getFeedbackByUuid(
+        feedbackId,
+      );
+      return res.status(200).json({
+        data: feedback,
+        message: 'Feedback fetched successfully',
+      });
+    }
+    return res
+      .status(404)
+      .json({ error: `No feedback found for id ${feedbackId}` });
+  });
+
+  // patch and delete apis
+  router.patch('/:id', async (req, res) => {
+    const feedbackId = req.params.id;
+    const data: FeedbackModel = req.body;
+
+    if (await feedbackDB.checkFeedbackId(feedbackId)) {
+      data.feedbackId = feedbackId;
+      data.updatedAt = new Date().toISOString();
+      const updatedData = await feedbackDB.updateFeedback(data);
+      return res.status(200).json({
+        data: updatedData,
+        message: 'Feedback updated successfully',
+      });
+    }
+
+    return res
+      .status(404)
+      .json({ message: `No feedback found for id ${feedbackId}` });
+  });
+
+  router.delete('/:id', async (req, res) => {
+    const feedbackId = req.params.id;
+    if (await feedbackDB.checkFeedbackId(feedbackId)) {
+      await feedbackDB.deleteFeedbackById(feedbackId);
+      res.status(200).json({ message: 'Deleted successfully' });
+    }
+
+    return res
+      .status(404)
+      .json({ message: `No feedback found for id ${feedbackId}` });
+  });
+
+  router.use(errorHandler());
+  return router;
+}
