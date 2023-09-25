@@ -1,0 +1,22 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: example-website-for-feedback-plugin
+  annotations:
+    jira/project-key: DEE         # 'jira-project-key' 
+    # github.com/project-slug: ''   # 'github-org/repo-name'
+    # gitlab/repo-id: ''            # 'gitlab-repo-id'
+
+    feedback/type: 'JIRA'       # 'JIRA' | 'GITLAB' | 'GITHUB' | 'MAIL'
+    feedback/host: 'https://issues.redhat.com'   # url of the service, it should be configured on backend as well, if not added the default 
+    #                                            # host for the `feedback/type` will be used 
+      
+    # [required] if feedback/type is MAIL
+    feedback/email-to: yoswal@redhat.com     # who to send the email  
+
+spec:
+  type: website
+  lifecycle: experimental
+  owner: guests
+  system: examples

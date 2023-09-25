@@ -26,8 +26,13 @@ backend:
     # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
     # Default Helmet Content-Security-Policy values can be removed by setting the key to false
     script-src:
-      ["'self'", "'unsafe-eval'", 'https://${ANALYTICS_MATOMO_INSTANCE_URL}', '${JIRA_URL}']
-    img-src: ["'self'", "data:", '$JIRA_URL']
+      [
+        "'self'",
+        "'unsafe-eval'",
+        'https://${ANALYTICS_MATOMO_INSTANCE_URL}',
+        '${JIRA_URL}',
+      ]
+    img-src: ["'self'", 'data:', '$JIRA_URL']
   cors:
     origin: http://localhost:3000
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
@@ -37,6 +42,13 @@ backend:
   database:
     client: better-sqlite3
     connection: ':memory:'
+    # client: pg
+    # connection:
+    #   host: ${POSTGRES_HOST}
+    #   port: ${POSTGRES_PORT}
+    #   user: ${POSTGRES_USER}
+    #   password: ${POSTGRES_PASSWORD}
+
   cache:
     store: memory
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
@@ -83,7 +95,7 @@ proxy:
 
 jira:
   proxyPath: /jira
-  
+
 lighthouse:
   instance_url: ${LIGHTHOUSE_INSTANCE_URL}
   contact_us: ${LIGHTHOUSE_CONTACT_URL}
@@ -105,6 +117,21 @@ cmdb:
 
 proxyManager:
   apiBaseUrl: ${PROXY_MANAGER_API_BASE_URL}
+
+feedback:
+  integrations:
+    jira:
+      - host: ${JIRA_URL}
+        token: ${JIRA_TOKEN}
+
+    email:
+      host: ${EMAIL_HOST}
+      port: ${EMAIL_PORT}
+      from: ${EMAIL_FROM}
+      auth:
+        user: ${EMAIL_USER}
+        pass: ${EMAIL_PASS}
+      secure: true
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 # Note: After experimenting with basic setup, use CI/CD to generate docs
@@ -161,6 +188,9 @@ catalog:
       target: ../../examples/test-data/jira-server-plugin.yaml
     - type: file
       target: ../../examples/test-data/contact-details-plugin.yaml
+    # Test data for Feedback plugin
+    - type: file
+      target: ../../examples/test-data/feedback-plugin.yaml
       rules:
         - allow: [Component, Group, User]
     # Local example template

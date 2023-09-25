@@ -16,6 +16,7 @@
     "build-image": "docker build ../.. -f Dockerfile --tag backstage"
   },
   "dependencies": {
+    "@appdev-platform/backstage-plugin-feedback-backend": "^0.1.0",
     "@appdev-platform/backstage-plugin-matomo-backend": "^0.1.0",
     "@backstage/backend-common": "^0.19.4",
     "@backstage/backend-tasks": "^0.5.7",
