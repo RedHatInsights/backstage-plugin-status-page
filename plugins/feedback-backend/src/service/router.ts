@@ -99,7 +99,7 @@ export async function createRouter(
           authToken,
         );
         // if jira id is not there for reporter, add email in description
-        reqData.description = reqData.description!.concat(
+        const jiraDescription = reqData.description!.concat(
           `\n\n${
             jiraUsername === undefined ? `Reported by: ${reporterEmail}` : '\r'
           }\n*Submitted from ${appTitle}*\n[${feedbackType} link|${
@@ -112,7 +112,7 @@ export async function createRouter(
           authToken,
           projectKey,
           reqData.summary!,
-          reqData.description,
+          jiraDescription,
           reqData.tag!.toLowerCase().split(' ').join('-'),
           jiraUsername,
         );
