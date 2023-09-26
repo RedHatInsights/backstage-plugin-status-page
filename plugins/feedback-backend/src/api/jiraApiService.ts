@@ -7,11 +7,30 @@ export const createJiraTicket = async (
   summary: string,
   description: string,
   tag: string,
+  reporter?: string,
 ): Promise<any> => {
-  const resp = await axios.post(
-    `${host}/rest/api/latest/issue`,
-    {
+  let body: any = {
+    fields: {
+      project: {
+        key: projectKey,
+      },
+      summary: summary,
+      description: description,
+      labels: [
+        'reported-by-backstage',
+        tag!.toLowerCase().split(' ').join('-'),
+      ],
+      issuetype: {
+        name: 'Task',
+      },
+    },
+  };
+  if (reporter) {
+    body = {
       fields: {
+        reporter: {
+          name: reporter,
+        },
         project: {
           key: projectKey,
         },
@@ -25,7 +44,24 @@ export const createJiraTicket = async (
           name: 'Task',
         },
       },
+    };
+  }
+  const resp = await axios.post(`${host}/rest/api/latest/issue`, body, {
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+      'Content-Type': 'application/json',
     },
+  });
+  return resp.data;
+};
+
+export const getJiraUsernameByEmail = async (
+  host: string,
+  reporterEmail: string,
+  authToken: string,
+): Promise<string | undefined> => {
+  const resp = await axios.get(
+    `${host}/rest/api/latest/user/search?username=${reporterEmail}`,
     {
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -33,5 +69,9 @@ export const createJiraTicket = async (
       },
     },
   );
-  return resp.data;
+  const data = resp.data;
+  if (data.length === 0) return undefined;
+  else {
+    return data[0].name;
+  }
 };

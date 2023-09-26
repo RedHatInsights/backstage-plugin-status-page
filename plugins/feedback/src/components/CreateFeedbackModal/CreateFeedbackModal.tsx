@@ -94,7 +94,7 @@ export const CreateFeedbackModal = React.forwardRef(
     const projectEntity = props.projectEntity;
     const userEntity = props.userEntity;
 
-    function handleCategoryClick(event: any, checked: boolean) {
+    function handleCategoryClick(event: any) {
       setFeedbackType(event.target.value);
       setSummary({ ...summary, value: '' });
       setDescription({ ...description, value: '' });
@@ -124,7 +124,7 @@ export const CreateFeedbackModal = React.forwardRef(
             : FeedbackCategory.FEEDBACK,
         tag: selectedTag,
       });
-      props.handleModalCloseFn({}, '', resp);
+      props.handleModalCloseFn(resp);
     }
 
     function handleInputChange(

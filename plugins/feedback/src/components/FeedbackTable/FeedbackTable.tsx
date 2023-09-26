@@ -171,10 +171,10 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
   function handleRowClick(
     event?: React.MouseEvent<Element, MouseEvent> | undefined,
     rowData?: any,
-    toggleDetailPanel?: ((panelIndex?: number | undefined) => void) | undefined,
   ) {
+    event?.preventDefault();
     const data: FeedbackModel = rowData;
-    setQueryState(data.feedbackId);
+    if (!queryState) setQueryState(data.feedbackId);
   }
 
   return (
