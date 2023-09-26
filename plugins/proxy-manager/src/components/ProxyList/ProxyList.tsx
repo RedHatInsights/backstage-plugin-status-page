@@ -167,6 +167,7 @@ export const ProxyList = () => {
                             </TableCell>
                           </TableRow>
                         );
+                        else return;
                     })
                   ) : (
                     <TableRow>
@@ -188,7 +189,7 @@ export const ProxyList = () => {
                   component="div"
                   count={proxies.length}
                   page={pageVariables.page - 1}
-                  onPageChange={(event, num) => {
+                  onPageChange={(_, num) => {
                     setPageVariable({ ...pageVariables, page: num + 1 });
                   }}
                   rowsPerPage={pageVariables.rowPerPage}
