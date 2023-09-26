@@ -12,7 +12,7 @@ import { Logger } from 'winston';
 import { DatabaseFeedbackStore } from '../database/feedbackStore';
 import { FeedbackModel } from '../model/feedback.model';
 import { Entity } from '@backstage/catalog-model';
-import { createJiraTicket } from '../api';
+import { createJiraTicket, getJiraUsernameByEmail } from '../api';
 import { NodeMailer } from './emails';
 
 export interface RouterOptions {
@@ -73,6 +73,10 @@ export async function createRouter(
       const annotations = entityRef.metadata.annotations;
       const type = annotations['feedback/type'];
       const replyTo = annotations['feedback/email-to'];
+      const reporterEmail = (
+        (await catalogClient.getEntityByRef(reqData.createdBy!))?.spec
+          ?.profile as { email: string }
+      ).email;
 
       if (type.toUpperCase() === 'JIRA') {
         let host = annotations['feedback/host'];
@@ -89,27 +93,36 @@ export async function createRouter(
 
         const projectKey = entityRef.metadata.annotations!['jira/project-key'];
         const appTitle = config.getString('app.title');
+        const jiraUsername = await getJiraUsernameByEmail(
+          host,
+          reporterEmail,
+          authToken,
+        );
+        // if jira id is not there for reporter, add email in description
+        reqData.description = reqData.description!.concat(
+          `\n\n${
+            jiraUsername === undefined ? `Reported by: ${reporterEmail}` : '\r'
+          }\n*Submitted from ${appTitle}*\n[${feedbackType} link|${
+            reqData.url
+          }?id=${reqData.feedbackId}]`,
+        );
+
         const resp = await createJiraTicket(
           host,
           authToken,
           projectKey,
           reqData.summary!,
-          reqData.description!.concat(
-            `\n\n\n*Submitted from ${appTitle}*\n[View here|${reqData.url}?id=${reqData.feedbackId}]`,
-          ),
+          reqData.description,
           reqData.tag!.toLowerCase().split(' ').join('-'),
+          jiraUsername,
         );
         reqData.ticketUrl = `${host}/browse/${resp.key}`;
         await feedbackDB.updateFeedback(reqData);
       }
 
       if (type.toUpperCase() === 'MAIL' || replyTo) {
-        const toAddress = (
-          (await catalogClient.getEntityByRef(reqData.createdBy!))?.spec
-            ?.profile as { email: string }
-        ).email;
         mailer.sendMail({
-          to: toAddress,
+          to: reporterEmail,
           replyTo: replyTo,
           subject: `${reqData.tag} - ${feedbackType} reported for ${
             reqData.projectId?.split('/')[1]

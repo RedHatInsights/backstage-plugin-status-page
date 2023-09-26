@@ -86,6 +86,7 @@ export const FeedbackDetailsModal = () => {
     event?: React.SyntheticEvent,
     reason?: string,
   ) => {
+    event?.preventDefault();
     if (reason === 'clickaway') {
       return;
     }

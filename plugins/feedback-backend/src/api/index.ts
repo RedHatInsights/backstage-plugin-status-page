@@ -1,1 +1,1 @@
-export { createJiraTicket } from './jiraApiService';
+export { createJiraTicket, getJiraUsernameByEmail } from './jiraApiService';

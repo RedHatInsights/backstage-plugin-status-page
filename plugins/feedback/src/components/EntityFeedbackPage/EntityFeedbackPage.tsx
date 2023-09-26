@@ -79,7 +79,7 @@ export const EntityFeedbackPage = () => {
     return setModalOpen(true);
   }
 
-  const handleModalClose = (event: any, reason: string, respObj?: any) => {
+  const handleModalClose = (respObj?: any) => {
     setModalOpen(false);
     if (respObj) {
       setReload(true);
@@ -103,17 +103,16 @@ export const EntityFeedbackPage = () => {
     event?: React.SyntheticEvent,
     reason?: string,
   ) => {
+    event?.preventDefault();
     if (reason === 'clickaway') {
       return;
     }
     setSnackbarOpen({ ...snackbarOpen, open: false });
   };
 
-  const handleResyncClick = (event: React.BaseSyntheticEvent) => {
+  const handleResyncClick = () => {
     setReload(true);
   };
-
-  // const { data, isLoading } = fetchData(Boolean(searchText));
 
   return pluginConfig['feedback/mail-to'] === undefined ? (
     <CustomEmptyState {...pluginConfig} />
@@ -148,7 +147,7 @@ export const EntityFeedbackPage = () => {
       </Grid>
       <Dialog
         open={modalOpen}
-        onClose={(event, reason) => handleModalClose(event, reason, '')}
+        onClose={() => handleModalClose('')}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
         fullWidth

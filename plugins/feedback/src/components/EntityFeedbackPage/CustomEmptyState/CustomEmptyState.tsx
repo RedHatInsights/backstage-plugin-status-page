@@ -74,6 +74,7 @@ export const CustomEmptyState = (props: {
 
   const handleChange =
     (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
+      event.preventDefault()
       setExpanded(isExpanded ? panel : false);
     };
 
