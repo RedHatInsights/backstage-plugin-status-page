@@ -121,16 +121,13 @@ proxyManager:
 feedback:
   integrations:
     jira:
-      - host: ${JIRA_URL}
-        token: ${JIRA_TOKEN}
+      - host: ${FEEDBACK_JIRA_HOST}
+        token: ${FEEDBACK_JIRA_TOKEN}
 
     email:
       host: ${EMAIL_HOST}
       port: ${EMAIL_PORT}
       from: ${EMAIL_FROM}
-      auth:
-        user: ${EMAIL_USER}
-        pass: ${EMAIL_PASS}
       secure: true
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
@@ -191,8 +188,6 @@ catalog:
     # Test data for Feedback plugin
     - type: file
       target: ../../examples/test-data/feedback-plugin.yaml
-      rules:
-        - allow: [Component, Group, User]
     # Local example template
     - type: file
       target: ../../examples/template/template.yaml
