@@ -49,6 +49,8 @@
   },
   "files": [
     "dist",
-    "config.d.ts"
-  ]
+    "config.d.ts",
+    "migrations/**/*.{js,d.ts}"
+  ],
+  "configSchema": "config.d.ts"
 }
