@@ -58,6 +58,8 @@ catalog:
       target: ./examples/test-data/contact-details-plugin.yaml
       rules:
         - allow: [Component, Group, User]
+    - type: file
+      target: ./examples/test-data/feedback-plugin.yaml
     # Local example template
     - type: file
       target: ./examples/template/template.yaml
