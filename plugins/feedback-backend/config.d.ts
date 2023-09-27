@@ -1,5 +1,5 @@
 export interface Config {
-  feedback: {
+  feedback?: {
     integrations: {
       /**
        * The list of the jira orgs to consume
