@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const DEFAULT_YAML = `metadata:
+const EMAIL_YAML = `metadata:
   annotations:    
     # Set to MAIL, if you want to recevie mail
     # on every feedback.
@@ -70,11 +70,11 @@ export const CustomEmptyState = (props: {
   'jira/project-key'?: string;
 }) => {
   const classes = useStyles();
-  const [expanded, setExpanded] = React.useState<string | false>('email');
+  const [expanded, setExpanded] = React.useState<string | false>('jira');
 
   const handleChange =
     (panel: string) => (event: React.ChangeEvent<{}>, isExpanded: boolean) => {
-      event.preventDefault()
+      event.preventDefault();
       setExpanded(isExpanded ? panel : false);
     };
 
@@ -97,7 +97,31 @@ export const CustomEmptyState = (props: {
             Add the annotation to your component YAML as shown in the
             highlighted example below:
           </Typography>
-
+          <Accordion
+            expanded={expanded === 'jira'}
+            onChange={handleChange('jira')}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreRounded />}>
+              <Typography className={classes.heading}>For JIRA</Typography>
+              <Typography className={classes.subHeading}>
+                (An email will be sent if <i>'feedback/email-to'</i> is set)
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <div className={classes.code}>
+                <CodeSnippet
+                  showLineNumbers
+                  customStyle={{
+                    background: 'inherit',
+                    fontSize: '120%',
+                    margin: '0px',
+                  }}
+                  language="yaml"
+                  text={JIRA_YAML}
+                />
+              </div>
+            </AccordionDetails>
+          </Accordion>
           <Accordion
             expanded={expanded === 'email'}
             onChange={handleChange('email')}
@@ -114,32 +138,7 @@ export const CustomEmptyState = (props: {
                     fontSize: '120%',
                   }}
                   language="yaml"
-                  text={DEFAULT_YAML}
-                />
-              </div>
-            </AccordionDetails>
-          </Accordion>
-          <Accordion
-            expanded={expanded === 'jira'}
-            onChange={handleChange('jira')}
-          >
-            <AccordionSummary expandIcon={<ExpandMoreRounded />}>
-              <Typography className={classes.heading}>For JIRA</Typography>
-              <Typography className={classes.subHeading}>
-                (An email will be sent if <i>'email-to'</i> is set)
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <div className={classes.code}>
-                <CodeSnippet
-                  showLineNumbers
-                  customStyle={{
-                    background: 'inherit',
-                    fontSize: '120%',
-                    margin: '0px',
-                  }}
-                  language="yaml"
-                  text={JIRA_YAML}
+                  text={EMAIL_YAML}
                 />
               </div>
             </AccordionDetails>

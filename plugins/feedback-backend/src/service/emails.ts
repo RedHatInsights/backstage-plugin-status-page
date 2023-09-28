@@ -1,18 +1,24 @@
 import { Config } from '@backstage/config';
 import { Transporter, createTransport } from 'nodemailer';
 import { Logger } from 'winston';
+import { readFileSync } from 'fs';
 
 export class NodeMailer {
   private readonly transportConfig: Transporter;
   private readonly from: string;
 
   constructor(config: Config, private logger: Logger) {
+    const useSecure: boolean = config.getBoolean(
+      'feedback.integrations.email.secure',
+    );
+    const customCACert = readFileSync(
+      config.getString('feedback.integrations.email.caCert'),
+    );
+
+    this.from = config.getString('feedback.integrations.email.from');
     this.transportConfig = createTransport({
       host: config.getString('feedback.integrations.email.host'),
-      port: config.getOptionalNumber('feedback.integrations.email.port') ?? 547,
-      secure:
-        config.getOptionalBoolean('feedback.integrations.email.secure') ??
-        false,
+      port: config.getOptionalNumber('feedback.integrations.email.port') ?? 587,
       auth:
         {
           user: config.getOptionalString(
@@ -22,11 +28,11 @@ export class NodeMailer {
             'feedback.integrations.email.auth.password',
           ),
         } ?? undefined,
+      secure: useSecure,
       tls: {
-        rejectUnauthorized: false,
+        ca: customCACert,
       },
     });
-    this.from = config.getString('feedback.integrations.email.from');
   }
 
   async sendMail(options: {
@@ -35,16 +41,21 @@ export class NodeMailer {
     subject: string;
     body: string;
   }): Promise<{}> {
-    const { to, replyTo, subject, body } = options;
-    this.logger.info(`Sending mail to ${to}`);
-    const resp = await this.transportConfig.sendMail({
-      to: to,
-      replyTo: replyTo,
-      cc: replyTo,
-      from: this.from,
-      subject: subject,
-      html: body,
-    });
-    return resp;
+    try {
+      const { to, replyTo, subject, body } = options;
+      this.logger.info(`Sending mail to ${to}`);
+      const resp = await this.transportConfig.sendMail({
+        to: to,
+        replyTo: replyTo,
+        cc: replyTo,
+        from: this.from,
+        subject: subject,
+        html: body,
+      });
+      return resp;
+    } catch (error: any) {
+      this.logger.error('Failed to send mail: ' + error.message);
+      return {};
+    }
   }
 }

@@ -5,6 +5,7 @@ import {
 import { Knex } from 'knex';
 import { FeedbackModel } from '../model/feedback.model';
 import short from 'short-uuid';
+import { Logger } from 'winston';
 
 export interface FeedbackStore {
   getFeedbackByUuid(uuid: String): Promise<FeedbackModel>;
@@ -26,14 +27,19 @@ const migrationsDir = resolvePackagePath(
 );
 
 export class DatabaseFeedbackStore implements FeedbackStore {
-  private constructor(private readonly db: Knex) {}
+  private constructor(
+    private readonly db: Knex,
+    private readonly logger: Logger,
+  ) {}
 
   static async create({
     database,
     skipMigrations,
+    logger,
   }: {
     database: PluginDatabaseManager;
     skipMigrations: boolean;
+    logger: Logger;
   }): Promise<DatabaseFeedbackStore> {
     const client = await database.getClient();
 
@@ -42,7 +48,7 @@ export class DatabaseFeedbackStore implements FeedbackStore {
         directory: migrationsDir,
       });
     }
-    return new DatabaseFeedbackStore(client);
+    return new DatabaseFeedbackStore(client, logger);
   }
 
   async getFeedbackByUuid(feedbackId: string): Promise<FeedbackModel> {
@@ -64,14 +70,15 @@ export class DatabaseFeedbackStore implements FeedbackStore {
 
     if (projectId !== 'all') {
       try {
-        const totalFeedbacks = (
-          await model
-            .clone()
-            .select('projectId')
-            .where('projectId', projectId)
-            .count('feedbackId')
-            .groupBy('projectId')
-        )[0].count;
+        const totalFeedbacks =
+          (
+            await model
+              .clone()
+              .select('projectId')
+              .where('projectId', projectId)
+              .count('feedbackId')
+              .groupBy('projectId')
+          )[0]?.count ?? 0;
         await model
           .clone()
           .select('*')
@@ -86,13 +93,13 @@ export class DatabaseFeedbackStore implements FeedbackStore {
           data: result,
           totalFeedbacks: parseInt(totalFeedbacks as string, 10),
         };
-      } catch (error) {
-        console.log(error);
+      } catch (error: any) {
+        this.logger.error(error.message);
       }
-
       return { data: result, totalFeedbacks: 0 };
     }
-    const totalFeedbacks = (await model.clone().count('feedbackId'))[0].count;
+    const totalFeedbacks =
+      (await model.clone().count('feedbackId'))[0]?.count ?? 0;
     await model
       .clone()
       .select('*')
@@ -136,8 +143,8 @@ export class DatabaseFeedbackStore implements FeedbackStore {
         feedbackId: id,
         projectId: data.projectId as string,
       };
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      this.logger.error(error.message);
       return 0;
     }
   }
@@ -154,7 +161,9 @@ export class DatabaseFeedbackStore implements FeedbackStore {
     return true;
   }
 
-  async updateFeedback(data: FeedbackModel): Promise<FeedbackModel> {
+  async updateFeedback(
+    data: FeedbackModel,
+  ): Promise<FeedbackModel | undefined> {
     const model = this.db('feedback').where('feedbackId', data.feedbackId);
 
     if (data.projectId) model.update('projectId', data.projectId);
@@ -170,12 +179,17 @@ export class DatabaseFeedbackStore implements FeedbackStore {
     if (data.userAgent) model.update('userAgent', data.userAgent);
     if (data.url) model.update('url', data.url);
 
-    await model.clone();
-    const result: FeedbackModel = await this.db('feedback')
-      .select('*')
-      .where({ feedbackId: data.feedbackId })
-      .first();
-    return result;
+    try {
+      await model.clone();
+      const result: FeedbackModel = await this.db('feedback')
+        .select('*')
+        .where({ feedbackId: data.feedbackId })
+        .first();
+      return result;
+    } catch (error: any) {
+      this.logger.error('Failed to update feedback: ' + error.message);
+      return undefined;
+    }
   }
 
   async deleteFeedbackById(id: string): Promise<number> {

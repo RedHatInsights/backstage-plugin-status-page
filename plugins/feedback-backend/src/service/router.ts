@@ -30,6 +30,7 @@ export async function createRouter(
   const feedbackDB = await DatabaseFeedbackStore.create({
     database: DatabaseManager.fromConfig(options.config).forPlugin('feedback'),
     skipMigrations: false,
+    logger: logger,
   });
 
   const mailer = new NodeMailer(config, logger);
@@ -165,8 +166,6 @@ export async function createRouter(
     const pageSize = req.query.pageSize
       ? parseInt(req.query.pageSize.toString(), 10)
       : 10;
-    logger.info(`${projectId} |${page} |${pageSize} `);
-
     const feedbackData = await feedbackDB.getAllFeedbacks(
       projectId,
       page,
@@ -204,10 +203,13 @@ export async function createRouter(
       data.feedbackId = feedbackId;
       data.updatedAt = new Date().toISOString();
       const updatedData = await feedbackDB.updateFeedback(data);
-      return res.status(200).json({
-        data: updatedData,
-        message: 'Feedback updated successfully',
-      });
+      if (updatedData) {
+        return res.status(200).json({
+          data: updatedData,
+          message: 'Feedback updated successfully',
+        });
+      }
+      return res.status(500).json({ message: 'Failed to edit the feedback' });
     }
 
     return res
@@ -222,6 +224,7 @@ export async function createRouter(
       res.status(200).json({ message: 'Deleted successfully' });
     }
 
+    logger.error(`No feedback found for id ${feedbackId}`);
     return res
       .status(404)
       .json({ message: `No feedback found for id ${feedbackId}` });
