@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { CatalogItem } from './CatalogItem';
 import {
   Box,
@@ -8,14 +8,9 @@ import {
   TablePagination,
   makeStyles,
 } from '@material-ui/core';
-import { useEntityList } from '@backstage/plugin-catalog-react';
-import {
-  EmptyState,
-  Link,
-  Progress,
-  useQueryParamState,
-} from '@backstage/core-components';
+import { EmptyState, Link, Progress } from '@backstage/core-components';
 import { CatalogToolbar } from './CatalogToolbar';
+import { usePaginatedEntityList } from '../contexts/PaginatedEntityListProvider';
 
 const useStyles = makeStyles(theme => ({
   list: {
@@ -26,28 +21,29 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface CatalogListProps {
-  dispatchActiveKind?: (values: { kind: string; count: number }) => void;
+  dispatchActiveKind?: (values: {
+    kind: string | symbol | (string | symbol)[];
+    count: number;
+  }) => void;
 }
 
 export const CatalogList = ({ dispatchActiveKind }: CatalogListProps) => {
-  const { loading, error, entities, filters } = useEntityList();
   const { list } = useStyles();
 
-  const [pageQs, setPageQs] = useQueryParamState<string>('page');
-  const [rowsPerPageQs, setRowsPerPageQs] =
-    useQueryParamState<string>('rowsPerPage');
-  const defaultRowsPerPage = '10';
-
-  const page = useMemo(() => Number.parseInt(pageQs ?? '1', 10), [pageQs]);
-  const rowsPerPage = useMemo(
-    () => Number.parseInt(rowsPerPageQs ?? defaultRowsPerPage, 10),
-    [rowsPerPageQs],
-  );
+  const {
+    loading,
+    error,
+    entities,
+    filters,
+    totalCount,
+    pageOptions,
+    updatePageOptions,
+  } = usePaginatedEntityList();
 
   useEffect(() => {
     if (filters.kind?.value) {
       dispatchActiveKind?.({
-        kind: filters.kind?.value,
+        kind: filters.kind.value,
         count: entities.length,
       });
     }
@@ -58,15 +54,17 @@ export const CatalogList = ({ dispatchActiveKind }: CatalogListProps) => {
     _: React.MouseEvent<HTMLButtonElement, MouseEvent> | null,
     newPage: number,
   ) => {
-    setPageQs(newPage.toString());
+    updatePageOptions({ ...pageOptions, page: newPage });
   };
 
   /* Updates the query params after a rowsPerPage change */
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    setRowsPerPageQs(event.target.value);
-    setPageQs('1');
+    updatePageOptions({
+      rowsPerPage: parseInt(event.target.value ?? '10', 10),
+      page: 0,
+    });
   };
 
   const EntitiesList = () => {
@@ -75,13 +73,13 @@ export const CatalogList = ({ dispatchActiveKind }: CatalogListProps) => {
         <Paper variant="outlined">
           <EmptyState
             missing="data"
-            title={`No ${filters.kind?.value}s found.`}
+            title={`No ${filters.kind?.value.toString()}s found.`}
             description="No records found for the entered filters."
             action={
               <Button
                 color="primary"
                 variant="outlined"
-                component={props => <Link {...props} to="/" />}
+                component={(props: any) => <Link {...props} to="/" />}
               >
                 Go to home
               </Button>
@@ -90,14 +88,12 @@ export const CatalogList = ({ dispatchActiveKind }: CatalogListProps) => {
         </Paper>
       );
     }
-    const startIndex = rowsPerPage * (page - 1);
-    const endIndex = rowsPerPage * page;
 
     return (
       <Paper>
         <List className={list}>
-          {entities.slice(startIndex, endIndex).map(entity => (
-            <CatalogItem key={entity.metadata.name} entity={entity} />
+          {entities.map((entity, index) => (
+            <CatalogItem key={index} entity={entity} />
           ))}
         </List>
       </Paper>
@@ -109,10 +105,10 @@ export const CatalogList = ({ dispatchActiveKind }: CatalogListProps) => {
       {!loading && entities.length > 0 && (
         <TablePagination
           component="div"
-          count={entities.length ?? 0}
-          page={page - 1}
+          count={totalCount}
+          page={pageOptions.page}
           onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
+          rowsPerPage={pageOptions.rowsPerPage}
           onRowsPerPageChange={handleChangeRowsPerPage}
           labelRowsPerPage="Rows:"
         />
@@ -129,12 +125,11 @@ export const CatalogList = ({ dispatchActiveKind }: CatalogListProps) => {
       </CatalogToolbar>
       {loading && <Progress />}
       {!loading && !error && <EntitiesList />}
+      {!loading && error && <>{error}</>}
 
-      {rowsPerPage > 10 && (
-        <Box marginTop={1}>
-          <Pagination />
-        </Box>
-      )}
+      <Box marginTop={1}>
+        <Pagination />
+      </Box>
     </>
   );
 };

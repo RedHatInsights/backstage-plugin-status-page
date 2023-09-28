@@ -185,6 +185,8 @@ catalog:
       target: ../../examples/test-data/jira-server-plugin.yaml
     - type: file
       target: ../../examples/test-data/contact-details-plugin.yaml
+      rules:
+        - allow: [Component, User, Group]
     # Test data for Feedback plugin
     - type: file
       target: ../../examples/test-data/feedback-plugin.yaml

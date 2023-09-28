@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@appdev-platform/backstage-plugin-analytics-module-matomo": "^1.0.0",
-    "@appdev-platform/backstage-plugin-catalog-index": "^0.2.0",
+    "@appdev-platform/backstage-plugin-catalog-index": "^0.3.0",
     "@appdev-platform/backstage-plugin-cmdb": "^0.2.0",
     "@appdev-platform/backstage-plugin-contact-details": "^0.1.1",
     "@appdev-platform/backstage-plugin-feedback": "^0.1.0",
