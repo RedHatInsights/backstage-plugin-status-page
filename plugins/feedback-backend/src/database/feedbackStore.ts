@@ -70,15 +70,21 @@ export class DatabaseFeedbackStore implements FeedbackStore {
 
     if (projectId !== 'all') {
       try {
+        const tempFeedbacksArr = await model
+          .clone()
+          .select('projectId')
+          .where('projectId', projectId)
+          .count('feedbackId')
+          .groupBy('projectId');
+
         const totalFeedbacks =
-          (
-            await model
-              .clone()
-              .select('projectId')
-              .where('projectId', projectId)
-              .count('feedbackId')
-              .groupBy('projectId')
-          )[0]?.count ?? 0;
+          // count the correct number of feedbacks for
+          // sqlite db
+          tempFeedbacksArr[0]?.['count(`feedbackId`)'] ??
+          // for postgres db
+          tempFeedbacksArr[0]?.count ??
+          // else
+          0;
         await model
           .clone()
           .select('*')
@@ -99,7 +105,13 @@ export class DatabaseFeedbackStore implements FeedbackStore {
       return { data: result, totalFeedbacks: 0 };
     }
     const totalFeedbacks =
-      (await model.clone().count('feedbackId'))[0]?.count ?? 0;
+      // count the correct number of feedbacks
+      // for sqlitedb
+      (await model.clone().count('feedbackId'))[0]?.[`count('feedbackId')`] ??
+      // for postgresdb
+      (await model.clone().count('feedbackId'))[0]?.count ??
+      // else
+      0;
     await model
       .clone()
       .select('*')
@@ -187,7 +199,7 @@ export class DatabaseFeedbackStore implements FeedbackStore {
         .first();
       return result;
     } catch (error: any) {
-      this.logger.error('Failed to update feedback: ' + error.message);
+      this.logger.error(`Failed to update feedback: ${error.message}`);
       return undefined;
     }
   }

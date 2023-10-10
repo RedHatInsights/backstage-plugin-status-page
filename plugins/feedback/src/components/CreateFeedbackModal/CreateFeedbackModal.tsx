@@ -130,25 +130,51 @@ export const CreateFeedbackModal = React.forwardRef(
     function handleInputChange(
       event: React.FocusEvent<HTMLTextAreaElement | HTMLInputElement>,
     ) {
-      event.target.id === 'summary' &&
-        setSummary({ ...summary, value: event.target.value, error: false });
-      event.target.id === 'description' &&
-        setDescription({
+      if (event.target.id === 'summary') {
+        const _summary = event.target.value;
+        if (_summary.trim().length === 0) {
+          return setSummary({
+            ...summary,
+            value: '',
+            error: true,
+          });
+        } else if (_summary.length > 255) {
+          return setSummary({
+            ...summary,
+            value: _summary,
+            error: true,
+            errorMessage: 'Summary should be less than 255 characters.',
+          });
+        }
+        return setSummary({ ...summary, value: _summary, error: false });
+      }
+      if (event.target.id === 'description') {
+        return setDescription({
           ...description,
           value: event.target.value,
           error: false,
         });
+      }
+      return 0;
     }
 
     function handleValidation(
       event: React.FocusEvent<HTMLTextAreaElement | HTMLInputElement>,
     ) {
-      event.target.id === 'summary' &&
-        event.target.value.length === 0 &&
-        setSummary({ ...summary, error: true });
-      event.target.id === 'description' &&
-        event.target.value.length === 0 &&
-        setDescription({ ...description, error: true });
+      if (event.target.id === 'summary') {
+        if (event.target.value.length === 0) {
+          return setSummary({ ...summary, error: true });
+        }
+        return setSummary({
+          ...summary,
+          value: event.target.value.trim(),
+          error: event.target.value.trim().length > 255,
+        });
+      }
+      if (event.target.id === 'description' && event.target.value.length > 0) {
+        setDescription({ ...description, value: description.value.trim() });
+      }
+      return 0;
     }
 
     return (
@@ -267,7 +293,7 @@ export const CreateFeedbackModal = React.forwardRef(
             onClick={handleSubmitClick}
             color={feedbackType === 'FEEDBACK' ? 'primary' : 'secondary'}
             variant="contained"
-            disabled={summary.value.length === 0}
+            disabled={summary.error || summary.value.length === 0}
           >
             {feedbackType === 'FEEDBACK' ? 'Send Feedback' : 'Report Bug'}
           </Button>

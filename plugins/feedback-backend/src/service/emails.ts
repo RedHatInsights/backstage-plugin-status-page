@@ -54,7 +54,7 @@ export class NodeMailer {
       });
       return resp;
     } catch (error: any) {
-      this.logger.error('Failed to send mail: ' + error.message);
+      this.logger.error(`Failed to send mail: ${error.message}`);
       return {};
     }
   }

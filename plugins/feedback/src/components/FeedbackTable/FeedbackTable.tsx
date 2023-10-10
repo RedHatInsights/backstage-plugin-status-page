@@ -36,6 +36,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
     pageSize: 5,
   });
   const [queryState, setQueryState] = useQueryParamState<string>('id');
+  const [isLoading, setLoading] = useState(true);
 
   const columns: TableColumn[] = [
     {
@@ -58,7 +59,16 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
         const data: FeedbackModel = row;
         return (
           <SubvalueCell
-            value={<Typography variant="h6">{data.summary}</Typography>}
+            value={
+              <Typography variant="h6">
+                {data.summary.length > 100
+                  ? `${data.summary.substring(
+                      0,
+                      data.summary.lastIndexOf(' ', 100),
+                    )}...`
+                  : data.summary}
+              </Typography>
+            }
             subvalue={
               <EntityPeekAheadPopover entityRef={data.createdBy}>
                 Submitted by&nbsp;
@@ -134,8 +144,12 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
           page: data.currentPage,
           pageSize: data.pageSize,
         });
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
       });
-  }, []);
+  }, [projectId, api, tableConfig.page, tableConfig.pageSize]);
 
   async function handlePageChange(newPage: number, pageSize: number) {
     if (newPage > tableConfig.page) {
@@ -164,7 +178,6 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
       pageSize,
       projectId,
     );
-
     return setFeedbackData(newData.data);
   }
 
@@ -182,7 +195,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
       <TableContainer component={Paper}>
         <Table
           options={{
-            paging: true,
+            paging: feedbackData.length > 0 ? true : false,
             pageSizeOptions: [5, 10, 25],
             pageSize: tableConfig.pageSize,
             paginationPosition: 'bottom',
@@ -193,6 +206,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
             searchFieldAlignment: 'left',
             loadingType: 'linear',
           }}
+          isLoading={isLoading}
           onRowClick={handleRowClick}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleChangeRowsPerPage}

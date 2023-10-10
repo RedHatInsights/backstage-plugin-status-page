@@ -66,4 +66,28 @@ export class FeedbackAPI {
     const respData = await resp.json();
     return respData;
   }
+
+  async getTicketDetails(
+    feedbackId: string,
+    ticketUrl: string,
+    projectId: string,
+  ): Promise<{ status: string; assignee: string; avatarUrls: any }> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('feedback');
+    const ticketId = ticketUrl.split('/').at(-1);
+    const resp = await fetch(
+      `${baseUrl}/${feedbackId}/ticket?ticketId=${ticketId}&projectId=${projectId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    const data = (await resp.json()).data;
+    return {
+      status: data.status,
+      assignee: data.assignee,
+      avatarUrls: data.avatarUrls,
+    };
+  }
 }

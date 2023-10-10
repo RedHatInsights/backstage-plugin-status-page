@@ -7,7 +7,7 @@ import { FeedbackDetailsModal } from '../FeedbackDetailsModal';
 export const GlobalFeedbackPage = () => {
   return (
     <Page themeId="tool">
-      <Header title="Feedbacks" subtitle="on Red Hat Experience Platform" />
+      <Header title="Feedback" subtitle="on Red Hat Experience Platform" />
       <Content>
         <FeedbackDetailsModal />
         <Grid container spacing={2}>

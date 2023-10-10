@@ -125,18 +125,30 @@ export const EntityFeedbackPage = () => {
           color="primary"
           variant="outlined"
         >
-          <Button startIcon={<Add />} onClick={handleModalOpen}>
-            Create
-          </Button>
-          {pluginConfig['feedback/type'] === 'JIRA' && (
-            <Button
-              endIcon={<ArrowForwardRounded />}
-              href={`${pluginConfig['feedback/host']}/projects/${pluginConfig['jira/project-key']}/summary`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Go to Jira project
+          <Tooltip
+            title="Give a feedback / Report a issue"
+            arrow
+            TransitionComponent={Zoom}
+          >
+            <Button startIcon={<Add />} onClick={handleModalOpen}>
+              Create
             </Button>
+          </Tooltip>
+          {pluginConfig['feedback/type'] === 'JIRA' && (
+            <Tooltip
+              title="Go to jira project dashboard"
+              arrow
+              TransitionComponent={Zoom}
+            >
+              <Button
+                endIcon={<ArrowForwardRounded />}
+                href={`${pluginConfig['feedback/host']}/projects/${pluginConfig['jira/project-key']}/summary`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Go to Jira project
+              </Button>
+            </Tooltip>
           )}
           <Tooltip title="Refresh" arrow TransitionComponent={Zoom}>
             <Button onClick={handleResyncClick}>
