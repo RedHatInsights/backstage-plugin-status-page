@@ -31,6 +31,7 @@ import { ActivityStream } from './components/ActivityStream';
 import { Selectors } from './components/Selectors';
 import { useEmptyIssueTypeFilter } from '../../hooks/useEmptyIssueTypeFilter';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -151,8 +152,8 @@ export const JiraCard = (props: EntityProps & JiraCardOptionalProps) => {
               </Box>
             </Box>
             <Box>
-              <Button variant="outlined" size="small" href={`${project?.url}/browse/${projectKey}`} target="_blank">
-                Go to Project
+              <Button variant="outlined" color="primary" size="medium" endIcon={<ArrowForwardIcon />} href={`${project?.url}/browse/${projectKey}`} target="_blank">
+                Open in JIRA
               </Button>
             </Box>
           </Box>
