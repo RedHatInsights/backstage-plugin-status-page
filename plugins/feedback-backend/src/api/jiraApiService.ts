@@ -7,6 +7,7 @@ export const createJiraTicket = async (
   summary: string,
   description: string,
   tag: string,
+  feedbackType: string,
   reporter?: string,
 ): Promise<any> => {
   let body: any = {
@@ -21,7 +22,7 @@ export const createJiraTicket = async (
         tag!.toLowerCase().split(' ').join('-'),
       ],
       issuetype: {
-        name: 'Task',
+        name: feedbackType === 'BUG' ? 'Bug' : 'Task',
       },
     },
   };
@@ -41,7 +42,7 @@ export const createJiraTicket = async (
           tag!.toLowerCase().split(' ').join('-'),
         ],
         issuetype: {
-          name: 'Task',
+          name: feedbackType === 'BUG' ? 'Bug' : 'Task',
         },
       },
     };

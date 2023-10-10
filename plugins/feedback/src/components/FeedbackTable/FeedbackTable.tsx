@@ -113,7 +113,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
       },
     },
     {
-      title: 'Tags',
+      title: 'Tag',
       customSort: (data1: any, data2: any) => {
         const currentRow: FeedbackModel = data1;
         const nextRow: FeedbackModel = data2;
@@ -195,7 +195,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
       <TableContainer component={Paper}>
         <Table
           options={{
-            paging: feedbackData.length > 0 ? true : false,
+            paging: feedbackData.length > 0,
             pageSizeOptions: [5, 10, 25],
             pageSize: tableConfig.pageSize,
             paginationPosition: 'bottom',
