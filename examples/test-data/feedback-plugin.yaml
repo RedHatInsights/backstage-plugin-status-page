@@ -4,10 +4,10 @@ kind: Component
 metadata:
   name: example-website-for-feedback-plugin
   annotations:
-    jira/project-key: DEE         # 'jira-project-key' 
-    feedback/type: 'JIRA'       # 'JIRA' | 'GITLAB' | 'GITHUB' | 'MAIL'
-    feedback/host: 'https://issues.stage.redhat.com'   # host of the service, should be configured in app-config (default: https://issues.redhat.com)
-    feedback/email-to: one-platform-devs+feeback-plugin-dev@redhat.com     # who to send the email  
+    jira/project-key: DEE # 'jira-project-key'
+    feedback/type: 'JIRA' # 'JIRA' | 'GITLAB' | 'GITHUB' | 'MAIL'
+    feedback/host: 'https://issues.stage.redhat.com' # host of the service, should be configured in app-config (default: https://issues.redhat.com)
+    feedback/email-to: one-platform-devs+feeback-plugin-dev@redhat.com # who to send the email
 spec:
   type: website
   lifecycle: experimental

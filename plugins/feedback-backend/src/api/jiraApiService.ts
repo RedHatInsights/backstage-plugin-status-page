@@ -71,7 +71,28 @@ export const getJiraUsernameByEmail = async (
   );
   const data = resp.data;
   if (data.length === 0) return undefined;
-  else {
-    return data[0].name;
-  }
+  return data[0].name;
+};
+
+export const getTicketDetails = async (
+  host: string,
+  ticketId: string,
+  authToken: string,
+): Promise<
+  { status: string; assignee: string; avatarUrls: {} } | undefined
+> => {
+  const resp = await axios.get(`${host}/rest/api/latest/issue/${ticketId}`, {
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+    },
+  });
+  return {
+    status: resp.data.fields.status.name,
+    assignee: resp.data.fields.assignee
+      ? resp.data.fields.assignee.displayName
+      : null,
+    avatarUrls: resp.data.fields.assignee
+      ? resp.data.fields.assignee.avatarUrls
+      : null,
+  };
 };

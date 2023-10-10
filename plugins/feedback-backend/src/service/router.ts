@@ -12,7 +12,11 @@ import { Logger } from 'winston';
 import { DatabaseFeedbackStore } from '../database/feedbackStore';
 import { FeedbackModel } from '../model/feedback.model';
 import { Entity } from '@backstage/catalog-model';
-import { createJiraTicket, getJiraUsernameByEmail } from '../api';
+import {
+  createJiraTicket,
+  getJiraUsernameByEmail,
+  getTicketDetails,
+} from '../api';
 import { NodeMailer } from './emails';
 
 export interface RouterOptions {
@@ -129,7 +133,7 @@ export async function createRouter(
             reqData.projectId?.split('/')[1]
           }`,
           body: `
-<div style="font-size:1.3rem" >
+<div style="font-size:1rem" >
   Hi ${reqData.createdBy?.split('/')[1]},
   <br/> 
   We have recieved your feedback for 
@@ -192,6 +196,43 @@ export async function createRouter(
     return res
       .status(404)
       .json({ error: `No feedback found for id ${feedbackId}` });
+  });
+
+  router.get('/:id/ticket', async (req, res) => {
+    const ticketId = req.query.ticketId ? req.query.ticketId.toString() : null;
+    const projectId = req.query.projectId
+      ? req.query.projectId.toString()
+      : null;
+
+    if (ticketId && projectId) {
+      const entityRef: Entity | undefined = await catalogClient.getEntityByRef(
+        projectId,
+      );
+      const feedbackType = entityRef?.metadata.annotations?.['feedback/type'];
+      if (feedbackType?.toLowerCase() === 'jira') {
+        let host = entityRef?.metadata.annotations?.['feedback/host'];
+
+        // if host is undefined then
+        // use the first host from config
+        const serviceConfig =
+          config
+            .getConfigArray('feedback.integrations.jira')
+            .find(hostConfig => host === hostConfig.getString('host')) ||
+          config.getConfigArray('feedback.integrations.jira')[0];
+        host = serviceConfig.getString('host');
+        const authToken = serviceConfig.getString('token');
+
+        const resp = await getTicketDetails(host, ticketId, authToken);
+        return res.status(200).json({
+          data: { ...resp },
+          message: 'fetched successfully',
+        });
+      }
+    }
+
+    return res
+      .status(404)
+      .json({ error: `Unable to fetch jira ticket ${ticketId}` });
   });
 
   // patch and delete apis

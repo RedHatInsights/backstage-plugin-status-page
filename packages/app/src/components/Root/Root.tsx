@@ -28,7 +28,7 @@ import {
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import { HydraProxyIcon } from '@appdev-platform/backstage-plugin-proxy-manager';
-import TextsmsOutlined  from '@material-ui/icons/TextsmsOutlined';
+import TextsmsOutlined from '@material-ui/icons/TextsmsOutlined';
 
 const useSidebarLogoStyles = makeStyles({
   root: {

@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Button,
   Chip,
   Dialog,
@@ -23,7 +24,7 @@ import React, { useEffect, useState } from 'react';
 import { FeedbackModel } from '../../models/feedback.model';
 import { feedbackApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
-import { useQueryParamState } from '@backstage/core-components';
+import { Progress, useQueryParamState } from '@backstage/core-components';
 import SmsOutlined from '@material-ui/icons/SmsOutlined';
 import BugReportOutlined from '@material-ui/icons/BugReportOutlined';
 import CloseRounded from '@material-ui/icons/CloseRounded';
@@ -47,7 +48,10 @@ const useStyles = makeStyles((theme: Theme) =>
       '& > *': {
         display: 'flex',
         alignItems: 'center',
+        marginRight: theme.spacing(2),
       },
+      '& > * > svg': { marginRight: theme.spacing(1) },
+
       paddingBottom: theme.spacing(0),
     },
     submittedBy: {
@@ -69,6 +73,15 @@ export const FeedbackDetailsModal = () => {
     open: false,
   });
 
+  const [ticketDetails, setTicketDetails] = useState<{
+    status: string | null;
+    assignee: string | null;
+    avatarUrls: {} | null;
+    element: React.JSX.Element | null;
+  }>({ status: null, assignee: null, avatarUrls: null, element: null });
+
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     if (queryState) {
       api.getFeedbackById(queryState!).then(resp => {
@@ -80,7 +93,56 @@ export const FeedbackDetailsModal = () => {
         }
       });
     }
-  }, [queryState]);
+  }, [queryState, api]);
+
+  useEffect(() => {
+    if (modalData) {
+      api
+        .getTicketDetails(
+          modalData.feedbackId,
+          modalData.ticketUrl,
+          modalData.projectId,
+        )
+        .then(data => {
+          setTicketDetails({
+            status: data.status,
+            assignee: data.assignee,
+            avatarUrls: data.avatarUrls,
+            element: (
+              <>
+                <ListItem>
+                  <ListItemText primary="Status" />
+                  <ListItemSecondaryAction>
+                    <ListItemText
+                      primary={<Chip variant="default" label={data.status} />}
+                    />
+                  </ListItemSecondaryAction>
+                </ListItem>
+                {data.assignee && (
+                  <ListItem>
+                    <ListItemText primary="Assignee" />
+                    <ListItemSecondaryAction>
+                      <ListItemText
+                        primary={
+                          <Chip
+                            avatar={<Avatar src={data.avatarUrls['48x48']} />}
+                            label={data.assignee}
+                          />
+                        }
+                      />
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                )}
+              </>
+            ),
+          });
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setIsLoading(false);
+        });
+    }
+  }, [modalData, api]);
 
   const handleSnackbarClose = (
     event?: React.SyntheticEvent,
@@ -95,6 +157,14 @@ export const FeedbackDetailsModal = () => {
   };
 
   const handleClose = () => {
+    setModalData(undefined);
+    setTicketDetails({
+      status: null,
+      assignee: null,
+      avatarUrls: null,
+      element: null,
+    });
+    setIsLoading(true);
     setQueryState(undefined);
   };
 
@@ -127,7 +197,7 @@ export const FeedbackDetailsModal = () => {
             ) : (
               <BugReportOutlined />
             )}
-            &nbsp;{modalData.summary}
+            {modalData.summary}
             <IconButton
               aria-label="close"
               className={classes.closeButton}
@@ -211,12 +281,18 @@ export const FeedbackDetailsModal = () => {
                       <ListItemSecondaryAction>
                         <ListItemText
                           primary={
-                            modalData.ticketUrl.split('/').pop() || 'N/A'
+                            <Chip
+                              variant="outlined"
+                              label={
+                                modalData.ticketUrl.split('/').pop() || 'N/A'
+                              }
+                            />
                           }
                         />
                       </ListItemSecondaryAction>
                     </ListItem>
                   )}
+                  {isLoading ? <Progress /> : ticketDetails.element}
                 </List>
               </Grid>
             </Grid>
