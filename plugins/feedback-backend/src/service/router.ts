@@ -119,6 +119,7 @@ export async function createRouter(
           reqData.summary!,
           jiraDescription,
           reqData.tag!.toLowerCase().split(' ').join('-'),
+          reqData.feedbackType!,
           jiraUsername,
         );
         reqData.ticketUrl = `${host}/browse/${resp.key}`;
