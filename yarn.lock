@@ -67,7 +67,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-catalog-index@^0.2.0, @appdev-platform/backstage-plugin-catalog-index@workspace:plugins/catalog-index":
+"@appdev-platform/backstage-plugin-catalog-index@^0.3.0, @appdev-platform/backstage-plugin-catalog-index@workspace:plugins/catalog-index":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-catalog-index@workspace:plugins/catalog-index"
   dependencies:
@@ -88,10 +88,13 @@ __metadata:
     "@testing-library/react": ^12.1.3
     "@testing-library/user-event": ^14.0.0
     "@types/node": "*"
+    lodash: ^4.17.21
     msw: ^1.0.0
+    qs: ^6.11.2
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0
+    react-router-dom: ^6.16.0
   languageName: unknown
   linkType: soft
 
@@ -11984,7 +11987,7 @@ __metadata:
   resolution: "app@workspace:packages/app"
   dependencies:
     "@appdev-platform/backstage-plugin-analytics-module-matomo": ^1.0.0
-    "@appdev-platform/backstage-plugin-catalog-index": ^0.2.0
+    "@appdev-platform/backstage-plugin-catalog-index": ^0.3.0
     "@appdev-platform/backstage-plugin-cmdb": ^0.2.0
     "@appdev-platform/backstage-plugin-contact-details": ^0.1.1
     "@appdev-platform/backstage-plugin-feedback": ^0.1.0
