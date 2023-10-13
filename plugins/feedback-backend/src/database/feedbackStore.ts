@@ -107,7 +107,7 @@ export class DatabaseFeedbackStore implements FeedbackStore {
     const totalFeedbacks =
       // count the correct number of feedbacks
       // for sqlitedb
-      (await model.clone().count('feedbackId'))[0]?.[`count('feedbackId')`] ??
+      (await model.clone().count('feedbackId'))[0]?.['count(`feedbackId`)'] ??
       // for postgresdb
       (await model.clone().count('feedbackId'))[0]?.count ??
       // else
