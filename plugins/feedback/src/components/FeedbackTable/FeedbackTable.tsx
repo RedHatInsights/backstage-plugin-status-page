@@ -1,9 +1,14 @@
 import {
   Chip,
+  IconButton,
   Link,
   Paper,
   TableContainer,
+  TextField,
+  Theme,
+  Tooltip,
   Typography,
+  makeStyles,
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { parseEntityRef } from '@backstage/catalog-model';
@@ -23,6 +28,19 @@ import {
 import TextsmsOutlined from '@material-ui/icons/TextsmsOutlined';
 import '@material-ui/icons/BugReportOutlined';
 import BugReportOutlined from '@material-ui/icons/BugReportOutlined';
+import Clear from '@material-ui/icons/Clear';
+import Search from '@material-ui/icons/Search';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  textField: {
+    padding: 0,
+    margin: theme.spacing(2),
+    width: '70%',
+    [theme.breakpoints.up('lg')]: {
+      width: '30%',
+    },
+  },
+}));
 
 export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
   projectId?: string;
@@ -37,6 +55,9 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
   });
   const [queryState, setQueryState] = useQueryParamState<string>('id');
   const [isLoading, setLoading] = useState(true);
+  const [searchText, setSearchText] = useState<string>('');
+  const [timer, setTimer] = useState<NodeJS.Timeout>();
+  const classes = useStyles();
 
   const columns: TableColumn[] = [
     {
@@ -57,18 +78,20 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
       title: 'Summary',
       render: (row: any) => {
         const data: FeedbackModel = row;
+        const getSummary = () => {
+          if (data.summary.length > 100) {
+            if (data.summary.split(' ').length > 1)
+              return `${data.summary.substring(
+                0,
+                data.summary.lastIndexOf(' ', 100),
+              )}...`;
+            return `${data.summary.slice(0, 100)}...`;
+          }
+          return data.summary;
+        };
         return (
           <SubvalueCell
-            value={
-              <Typography variant="h6">
-                {data.summary.length > 100
-                  ? `${data.summary.substring(
-                      0,
-                      data.summary.lastIndexOf(' ', 100),
-                    )}...`
-                  : data.summary}
-              </Typography>
-            }
+            value={<Typography variant="h6">{getSummary()}</Typography>}
             subvalue={
               <EntityPeekAheadPopover entityRef={data.createdBy}>
                 Submitted by&nbsp;
@@ -135,21 +158,25 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
   ];
 
   useEffect(() => {
-    api
-      .getAllFeedbacks(tableConfig.page, tableConfig.pageSize, projectId)
-      .then(data => {
-        setFeedbackData(data.data);
-        setTableConfig({
-          totalFeedbacks: data.totalFeedbacks,
-          page: data.currentPage,
-          pageSize: data.pageSize,
-        });
-        setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  }, [projectId, api, tableConfig.page, tableConfig.pageSize]);
+    setTimer(
+      setTimeout(() => {
+        api
+          .getAllFeedbacks(1, tableConfig.pageSize, projectId, searchText)
+          .then(data => {
+            setFeedbackData(data.data);
+            setTableConfig({
+              totalFeedbacks: data.count,
+              page: data.currentPage,
+              pageSize: data.pageSize,
+            });
+            setLoading(false);
+          })
+          .catch(() => {
+            setLoading(false);
+          });
+      }, 400),
+    );
+  }, [projectId, api, tableConfig.pageSize, searchText]);
 
   async function handlePageChange(newPage: number, pageSize: number) {
     if (newPage > tableConfig.page) {
@@ -164,7 +191,12 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
       pageSize: pageSize,
       page: newPage + 1,
     });
-    const newData = await api.getAllFeedbacks(newPage + 1, pageSize, projectId);
+    const newData = await api.getAllFeedbacks(
+      newPage + 1,
+      pageSize,
+      projectId,
+      searchText,
+    );
     return setFeedbackData(newData.data);
   }
 
@@ -177,6 +209,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
       tableConfig.page,
       pageSize,
       projectId,
+      searchText,
     );
     return setFeedbackData(newData.data);
   }
@@ -190,8 +223,44 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
     if (!queryState) setQueryState(data.feedbackId);
   }
 
+  function handleSearch(
+    event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
+  ) {
+    const _searchText = event.target.value;
+    if (timer) clearTimeout(timer);
+    if (_searchText.trim().length !== 0) return setSearchText(_searchText);
+    return setSearchText('');
+  }
+
   return (
     <Paper>
+      <TextField
+        onChange={handleSearch}
+        variant="outlined"
+        placeholder="Search Feedbacks"
+        value={searchText}
+        className={classes.textField}
+        InputProps={{
+          startAdornment: (
+            <IconButton
+              onClick={() => {
+                if (searchText.trim().length !== 0) setSearchText(searchText);
+              }}
+              children={<Search />}
+            />
+          ),
+          endAdornment: (
+            <Tooltip title="Clear search" arrow>
+              <IconButton
+                onClick={() => {
+                  setSearchText('');
+                }}
+                children={<Clear />}
+              />
+            </Tooltip>
+          ),
+        }}
+      />
       <TableContainer component={Paper}>
         <Table
           options={{
@@ -200,11 +269,9 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
             pageSize: tableConfig.pageSize,
             paginationPosition: 'bottom',
             padding: 'dense',
-            toolbar: true,
-            search: true,
-            searchFieldVariant: 'outlined',
-            searchFieldAlignment: 'left',
-            loadingType: 'linear',
+            toolbar: false,
+            search: false,
+            sorting: false,
           }}
           isLoading={isLoading}
           onRowClick={handleRowClick}

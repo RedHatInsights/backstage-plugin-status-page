@@ -136,6 +136,7 @@ export const CreateFeedbackModal = React.forwardRef(
           return setSummary({
             ...summary,
             value: '',
+            errorMessage: 'Provide summary',
             error: true,
           });
         } else if (_summary.length > 255) {
@@ -265,7 +266,11 @@ export const CreateFeedbackModal = React.forwardRef(
                 onChange={handleInputChange}
                 onBlur={handleValidation}
                 error={summary.error}
-                helperText={summary.error && summary.errorMessage}
+                helperText={
+                  summary.error
+                    ? summary.errorMessage
+                    : `${summary.value.length}/255`
+                }
                 required
               />
             </Grid>

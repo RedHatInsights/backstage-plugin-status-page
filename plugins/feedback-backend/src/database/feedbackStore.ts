@@ -18,7 +18,8 @@ export interface FeedbackStore {
     projectId: string,
     page: number,
     pageSize: number,
-  ): Promise<{ data: FeedbackModel[]; totalFeedbacks: number }>;
+    searchKey: string,
+  ): Promise<{ data: FeedbackModel[]; count: number }>;
 }
 
 const migrationsDir = resolvePackagePath(
@@ -61,19 +62,27 @@ export class DatabaseFeedbackStore implements FeedbackStore {
 
   async getAllFeedbacks(
     projectId: string,
-    page: number,
-    pageSize: number,
-  ): Promise<{ data: FeedbackModel[]; totalFeedbacks: number }> {
-    const model = this.db('feedback');
-    const offset = (page - 1) * pageSize;
+    offset: number,
+    limit: number,
+    searchKey: string,
+  ): Promise<{ data: FeedbackModel[]; count: number }> {
     const result: FeedbackModel[] = [];
 
     if (projectId !== 'all') {
+      const model =
+        searchKey.length > 0
+          ? this.db('feedback')
+              .where('projectId', projectId)
+              .andWhere(builder => {
+                builder.orWhere('summary', 'ilike', `%${searchKey}%`);
+                builder.orWhere('ticketUrl', 'ilike', `%${searchKey}%`);
+                builder.orWhere('tag', 'ilike', `%${searchKey}%`);
+                builder.orWhere('feedbackType', 'ilike', `%${searchKey}%`);
+              })
+          : this.db('feedback').where('projectId', projectId);
       try {
         const tempFeedbacksArr = await model
           .clone()
-          .select('projectId')
-          .where('projectId', projectId)
           .count('feedbackId')
           .groupBy('projectId');
 
@@ -87,23 +96,33 @@ export class DatabaseFeedbackStore implements FeedbackStore {
           0;
         await model
           .clone()
-          .select('*')
-          .where('projectId', projectId)
           .orderBy('updatedAt', 'desc')
           .offset(offset)
-          .limit(pageSize)
+          .limit(limit)
           .then(res => {
             res.forEach(data => result.push(data));
           });
         return {
           data: result,
-          totalFeedbacks: parseInt(totalFeedbacks as string, 10),
+          count: parseInt(totalFeedbacks as string, 10),
         };
       } catch (error: any) {
         this.logger.error(error.message);
       }
-      return { data: result, totalFeedbacks: 0 };
+      return { data: result, count: 0 };
     }
+
+    const model =
+      searchKey.length > 0
+        ? this.db('feedback').where(builder => {
+            builder.orWhere('summary', 'ilike', `%${searchKey}%`);
+            builder.orWhere('ticketUrl', 'ilike', `%${searchKey}%`);
+            builder.orWhere('projectId', 'ilike', `%${searchKey}%`);
+            builder.orWhere('tag', 'ilike', `%${searchKey}%`);
+            builder.orWhere('feedbackType', 'ilike', `%${searchKey}%`);
+          })
+        : this.db('feedback');
+
     const totalFeedbacks =
       // count the correct number of feedbacks
       // for sqlitedb
@@ -114,9 +133,8 @@ export class DatabaseFeedbackStore implements FeedbackStore {
       0;
     await model
       .clone()
-      .select('*')
       .orderBy('updatedAt', 'desc')
-      .limit(pageSize)
+      .limit(limit)
       .offset(offset)
       .then(res => {
         res.forEach(data => result.push(data));
@@ -124,7 +142,7 @@ export class DatabaseFeedbackStore implements FeedbackStore {
 
     return {
       data: result,
-      totalFeedbacks: parseInt(totalFeedbacks as string, 10),
+      count: parseInt(totalFeedbacks as string, 10),
     };
   }
 

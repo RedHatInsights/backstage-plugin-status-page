@@ -49,6 +49,7 @@ const useStyles = makeStyles((theme: Theme) =>
         display: 'flex',
         alignItems: 'center',
         marginRight: theme.spacing(2),
+        wordBreak: 'break-word',
       },
       '& > * > svg': { marginRight: theme.spacing(1) },
 
@@ -118,21 +119,25 @@ export const FeedbackDetailsModal = () => {
                     />
                   </ListItemSecondaryAction>
                 </ListItem>
-                {data.assignee && (
-                  <ListItem>
-                    <ListItemText primary="Assignee" />
-                    <ListItemSecondaryAction>
-                      <ListItemText
-                        primary={
-                          <Chip
-                            avatar={<Avatar src={data.avatarUrls['48x48']} />}
-                            label={data.assignee}
-                          />
-                        }
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                )}
+                <ListItem>
+                  <ListItemText primary="Assignee" />
+                  <ListItemSecondaryAction>
+                    <ListItemText
+                      primary={
+                        <Chip
+                          avatar={
+                            <Avatar
+                              src={
+                                data.avatarUrls ? data.avatarUrls['48x48'] : ''
+                              }
+                            />
+                          }
+                          label={data.assignee ? data.assignee : 'Unassigned'}
+                        />
+                      }
+                    />
+                  </ListItemSecondaryAction>
+                </ListItem>
               </>
             ),
           });

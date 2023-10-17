@@ -167,19 +167,24 @@ export async function createRouter(
     const projectId = req.query.projectId
       ? req.query.projectId.toString()
       : 'all';
-    const page = req.query.page ? parseInt(req.query.page.toString(), 10) : 1;
-    const pageSize = req.query.pageSize
-      ? parseInt(req.query.pageSize.toString(), 10)
+    const offset = req.query.offset
+      ? parseInt(req.query.offset.toString(), 10)
+      : 0;
+    const limit = req.query.limit
+      ? parseInt(req.query.limit.toString(), 10)
       : 10;
+    const searchKey = req.query.query?.toString() || '';
+
     const feedbackData = await feedbackDB.getAllFeedbacks(
       projectId,
-      page,
-      pageSize,
+      offset,
+      limit,
+      searchKey,
     );
-
+    const page = offset / limit + 1;
     res
       .status(200)
-      .json({ ...feedbackData, currentPage: page, pageSize: pageSize });
+      .json({ ...feedbackData, currentPage: page, pageSize: limit });
   });
 
   router.get('/:id', async (req, res) => {
