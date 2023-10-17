@@ -24,7 +24,7 @@ type feedbackResp = {
 
 type feedbacksResp = {
   data: FeedbackModel[];
-  totalFeedbacks: number;
+  count: number;
   currentPage: number;
   pageSize: number;
 };
@@ -36,10 +36,16 @@ export class FeedbackAPI {
     this.discoveryApi = options.discoveryApi;
   }
 
-  async getAllFeedbacks(page: number, pageSize: number, projectId: string) {
+  async getAllFeedbacks(
+    page: number,
+    pageSize: number,
+    projectId: string,
+    searchText: string,
+  ) {
     const baseUrl = await this.discoveryApi.getBaseUrl('feedback');
+    const offset = (page - 1) * pageSize;
     const resp = await fetch(
-      `${baseUrl}?page=${page}&pageSize=${pageSize}&projectId=${projectId}`,
+      `${baseUrl}?query=${searchText}&offset=${offset}&limit=${pageSize}&projectId=${projectId}`,
     );
     const respData: feedbacksResp = await resp.json();
     return respData;
