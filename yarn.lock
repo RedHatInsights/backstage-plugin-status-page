@@ -41,7 +41,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@appdev-platform/backstage-plugin-analytics-module-matomo@^1.0.0, @appdev-platform/backstage-plugin-analytics-module-matomo@workspace:plugins/analytics-module-matomo":
+"@appdev-platform/backstage-plugin-analytics-module-matomo@*, @appdev-platform/backstage-plugin-analytics-module-matomo@workspace:plugins/analytics-module-matomo":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-analytics-module-matomo@workspace:plugins/analytics-module-matomo"
   dependencies:
@@ -67,7 +67,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-catalog-index@^0.3.0, @appdev-platform/backstage-plugin-catalog-index@workspace:plugins/catalog-index":
+"@appdev-platform/backstage-plugin-catalog-index@*, @appdev-platform/backstage-plugin-catalog-index@workspace:plugins/catalog-index":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-catalog-index@workspace:plugins/catalog-index"
   dependencies:
@@ -100,7 +100,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-cmdb@^0.2.0, @appdev-platform/backstage-plugin-cmdb@workspace:plugins/cmdb":
+"@appdev-platform/backstage-plugin-cmdb@*, @appdev-platform/backstage-plugin-cmdb@workspace:plugins/cmdb":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-cmdb@workspace:plugins/cmdb"
   dependencies:
@@ -128,7 +128,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-contact-details@^0.1.1, @appdev-platform/backstage-plugin-contact-details@workspace:plugins/contact-details":
+"@appdev-platform/backstage-plugin-contact-details@*, @appdev-platform/backstage-plugin-contact-details@workspace:plugins/contact-details":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-contact-details@workspace:plugins/contact-details"
   dependencies:
@@ -155,7 +155,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-feedback-backend@^0.1.0, @appdev-platform/backstage-plugin-feedback-backend@workspace:plugins/feedback-backend":
+"@appdev-platform/backstage-plugin-feedback-backend@*, @appdev-platform/backstage-plugin-feedback-backend@workspace:plugins/feedback-backend":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-feedback-backend@workspace:plugins/feedback-backend"
   dependencies:
@@ -183,7 +183,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-feedback@^0.1.0, @appdev-platform/backstage-plugin-feedback@workspace:plugins/feedback":
+"@appdev-platform/backstage-plugin-feedback@*, @appdev-platform/backstage-plugin-feedback@workspace:plugins/feedback":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-feedback@workspace:plugins/feedback"
   dependencies:
@@ -211,7 +211,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-jira-server@^0.2.1, @appdev-platform/backstage-plugin-jira-server@workspace:plugins/jira-server":
+"@appdev-platform/backstage-plugin-jira-server@*, @appdev-platform/backstage-plugin-jira-server@workspace:plugins/jira-server":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-jira-server@workspace:plugins/jira-server"
   dependencies:
@@ -246,7 +246,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-lighthouse@^0.1.2, @appdev-platform/backstage-plugin-lighthouse@workspace:plugins/lighthouse":
+"@appdev-platform/backstage-plugin-lighthouse@*, @appdev-platform/backstage-plugin-lighthouse@workspace:plugins/lighthouse":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-lighthouse@workspace:plugins/lighthouse"
   dependencies:
@@ -276,7 +276,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-matomo-backend@^0.1.0, @appdev-platform/backstage-plugin-matomo-backend@workspace:plugins/matomo-backend":
+"@appdev-platform/backstage-plugin-matomo-backend@*, @appdev-platform/backstage-plugin-matomo-backend@workspace:plugins/matomo-backend":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-matomo-backend@workspace:plugins/matomo-backend"
   dependencies:
@@ -296,7 +296,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-matomo@^0.1.1, @appdev-platform/backstage-plugin-matomo@workspace:plugins/matomo":
+"@appdev-platform/backstage-plugin-matomo@*, @appdev-platform/backstage-plugin-matomo@workspace:plugins/matomo":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-matomo@workspace:plugins/matomo"
   dependencies:
@@ -327,7 +327,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-proxy-manager@^0.1.0, @appdev-platform/backstage-plugin-proxy-manager@workspace:plugins/proxy-manager":
+"@appdev-platform/backstage-plugin-proxy-manager@*, @appdev-platform/backstage-plugin-proxy-manager@workspace:plugins/proxy-manager":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-proxy-manager@workspace:plugins/proxy-manager"
   dependencies:
@@ -357,7 +357,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-spaship@^0.1.1, @appdev-platform/backstage-plugin-spaship@workspace:plugins/spaship":
+"@appdev-platform/backstage-plugin-spaship@*, @appdev-platform/backstage-plugin-spaship@workspace:plugins/spaship":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-spaship@workspace:plugins/spaship"
   dependencies:
@@ -11995,16 +11995,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "app@workspace:packages/app"
   dependencies:
-    "@appdev-platform/backstage-plugin-analytics-module-matomo": ^1.0.0
-    "@appdev-platform/backstage-plugin-catalog-index": ^0.3.0
-    "@appdev-platform/backstage-plugin-cmdb": ^0.2.0
-    "@appdev-platform/backstage-plugin-contact-details": ^0.1.1
-    "@appdev-platform/backstage-plugin-feedback": ^0.1.0
-    "@appdev-platform/backstage-plugin-jira-server": ^0.2.1
-    "@appdev-platform/backstage-plugin-lighthouse": ^0.1.2
-    "@appdev-platform/backstage-plugin-matomo": ^0.1.1
-    "@appdev-platform/backstage-plugin-proxy-manager": ^0.1.0
-    "@appdev-platform/backstage-plugin-spaship": ^0.1.1
+    "@appdev-platform/backstage-plugin-analytics-module-matomo": "*"
+    "@appdev-platform/backstage-plugin-catalog-index": "*"
+    "@appdev-platform/backstage-plugin-cmdb": "*"
+    "@appdev-platform/backstage-plugin-contact-details": "*"
+    "@appdev-platform/backstage-plugin-feedback": "*"
+    "@appdev-platform/backstage-plugin-jira-server": "*"
+    "@appdev-platform/backstage-plugin-lighthouse": "*"
+    "@appdev-platform/backstage-plugin-matomo": "*"
+    "@appdev-platform/backstage-plugin-proxy-manager": "*"
+    "@appdev-platform/backstage-plugin-spaship": "*"
     "@backstage/app-defaults": ^1.4.2
     "@backstage/catalog-model": ^1.4.1
     "@backstage/cli": ^0.22.12
@@ -12736,8 +12736,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "backend@workspace:packages/backend"
   dependencies:
-    "@appdev-platform/backstage-plugin-feedback-backend": ^0.1.0
-    "@appdev-platform/backstage-plugin-matomo-backend": ^0.1.0
+    "@appdev-platform/backstage-plugin-feedback-backend": "*"
+    "@appdev-platform/backstage-plugin-matomo-backend": "*"
     "@backstage/backend-common": ^0.19.4
     "@backstage/backend-tasks": ^0.5.7
     "@backstage/catalog-client": ^1.4.3
