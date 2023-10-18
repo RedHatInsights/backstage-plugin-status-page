@@ -12,6 +12,7 @@ import { Container, Typography, makeStyles } from '@material-ui/core';
 import { CatalogList } from './CatalogList';
 import { PaginatedEntityListProvider } from '../contexts/PaginatedEntityListProvider';
 import { capitalize } from 'lodash';
+import { plural } from 'pluralize';
 
 const useStyles = makeStyles({
   heading: {
@@ -49,7 +50,7 @@ export const CatalogPage = () => {
           <ContentHeader
             titleComponent={
               <Typography variant="h2" className={heading}>
-                All {kind}s ({count})
+                All {plural(kind)} ({count})
               </Typography>
             }
           >

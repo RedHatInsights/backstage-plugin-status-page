@@ -5,6 +5,7 @@ import { EntityKindFilter } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import { Select } from '@backstage/core-components';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { capitalize } from 'lodash';
 
 export const EntityKindPicker = (props: {
   hidden?: boolean;
@@ -30,7 +31,7 @@ export const EntityKindPicker = (props: {
   useEffect(() => {
     if (error) {
       alertApi.post({
-        message: `Fauled to load entity kinds`,
+        message: `Failed to load entity kinds`,
         severity: 'error',
       });
     }
@@ -49,19 +50,25 @@ export const EntityKindPicker = (props: {
   }, [filters.kind]);
 
   useEffect(() => {
-    if (selectedKind !== filters.kind?.value) {
+    if (selectedKind && selectedKind !== filters.kind?.value) {
       updateFilters({
         kind: selectedKind ? new EntityKindFilter(selectedKind) : undefined,
       });
     }
   }, [filters, selectedKind, updateFilters]);
-
-  if (error) return null;
-
-  const items = kinds?.map(key => ({
-    value: key.value.toLocaleLowerCase(),
-    label: key.value,
-  }));
+  
+  const items =
+    (!error && kinds?.length > 0)
+      ? kinds?.map(key => ({
+          value: key.value.toLocaleLowerCase(),
+          label: key.value,
+        }))
+      : [
+          {
+            value: selectedKind.toLocaleLowerCase(),
+            label: capitalize(selectedKind),
+          },
+        ];
 
   return hidden ? null : (
     <Box pb={1} pt={1}>
