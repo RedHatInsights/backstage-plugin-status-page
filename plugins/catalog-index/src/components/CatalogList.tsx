@@ -11,6 +11,8 @@ import {
 import { EmptyState, Link, Progress } from '@backstage/core-components';
 import { CatalogToolbar } from './CatalogToolbar';
 import { usePaginatedEntityList } from '../contexts/PaginatedEntityListProvider';
+import { plural } from 'pluralize';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   list: {
@@ -29,6 +31,7 @@ interface CatalogListProps {
 
 export const CatalogList = ({ dispatchActiveKind }: CatalogListProps) => {
   const { list } = useStyles();
+  const alertApi = useApi(alertApiRef);
 
   const {
     loading,
@@ -44,10 +47,10 @@ export const CatalogList = ({ dispatchActiveKind }: CatalogListProps) => {
     if (filters.kind?.value) {
       dispatchActiveKind?.({
         kind: filters.kind.value,
-        count: entities.length,
+        count: totalCount,
       });
     }
-  }, [dispatchActiveKind, entities, filters]);
+  }, [dispatchActiveKind, entities, filters, totalCount]);
 
   /* Updates the query params after a page change */
   const handleChangePage = (
@@ -67,13 +70,23 @@ export const CatalogList = ({ dispatchActiveKind }: CatalogListProps) => {
     });
   };
 
+  useEffect(() => {
+    if (error) {
+      alertApi.post({
+        message: 'Failed to load entities. Please try again.',
+        severity: 'error'
+      });
+    }
+  }, [alertApi, error]);
+
+
   const EntitiesList = () => {
-    if (entities.length === 0) {
+    if (!entities?.length) {
       return (
         <Paper variant="outlined">
           <EmptyState
             missing="data"
-            title={`No ${filters.kind?.value.toString()}s found.`}
+            title={`No ${plural(filters.kind?.value.toString())} found.`}
             description="No records found for the entered filters."
             action={
               <Button
@@ -124,9 +137,7 @@ export const CatalogList = ({ dispatchActiveKind }: CatalogListProps) => {
         </Box>
       </CatalogToolbar>
       {loading && <Progress />}
-      {!loading && !error && <EntitiesList />}
-      {!loading && error && <>{error}</>}
-
+      {!loading && <EntitiesList />}
       <Box marginTop={1}>
         <Pagination />
       </Box>
