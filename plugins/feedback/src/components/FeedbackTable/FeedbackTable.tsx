@@ -237,7 +237,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
       <TextField
         onChange={handleSearch}
         variant="outlined"
-        placeholder="Search Feedbacks"
+        placeholder="Search Feedback"
         value={searchText}
         className={classes.textField}
         InputProps={{
@@ -272,6 +272,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
             toolbar: false,
             search: false,
             sorting: false,
+            emptyRowsWhenPaging: false,
           }}
           isLoading={isLoading}
           onRowClick={handleRowClick}

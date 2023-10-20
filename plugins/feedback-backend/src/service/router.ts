@@ -32,7 +32,7 @@ export async function createRouter(
 
   const router = Router();
   const feedbackDB = await DatabaseFeedbackStore.create({
-    database: DatabaseManager.fromConfig(options.config).forPlugin('feedback'),
+    database: DatabaseManager.fromConfig(config).forPlugin('feedback'),
     skipMigrations: false,
     logger: logger,
   });
