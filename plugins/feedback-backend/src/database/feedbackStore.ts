@@ -66,6 +66,10 @@ export class DatabaseFeedbackStore implements FeedbackStore {
     limit: number,
     searchKey: string,
   ): Promise<{ data: FeedbackModel[]; count: number }> {
+    const operator = this.db.client.config.client === 'pg' ? 'ilike' : 'like';
+    const countKey =
+      this.db.client.config.client === 'pg' ? 'count' : 'count(`feedbackId`)';
+
     const result: FeedbackModel[] = [];
 
     if (projectId !== 'all') {
@@ -74,10 +78,10 @@ export class DatabaseFeedbackStore implements FeedbackStore {
           ? this.db('feedback')
               .where('projectId', projectId)
               .andWhere(builder => {
-                builder.orWhere('summary', 'ilike', `%${searchKey}%`);
-                builder.orWhere('ticketUrl', 'ilike', `%${searchKey}%`);
-                builder.orWhere('tag', 'ilike', `%${searchKey}%`);
-                builder.orWhere('feedbackType', 'ilike', `%${searchKey}%`);
+                builder.orWhere('summary', operator, `%${searchKey}%`);
+                builder.orWhere('ticketUrl', operator, `%${searchKey}%`);
+                builder.orWhere('tag', operator, `%${searchKey}%`);
+                builder.orWhere('feedbackType', operator, `%${searchKey}%`);
               })
           : this.db('feedback').where('projectId', projectId);
       try {
@@ -86,14 +90,7 @@ export class DatabaseFeedbackStore implements FeedbackStore {
           .count('feedbackId')
           .groupBy('projectId');
 
-        const totalFeedbacks =
-          // count the correct number of feedbacks for
-          // sqlite db
-          tempFeedbacksArr[0]?.['count(`feedbackId`)'] ??
-          // for postgres db
-          tempFeedbacksArr[0]?.count ??
-          // else
-          0;
+        const totalFeedbacks = tempFeedbacksArr[0]?.[countKey] ?? 0;
         await model
           .clone()
           .orderBy('updatedAt', 'desc')
@@ -111,38 +108,38 @@ export class DatabaseFeedbackStore implements FeedbackStore {
       }
       return { data: result, count: 0 };
     }
+    try {
+      const model =
+        searchKey.length > 0
+          ? this.db('feedback').where(builder => {
+              builder.orWhere('summary', operator, `%${searchKey}%`);
+              builder.orWhere('ticketUrl', operator, `%${searchKey}%`);
+              builder.orWhere('projectId', operator, `%${searchKey}%`);
+              builder.orWhere('tag', operator, `%${searchKey}%`);
+              builder.orWhere('feedbackType', operator, `%${searchKey}%`);
+            })
+          : this.db('feedback');
 
-    const model =
-      searchKey.length > 0
-        ? this.db('feedback').where(builder => {
-            builder.orWhere('summary', 'ilike', `%${searchKey}%`);
-            builder.orWhere('ticketUrl', 'ilike', `%${searchKey}%`);
-            builder.orWhere('projectId', 'ilike', `%${searchKey}%`);
-            builder.orWhere('tag', 'ilike', `%${searchKey}%`);
-            builder.orWhere('feedbackType', 'ilike', `%${searchKey}%`);
-          })
-        : this.db('feedback');
-
-    const totalFeedbacks =
-      // count the correct number of feedbacks
-      // for sqlitedb
-      (await model.clone().count('feedbackId'))[0]?.['count(`feedbackId`)'] ??
-      // for postgresdb
-      (await model.clone().count('feedbackId'))[0]?.count ??
-      // else
-      0;
-    await model
-      .clone()
-      .orderBy('updatedAt', 'desc')
-      .limit(limit)
-      .offset(offset)
-      .then(res => {
-        res.forEach(data => result.push(data));
-      });
-
+      const totalFeedbacks =
+        (await model.clone().count('feedbackId'))[0]?.[countKey] ?? 0;
+      await model
+        .clone()
+        .orderBy('updatedAt', 'desc')
+        .limit(limit)
+        .offset(offset)
+        .then(res => {
+          res.forEach(data => result.push(data));
+        });
+      return {
+        data: result,
+        count: parseInt(totalFeedbacks as string, 10),
+      };
+    } catch (error: any) {
+      this.logger.error(error.message);
+    }
     return {
       data: result,
-      count: parseInt(totalFeedbacks as string, 10),
+      count: 0,
     };
   }
 
