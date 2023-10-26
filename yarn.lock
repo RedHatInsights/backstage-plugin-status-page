@@ -246,9 +246,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-lighthouse@*, @appdev-platform/backstage-plugin-lighthouse@workspace:plugins/lighthouse":
+"@appdev-platform/backstage-plugin-lighthouse-ci@*, @appdev-platform/backstage-plugin-lighthouse-ci@workspace:plugins/lighthouse-ci":
   version: 0.0.0-use.local
-  resolution: "@appdev-platform/backstage-plugin-lighthouse@workspace:plugins/lighthouse"
+  resolution: "@appdev-platform/backstage-plugin-lighthouse-ci@workspace:plugins/lighthouse-ci"
   dependencies:
     "@backstage/catalog-model": ^1.4.1
     "@backstage/cli": ^0.22.12
@@ -12001,7 +12001,7 @@ __metadata:
     "@appdev-platform/backstage-plugin-contact-details": "*"
     "@appdev-platform/backstage-plugin-feedback": "*"
     "@appdev-platform/backstage-plugin-jira-server": "*"
-    "@appdev-platform/backstage-plugin-lighthouse": "*"
+    "@appdev-platform/backstage-plugin-lighthouse-ci": "*"
     "@appdev-platform/backstage-plugin-matomo": "*"
     "@appdev-platform/backstage-plugin-proxy-manager": "*"
     "@appdev-platform/backstage-plugin-spaship": "*"
