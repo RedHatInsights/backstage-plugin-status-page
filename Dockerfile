@@ -30,7 +30,7 @@ RUN \
     microdnf clean all && \
     pip3 install mkdocs-techdocs-core==1.1.7 && \
     npm i -g corepack && corepack enable && \
-    corepack prepare yarn@stable --activate
+    corepack prepare yarn@3 --activate
 
 USER 1001
 
