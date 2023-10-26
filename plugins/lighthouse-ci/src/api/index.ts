@@ -21,7 +21,7 @@ type Options = {
 };
 
 export const lighthouseApiRef = createApiRef<LighthouseAPI>({
-  id: 'plugin.lighthouse.service',
+  id: 'plugin.lighthouse-ci.service',
 });
 
 export class LighthouseApiClient implements LighthouseAPI {

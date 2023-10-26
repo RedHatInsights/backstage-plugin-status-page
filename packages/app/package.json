@@ -24,7 +24,7 @@
     "@appdev-platform/backstage-plugin-contact-details": "*",
     "@appdev-platform/backstage-plugin-feedback": "*",
     "@appdev-platform/backstage-plugin-jira-server": "*",
-    "@appdev-platform/backstage-plugin-lighthouse": "*",
+    "@appdev-platform/backstage-plugin-lighthouse-ci": "*",
     "@appdev-platform/backstage-plugin-matomo": "*",
     "@appdev-platform/backstage-plugin-proxy-manager": "*",
     "@appdev-platform/backstage-plugin-spaship": "*",
