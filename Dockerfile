@@ -7,7 +7,7 @@ USER 0
 RUN \
     dnf install -y python3 make g++ zlib-devel openssl-devel brotli-devel && \
     npm i -g corepack && corepack enable && \
-    corepack prepare yarn@stable --activate
+    corepack prepare yarn@3 --activate
 
 COPY . .
 
