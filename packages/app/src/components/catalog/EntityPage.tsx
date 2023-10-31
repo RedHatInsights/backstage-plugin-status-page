@@ -71,7 +71,7 @@ import {
   ServiceDetailsCard,
   isAppCodeAvailable,
 } from '@appdev-platform/backstage-plugin-cmdb';
-import { LighthousePage } from '@appdev-platform/backstage-plugin-lighthouse-ci';
+import { LighthousePage } from '@appdev-platform/backstage-plugin-lighthouse';
 
 import {  
   ContactDetailsCard,
