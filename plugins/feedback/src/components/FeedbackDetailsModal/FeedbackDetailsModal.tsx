@@ -8,13 +8,16 @@ import {
   DialogTitle,
   Grid,
   IconButton,
+  Link,
   List,
   ListItem,
   ListItemSecondaryAction,
   ListItemText,
   Snackbar,
   Theme,
+  Tooltip,
   Typography,
+  Zoom,
   createStyles,
   makeStyles,
 } from '@material-ui/core';
@@ -30,6 +33,7 @@ import BugReportOutlined from '@material-ui/icons/BugReportOutlined';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import ArrowForwardRounded from '@material-ui/icons/ArrowForwardRounded';
 import { Alert } from '@material-ui/lab';
+import { ExpandLessRounded, ExpandMoreRounded } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -58,6 +62,11 @@ const useStyles = makeStyles((theme: Theme) =>
     submittedBy: {
       color: theme.palette.textSubtle,
       fontWeight: 500,
+    },
+    readMoreLink: {
+      display: 'flex',
+      alignItems: 'center',
+      cursor: 'pointer',
     },
   }),
 );
@@ -170,8 +179,22 @@ export const FeedbackDetailsModal = () => {
       element: null,
     });
     setIsLoading(true);
+    setExpandDescription(false);
     setQueryState(undefined);
   };
+
+  const getDescription = (str: string) => {
+    if (!expandDescription) {
+      if (str.length > 400) {
+        if (str.split(' ').length > 1)
+          return `${str.substring(0, str.lastIndexOf(' ', 400))}...`;
+        return `${str.slice(0, 400)}...`;
+      }
+    }
+    return str;
+  };
+
+  const [expandDescription, setExpandDescription] = useState(false);
 
   return (
     <Dialog
@@ -197,11 +220,17 @@ export const FeedbackDetailsModal = () => {
       ) : (
         <>
           <DialogTitle className={classes.dialogTitle} id="dialog-title">
-            {modalData.feedbackType === 'FEEDBACK' ? (
-              <SmsOutlined />
-            ) : (
-              <BugReportOutlined />
-            )}
+            <Tooltip
+              title={modalData.feedbackType === 'FEEDBACK' ? 'Feedback' : 'Bug'}
+              arrow
+              TransitionComponent={Zoom}
+            >
+              {modalData.feedbackType === 'FEEDBACK' ? (
+                <SmsOutlined />
+              ) : (
+                <BugReportOutlined />
+              )}
+            </Tooltip>
             {modalData.summary}
             <IconButton
               aria-label="close"
@@ -231,9 +260,22 @@ export const FeedbackDetailsModal = () => {
               <Grid item xs={12}>
                 <Typography variant="body1">
                   {modalData.description
-                    ? modalData.description
+                    ? getDescription(modalData.description)
                     : 'No description provided'}
                 </Typography>
+                {modalData.description.length > 400 ? (
+                  <Link
+                    className={classes.readMoreLink}
+                    onClick={() => setExpandDescription(!expandDescription)}
+                  >
+                    {!expandDescription ? (
+                      <ExpandMoreRounded />
+                    ) : (
+                      <ExpandLessRounded />
+                    )}
+                    {!expandDescription ? 'Read More' : 'Read Less'}
+                  </Link>
+                ) : null}
               </Grid>
               <Grid item xs={12}>
                 <List disablePadding>
@@ -265,17 +307,11 @@ export const FeedbackDetailsModal = () => {
                     </ListItemSecondaryAction>
                   </ListItem>
                   <ListItem>
-                    <ListItemText primary="Type" />
+                    <ListItemText primary="Tag" />
                     <ListItemSecondaryAction>
                       <ListItemText
                         primary={
-                          <>
-                            <Chip
-                              variant="outlined"
-                              label={modalData.feedbackType}
-                            />
-                            <Chip variant="outlined" label={modalData.tag} />
-                          </>
+                          <Chip variant="outlined" label={modalData.tag} />
                         }
                       />
                     </ListItemSecondaryAction>
@@ -286,12 +322,17 @@ export const FeedbackDetailsModal = () => {
                       <ListItemSecondaryAction>
                         <ListItemText
                           primary={
-                            <Chip
-                              variant="outlined"
-                              label={
-                                modalData.ticketUrl.split('/').pop() || 'N/A'
-                              }
-                            />
+                            <Link
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              href={modalData.ticketUrl}
+                            >
+                              <Chip
+                                clickable
+                                variant="outlined"
+                                label={modalData.ticketUrl.split('/').pop()}
+                              />
+                            </Link>
                           }
                         />
                       </ListItemSecondaryAction>

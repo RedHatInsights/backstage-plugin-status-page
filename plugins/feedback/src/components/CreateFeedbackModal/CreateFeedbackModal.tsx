@@ -96,8 +96,6 @@ export const CreateFeedbackModal = React.forwardRef(
 
     function handleCategoryClick(event: any) {
       setFeedbackType(event.target.value);
-      setSummary({ ...summary, value: '' });
-      setDescription({ ...description, value: '' });
       setSelectedTag(
         event.target.value === 'FEEDBACK' ? feedbackTags[0] : issueTags[0],
       );
