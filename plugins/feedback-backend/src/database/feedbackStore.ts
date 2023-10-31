@@ -82,6 +82,7 @@ export class DatabaseFeedbackStore implements FeedbackStore {
                 builder.orWhere('ticketUrl', operator, `%${searchKey}%`);
                 builder.orWhere('tag', operator, `%${searchKey}%`);
                 builder.orWhere('feedbackType', operator, `%${searchKey}%`);
+                builder.orWhere('projectId', operator, `%${searchKey}%`);
               })
           : this.db('feedback').where('projectId', projectId);
       try {

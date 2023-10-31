@@ -93,12 +93,14 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
           <SubvalueCell
             value={<Typography variant="h6">{getSummary()}</Typography>}
             subvalue={
-              <EntityPeekAheadPopover entityRef={data.createdBy}>
-                Submitted by&nbsp;
-                <EntityRefLink entityRef={data.createdBy}>
-                  {parseEntityRef(data.createdBy).name}
-                </EntityRefLink>
-              </EntityPeekAheadPopover>
+              <div onClick={e => e.stopPropagation()}>
+                <EntityPeekAheadPopover entityRef={data.createdBy}>
+                  Submitted by&nbsp;
+                  <EntityRefLink entityRef={data.createdBy}>
+                    {parseEntityRef(data.createdBy).name}
+                  </EntityRefLink>
+                </EntityPeekAheadPopover>
+              </div>
             }
           />
         );
