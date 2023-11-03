@@ -22,6 +22,13 @@ backend:
     # Uncomment the following host directive to bind to specific interfaces
     # host: 127.0.0.1
   csp:
+    default-src:
+      - "'self'"
+      - 'http:'
+      - 'https:'
+      - 'https://cdnapisec.kaltura.com/'
+      - 'https://analytics.kaltura.com/'
+
     connect-src: ["'self'", 'http:', 'https:']
     # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
     # Default Helmet Content-Security-Policy values can be removed by setting the key to false
