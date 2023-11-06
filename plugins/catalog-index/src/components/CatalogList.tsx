@@ -86,7 +86,7 @@ export const CatalogList = ({ dispatchActiveKind }: CatalogListProps) => {
         <Paper variant="outlined">
           <EmptyState
             missing="data"
-            title={`No ${plural(filters.kind?.value.toString())} found.`}
+            title={`No ${plural(filters.kind?.value?.toString() ?? '')} found.`}
             description="No records found for the entered filters."
             action={
               <Button

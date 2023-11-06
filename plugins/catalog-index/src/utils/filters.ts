@@ -20,3 +20,15 @@ export function reduceEntityFilters(
       filter => !filter.filterEntity || filter.filterEntity(entity),
     );
 }
+
+export class EntitySearchFilter implements EntityFilter {
+  constructor(readonly value: string | string[]) {}
+
+  getTypes(): string[] {
+    return Array.isArray(this.value) ? this.value : [this.value];
+  }
+
+  toQueryValue(): string[] {
+    return this.getTypes();
+  }
+}
