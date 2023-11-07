@@ -15,7 +15,11 @@ import useDebounce from 'react-use/lib/useDebounce';
 import useMountedState from 'react-use/lib/useMountedState';
 import { reduceCatalogFilters, reduceEntityFilters } from '../utils/filters';
 import { useApi } from '@backstage/core-plugin-api';
-import { DefaultEntityFilters, EntityFilter, catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  DefaultEntityFilters,
+  EntityFilter,
+  catalogApiRef,
+} from '@backstage/plugin-catalog-react';
 
 /** @public */
 export type PageOptions = {
@@ -57,7 +61,7 @@ export type EntityListContextProps<
    * Updates the pagination state
    * @param update Partial page options object
    */
-  updatePageOptions: (update: Partial<PageOptions>) => void
+  updatePageOptions: (update: Partial<PageOptions>) => void;
 
   /**
    * Update one or more of the registered filters. Optional filters can be set to `undefined` to
@@ -90,7 +94,10 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
   appliedFilters: EntityFilters;
   entities: Entity[];
   backendEntities: Entity[];
-  pageOptions: PageOptions;
+  pageOptions: PageOptions & {
+    nextCursor?: string;
+    prevCursor?: string;
+  };
   totalCount: number;
 };
 
@@ -98,7 +105,9 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
  * Provides entities and filters for a catalog listing with pagination using offset and limit
  * @public
  */
-export const PaginatedEntityListProvider = <EntityFilters extends DefaultEntityFilters>(
+export const PaginatedEntityListProvider = <
+  EntityFilters extends DefaultEntityFilters,
+>(
   props: PropsWithChildren<{}>,
 ) => {
   const isMounted = useMountedState();
@@ -111,6 +120,7 @@ export const PaginatedEntityListProvider = <EntityFilters extends DefaultEntityF
     page: 0,
     rowsPerPage: 10,
   });
+  const [pageCursor, setPageCursor] = useState<string>();
 
   const location = useLocation();
   const queryParameters = useMemo(
@@ -142,6 +152,8 @@ export const PaginatedEntityListProvider = <EntityFilters extends DefaultEntityF
         compact(Object.values(outputState.appliedFilters)),
       );
       const previousPageOptions = Object.assign({}, outputState.pageOptions);
+      const previousTextFilter = outputState.appliedFilters.text;
+      const textFilter = requestedFilters.text?.value;
 
       const queryParams = Object.keys(requestedFilters).reduce(
         (params, key) => {
@@ -156,23 +168,36 @@ export const PaginatedEntityListProvider = <EntityFilters extends DefaultEntityF
         {} as Record<string, string | string[]>,
       );
 
-      if (!isEqual(previousBackendFilter, backendFilter) || !isEqual(previousPageOptions, pageOptions)) {
-        const response = await catalogApi.getEntities({
+      if (
+        !isEqual(previousBackendFilter, backendFilter) ||
+        !isEqual(previousPageOptions, pageOptions) ||
+        !isEqual(previousTextFilter, textFilter)
+      ) {
+        const response = await catalogApi.queryEntities({
           filter: backendFilter,
-          offset: pageOptions.page * pageOptions.rowsPerPage,
+          fullTextFilter: {
+            term: textFilter ?? '',
+            fields: [
+              'metadata.name',
+              'metadata.title',
+              'metadata.description',
+              'metadata.annotations.servicenow.com/appcode',
+            ],
+          },
+          cursor: pageCursor,
           limit: pageOptions.rowsPerPage,
-          order: { field: 'metadata.name', order: 'asc' },
-        });
-        const {items: allItems} = await catalogApi.getEntities({
-          filter: backendFilter,
+          orderFields: { field: 'metadata.name', order: 'asc' },
         });
 
         setOutputState({
           appliedFilters: requestedFilters,
           backendEntities: response.items,
           entities: response.items.filter(entityFilter),
-          totalCount: allItems.length,
-          pageOptions,
+          totalCount: response.totalItems,
+          pageOptions: {
+            ...pageOptions,
+            ...response.pageInfo
+          },
         });
       } else {
         setOutputState({
@@ -218,8 +243,14 @@ export const PaginatedEntityListProvider = <EntityFilters extends DefaultEntityF
   );
 
   const updatePageOptions = useCallback((update: Partial<PageOptions>) => {
-    setPageOptions((prevPageOptions) => ({...prevPageOptions, ...update}));
-  }, []);
+    if (update.page! < outputState.pageOptions.page) {
+      setPageCursor(outputState.pageOptions.prevCursor);
+    } else if (update.page! > outputState.pageOptions.page) {
+      setPageCursor(outputState.pageOptions.nextCursor);
+    }
+
+    setPageOptions(prevPageOptions => ({ ...prevPageOptions, ...update }));
+  }, [outputState.pageOptions]);
 
   const value = useMemo(
     () => ({
@@ -234,7 +265,15 @@ export const PaginatedEntityListProvider = <EntityFilters extends DefaultEntityF
       loading,
       error,
     }),
-    [outputState, pageOptions, updatePageOptions, updateFilters, queryParameters, loading, error],
+    [
+      outputState,
+      pageOptions,
+      updatePageOptions,
+      updateFilters,
+      queryParameters,
+      loading,
+      error,
+    ],
   );
 
   return (

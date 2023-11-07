@@ -9,9 +9,9 @@ import {
 import { usePaginatedEntityList } from '../contexts/PaginatedEntityListProvider';
 import React, { useState } from 'react';
 import { useDebounce } from 'react-use';
-import { EntityTextFilter } from '@backstage/plugin-catalog-react';
 import Search from '@material-ui/icons/Search';
 import Clear from '@material-ui/icons/Clear';
+import { EntitySearchFilter } from '../utils/filters';
 
 const useStyles = makeStyles(
   {
@@ -35,7 +35,7 @@ export const EntitySearchBar = () => {
   useDebounce(
     () => {
       updateFilters({
-        text: search.length ? new EntityTextFilter(search) : undefined,
+        text: search.length ? new EntitySearchFilter(search) : undefined,
       });
     },
     250,
