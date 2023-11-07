@@ -82,6 +82,7 @@ export async function createRouter(
         (await catalogClient.getEntityByRef(reqData.createdBy!))?.spec
           ?.profile as { email: string }
       ).email;
+      const appTitle = config.getString('app.title');
 
       if (type.toUpperCase() === 'JIRA') {
         let host = annotations['feedback/host'];
@@ -97,7 +98,6 @@ export async function createRouter(
         const authToken = serviceConfig.getString('token');
 
         const projectKey = entityRef.metadata.annotations!['jira/project-key'];
-        const appTitle = config.getString('app.title');
         const jiraUsername = await getJiraUsernameByEmail(
           host,
           reporterEmail,
@@ -137,7 +137,7 @@ export async function createRouter(
 <div style="font-size:1rem" >
   Hi ${reqData.createdBy?.split('/')[1]},
   <br/> 
-  We have recieved your feedback for 
+  We have received your feedback for 
     <b>
       ${reqData.projectId?.split('/')[1]}
     </b>, 
@@ -154,7 +154,7 @@ export async function createRouter(
   <br/>
   <br/>
   <a href="${reqData.url}?id=${reqData.feedbackId}">
-    View on Platform
+    View on ${appTitle}
   </a>
 </div>`,
         });
