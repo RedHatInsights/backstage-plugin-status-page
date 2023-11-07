@@ -134,8 +134,9 @@ export async function createRouter(
             reqData.projectId?.split('/')[1]
           }`,
           body: `
-<div style="font-size:1rem" >
+<div>
   Hi ${reqData.createdBy?.split('/')[1]},
+  <br/> 
   <br/> 
   We have received your feedback for 
     <b>
@@ -149,6 +150,8 @@ export async function createRouter(
   <br/>
   Description: ${reqData.description}
   <br/>
+  <br/>
+  Submitted from: ${reqData.url}
   <br/>
   Submitted at: ${reqData.createdAt} 
   <br/>
