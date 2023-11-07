@@ -56,7 +56,7 @@ export async function createRouter(
     const entityRef: Entity | undefined = await catalogClient.getEntityByRef(
       reqData.projectId!,
     );
-
+    const entityRoute = `${req.headers.origin}/catalog/${entityRef?.metadata.namespace}/${entityRef?.kind}/${entityRef?.metadata.name}/feedback`;
     const respObj = await feedbackDB.storeFeedbackGetUuid(reqData);
 
     const feedbackType =
@@ -107,9 +107,9 @@ export async function createRouter(
         const jiraDescription = reqData.description!.concat(
           `\n\n${
             jiraUsername === undefined ? `Reported by: ${reporterEmail}` : '\r'
-          }\n*Submitted from ${appTitle}*\n[${feedbackType} link|${
-            reqData.url
-          }?id=${reqData.feedbackId}]`,
+          }\n*Submitted from ${appTitle}*\n[${feedbackType} link|${entityRoute}?id=${
+            reqData.feedbackId
+          }]`,
         );
 
         const resp = await createJiraTicket(
@@ -153,10 +153,10 @@ export async function createRouter(
   <br/>
   Submitted from: ${reqData.url}
   <br/>
-  Submitted at: ${reqData.createdAt} 
+  Submitted at: ${new Date(reqData.createdAt).toUTCString()} 
   <br/>
   <br/>
-  <a href="${reqData.url}?id=${reqData.feedbackId}">
+  <a href="${entityRoute}?id=${reqData.feedbackId}">
     View on ${appTitle}
   </a>
 </div>`,
