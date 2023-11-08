@@ -70,7 +70,7 @@ export async function createRouter(
 
     reqData.feedbackId = respObj.feedbackId;
     res.status(201).json({
-      message: `${feedbackType} created sucessfully`,
+      message: `${feedbackType} created successfully`,
       data: respObj,
     });
 
