@@ -148,9 +148,12 @@ export async function createRouter(
   Summary: ${reqData.summary}
   <br/>
   <br/>
-  Description: ${reqData.description}
-  <br/>
-  <br/>
+  ${
+    reqData.description?.length! > 0 ?
+    `Description: ${reqData.description}
+    <br/>
+    <br/>`:'\r'
+  }
   Submitted from: ${reqData.url}
   <br/>
   Submitted at: ${new Date(reqData.createdAt).toUTCString()} 
