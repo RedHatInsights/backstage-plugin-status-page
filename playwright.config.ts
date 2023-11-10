@@ -89,7 +89,6 @@ const config = {
         ],
       },
     },
-
     /* Test against branded browsers. */
     {
       name: 'Microsoft Edge',
