@@ -271,6 +271,7 @@ export const LighthouseHomePage = () => {
                       : '#EEE'
                     : 'inherit',
               }),
+              emptyRowsWhenPaging: false,
             }}
             onRowClick={(_, rowData) => {
               if (rowData) {
