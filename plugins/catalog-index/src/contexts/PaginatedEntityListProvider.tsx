@@ -238,6 +238,10 @@ export const PaginatedEntityListProvider = <
           typeof update === 'function' ? update(prevFilters) : update;
         return { ...prevFilters, ...newFilters };
       });
+
+      /* HACK: If the filters are updated, reset the pagination to the first page */
+      setPageCursor('');
+      setPageOptions(prevOptions => ({ ...prevOptions, page: 0}));
     },
     [],
   );
