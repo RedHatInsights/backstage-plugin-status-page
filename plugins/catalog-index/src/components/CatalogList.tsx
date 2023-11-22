@@ -8,7 +8,7 @@ import {
   TablePagination,
   makeStyles,
 } from '@material-ui/core';
-import { EmptyState, Link, Progress } from '@backstage/core-components';
+import { EmptyState, ErrorPanel, Link, Progress } from '@backstage/core-components';
 import { CatalogToolbar } from './CatalogToolbar';
 import { usePaginatedEntityList } from '../contexts/PaginatedEntityListProvider';
 import { plural } from 'pluralize';
@@ -81,13 +81,23 @@ export const CatalogList = ({ dispatchActiveKind }: CatalogListProps) => {
 
 
   const EntitiesList = () => {
+    if (error) {
+      return (
+        <Paper variant="outlined">
+          <ErrorPanel error={error} title={error.message} />
+        </Paper>
+      );
+    }
+
     if (!entities?.length) {
       return (
         <Paper variant="outlined">
           <EmptyState
             missing="data"
-            title={`No ${plural(filters.kind?.value?.toString() ?? '')} found.`}
-            description="No records found for the entered filters."
+            title={`No ${plural(
+              filters.kind?.value?.toString() ?? 'Entity',
+            )} found.`}
+            description="No records found for the selected filters."
             action={
               <Button
                 color="primary"
