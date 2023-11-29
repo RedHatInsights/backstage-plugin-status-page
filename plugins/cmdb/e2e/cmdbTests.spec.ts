@@ -10,7 +10,7 @@ test.describe('BackStage SPAShip Plugin', async () => {
     await Landing.goToSite(process.env.BASE_URL);
     await page.isVisible('css=h1');
     await Landing.openTheExampleWebsiteTab();
-  
+    await expect(page.getByText('CMDB Details')).not.toBeAttached();
   });
   test('Test CMDB card plugin for the configured property', async ({ page }) => {
     const Landing = new LandingPage(page);
