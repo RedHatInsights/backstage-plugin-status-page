@@ -43,12 +43,10 @@ export async function createRouter(
   router.use(express.json());
 
   router.post('/', async (req, res) => {
-    if (req.body.summary === undefined) {
-      return res.status(500).json({ error: 'Summary field??' });
-    }
-
     const reqData: FeedbackModel = req.body;
-
+    if (!reqData.summary || reqData.summary?.trim().length < 1) {
+      return res.status(500).json({ error: 'Summary field empty' });
+    }
     reqData.createdAt = new Date().toISOString();
     reqData.updatedBy = reqData.createdBy;
     reqData.updatedAt = reqData.createdAt;
@@ -57,11 +55,22 @@ export async function createRouter(
       reqData.projectId!,
     );
     const entityRoute = `${req.headers.origin}/catalog/${entityRef?.metadata.namespace}/${entityRef?.kind}/${entityRef?.metadata.name}/feedback`;
-    const respObj = await feedbackDB.storeFeedbackGetUuid(reqData);
 
     const feedbackType =
       reqData.feedbackType === 'FEEDBACK' ? 'Feedback' : 'Issue';
 
+    if (reqData.summary?.length! > 255) {
+      reqData.description = reqData.summary
+        ?.concat('\n\n')
+        .concat(reqData.description || '');
+      console.log(reqData.description);
+
+      reqData.summary = `${feedbackType} reported by ${
+        reqData.createdBy?.split('/')[1]
+      } for ${entityRef?.metadata.title || entityRef?.metadata.name}`;
+    }
+
+    const respObj = await feedbackDB.storeFeedbackGetUuid(reqData);
     if (respObj === 0) {
       return res.status(500).json({
         error: `Failed to create ${feedbackType}`,
@@ -149,10 +158,11 @@ export async function createRouter(
   <br/>
   <br/>
   ${
-    reqData.description?.length! > 0 ?
-    `Description: ${reqData.description}
+    reqData.description?.length! > 0
+      ? `Description: ${reqData.description}
     <br/>
-    <br/>`:'\r'
+    <br/>`
+      : '\r'
   }
   Submitted from: ${reqData.url}
   <br/>
