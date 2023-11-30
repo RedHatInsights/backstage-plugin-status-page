@@ -28,6 +28,7 @@
     "@appdev-platform/backstage-plugin-matomo": "*",
     "@appdev-platform/backstage-plugin-proxy-manager": "*",
     "@appdev-platform/backstage-plugin-spaship": "*",
+    "@appdev-platform/plugin-mock-plugin": "*",
     "@backstage/app-defaults": "^1.4.2",
     "@backstage/catalog-model": "^1.4.1",
     "@backstage/cli": "^0.22.12",

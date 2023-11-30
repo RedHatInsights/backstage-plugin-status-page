@@ -37,6 +37,7 @@ import { SpashipGlobalPage } from '@appdev-platform/backstage-plugin-spaship';
 import { ProxyManagerPage } from '@appdev-platform/backstage-plugin-proxy-manager';
 import { CatalogPage } from '@appdev-platform/backstage-plugin-catalog-index';
 import { GlobalFeedbackPage } from '@appdev-platform/backstage-plugin-feedback';
+import { MockPluginPage } from '@appdev-platform/plugin-mock-plugin';
 
 const app = createApp({
   apis,
@@ -113,6 +114,7 @@ const routes = (
     <Route path="/spaship" element={<SpashipGlobalPage />} />
     <Route path="/proxy-manager" element={<ProxyManagerPage />} />
     <Route path="/feedback" element={<GlobalFeedbackPage />} />
+    <Route path="/mock-plugin" element={<MockPluginPage />} />
   </FlatRoutes>
 );
 
