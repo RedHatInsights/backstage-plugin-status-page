@@ -136,7 +136,7 @@ export const EntityFeedbackPage = () => {
           </Tooltip>
           {pluginConfig['feedback/type'] === 'JIRA' && (
             <Tooltip
-              title="Go to jira project dashboard"
+              title="Go to Jira Project"
               arrow
               TransitionComponent={Zoom}
             >
@@ -146,7 +146,7 @@ export const EntityFeedbackPage = () => {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Go to Jira project
+                Go to Jira Project
               </Button>
             </Tooltip>
           )}

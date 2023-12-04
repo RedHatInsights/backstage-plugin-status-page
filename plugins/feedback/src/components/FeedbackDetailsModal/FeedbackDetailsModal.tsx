@@ -24,7 +24,7 @@ import {
 import { parseEntityRef } from '@backstage/catalog-model';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import React, { useEffect, useState } from 'react';
-import { FeedbackModel } from '../../models/feedback.model';
+import { FeedbackType } from '../../models/feedback.model';
 import { feedbackApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { Progress, useQueryParamState } from '@backstage/core-components';
@@ -77,7 +77,7 @@ export const FeedbackDetailsModal = () => {
   const [queryState, setQueryState] = useQueryParamState<string | undefined>(
     'id',
   );
-  const [modalData, setModalData] = useState<FeedbackModel>();
+  const [modalData, setModalData] = useState<FeedbackType>();
   const [snackbarOpen, setSnackbarOpen] = useState({
     message: '',
     open: false,
@@ -93,20 +93,7 @@ export const FeedbackDetailsModal = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (queryState) {
-      api.getFeedbackById(queryState!).then(resp => {
-        if (resp?.error !== undefined) {
-          setSnackbarOpen({ message: resp.error, open: true });
-        } else {
-          const respData: FeedbackModel = resp?.data!;
-          setModalData(respData);
-        }
-      });
-    }
-  }, [queryState, api]);
-
-  useEffect(() => {
-    if (modalData) {
+    if (modalData && modalData.ticketUrl) {
       api
         .getTicketDetails(
           modalData.feedbackId,
@@ -123,9 +110,7 @@ export const FeedbackDetailsModal = () => {
                 <ListItem>
                   <ListItemText primary="Status" />
                   <ListItemSecondaryAction>
-                    <ListItemText
-                      primary={<Chip variant="default" label={data.status} />}
-                    />
+                    <ListItemText primary={<Chip label={data.status} />} />
                   </ListItemSecondaryAction>
                 </ListItem>
                 <ListItem>
@@ -151,12 +136,19 @@ export const FeedbackDetailsModal = () => {
             ),
           });
           setIsLoading(false);
-        })
-        .catch(() => {
-          setIsLoading(false);
         });
     }
-  }, [modalData, api]);
+    if (!modalData && queryState) {
+      api.getFeedbackById(queryState!).then(resp => {
+        if (resp?.error !== undefined) {
+          setSnackbarOpen({ message: resp.error, open: true });
+        } else {
+          const respData: FeedbackType = resp?.data!;
+          setModalData(respData);
+        }
+      });
+    }
+  }, [modalData, api, queryState]);
 
   const handleSnackbarClose = (
     event?: React.SyntheticEvent,
@@ -206,17 +198,15 @@ export const FeedbackDetailsModal = () => {
       scroll="paper"
     >
       {!modalData ? (
-        <>
-          <Snackbar
-            open={snackbarOpen.open}
-            autoHideDuration={6000}
-            onClose={handleSnackbarClose}
-          >
-            <Alert severity="error" onClose={handleSnackbarClose}>
-              {snackbarOpen.message}
-            </Alert>
-          </Snackbar>
-        </>
+        <Snackbar
+          open={snackbarOpen.open}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+        >
+          <Alert severity="error" onClose={handleSnackbarClose}>
+            {snackbarOpen.message}
+          </Alert>
+        </Snackbar>
       ) : (
         <>
           <DialogTitle className={classes.dialogTitle} id="dialog-title">
@@ -278,7 +268,7 @@ export const FeedbackDetailsModal = () => {
                 ) : null}
               </Grid>
               <Grid item xs={12}>
-                <List disablePadding>
+                <List title="feedback-details-list" disablePadding>
                   <ListItem>
                     <ListItemText
                       primary={
@@ -290,9 +280,7 @@ export const FeedbackDetailsModal = () => {
                     <ListItemSecondaryAction>
                       <ListItemText
                         primary={
-                          <EntityRefLink
-                            entityRef={parseEntityRef(modalData.projectId)}
-                          >
+                          <EntityRefLink entityRef={modalData.projectId}>
                             <Chip
                               clickable
                               variant="outlined"

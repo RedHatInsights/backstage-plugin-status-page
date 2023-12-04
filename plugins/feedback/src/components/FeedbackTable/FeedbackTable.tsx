@@ -10,13 +10,13 @@ import {
   Typography,
   makeStyles,
 } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { parseEntityRef } from '@backstage/catalog-model';
 import {
   EntityRefLink,
   EntityPeekAheadPopover,
 } from '@backstage/plugin-catalog-react';
-import { FeedbackModel } from '../../models/feedback.model';
+import { FeedbackType } from '../../models/feedback.model';
 import { useApi } from '@backstage/core-plugin-api';
 import { feedbackApiRef } from '../../api';
 import {
@@ -30,6 +30,7 @@ import '@material-ui/icons/BugReportOutlined';
 import BugReportOutlined from '@material-ui/icons/BugReportOutlined';
 import Clear from '@material-ui/icons/Clear';
 import Search from '@material-ui/icons/Search';
+import { useDebounce } from 'react-use';
 
 const useStyles = makeStyles((theme: Theme) => ({
   textField: {
@@ -47,7 +48,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
 }) => {
   const projectId = props.projectId ? props.projectId : 'all';
   const api = useApi(feedbackApiRef);
-  const [feedbackData, setFeedbackData] = useState<FeedbackModel[]>([]);
+  const [feedbackData, setFeedbackData] = useState<FeedbackType[]>([]);
   const [tableConfig, setTableConfig] = useState({
     totalFeedbacks: 100,
     page: 1,
@@ -56,7 +57,6 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
   const [queryState, setQueryState] = useQueryParamState<string>('id');
   const [isLoading, setLoading] = useState(true);
   const [searchText, setSearchText] = useState<string>('');
-  const [timer, setTimer] = useState<NodeJS.Timeout>();
   const classes = useStyles();
 
   const columns: TableColumn[] = [
@@ -65,7 +65,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
       field: 'feedbackType',
       title: 'Type',
       render: (row: any) => {
-        const data: FeedbackModel = row;
+        const data: FeedbackType = row;
         return data.feedbackType === 'BUG' ? (
           <BugReportOutlined color="secondary" key={data.feedbackType} />
         ) : (
@@ -77,7 +77,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
       field: 'summary',
       title: 'Summary',
       render: (row: any) => {
-        const data: FeedbackModel = row;
+        const data: FeedbackType = row;
         const getSummary = () => {
           if (data.summary.length > 100) {
             if (data.summary.split(' ').length > 1)
@@ -110,7 +110,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
       field: 'projectId',
       title: 'Project',
       render: (row: any) => {
-        const data: FeedbackModel = row;
+        const data: FeedbackType = row;
         return (
           <EntityRefLink entityRef={data.projectId}>
             {parseEntityRef(data.projectId).name}
@@ -127,7 +127,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
       disableClick: true,
       width: '10%',
       render: (row: any) => {
-        const data: FeedbackModel = row;
+        const data: FeedbackType = row;
         return data.ticketUrl ? (
           <Link target="_blank" rel="noopener noreferrer" href={data.ticketUrl}>
             {data.ticketUrl.split('/').pop()}
@@ -140,14 +140,14 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
     {
       title: 'Tag',
       customSort: (data1: any, data2: any) => {
-        const currentRow: FeedbackModel = data1;
-        const nextRow: FeedbackModel = data2;
+        const currentRow: FeedbackType = data1;
+        const nextRow: FeedbackType = data2;
         return currentRow.tag
           .toLowerCase()
           .localeCompare(nextRow.tag.toLowerCase());
       },
       render: (row: any) => {
-        const data: FeedbackModel = row;
+        const data: FeedbackType = row;
         return (
           <Chip
             label={data.tag}
@@ -159,26 +159,26 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
     },
   ];
 
-  useEffect(() => {
-    setTimer(
-      setTimeout(() => {
-        api
-          .getAllFeedbacks(1, tableConfig.pageSize, projectId, searchText)
-          .then(data => {
-            setFeedbackData(data.data);
-            setTableConfig({
-              totalFeedbacks: data.count,
-              page: data.currentPage,
-              pageSize: data.pageSize,
-            });
-            setLoading(false);
-          })
-          .catch(() => {
-            setLoading(false);
+  useDebounce(
+    () => {
+      api
+        .getAllFeedbacks(1, tableConfig.pageSize, projectId, searchText)
+        .then(data => {
+          setFeedbackData(data.data);
+          setTableConfig({
+            totalFeedbacks: data.count,
+            page: data.currentPage,
+            pageSize: data.pageSize,
           });
-      }, 400),
-    );
-  }, [projectId, api, tableConfig.pageSize, searchText]);
+          setLoading(false);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    },
+    400,
+    [projectId, api, tableConfig.pageSize, searchText],
+  );
 
   async function handlePageChange(newPage: number, pageSize: number) {
     if (newPage > tableConfig.page) {
@@ -221,7 +221,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
     rowData?: any,
   ) {
     event?.preventDefault();
-    const data: FeedbackModel = rowData;
+    const data: FeedbackType = rowData;
     if (!queryState) setQueryState(data.feedbackId);
   }
 
@@ -229,7 +229,6 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
     event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>,
   ) {
     const _searchText = event.target.value;
-    if (timer) clearTimeout(timer);
     if (_searchText.trim().length !== 0) return setSearchText(_searchText);
     return setSearchText('');
   }
@@ -254,9 +253,7 @@ export const FeedbackTable: React.FC<{ projectId?: string }> = (props: {
           endAdornment: (
             <Tooltip title="Clear search" arrow>
               <IconButton
-                onClick={() => {
-                  setSearchText('');
-                }}
+                onClick={() => setSearchText('')}
                 children={<Clear />}
               />
             </Tooltip>

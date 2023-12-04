@@ -3,7 +3,7 @@ export enum FeedbackCategory {
   FEEDBACK = 'FEEDBACK',
 }
 
-export type FeedbackModel = {
+export type FeedbackType = {
   feedbackId: string;
   summary: string;
   projectId: string;

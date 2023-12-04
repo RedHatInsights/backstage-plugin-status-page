@@ -199,6 +199,7 @@ export const CreateFeedbackModal = React.forwardRef(
                   value="BUG"
                   checked={feedbackType === 'BUG'}
                   onChange={handleCategoryClick}
+                  label="Bug"
                   control={
                     <Radio
                       icon={<BugReportOutlined />}
@@ -206,11 +207,11 @@ export const CreateFeedbackModal = React.forwardRef(
                       color="secondary"
                     />
                   }
-                  label="Bug"
                 />
                 <FormControlLabel
                   value="FEEDBACK"
                   onChange={handleCategoryClick}
+                  label="Feedback"
                   control={
                     <Radio
                       icon={<SmsOutlined />}
@@ -218,7 +219,6 @@ export const CreateFeedbackModal = React.forwardRef(
                       color="primary"
                     />
                   }
-                  label="Feedback"
                 />
               </RadioGroup>
             </Grid>
