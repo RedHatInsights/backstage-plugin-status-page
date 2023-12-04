@@ -4,7 +4,7 @@ import {
   DiscoveryApi,
   IdentityApi,
 } from '@backstage/core-plugin-api';
-import { FeedbackModel } from '../models/feedback.model';
+import { FeedbackType } from '../models/feedback.model';
 
 export const feedbackApiRef = createApiRef<FeedbackAPI>({
   id: 'plugin.feedback.service',
@@ -17,13 +17,13 @@ type Options = {
 };
 
 type feedbackResp = {
-  data?: FeedbackModel;
+  data?: FeedbackType;
   message?: string;
   error?: string;
 };
 
 type feedbacksResp = {
-  data: FeedbackModel[];
+  data: FeedbackType[];
   count: number;
   currentPage: number;
   pageSize: number;
