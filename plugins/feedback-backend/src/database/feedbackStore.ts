@@ -8,11 +8,11 @@ import short from 'short-uuid';
 import { Logger } from 'winston';
 
 export interface FeedbackStore {
-  getFeedbackByUuid(uuid: String): Promise<FeedbackModel>;
+  getFeedbackByUuid(uuid: string): Promise<FeedbackModel>;
 
   storeFeedbackGetUuid(
     data: FeedbackModel,
-  ): Promise<{ feedbackId: String; projectId: string } | 0>;
+  ): Promise<{ feedbackId: string; projectId: string } | 0>;
 
   getAllFeedbacks(
     projectId: string,
@@ -20,6 +20,10 @@ export interface FeedbackStore {
     pageSize: number,
     searchKey: string,
   ): Promise<{ data: FeedbackModel[]; count: number }>;
+
+  checkFeedbackId(feedbackId: string): Promise<boolean>;
+  updateFeedback(data: FeedbackModel): Promise<FeedbackModel | undefined>;
+  deleteFeedbackById(id: string): Promise<number>;
 }
 
 const migrationsDir = resolvePackagePath(
