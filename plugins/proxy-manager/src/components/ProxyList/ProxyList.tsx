@@ -75,7 +75,13 @@ export const ProxyList = () => {
         [...proxyBackup].filter((proxy: any) => {
           if (
             proxy?.baseUrl?.toLowerCase().includes(query.toLowerCase()) ||
-            proxy?.upstreamHost?.toLowerCase().includes(query.toLowerCase())
+            proxy?.upstreamHost?.toLowerCase().includes(query.toLowerCase()) ||
+            proxy?.authenticationType?.toLowerCase().includes(query.toLowerCase()) ||
+            proxy?.createdBy?.toLowerCase().includes(query.toLowerCase()) ||
+            ("internal".includes(query.toLowerCase()) && proxy?.isInternal) ||
+            ("external".includes(query.toLowerCase()) && !proxy?.isInternal) ||
+            ("enabled".includes(query.toLowerCase()) && proxy?.isActive) ||
+            ("disabled".includes(query.toLowerCase()) && !proxy?.isActive)
           ) {
             return true;
           } else return false;
