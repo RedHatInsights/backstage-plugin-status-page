@@ -1,4 +1,4 @@
-enum FeedbackCategory {
+export enum FeedbackCategory {
   BUG = 'BUG',
   FEEDBACK = 'FEEDBACK',
 }
