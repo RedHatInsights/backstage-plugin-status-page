@@ -22,18 +22,16 @@
     "prettier:check": "prettier --check .",
     "create-plugin": "backstage-cli create-plugin --scope appdev-platform",
     "new": "backstage-cli new --scope appdev-platform",
-    "allure:report": "allure generate allure-results --clean -o allure-report"
-  },
-  "workspaces": {
-    "packages": [
-      "packages/*",
-      "plugins/*"
-    ]
+    "allure:report": "allure generate allure-results --clean -o allure-report",
+    "release": "multi-semantic-release"
   },
   "devDependencies": {
     "@backstage/cli": "^0.22.12",
     "@playwright/test": "^1.34.3",
     "@reportportal/agent-js-playwright": "5.1.2",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semrel-extra/npm": "^1.2.2",
     "@spotify/prettier-config": "^12.0.0",
     "@types/cypress": "^1.1.3",
     "allure-commandline": "^2.17.2",
@@ -41,9 +39,114 @@
     "concurrently": "^6.0.0",
     "dotenv": "^16.1.4",
     "lerna": "^4.0.0",
+    "multi-semantic-release": "^3.0.2",
     "node-gyp": "^9.0.0",
     "prettier": "^2.3.2",
     "typescript": "~4.6.4"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*",
+      "plugins/*"
+    ]
+  },
+  "release": {
+    "branches": "main",
+    "ignorePrivatePackages": true,
+    "plugins": [
+      [
+        "@semantic-release/commit-analyzer",
+        {
+          "preset": "conventionalCommits",
+          "releaseRules": [
+            {
+              "type": "docs",
+              "release": "patch"
+            },
+            {
+              "type": "refactor",
+              "release": "patch"
+            },
+            {
+              "type": "perf",
+              "release": "minor"
+            },
+            {
+              "type": "no-release",
+              "release": false
+            },
+            {
+              "type": "chore",
+              "release": "patch"
+            }
+          ]
+        }
+      ],
+      [
+        "@semantic-release/release-notes-generator",
+        {
+          "preset": "conventionalCommits",
+          "presetConfig": {
+            "types": [
+              {
+                "type": "feat",
+                "section": "Features"
+              },
+              {
+                "type": "fix",
+                "section": "Bug Fixes"
+              },
+              {
+                "type": "docs",
+                "section": "Documentation"
+              },
+              {
+                "type": "style",
+                "section": "Other changes"
+              },
+              {
+                "type": "refactor",
+                "section": "Other changes"
+              },
+              {
+                "type": "perf",
+                "section": "Other changes"
+              },
+              {
+                "type": "test",
+                "section": "Other changes"
+              },
+              {
+                "type": "chore",
+                "section": "Other changes"
+              }
+            ]
+          },
+          "writerOpts": {
+            "commitsSort": [
+              "subject",
+              "scope"
+            ]
+          }
+        }
+      ],
+      [
+        "@semantic-release/changelog",
+        {
+          "changelogTitle": "# Changelog"
+        }
+      ],
+      "@semrel-extra/npm",
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "CHANGELOG.md",
+            "package.json"
+          ]
+        }
+      ]
+    ]
   },
   "resolutions": {
     "@types/react": "^17",
