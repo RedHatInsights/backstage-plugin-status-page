@@ -171,7 +171,7 @@ __metadata:
     axios: ^1.5.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    knex: ^2.5.1
+    knex: ^3.1.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
     nodemailer: ^6.9.5
@@ -4844,13 +4844,13 @@ __metadata:
   linkType: hard
 
 "@codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0":
-  version: 6.22.2
-  resolution: "@codemirror/view@npm:6.22.2"
+  version: 6.22.3
+  resolution: "@codemirror/view@npm:6.22.3"
   dependencies:
     "@codemirror/state": ^6.1.4
     style-mod: ^4.1.0
     w3c-keyname: ^2.2.4
-  checksum: a56f5d1f5cf8f3de290e912c96c57406cceb33e99d3463bfce1ffda5f6bd709ab75f3016d289f808bb01d797a1a484f001bf787a15002ffdf7579e48e3bd5c09
+  checksum: 89d011afa87b754a4207d18393109c1972c9403762d288711e96c77f51c693a825431c8e35c26268a6eb0889f7184602080d8dcf27fa21354a87dff80636d971
   languageName: node
   linkType: hard
 
@@ -22375,7 +22375,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex@npm:^2.0.0, knex@npm:^2.3.0, knex@npm:^2.5.1":
+"knex@npm:^2.0.0, knex@npm:^2.3.0":
   version: 2.5.1
   resolution: "knex@npm:2.5.1"
   dependencies:
@@ -22414,7 +22414,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"knex@npm:^3.0.0":
+"knex@npm:^3.0.0, knex@npm:^3.1.0":
   version: 3.1.0
   resolution: "knex@npm:3.1.0"
   dependencies:
@@ -28213,11 +28213,11 @@ __metadata:
   linkType: hard
 
 "react-hook-form@npm:^7.12.2":
-  version: 7.49.1
-  resolution: "react-hook-form@npm:7.49.1"
+  version: 7.49.2
+  resolution: "react-hook-form@npm:7.49.2"
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18
-  checksum: df39362ef4a5030cfe00a8a7b202f235324561b3b69c0af92214ef967289fdf19ff7a433a007ab5ab4c83e8c5dc52d76f2553d92915c18c246416ab545483ab8
+  checksum: e982a4638d474bfd156a7d4ebb098065944895f62d8e0098195a2e0030106debea7262ddd58f920797f3b651fdc2a47831f89be0c7e0338c9cb8430fd3b202f1
   languageName: node
   linkType: hard
 

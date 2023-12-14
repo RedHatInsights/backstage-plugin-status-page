@@ -19,15 +19,12 @@ export class NodeMailer {
     this.transportConfig = createTransport({
       host: config.getString('feedback.integrations.email.host'),
       port: config.getOptionalNumber('feedback.integrations.email.port') ?? 587,
-      auth:
-        {
-          user: config.getOptionalString(
-            'feedback.integrations.email.auth.user',
-          ),
-          pass: config.getOptionalString(
-            'feedback.integrations.email.auth.password',
-          ),
-        } ?? undefined,
+      auth: {
+        user: config.getOptionalString('feedback.integrations.email.auth.user'),
+        pass: config.getOptionalString(
+          'feedback.integrations.email.auth.password',
+        ),
+      },
       secure: useSecure,
       tls: {
         ca: customCACert,
