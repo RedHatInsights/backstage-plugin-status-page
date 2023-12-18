@@ -80,13 +80,22 @@ describe('JiraCard', () => {
       ),
     ).toBeInTheDocument();
     expect(await rendered.findByText(/Add basic test/)).toBeInTheDocument();
-    expect(await rendered.getByAltText(/Page/)).toHaveAttribute(
+    expect(rendered.getByAltText(/Page/)).toHaveAttribute(
       'src',
       expect.stringContaining('mocked_icon_filename.gif'),
     );
     expect(
       await rendered.findByText(/filter issue status/),
     ).toBeInTheDocument();
+    expect(
+      rendered.getByRole('row', {
+        name: 'Key Summary Priority Status Created Updated Assignee',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      rendered.getByText(/Backstage Performance Issues/),
+    ).toBeInTheDocument();
+    expect(rendered.getByText(/John Doe/)).toBeInTheDocument();
   });
 
   it('should display board and component data whitout issue filter', async () => {

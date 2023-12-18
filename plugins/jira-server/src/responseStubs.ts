@@ -143,9 +143,38 @@ export const searchResponseStub = {
       key: '10003',
       fields: {
         issuetype: {
-          id: 1,
-          name: 'Task',
+          id: '1',
+          name: 'Epic',
+        },
+        summary: 'Backstage Performance Issues',
+        created: '2023-11-30T06:27:45.000+0000',
+        assignee: {
+          name: 'johndoe',
+          key: 'johndoe',
+          emailAddress: 'johndoe@example.com',
+          avatarUrls: {
+            '48x48':
+              'https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/5f42b4ae347294003e51f83e/1d5fed69-e36e-401b-9dd1-9687693c8d91/48',
+            '24x24':
+              'https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/5f42b4ae347294003e51f83e/1d5fed69-e36e-401b-9dd1-9687693c8d91/24',
+            '16x16':
+              'https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/5f42b4ae347294003e51f83e/1d5fed69-e36e-401b-9dd1-9687693c8d91/16',
+            '32x32':
+              'https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/5f42b4ae347294003e51f83e/1d5fed69-e36e-401b-9dd1-9687693c8d91/32',
+          },
+          displayName: 'John Doe',
+        },
+        priority: {
           iconUrl: 'http://example.com/avatar.jpg',
+          name: 'Critical',
+          id: '2',
+        },
+        updated: '2023-12-15T07:51:26.000+0000',
+        status: {
+          description:
+            'Work has been reviewed as in-scope for the team. Implies receipt of the work, but not necessarily commitment.',
+          iconUrl: 'https://backstage-test.atlassian.net/',
+          name: 'Backlog',
         },
       },
     },
