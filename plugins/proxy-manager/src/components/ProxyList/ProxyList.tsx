@@ -76,12 +76,14 @@ export const ProxyList = () => {
           if (
             proxy?.baseUrl?.toLowerCase().includes(query.toLowerCase()) ||
             proxy?.upstreamHost?.toLowerCase().includes(query.toLowerCase()) ||
-            proxy?.authenticationType?.toLowerCase().includes(query.toLowerCase()) ||
+            proxy?.authenticationType
+              ?.toLowerCase()
+              .includes(query.toLowerCase()) ||
             proxy?.createdBy?.toLowerCase().includes(query.toLowerCase()) ||
-            ("internal".includes(query.toLowerCase()) && proxy?.isInternal) ||
-            ("external".includes(query.toLowerCase()) && !proxy?.isInternal) ||
-            ("enabled".includes(query.toLowerCase()) && proxy?.isActive) ||
-            ("disabled".includes(query.toLowerCase()) && !proxy?.isActive)
+            ('internal'.includes(query.toLowerCase()) && proxy?.isInternal) ||
+            ('external'.includes(query.toLowerCase()) && !proxy?.isInternal) ||
+            ('enabled'.includes(query.toLowerCase()) && proxy?.isActive) ||
+            ('disabled'.includes(query.toLowerCase()) && !proxy?.isActive)
           ) {
             return true;
           } else return false;
@@ -112,7 +114,7 @@ export const ProxyList = () => {
                 <Search />
               </div>
             </div>
-            <Typography variant="body1">
+            <Typography component="div" variant="body1">
               <Table>
                 <TableHead>
                   <TableRow
@@ -120,7 +122,12 @@ export const ProxyList = () => {
                   >
                     {tableColumns?.map(name => {
                       return (
-                        <TableCell style={{ color: 'white' }}>{name}</TableCell>
+                        <TableCell
+                          key={`${name}-cell`}
+                          style={{ color: 'white' }}
+                        >
+                          {name}
+                        </TableCell>
                       );
                     })}
                   </TableRow>
@@ -173,7 +180,7 @@ export const ProxyList = () => {
                             </TableCell>
                           </TableRow>
                         );
-                        else return;
+                      else return;
                     })
                   ) : (
                     <TableRow>
