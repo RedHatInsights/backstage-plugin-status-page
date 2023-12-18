@@ -9,7 +9,7 @@ import { ServiceDetailsContent } from './ServiceDetailsContent';
 import { getAppCodeFromEntity } from '../../utils/getAppCodeFromEntity';
 import { useServiceDetails } from '../../hooks';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { getServiceNowDashboardUrl } from '../../utils/getServiceNowDashboardUrl';
+import { getServiceNowFormUrl } from '../../utils/getServiceNowFormUrl';
 import { CardSkeleton } from '../CardSkeleton';
 import { useServiceUser } from '../../hooks/useServiceUser';
 import { iff } from '../../utils/ternaryConditional';
@@ -23,10 +23,9 @@ export const ServiceDetailsCard = (props: Props) => {
   const configApi = useApi(configApiRef);
   const serviceNowHost = configApi.getOptionalString('cmdb.host');
   const userNamespace = configApi.getOptionalString('cmdb.userNamespace');
+  const appCode = getAppCodeFromEntity(entity);
 
-  const { loading, serviceDetails } = useServiceDetails(
-    getAppCodeFromEntity(entity),
-  );
+  const { loading, serviceDetails } = useServiceDetails(appCode);
 
   const { userInfo: owner } = useServiceUser(serviceDetails?.owned_by?.value);
   const { userInfo: delegate } = useServiceUser(
@@ -39,10 +38,10 @@ export const ServiceDetailsCard = (props: Props) => {
     }
     // eslint-disable-next-line consistent-return
     return {
-      link: getServiceNowDashboardUrl(serviceNowHost, serviceDetails?.sys_id),
+      link: getServiceNowFormUrl(serviceNowHost, appCode),
       title: 'View on ServiceNow',
     };
-  }, [serviceDetails?.sys_id, serviceNowHost]);
+  }, [appCode, serviceNowHost]);
 
   return (
     <InfoCard
