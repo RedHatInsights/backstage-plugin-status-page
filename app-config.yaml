@@ -126,10 +126,12 @@ proxyManager:
   apiBaseUrl: ${PROXY_MANAGER_API_BASE_URL}
 
 feedback:
+  baseEntityRef: ${FEEDBACK_PLUGIN_BASE_ENTITY} # for global feedbacks
+  summaryLimit: ${FEEDBACK_PLUGIN_SUMMARY_LIMIT}
   integrations:
     jira:
-      - host: ${FEEDBACK_JIRA_HOST}
-        token: ${FEEDBACK_JIRA_TOKEN}
+      - host: ${JIRA_URL}
+        token: ${JIRA_TOKEN}
 
     email:
       host: ${EMAIL_HOST}

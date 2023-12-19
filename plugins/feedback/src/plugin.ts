@@ -5,15 +5,20 @@ import {
   discoveryApiRef,
   configApiRef,
   identityApiRef,
+  createComponentExtension,
 } from '@backstage/core-plugin-api';
 
-import { rootRouteRef } from './routes';
+import { entityRootRouteRef, rootRouteRef, viewDocsRouteRef } from './routes';
 import { FeedbackAPI, feedbackApiRef } from './api';
 
 export const feedbackPlugin = createPlugin({
   id: 'feedback',
   routes: {
     root: rootRouteRef,
+    entityRoot: entityRootRouteRef
+  },
+  externalRoutes:{
+    viewDocs: viewDocsRouteRef
   },
   apis: [
     createApiFactory({
@@ -44,6 +49,18 @@ export const EntityFeedbackPage = feedbackPlugin.provide(
     name: 'EntityFeedbackPage',
     component: () =>
       import('./components/EntityFeedbackPage').then(m => m.EntityFeedbackPage),
-    mountPoint: rootRouteRef,
+    mountPoint: entityRootRouteRef,
+  }),
+);
+
+export const OpcFeedbackComponent = feedbackPlugin.provide(
+  createComponentExtension({
+    name: 'OpcFeedbackComponent',
+    component: {
+      lazy: () =>
+        import('./components/OpcFeedbackComponent').then(
+          m => m.OpcFeedbackComponent,
+        ),
+    },
   }),
 );
