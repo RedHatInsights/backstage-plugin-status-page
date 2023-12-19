@@ -36,7 +36,11 @@ import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/
 import { SpashipGlobalPage } from '@appdev-platform/backstage-plugin-spaship';
 import { ProxyManagerPage } from '@appdev-platform/backstage-plugin-proxy-manager';
 import { CatalogPage } from '@appdev-platform/backstage-plugin-catalog-index';
-import { GlobalFeedbackPage } from '@appdev-platform/backstage-plugin-feedback';
+import {
+  GlobalFeedbackPage,
+  OpcFeedbackComponent,
+  feedbackPlugin,
+} from '@appdev-platform/backstage-plugin-feedback';
 import { MockPluginPage } from '@appdev-platform/plugin-mock-plugin';
 
 const app = createApp({
@@ -54,6 +58,9 @@ const app = createApp({
     });
     bind(orgPlugin.externalRoutes, {
       catalogIndex: catalogPlugin.routes.catalogIndex,
+    });
+    bind(feedbackPlugin.externalRoutes, {
+      viewDocs: techdocsPlugin.routes.root
     });
   },
   featureFlags: [
@@ -124,6 +131,7 @@ export default app.createRoot(
     <OAuthRequestDialog />
     <AppRouter>
       <Root>{routes}</Root>
+      <OpcFeedbackComponent />
     </AppRouter>
   </>,
 );

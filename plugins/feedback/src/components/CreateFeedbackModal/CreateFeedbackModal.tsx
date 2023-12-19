@@ -22,7 +22,7 @@ import CloseRounded from '@material-ui/icons/CloseRounded';
 import SmsOutlined from '@material-ui/icons/SmsOutlined';
 import SmsTwoTone from '@material-ui/icons/SmsTwoTone';
 import { FeedbackCategory } from '../../models/feedback.model';
-import { useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { feedbackApiRef } from '../../api';
 import BugReportTwoToneIcon from '@material-ui/icons/BugReportTwoTone';
 
@@ -79,6 +79,8 @@ export const CreateFeedbackModal = React.forwardRef(
     const api = useApi(feedbackApiRef);
     const [feedbackType, setFeedbackType] = useState('BUG');
     const [selectedTag, setSelectedTag] = useState(issueTags[0]);
+    const app = useApi(configApiRef);
+    const summaryLimit = app.getOptionalNumber('feedback.summaryLimit') || 240;
 
     const [summary, setSummary] = useState({
       value: '',
@@ -137,12 +139,12 @@ export const CreateFeedbackModal = React.forwardRef(
             errorMessage: 'Provide summary',
             error: true,
           });
-        } else if (_summary.length > 255) {
+        } else if (_summary.length > summaryLimit) {
           return setSummary({
             ...summary,
             value: _summary,
             error: true,
-            errorMessage: 'Summary should be less than 255 characters.',
+            errorMessage: `Summary should be less than ${summaryLimit} characters.`,
           });
         }
         return setSummary({ ...summary, value: _summary, error: false });
@@ -167,7 +169,7 @@ export const CreateFeedbackModal = React.forwardRef(
         return setSummary({
           ...summary,
           value: event.target.value.trim(),
-          error: event.target.value.trim().length > 255,
+          error: event.target.value.trim().length > summaryLimit,
         });
       }
       if (event.target.id === 'description' && event.target.value.length > 0) {
@@ -267,7 +269,7 @@ export const CreateFeedbackModal = React.forwardRef(
                 helperText={
                   summary.error
                     ? summary.errorMessage
-                    : `${summary.value.length}/255`
+                    : `${summary.value.length}/${summaryLimit}`
                 }
                 required
               />
