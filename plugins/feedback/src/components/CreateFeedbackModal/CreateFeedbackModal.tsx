@@ -25,6 +25,7 @@ import { FeedbackCategory } from '../../models/feedback.model';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { feedbackApiRef } from '../../api';
 import BugReportTwoToneIcon from '@material-ui/icons/BugReportTwoTone';
+import { Alert } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -71,7 +72,8 @@ export const CreateFeedbackModal = React.forwardRef(
     props: {
       projectEntity: string;
       userEntity: string;
-      handleModalCloseFn: any;
+      serverType: string;
+      handleModalCloseFn: (respObj?: any) => void;
     },
     ref,
   ) => {
@@ -181,7 +183,7 @@ export const CreateFeedbackModal = React.forwardRef(
     return (
       <Paper innerRef={ref}>
         <DialogTitle>
-          {feedbackType === 'FEEDBACK' ? 'Add New Feedback' : 'Create a Issue'}
+          {`Feedback for ${projectEntity.split('/').pop()}`}
           {props.handleModalCloseFn ? (
             <IconButton
               aria-label="close"
@@ -303,6 +305,14 @@ export const CreateFeedbackModal = React.forwardRef(
             {feedbackType === 'FEEDBACK' ? 'Send Feedback' : 'Report Bug'}
           </Button>
         </DialogActions>
+        {props.serverType.toLowerCase() !== 'mail' &&
+          !selectedTag.match(/(Excellent|Good)/g) && (
+            <Alert severity="warning" variant="outlined">
+              Note: By submitting&nbsp;
+              {feedbackType === 'FEEDBACK' ? 'feedback' : 'bug'} with this tag,
+              it will create an issue in {props.serverType.toLowerCase()}
+            </Alert>
+          )}
       </Paper>
     );
   },

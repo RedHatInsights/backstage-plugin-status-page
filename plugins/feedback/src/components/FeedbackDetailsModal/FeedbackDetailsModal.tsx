@@ -28,12 +28,13 @@ import { FeedbackType } from '../../models/feedback.model';
 import { feedbackApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { Progress, useQueryParamState } from '@backstage/core-components';
+import { Alert } from '@material-ui/lab';
 import SmsOutlined from '@material-ui/icons/SmsOutlined';
 import BugReportOutlined from '@material-ui/icons/BugReportOutlined';
 import CloseRounded from '@material-ui/icons/CloseRounded';
 import ArrowForwardRounded from '@material-ui/icons/ArrowForwardRounded';
-import { Alert } from '@material-ui/lab';
-import { ExpandLessRounded, ExpandMoreRounded } from '@material-ui/icons';
+import ExpandLessRounded from '@material-ui/icons/ExpandLessRounded';
+import ExpandMoreRounded from '@material-ui/icons/ExpandMoreRounded';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -91,6 +92,7 @@ export const FeedbackDetailsModal = () => {
   }>({ status: null, assignee: null, avatarUrls: null, element: null });
 
   const [isLoading, setIsLoading] = useState(true);
+  const [expandDescription, setExpandDescription] = useState(false);
 
   useEffect(() => {
     if (modalData && modalData.ticketUrl) {
@@ -137,6 +139,8 @@ export const FeedbackDetailsModal = () => {
           });
           setIsLoading(false);
         });
+    } else {
+      setIsLoading(false);
     }
     if (!modalData && queryState) {
       api.getFeedbackById(queryState!).then(resp => {
@@ -185,8 +189,6 @@ export const FeedbackDetailsModal = () => {
     }
     return str;
   };
-
-  const [expandDescription, setExpandDescription] = useState(false);
 
   return (
     <Dialog

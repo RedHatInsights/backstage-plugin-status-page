@@ -3,6 +3,7 @@ import { CreateFeedbackModal } from './CreateFeedbackModal';
 import { FeedbackAPI, feedbackApiRef } from '../../api';
 import React from 'react';
 import { fireEvent } from '@testing-library/react';
+import { mockEntity } from '../../mocks';
 
 describe('Create Feedback Modal', () => {
   const feedbackApi: Partial<FeedbackAPI> = {
@@ -21,6 +22,7 @@ describe('Create Feedback Modal', () => {
           handleModalCloseFn={handleModalClose}
           projectEntity={PROJECT_ID}
           userEntity={USER_ID}
+          serverType={mockEntity.metadata.annotations?.['feedback/type']!}
         />
       </TestApiProvider>,
     );
@@ -32,14 +34,14 @@ describe('Create Feedback Modal', () => {
 
   it('should render the modal title', async () => {
     const rendered = await render();
-    expect(rendered.getByText('Create a Issue')).toBeInTheDocument();
+    expect(rendered.getByText(`Feedback for ${PROJECT_ID.split('/').pop()}`)).toBeInTheDocument();
   });
 
-  test('BUG should be selected ', async () => {
+  test('BUG should be selected', async () => {
     const rendered = await render();
     const tags = rendered.getAllByRole('radio') as any;
-    expect(tags[0]['checked']).toBeTruthy();
-    expect(tags[1]['checked']).not.toBeTruthy();
+    expect(tags[0].checked).toBeTruthy();
+    expect(tags[1].checked).not.toBeTruthy();
   });
 
   it('should render all tags for bug', async () => {
@@ -100,7 +102,7 @@ describe('Create Feedback Modal', () => {
     const rendered = await render();
     fireEvent.click(rendered.getByRole('radio', { name: 'Feedback' }));
 
-    expect(rendered.getByText('Add New Feedback')).toBeInTheDocument();
+    expect(rendered.getByText(`Feedback for ${PROJECT_ID.split('/').pop()}`)).toBeInTheDocument();
   });
 
   it('should render all tags for feedback', async () => {
