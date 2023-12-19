@@ -42,6 +42,7 @@ export const EntityFeedbackPage = () => {
   const [modalProps, setModalProps] = useState<{
     projectEntity: string;
     userEntity: string;
+    serverType: string
   }>();
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -72,8 +73,9 @@ export const EntityFeedbackPage = () => {
   async function handleModalOpen() {
     const userEntity = (await user.getBackstageIdentity()).userEntityRef;
     setModalProps({
-      projectEntity,
-      userEntity,
+      projectEntity:projectEntity,
+      userEntity: userEntity,
+      serverType: pluginConfig['feedback/type']
     });
 
     return setModalOpen(true);
