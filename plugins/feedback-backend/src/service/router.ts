@@ -93,7 +93,10 @@ export async function createRouter(
       ).email;
       const appTitle = config.getString('app.title');
 
-      if (type.toUpperCase() === 'JIRA') {
+      if (
+        type.toUpperCase() === 'JIRA' &&
+        !reqData.tag?.match(/(Excellent|Good)/g)
+      ) {
         let host = annotations['feedback/host'];
 
         // if host is undefined then
