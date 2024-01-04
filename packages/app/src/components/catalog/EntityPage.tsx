@@ -70,10 +70,11 @@ import {
 import {
   ServiceDetailsCard,
   isAppCodeAvailable,
+  InfraDetailsPage,
 } from '@appdev-platform/backstage-plugin-cmdb';
 import { LighthousePage } from '@appdev-platform/backstage-plugin-lighthouse';
 
-import {  
+import {
   ContactDetailsCard,
   isContactDetailsAvailable,
 } from '@appdev-platform/backstage-plugin-contact-details';
@@ -141,6 +142,18 @@ const entityWarningContent = (
     </EntitySwitch>
   </>
 );
+
+const infraDetailsContent = (
+  <EntitySwitch>
+    <EntitySwitch.Case if={isAppCodeAvailable}>
+      <InfraDetailsPage />
+    </EntitySwitch.Case>
+    <EntitySwitch.Case>
+      <MissingAnnotationEmptyState annotation={['servicenow.com/app-code']} />
+    </EntitySwitch.Case>
+  </EntitySwitch>
+);
+
 const jiraContent = (
   <>
     <EntitySwitch>
@@ -199,6 +212,10 @@ const serviceEntityPage = (
       {overviewContent}
     </EntityLayout.Route>
 
+    <EntityLayout.Route path="/infra" title="Infra Details">
+      {infraDetailsContent}
+    </EntityLayout.Route>
+
     <EntityLayout.Route path="/ci-cd" title="CI/CD">
       {cicdContent}
     </EntityLayout.Route>
@@ -244,6 +261,10 @@ const websiteEntityPage = (
   <EntityLayout>
     <EntityLayout.Route path="/" title="Overview">
       {overviewContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/infra" title="Infra Details">
+      {infraDetailsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/ci-cd" title="CI/CD">
@@ -298,6 +319,10 @@ const defaultEntityPage = (
 
     <EntityLayout.Route path="/docs" title="Docs">
       {techdocsContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/infra" title="Infra Details">
+      {infraDetailsContent}
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/feedback" title="Feedback">

@@ -19,6 +19,7 @@ jest.mock('../../hooks/useServiceUser', () => ({
 const mockServiceNowApi: jest.Mocked<typeof serviceNowApiRef.T> = {
   getBusinessApplication: jest.fn(),
   getUserDetails: jest.fn(),
+  getInfraDetails: jest.fn(),
 };
 const configApi: ConfigApi = new ConfigReader({});
 
@@ -51,7 +52,7 @@ describe('<ServiceDetailsCard>', () => {
         </EntityProvider>
       </TestApiProvider>,
     );
-  }
+  };
 
   it('should render', async () => {
     const component = await renderServiceDetailsCard();

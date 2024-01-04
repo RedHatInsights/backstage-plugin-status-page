@@ -21,3 +21,11 @@ export type ServiceNowUser = {
   name: string;
   email: string;
 };
+
+export type InfraDetails = {
+  'parent.sys_class_name': string;
+  'parent.name': string;
+  u_display: string;
+  'child.name': string;
+  sys_updated_on: string;
+};

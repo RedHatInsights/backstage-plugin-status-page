@@ -2,6 +2,7 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import {
   ServiceNowApi,
   ServiceNowCMDBResponse,
+  ServiceNowInfraResponse,
   ServiceNowUserResponse,
 } from './ServiceNowApi';
 
@@ -13,6 +14,7 @@ import {
 export class ServiceNowClient implements ServiceNowApi {
   private readonly cmdbTableName = 'cmdb_ci_business_app';
   private readonly userTableName = 'sys_user';
+  private readonly cmdbCiRelTableName = 'cmdb_rel_ci';
 
   constructor(private discoveryApi: DiscoveryApi) {}
 
@@ -46,5 +48,26 @@ export class ServiceNowClient implements ServiceNowApi {
     }
 
     return (await response.json()) as ServiceNowUserResponse;
+  }
+
+  async getInfraDetails(appCode: string) {
+    const apiUrl = new URL(
+      `${this.cmdbCiRelTableName}`,
+      await this.getBaseUrl(),
+    );
+    apiUrl.searchParams.append(
+      'sysparm_query',
+      `parent.u_business_app.u_application_idSTARTSWITH${appCode}^type.nameSTARTSWITHHosted on::Hosts^GROUPBYchild.name`,
+    );
+    apiUrl.searchParams.append(
+      'sysparm_fields',
+      'parent.name,parent.sys_class_name,u_display,child.name,sys_updated_on',
+    );
+    const response = await fetch(apiUrl.toString());
+    if (response.status >= 400 && response.status < 600) {
+      throw new Error('Failed to fetch user details');
+    }
+    
+    return (await response.json()) as ServiceNowInfraResponse;
   }
 }
