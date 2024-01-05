@@ -1,5 +1,5 @@
 import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
-import { BusinessApplication, ServiceNowUser } from './types';
+import { BusinessApplication, InfraDetails, ServiceNowUser } from './types';
 
 /** @public */
 export const serviceNowApiRef: ApiRef<ServiceNowApi> = createApiRef({
@@ -15,6 +15,8 @@ export type ServiceNowApi = {
   getBusinessApplication: (appCode: string) => Promise<ServiceNowCMDBResponse>;
 
   getUserDetails: (userId: string) => Promise<ServiceNowUserResponse>;
+
+  getInfraDetails: (appCode: string) => Promise<ServiceNowInfraResponse>;
 };
 
 export type ServiceNowCMDBResponse = {
@@ -22,4 +24,8 @@ export type ServiceNowCMDBResponse = {
 };
 export type ServiceNowUserResponse = {
   result: ServiceNowUser;
+};
+
+export type ServiceNowInfraResponse = {
+  result: [InfraDetails];
 };

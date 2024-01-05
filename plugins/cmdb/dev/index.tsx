@@ -15,6 +15,7 @@ const mockServiceNowApi: ServiceNowApi = {
     Promise.resolve({
       result: mockUser1,
     }),
+  getInfraDetails: jest.fn(),
 };
 
 createDevApp()
