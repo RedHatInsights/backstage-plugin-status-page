@@ -1,28 +1,45 @@
 ---
-apiVersion: build.openshift.io/v1
-kind: BuildConfig
+apiVersion: template.openshift.io/v1
+kind: Template
+
 metadata:
   name: backstage-plugins
-  namespace: one-platform--pipeline
+  annotations:
+    openshift.io/display-name: "backstage-plugins"
+    description: "backstage-plugins"
   labels:
-    app: backstage-plugins
     paas.redhat.com/appcode: ONEP-003
-spec:
-  source:
-    git:
-      uri: 'https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins.git'
-      ref: 'main'
-  strategy:
-    dockerStrategy:
-      dockerfilePath: Dockerfile
-      noCache: true
-  output:
-    to:
-      kind: DockerImage
-      name: 'images.paas.redhat.com/app-dev-platform/backstage-plugins:latest'
-    pushSecret:
-      name: app-dev-platform-backstage-openshift-build-deployment-pull-secret
-  resources:
-    limits:
-      memory: 4Gi
-      cpu: '1'
+objects:
+  - kind: BuildConfig
+    apiVersion: build.openshift.io/v1
+    metadata:
+      name: backstage-plugins
+      namespace: one-platform--pipeline
+      labels:
+        app: backstage-plugins
+        paas.redhat.com/appcode: ONEP-003
+    spec:
+      source:
+        git:
+          uri: 'https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins.git'
+          ref: main
+      strategy:
+        dockerStrategy:
+          dockerfilePath: Dockerfile
+          noCache: true
+      output:
+        to:
+          kind: DockerImage
+          name: images.paas.redhat.com/app-dev-platform/backstage-plugins:${TAG}
+        pushSecret:
+          name: app-dev-platform-backstage-openshift-build-deployment-pull-secret
+      resources:
+        limits:
+          memory: 4Gi
+          cpu: '1'
+
+parameters:
+  - name: TAG
+    description: "Tag for repo"
+    required: true
+
