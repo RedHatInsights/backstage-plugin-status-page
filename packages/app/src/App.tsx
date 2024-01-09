@@ -42,6 +42,7 @@ import {
   feedbackPlugin,
 } from '@appdev-platform/backstage-plugin-feedback';
 import { MockPluginPage } from '@appdev-platform/plugin-mock-plugin';
+import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
 
 const app = createApp({
   apis,
@@ -122,6 +123,11 @@ const routes = (
     <Route path="/proxy-manager" element={<ProxyManagerPage />} />
     <Route path="/feedback" element={<GlobalFeedbackPage />} />
     <Route path="/mock-plugin" element={<MockPluginPage />} />
+
+    <Route
+      path="/catalog-unprocessed-entities"
+      element={<CatalogUnprocessedEntitiesPage />}
+    />;
   </FlatRoutes>
 );
 
