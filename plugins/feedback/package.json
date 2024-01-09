@@ -1,6 +1,6 @@
 {
   "name": "@appdev-platform/backstage-plugin-feedback",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
@@ -49,7 +49,8 @@
     "msw": "^1.0.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ],
   "configSchema": "config.d.ts"
 }
