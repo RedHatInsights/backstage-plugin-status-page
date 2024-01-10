@@ -4,13 +4,9 @@ Welcome to the contact-details plugin!
 
 This plugin exposes a card component for the Contact Details of an entity. The contacts details can be provided in the entity's `catalog-info.yaml` in the form of a user list or a group.
 
-<details>
-<summary><strong>Screenshots</strong></summary>
-
 | Card Collapsed | Card Expanded |
 |---|---|
 | ![Card Collapsed](docs/contact-details-card.png) | ![Card Expanded](docs/contact-details-card-expanded.png) |
-</details>
 
 
 ## Features
