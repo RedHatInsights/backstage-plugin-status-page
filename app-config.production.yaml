@@ -28,10 +28,39 @@ backend:
   #   ca: # if you have a CA file and want to verify it you can uncomment this section
   #     $file: <file-path>/ca/server.crt
 
+integrations:
+  servicenow:
+    - host: ${SERVICE_NOW_HOST}
+      apiBaseUrl: ${SERVICE_NOW_BASE_API_URL}
+      credentials:
+        username: ${SERVICE_NOW_USERNAME}
+        password: ${SERVICE_NOW_PASSWORD}
+
 catalog:
   # Overrides the default list locations from app-config.yaml as these contain example data.
   # See https://backstage.io/docs/features/software-catalog/software-catalog-overview#adding-components-to-the-catalog for more details
   # on how to get entities into the catalog.
+  providers:
+    cmdb:
+      appdevPlatform:
+        host: ${SERVICE_NOW_HOST}
+        querySize: 1
+        sysparmQuery: 'u_application_id=ONEP-003'
+        schedule:
+          frequency:
+            minutes: 2
+          timeout:
+            minutes: 5
+        overrides:
+          spec:
+            system: devex/one-platform
+            cmdb-childOf:
+              - businessapp:redhat/ONEP-003
+        customMappings:
+          'metadata.urls.sia': '{{ u_sia_url }}'
+          'metadata.urls.pia': '{{ u_pia_url }}'
+          'metadata.annotations["jira/project-key"]': 'DEE'
+
   locations:
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
     - type: file
