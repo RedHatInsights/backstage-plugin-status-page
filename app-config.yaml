@@ -82,7 +82,7 @@ proxy:
       headers:
         Authorization: Bearer ${SPASHIP_API_TOKEN}
     '/cmdb':
-      target: ${SERVICE_NOW_HOST}
+      target: ${SERVICE_NOW_BASE_API_URL}
       changeOrigin: true
       allowedMethods: ['GET']
       headers:
@@ -120,7 +120,7 @@ matomo:
   contact_us: ${MATOMO_CONTACT_URL}
 
 cmdb:
-  host: ${SERVICE_NOW_HOST}
+  host: ${SERVICE_NOW_BASE_API_URL}
 
 proxyManager:
   apiBaseUrl: ${PROXY_MANAGER_API_BASE_URL}
