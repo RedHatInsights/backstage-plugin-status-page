@@ -13,6 +13,8 @@ This plugin is designed to work with all Entity kinds which contain the annotati
 
 ## Getting started
 
+### Adding CMDB Details Card
+
 To get started, you need a running ServiceNow instance with [CMDB (Configuration Management Database)](https://www.servicenow.com/products/servicenow-platform/configuration-management-database.html).
 
 1. Add this plugin to Backstage, first install the plugin:
@@ -71,3 +73,45 @@ metadata:
   annotations:
     servicenow.com/appcode: <CMDB_APP_CODE>  # eg. APP-001
 ```
+
+### Adding Infrastructure Details Page
+
+This component requires that your servicenow instance has a `cmdb_rel_ci` table with the necessary relationships mapped for each business application in CMDB.
+
+To add the infra details page, add the following piece of code to the EntityPage.tsx
+
+```tsx
+// In packages/app/src/components/catalog/EntityPage.tsx
+import {
+  isAppCodeAvailable,
+  InfraDetailsPage,
+} from '@appdev-platform/backstage-plugin-cmdb';
+
+const infraDetailsContent = (
+  <EntitySwitch>
+    <EntitySwitch.Case if={isAppCodeAvailable}>
+      <InfraDetailsPage />
+    </EntitySwitch.Case>
+    <EntitySwitch.Case>
+      <MissingAnnotationEmptyState annotation={['servicenow.com/app-code']} />
+    </EntitySwitch.Case>
+  </EntitySwitch>
+);
+
+// ...
+
+const serviceEntityPage = (
+  <EntityLayout>
+    // ...
+
+    <EntityLayout.Route path="/infra" title="Infra Details">
+      {infraDetailsContent}
+    </EntityLayout.Route>
+
+    // ...
+);
+```
+
+#### Screenshot
+
+![infra-details](docs/Infra%20Details%20Page.png)

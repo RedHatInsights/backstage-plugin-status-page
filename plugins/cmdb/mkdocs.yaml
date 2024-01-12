@@ -1,6 +1,6 @@
-site_name: Contact Details Plugin for Backstage
+site_name: CMDB Plugin for Backstage
 repo_url: https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/
-site_description: A Plugin that displays a card view for the important contacts for a component.
+site_description: A Plugin that displays CMDB Details and the infrastructure related details for an Application.
 
 nav:
   - README: 'README.md'
