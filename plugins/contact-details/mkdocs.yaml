@@ -2,8 +2,6 @@ site_name: Contact Details Plugin for Backstage
 repo_url: https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/
 site_description: A Plugin that displays a card view for the important contacts for a component.
 
-docs_dir: .
-
 nav:
   - README: 'README.md'
 
