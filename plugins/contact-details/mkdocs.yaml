@@ -5,10 +5,5 @@ site_description: A Plugin that displays a card view for the important contacts 
 nav:
   - README: 'README.md'
 
-exclude_docs: |
-  .*
-  !./docs
-  !./README.md   # But keep this particular file.
-
 plugins:
   - techdocs-core
