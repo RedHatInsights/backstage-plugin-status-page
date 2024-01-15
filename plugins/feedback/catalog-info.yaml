@@ -16,8 +16,28 @@ metadata:
   links:
     - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-feedback
       title: Backstage Feedback Plugin NPM Package
+  annotations:
+    backstage.io/techdocs-ref: dir:.
 spec:
   type: library
   lifecycle: production
   owner: group:redhat/one-platform-devs
   system: devex/redhat-experience-platform
+  providesApis:
+    - devex/feedback-plugin-api
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: feedback-plugin-api
+  title: Backstage Feedback Plugin ReST API
+  description: ReST API for backstage feedback plugin
+  namespace: devex
+spec:
+  type: openapi
+  lifecycle: production
+  owner: group:redhat/one-platform-devs
+  system: devex/redhat-experience-platform
+  definition:
+    $text: './docs/openapi3_0.yaml'
