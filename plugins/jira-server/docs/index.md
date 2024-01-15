@@ -6,7 +6,7 @@ Welcome to the Jira Server plugin!
 
 This plugin exposes a card component with information about the project. It relies on Jira for the Project Details.
 
-![Jira Plugin Card Component](./docs/JiraCard.png)
+![Jira Plugin Card Component](./JiraCard.png)
 
 This plugin is designed to work with all Entity kinds which contain the annotation: `jira/project-key`.
 

@@ -6,7 +6,7 @@ metadata:
   title: JIRA Server Plugin Backstage
   description: Backstage Plugin for Jira Server
   namespace: devex
-  tags: 
+  tags:
     - backstage
     - idp
     - developers
@@ -15,6 +15,8 @@ metadata:
   links:
     - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-jira-server
       title: Backstage Jira Server Plugin NPM Package
+  annotations:
+    backstage.io/techdocs-ref: dir:.
 spec:
   type: library
   lifecycle: production
