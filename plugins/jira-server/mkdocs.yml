@@ -1,0 +1,6 @@
+site_name: Jira Plugin
+repo_url: https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/
+site_description: A Plugin that displays information about the project from Jira Board
+
+plugins:
+  - techdocs-core
