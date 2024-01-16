@@ -1,0 +1,9 @@
+site_name: CMDB Discovery Plugin for Backstage Catalog
+repo_url: https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/
+site_description: An extension module to the catalog-backend plugin, providing a CMDBDiscoveryEntityProvider and CMDBDiscoveryEntityProcessor that can be used to ingest business applications from Service Now Configuration Management Database (CMDB).
+
+nav:
+  - README: 'README.md'
+
+plugins:
+  - techdocs-core
