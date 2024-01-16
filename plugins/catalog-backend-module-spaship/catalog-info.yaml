@@ -1,0 +1,23 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-backend-module-spaship
+  title: SPAship Discovery Plugin
+  description: |
+    An extension module to the catalog-backend plugin, providing a SPAshipDiscoveryEntityProvider that can be used to ingest SPAship Properties and Applications.
+  namespace: devex
+  tags:
+    - backstage
+    - SPAship
+    - catalog
+    - discovery
+
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+
+spec:
+  type: library
+  lifecycle: preproduction
+  owner: group:redhat/one-platform-devs
+  system: devex/redhat-experience-platform
