@@ -1,0 +1,25 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: proxy-manager-plugin
+  title: Proxy Manager Plugin Backstage
+  description: Backstage Plugin for Proxy Manager
+  namespace: devex
+  tags:
+    - backstage
+    - idp
+    - developers
+    - plugin
+    - hydra
+    - proxy-manager
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-proxy-manager
+      title: Backstage Proxy Manager Plugin NPM Package
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: library
+  lifecycle: production
+  owner: group:redhat/one-platform-devs
+  system: devex/redhat-experience-platform
