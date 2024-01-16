@@ -1,0 +1,48 @@
+{
+  "name": "@appdev-platform/backstage-plugin-catalog-backend-module-spaship",
+  "description": "The spaship backend module for the catalog plugin.",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "private": true,
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts",
+    "tag": "beta"
+  },
+  "backstage": {
+    "role": "backend-plugin-module"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
+  },
+  "dependencies": {
+    "@backstage/backend-common": "^0.19.4",
+    "@backstage/backend-plugin-api": "^0.6.3",
+    "@backstage/backend-tasks": "^0.5.13",
+    "@backstage/catalog-model": "^1.4.3",
+    "@backstage/config": "^1.1.1",
+    "@backstage/plugin-catalog-node": "^1.6.0",
+    "@backstage/types": "^1.1.1",
+    "lodash": "^4.17.21",
+    "nunjucks": "^3.2.4",
+    "uuid": "^9.0.1",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "^0.2.6",
+    "@backstage/cli": "^0.22.8",
+    "@types/nunjucks": "^3.2.6"
+  },
+  "files": [
+    "dist"
+  ]
+}

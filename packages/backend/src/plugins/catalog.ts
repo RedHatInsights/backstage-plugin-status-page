@@ -4,6 +4,7 @@ import { UnprocessedEntitiesModule } from '@backstage/plugin-catalog-backend-mod
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 import { CMDBDiscoveryEntityProvider, BusinessApplicationEntityProcessor } from '@appdev-platform/backstage-plugin-catalog-backend-module-cmdb';
+import { SPAshipDiscoveryEntityProvider } from '@appdev-platform/backstage-plugin-catalog-backend-module-spaship';
 
 export default async function createPlugin(
   env: PluginEnvironment,
@@ -15,10 +16,14 @@ export default async function createPlugin(
     logger: env.logger,
     scheduler: env.scheduler,
   });
-
   const cmdbProcessor = new BusinessApplicationEntityProcessor();
 
-  builder.addEntityProvider(...cmdbProvider);
+  const spashipProvider = SPAshipDiscoveryEntityProvider.fromConfig(env.config, {
+    logger: env.logger,
+    scheduler: env.scheduler,
+  });
+
+  builder.addEntityProvider(...cmdbProvider, ...spashipProvider);
   builder.addProcessor(cmdbProcessor);
 
   const { processingEngine, router } = await builder.build();
