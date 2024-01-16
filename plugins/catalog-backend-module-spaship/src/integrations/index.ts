@@ -1,0 +1,1 @@
+export { SPAshipIntegration } from './SPAshipIntegration';
