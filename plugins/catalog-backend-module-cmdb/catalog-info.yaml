@@ -1,0 +1,24 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-backend-module-cmdb
+  title: CMDB Discovery Plugin
+  description: |
+    An extension module to the catalog-backend plugin, providing a CMDBDiscoveryEntityProvider and CMDBDiscoveryEntityProcessor that can be used to ingest business applications from Service Now Configuration Management Database (CMDB).
+  namespace: devex
+  tags:
+    - backstage
+    - cmdb
+    - servicenow
+    - catalog
+    - discovery
+
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+
+spec:
+  type: library
+  lifecycle: preproduction
+  owner: group:redhat/one-platform-devs
+  system: devex/redhat-experience-platform

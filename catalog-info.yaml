@@ -7,6 +7,7 @@ spec:
   lifecycle: producion
   targets:
     - ./plugins/analytics-module-matomo/catalog-info.yaml
+    - ./plugins/catalog-backend-module-cmdb/catalog-info.yaml
     - ./plugins/catalog-backend-module-spaship/catalog-info.yaml
     - ./plugins/cmdb/catalog-info.yaml
     - ./plugins/contact-details/catalog-info.yaml
