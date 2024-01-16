@@ -19,8 +19,6 @@ import { EmptyState } from '../EmptyState';
 import {
   useGetDeploymentCountByEnv,
   useGetDeploymentHistoryByMonth,
-} from '../../hooks';
-import {
   useGetDeploymentCountByProperty,
   useGetDeploymentTime,
   useGetActiviyStream,
@@ -40,6 +38,20 @@ import { lineCharts } from '../colorPalette';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { Center } from '../Center';
 import OpenInNew from '@material-ui/icons/OpenInNew';
+import { parseEntityRef } from '@backstage/catalog-model';
+
+function isValidEntityRefString(entityRefString: string | undefined) {
+  const entityRefPattern = /^(user|group):[a-z0-9-]+\/[a-zA-Z0-9-]+$/;
+  return entityRefString && entityRefPattern.test(entityRefString);
+}
+
+function getSpashipOwnerUrl(spashipOwner?: string) {
+  if (isValidEntityRefString(spashipOwner)) {
+    const entityRef = parseEntityRef(spashipOwner!);
+    return `/${entityRef.namespace}/${entityRef.kind}/${entityRef.name}`;
+  }
+  return '#';
+}
 
 export const SpashipGlobal = () => {
   const config = useApi(configApiRef);
@@ -48,6 +60,8 @@ export const SpashipGlobal = () => {
   const spashipSlackUrl = config.getOptionalString('spaship.slackUrl');
   const spashipGithubUrl = config.getOptionalString('spaship.githubUrl');
   const spashipContactMail = config.getOptionalString('spaship.contactMail');
+  const spashipOwner = config.getOptionalString('spaship.owner');
+  const spashipOwnerUrl = getSpashipOwnerUrl(spashipOwner);
 
   const { data: deploymentCount, isLoading: isDeploymentCountLoading } =
     useGetDeploymentCountByEnv();
@@ -101,7 +115,20 @@ export const SpashipGlobal = () => {
         }
         subtitle="Overall Deployment Status"
       >
-        <HeaderLabel label="Owner" value="SPAship" />
+        {spashipOwner && (
+          <HeaderLabel
+            label="Owner"
+            value={
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                href={spashipOwnerUrl}
+              >
+                {spashipOwner?.split('/').pop() ?? spashipOwner}
+              </a>
+            }
+          />
+        )}
         {spashipGithubUrl && (
           <HeaderLabel
             label="Github"
@@ -111,7 +138,7 @@ export const SpashipGlobal = () => {
                 rel="noopener noreferrer"
                 href={spashipGithubUrl}
               >
-                #spaship
+                @spaship
               </a>
             }
           />

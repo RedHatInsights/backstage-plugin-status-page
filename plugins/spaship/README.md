@@ -34,6 +34,7 @@ spaship:
   slackUrl: ${SPASHIP_SLACK_URL}
   contactMail: ${SPASHIP_MAIL}
   githubUrl: ${SPASHIP_GITHUB_URL}
+  owner: ${SPASHIP_OWNER_REF}   # for example: 'user:default/guest'
 ```
 
 ### Entity Pages

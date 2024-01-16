@@ -8,5 +8,7 @@ export interface Config {
     contactMail: string;
     /** @visibility frontend */
     githubUrl: string;
+    /** @visibility frontend */
+    owner: string;
   };
 }

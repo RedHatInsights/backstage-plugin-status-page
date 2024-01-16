@@ -112,6 +112,7 @@ spaship:
   slackUrl: ${SPASHIP_SLACK_URL}
   contactMail: ${SPASHIP_MAIL}
   githubUrl: ${SPASHIP_GITHUB_URL}
+  owner: ${SPASHIP_OWNER_REF}
 
 matomo:
   api_token: ${MATOMO_API_TOKEN}
