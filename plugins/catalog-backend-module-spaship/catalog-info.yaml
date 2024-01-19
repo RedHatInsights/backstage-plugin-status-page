@@ -9,7 +9,7 @@ metadata:
   namespace: devex
   tags:
     - backstage
-    - SPAship
+    - spaship
     - catalog
     - discovery
 

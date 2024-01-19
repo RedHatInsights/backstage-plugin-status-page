@@ -1,5 +1,5 @@
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, EntityMeta } from '@backstage/catalog-model';
 import { DEFAULT_CMDB_RECORD_FIELDS } from './constants';
 import { JsonValue, JsonObject } from '@backstage/types';
 
@@ -89,3 +89,34 @@ export type PagedResponse<T> = {
 type CMDBFields = (typeof DEFAULT_CMDB_RECORD_FIELDS)[number];
 
 export type CMDBRecord = JsonObject & Record<CMDBFields, JsonValue>;
+
+export type CMDBMeta = {
+  title: string;
+  ownedBy: string;
+  ownedByActive: boolean;
+  installStatus: string;
+  businessCriticality: string;
+  applicationType?: string;
+  dataClassification?: string;
+  lifecycleStateStatus?: string;
+  supportGroup?: string;
+  urls?: Partial<{
+    ess: string;
+    pia: string;
+    piaRemediations: string;
+    risk: string;
+    sia: string;
+  }>;
+} & JsonObject;
+
+export interface BusinessApplicationEntity extends Entity {
+  metadata: Prettify<
+    EntityMeta & {
+      cmdb: CMDBMeta;
+    }
+  >;
+}
+
+type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & {};
