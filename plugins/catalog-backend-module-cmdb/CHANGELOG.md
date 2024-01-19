@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.0.0...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.1.0) (2024-01-19)
+
+
+### Features
+
+* **cmdb-module:** add support for copying cmdb details to inheriting entities ([5e20a4b](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/5e20a4be7624356a85e614d4073fe55d56e5e1b5))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb 1.0.0 (2024-01-10)
 
 
