@@ -48,18 +48,31 @@ catalog:
         sysparmQuery: 'u_application_id=ONEP-003'
         schedule:
           frequency:
-            minutes: 2
+            hours: 12
           timeout:
             minutes: 5
         overrides:
-          spec:
-            system: devex/one-platform
-            cmdb-childOf:
-              - businessapp:redhat/ONEP-003
+          metadata:
+            namespace: redhat
         customMappings:
-          'metadata.urls.sia': '{{ u_sia_url }}'
-          'metadata.urls.pia': '{{ u_pia_url }}'
-          'metadata.annotations["jira/project-key"]': 'DEE'
+          'metadata.name': '{{ u_application_id }}'
+          # CMDB Mappings
+          'metadata.cmdb.appcode': '{{ u_application_id }}'
+          'metadata.cmdb.delegate': '{{ u_delegate.user_name }}'
+          'metadata.cmdb.delegateActive': '{{ u_delegate.active }}'
+          'metadata.cmdb.actualItRpo': '{{ u_actual_it_rpo }}'
+          'metadata.cmdb.actualRto': '{{ u_actual_rto }}'
+          'metadata.cmdb.applicationRetirementDate': '{{ u_application_retirement_date }}'
+          'metadata.cmdb.businessMtd': '{{ u_business_mtd }}'
+          'metadata.cmdb.investmentObjective': '{{ u_investment_objective }}'
+          'metadata.cmdb.onCallNotificationProcess': '{{ u_oncall_notification_process }}'
+          'metadata.cmdb.supportContactEmail': '{{ u_support_contact_email }}'
+          'metadata.cmdb.rwi': '{{ u_rwi }}'
+          'metadata.cmdb.urls.ess': '{{ u_ess_url }}'
+          'metadata.cmdb.urls.pia': '{{ u_pia_url }}'
+          'metadata.cmdb.urls.piaRemediations': '{{ u_pia_remediations_url }}'
+          'metadata.cmdb.urls.risk': '{{ u_risk_url }}'
+          'metadata.cmdb.urls.sia': '{{ u_sia_url }}'
 
   locations:
     # Local example data, file locations are relative to the backend process, typically `packages/backend`

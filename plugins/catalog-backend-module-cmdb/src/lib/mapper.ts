@@ -20,10 +20,15 @@ export function mapper(
     return {};
   }
 
-  return Object.keys(customMappings).reduce((acc, key) => {
+  const entity = Object.keys(customMappings).reduce((acc, key) => {
     const template = customMappings[key];
-    set(acc, key, renderString(template, { ...application }));
+    const value = renderString(template, { ...application });
+    if (value) {
+      set(acc, key, value);
+    }
 
     return acc;
   }, {});
+
+  return entity;
 }

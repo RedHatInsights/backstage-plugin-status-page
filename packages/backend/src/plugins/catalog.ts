@@ -5,6 +5,7 @@ import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 import { CMDBDiscoveryEntityProvider, BusinessApplicationEntityProcessor } from '@appdev-platform/backstage-plugin-catalog-backend-module-cmdb';
 import { SPAshipDiscoveryEntityProvider } from '@appdev-platform/backstage-plugin-catalog-backend-module-spaship';
+import { CatalogClient } from '@backstage/catalog-client';
 
 export default async function createPlugin(
   env: PluginEnvironment,
@@ -16,7 +17,12 @@ export default async function createPlugin(
     logger: env.logger,
     scheduler: env.scheduler,
   });
-  const cmdbProcessor = new BusinessApplicationEntityProcessor();
+
+  const catalog = new CatalogClient({
+    discoveryApi: env.discovery
+  });
+
+  const cmdbProcessor = new BusinessApplicationEntityProcessor(catalog);
 
   const spashipProvider = SPAshipDiscoveryEntityProvider.fromConfig(env.config, {
     logger: env.logger,
