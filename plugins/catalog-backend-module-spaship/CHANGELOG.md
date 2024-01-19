@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-spaship [1.0.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-spaship@1.0.0...@appdev-platform/backstage-plugin-catalog-backend-module-spaship@1.0.1) (2024-01-19)
+
+
+### Other changes
+
+* updated secrets and fixed spaship catalog file type error ([d4efd51](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/d4efd5179a17d2e572cf4dee8df1d747d66428dc))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-spaship 1.0.0 (2024-01-16)
 
 
