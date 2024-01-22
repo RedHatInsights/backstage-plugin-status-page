@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-spaship [1.0.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-spaship@1.0.1...@appdev-platform/backstage-plugin-catalog-backend-module-spaship@1.0.2) (2024-01-22)
+
+
+### Other changes
+
+* **spaship-module:** add config for spaship import ([0fd09b4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/0fd09b47053b5e98cb3130958eab58891fd1ca25))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-spaship [1.0.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-spaship@1.0.0...@appdev-platform/backstage-plugin-catalog-backend-module-spaship@1.0.1) (2024-01-19)
 
 
