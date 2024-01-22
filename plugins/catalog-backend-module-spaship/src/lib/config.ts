@@ -12,6 +12,7 @@ const readSPAshipConfig = (
 ): SPAshipDiscoveryEntityProviderConfig => {
   const host = config.getString('host');
   const defaultOwnerNamespace = config.getOptionalString('defaultOwnerNamespace');
+  const properties = config.getOptionalStringArray('properties');
   const excludeProperties = config.getOptionalStringArray('excludeProperties');
   const customPropertyMappings =
     config.getOptional<Record<string, string>>('customPropertyMappings');
@@ -27,6 +28,7 @@ const readSPAshipConfig = (
     id,
     host,
     defaultOwnerNamespace,
+    properties,
     excludeProperties,
     customPropertyMappings,
     customApplicationMappings,

@@ -43,6 +43,11 @@ export interface Config {
            */
           defaultOwnerNamespace?: string;
           /**
+           * A list of property names to import from SPAship.
+           * (optional) if empty, all the properties are imported.
+           */
+          properties?: string[];
+          /**
            * A list of SPAship properties to exlude from being ingested into backstage catalog.
            */
           excludeProperties?: string[];
