@@ -36,6 +36,11 @@ integrations:
         username: ${SERVICE_NOW_USERNAME}
         password: ${SERVICE_NOW_PASSWORD}
 
+  spaship:
+    - host: ${SPASHIP_HOST}
+      apiBaseUrl: ${SPASHIP_API_URL}
+      apiKey: ${SPASHIP_API_TOKEN}
+
 catalog:
   # Overrides the default list locations from app-config.yaml as these contain example data.
   # See https://backstage.io/docs/features/software-catalog/software-catalog-overview#adding-components-to-the-catalog for more details
@@ -48,7 +53,7 @@ catalog:
         sysparmQuery: 'u_application_id=ONEP-003'
         schedule:
           frequency:
-            hours: 12
+            hours: 3
           timeout:
             minutes: 5
         overrides:
@@ -73,6 +78,40 @@ catalog:
           'metadata.cmdb.urls.piaRemediations': '{{ u_pia_remediations_url }}'
           'metadata.cmdb.urls.risk': '{{ u_risk_url }}'
           'metadata.cmdb.urls.sia': '{{ u_sia_url }}'
+        additionalQueryFields:
+          - u_application_id
+          - owned_by.active
+          - u_delegate.user_name
+          - u_delegate.active
+          - u_actual_it_rpo
+          - u_actual_rto
+          - u_application_retirement_date
+          - u_business_mtd
+          - u_investment_objective
+          - u_oncall_notification_process
+          - u_support_contact_email
+          - u_rwi
+          - u_ess_url
+          - u_pia_url
+          - u_pia_remediations_url
+          - u_risk_url
+          - u_sia_url
+
+    spaship:
+      example:
+        host: ${SPASHIP_HOST}
+        defaultOwnerNamespace: 'redhat'
+        properties:
+          - customer-portal
+          - one-platform
+        overrides:
+          metadata:
+            namespace: 'dx'
+        schedule:
+          frequency:
+            hours: 3
+          timeout:
+            minutes: 5
 
   locations:
     # Local example data, file locations are relative to the backend process, typically `packages/backend`

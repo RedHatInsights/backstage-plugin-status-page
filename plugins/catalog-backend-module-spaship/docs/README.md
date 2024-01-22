@@ -79,19 +79,24 @@ Defaults to the DEFAULT_NAMESPACE of the backstage instance.
 
 You can add a custom/derived namespace by using the customMappings instead.
 
-##### overrides
+#### properties
+
+A list of property names to import from SPAship.
+If not defined, all the properties are imported.
+
+#### overrides
 
 The overrides object can be used for adding some additional static fields in the composed entity before it gets applied and processed in the catalog.
 
-##### customPropertyMappings
+#### customPropertyMappings
 
 A key-value map used for adding custom fields to the composed system entities. The keys here are the fields in the system entity. You can use nunjucks templates for composing the values in the key-value pairs. The nunjucks templates are populated with the spaship property object from SPAship.
 
-##### customApplicationMappings
+#### customApplicationMappings
 
 A key-value map used for adding custom fields to the composed component entities. The keys here are the fields in the component entity. You can use nunjucks templates for composing the values in the key-value pairs. The nunjucks templates are populated with the spaship application object from SPAship.
 
-##### schedule
+#### schedule
 
 _required_\
 A task schedule for the job to import the spaship properties at a regular interval. Can also be defined at the plugin initialization step in `catalog.ts` file.

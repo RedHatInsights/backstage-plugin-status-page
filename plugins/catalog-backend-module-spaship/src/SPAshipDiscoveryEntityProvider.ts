@@ -18,6 +18,7 @@ import * as uuid from 'uuid';
 import { ANNOTATION_LOCATION, Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { SPAshipIntegration } from './integrations';
+import { isEmpty } from 'lodash';
 
 export class SPAshipDiscoveryEntityProvider implements EntityProvider {
   private readonly provider: SPAshipDiscoveryEntityProviderConfig;
@@ -122,6 +123,9 @@ export class SPAshipDiscoveryEntityProvider implements EntityProvider {
     /* Using for await loop here to ensure the following statements inside the loop are executed synchronously */
     for await (const property of properties) {
       if (!property.identifier) {
+        continue;
+      }
+      if (!isEmpty(this.provider.properties) && this.provider.properties?.includes(property.identifier)) {
         continue;
       }
 
