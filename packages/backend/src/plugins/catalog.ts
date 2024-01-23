@@ -3,7 +3,10 @@ import { ScaffolderEntitiesProcessor } from '@backstage/plugin-catalog-backend-m
 import { UnprocessedEntitiesModule } from '@backstage/plugin-catalog-backend-module-unprocessed';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
-import { CMDBDiscoveryEntityProvider, BusinessApplicationEntityProcessor } from '@appdev-platform/backstage-plugin-catalog-backend-module-cmdb';
+import {
+  CMDBDiscoveryEntityProvider,
+  BusinessApplicationEntityProcessor,
+} from '@appdev-platform/backstage-plugin-catalog-backend-module-cmdb';
 import { SPAshipDiscoveryEntityProvider } from '@appdev-platform/backstage-plugin-catalog-backend-module-spaship';
 import { CatalogClient } from '@backstage/catalog-client';
 
@@ -18,16 +21,22 @@ export default async function createPlugin(
     scheduler: env.scheduler,
   });
 
-  const catalog = new CatalogClient({
-    discoveryApi: env.discovery
+  const catalogApi = new CatalogClient({
+    discoveryApi: env.discovery,
   });
 
-  const cmdbProcessor = new BusinessApplicationEntityProcessor(catalog);
-
-  const spashipProvider = SPAshipDiscoveryEntityProvider.fromConfig(env.config, {
+  const cmdbProcessor = new BusinessApplicationEntityProcessor({
+    catalogApi,
     logger: env.logger,
-    scheduler: env.scheduler,
   });
+
+  const spashipProvider = SPAshipDiscoveryEntityProvider.fromConfig(
+    env.config,
+    {
+      logger: env.logger,
+      scheduler: env.scheduler,
+    },
+  );
 
   builder.addEntityProvider(...cmdbProvider, ...spashipProvider);
   builder.addProcessor(cmdbProcessor);
