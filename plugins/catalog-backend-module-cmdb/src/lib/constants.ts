@@ -20,8 +20,11 @@ export const DEFAULT_CMDB_RECORD_FIELDS = [
   'business_criticality',
   'application_type',
   'data_classification',
-  'life_cycle_stage_status',
+  'life_cycle_stage.name',
+  'life_cycle_stage_status.name',
   'support_group',
   'url',
   'sys_updated_on',
 ] as const;
+
+export const PROCESSOR_CACHE_INVALIDATION_PERIOD = 15 * 60 * 1000;    // 15 minutes

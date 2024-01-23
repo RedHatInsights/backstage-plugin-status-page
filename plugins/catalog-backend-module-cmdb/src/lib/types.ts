@@ -98,7 +98,8 @@ export type CMDBMeta = {
   businessCriticality: string;
   applicationType?: string;
   dataClassification?: string;
-  lifecycleStateStatus?: string;
+  lifecycleStage?: string;
+  lifecycleStageStatus?: string;
   supportGroup?: string;
   urls?: Partial<{
     ess: string;

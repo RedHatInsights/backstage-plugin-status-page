@@ -82,7 +82,8 @@ function cmdbRecordToCMDBMeta (record: CMDBRecord): CMDBMeta {
     businessCriticality: record.business_criticality?.toString()!,
     applicationType: record.application_type?.toString(),
     dataClassification: record.data_classification?.toString(),
-    lifecycleStateStatus: record.life_cycle_stage_status?.toString(),
+    lifecycleStage: record['life_cycle_stage.name']?.toString(),
+    lifecycleStageStatus: record['life_cycle_stage_status.name']?.toString(),
     supportGroup: record.support_group?.toString(),
   };
 }

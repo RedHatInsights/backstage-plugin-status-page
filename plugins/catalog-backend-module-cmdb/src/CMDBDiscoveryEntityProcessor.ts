@@ -18,14 +18,25 @@ import { merge } from 'lodash';
 import { CatalogClient } from '@backstage/catalog-client';
 import {
   ANNOTATION_CMDB_APPCODE,
+  PROCESSOR_CACHE_INVALIDATION_PERIOD,
 } from './lib';
-import { BusinessApplicationEntity } from './lib/types';
+import { BusinessApplicationEntity, CMDBMeta } from './lib/types';
+import { JsonValue } from '@backstage/types';
+import { Logger } from 'winston';
 
 export class BusinessApplicationEntityProcessor implements CatalogProcessor {
+  private readonly catalogApi: CatalogClient;
+  private readonly logger: Logger;
+
   /* TODO: Add JSON Schema validator for BusinessApplication entity kind */
   private readonly validator = (_entity: Entity) => true;
 
-  constructor(private catalog: CatalogClient) {}
+  constructor(options: { catalogApi: CatalogClient; logger: Logger }) {
+    this.catalogApi = options.catalogApi;
+    this.logger = options.logger.child({
+      target: this.getProcessorName(),
+    });
+  }
 
   getProcessorName(): string {
     return 'BusinessApplicationEntityProcessor';
@@ -45,42 +56,83 @@ export class BusinessApplicationEntityProcessor implements CatalogProcessor {
     _location: LocationSpec,
     emit: CatalogProcessorEmit,
     _originLocation: LocationSpec,
-    _cache: CatalogProcessorCache,
+    cache: CatalogProcessorCache,
   ): Promise<Entity> {
     const selfRef = getCompoundEntityRef(entity);
 
-    if (entity.metadata.annotations?.hasOwnProperty(ANNOTATION_CMDB_APPCODE)) {
-      const appCode = entity.metadata.annotations[ANNOTATION_CMDB_APPCODE];
+    /* Skip the preprocess step for BusinessApplication entities */
+    if (
+      selfRef.kind === 'BusinessApplication' ||
+      !entity.metadata.annotations?.hasOwnProperty(ANNOTATION_CMDB_APPCODE)
+    ) {
+      return entity;
+    }
+
+    const appCode = entity.metadata.annotations[ANNOTATION_CMDB_APPCODE];
+
+    /* Get the cached data for the appcode */
+    let cachedData = await cache.get<{
+      created: number;
+      businessAppRef?: string;
+      cmdb?: CMDBMeta | JsonValue | undefined;
+    }>(appCode);
+
+    this.logger.debug({ cachedData });
+
+    /* If no cache is found, or the cache has expired, fetch the business application details */
+    if (
+      !cachedData ||
+      (cachedData.created &&
+        Date.now() - cachedData.created > PROCESSOR_CACHE_INVALIDATION_PERIOD)
+    ) {
+      this.logger.debug(`fetching ${appCode} from catalog`);
 
       const businessApp: BusinessApplicationEntity | Entity | undefined =
-        await this.catalog.getEntityByRef(
+        await this.catalogApi.getEntityByRef(
           `businessapplication:redhat/${appCode}`,
         );
 
-      if (businessApp) {
-        const inheritedProps = {
-          metadata: {
-            cmdb: businessApp.metadata.cmdb,
-          },
-        };
-
-        this.doEmit(
-          emit,
-          selfRef,
-          stringifyEntityRef(businessApp),
-          {
-            defaultKind: 'businessapplication',
-            defaultNamespace: 'redhat',
-          },
-          'inheritsFrom',
-          'inheritedBy',
-        );
-
-        return merge(entity, inheritedProps);
-      }
+      /* Update the cache with the new data */
+      cachedData = {
+        created: Date.now(),
+        ...(businessApp
+          ? {
+              businessAppRef: stringifyEntityRef(businessApp),
+              cmdb: businessApp.metadata.cmdb,
+            }
+          : {}),
+      };
+      await cache.set(appCode, cachedData);
+      this.logger.debug({
+        newCache: cachedData,
+      });
     }
 
-    return entity;
+    /* If the businessApplication could not be found, skip */
+    if (!cachedData.businessAppRef) {
+      return entity;
+    }
+
+    /* Emit the relationship between the entity and businessapplication entity */
+    this.doEmit(
+      emit,
+      selfRef,
+      cachedData.businessAppRef,
+      {
+        defaultKind: 'businessapplication',
+        defaultNamespace: 'redhat',
+      },
+      'inheritsFrom',
+      'inheritedBy',
+    );
+
+    /* Create a new cmdb meta field for the entity */
+    const inheritedProps = {
+      metadata: {
+        cmdb: cachedData.cmdb,
+      },
+    };
+    return merge(entity, inheritedProps);
   }
 
   async postProcessEntity(
@@ -106,6 +158,9 @@ export class BusinessApplicationEntityProcessor implements CatalogProcessor {
     return entity;
   }
 
+  /**
+   * A helper method to emit relationships with one or more targets
+   */
   private doEmit(
     emit: CatalogProcessorEmit,
     selfRef: CompoundEntityRef,
