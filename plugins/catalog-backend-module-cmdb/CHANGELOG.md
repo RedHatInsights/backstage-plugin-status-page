@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.1.0...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.2.0) (2024-01-23)
+
+
+### Features
+
+* **cmdb-module:** add cache support for cmdb processor ([4cea14a](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/4cea14a3d4a8ceb2a38b7edb4a7788c7055004a0))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.0.0...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.1.0) (2024-01-19)
 
 
