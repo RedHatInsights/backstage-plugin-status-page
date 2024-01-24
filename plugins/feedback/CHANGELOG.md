@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-feedback [1.1.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-feedback@1.1.1...@appdev-platform/backstage-plugin-feedback@1.1.2) (2024-01-24)
+
+
+### Bug Fixes
+
+* **feedback:** moved the api definition to feedback-backend plugin ([c8b1cb0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/c8b1cb0a9bb71612682338cdbfa39b37763d5385))
+
 ## @appdev-platform/backstage-plugin-feedback [1.1.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-feedback@1.1.0...@appdev-platform/backstage-plugin-feedback@1.1.1) (2024-01-16)
 
 
