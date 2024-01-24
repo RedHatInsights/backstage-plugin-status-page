@@ -15,7 +15,11 @@ import {
 } from './lib';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import * as uuid from 'uuid';
-import { ANNOTATION_LOCATION, Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  ANNOTATION_LOCATION,
+  Entity,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { SPAshipIntegration } from './integrations';
 import { isEmpty } from 'lodash';
@@ -125,7 +129,17 @@ export class SPAshipDiscoveryEntityProvider implements EntityProvider {
       if (!property.identifier) {
         continue;
       }
-      if (!isEmpty(this.provider.properties) && this.provider.properties?.includes(property.identifier)) {
+      /**
+       * If the "properties" array is defined in the provider config,
+       * and the `property` does is not present in the array, then skip the property.
+       *
+       * Also, if the property is in the exludeProperties array defined in the provider config, then skip the property
+       */
+      if (
+        (!isEmpty(this.provider.properties) &&
+          !this.provider.properties?.includes(property.identifier)) ||
+        this.provider.excludeProperties?.includes(property.identifier)
+      ) {
         continue;
       }
 
@@ -147,25 +161,34 @@ export class SPAshipDiscoveryEntityProvider implements EntityProvider {
       applicationsCount: res.applicationsScanned,
     });
 
-    const entities: Entity[] = res.groupedProperties.reduce((acc, { property, applications }) => {
-      const system = generateSystemEntity(property, this.provider, logger);
+    const entities: Entity[] = res.groupedProperties.reduce(
+      (acc, { property, applications }) => {
+        const system = generateSystemEntity(property, this.provider, logger);
 
-      acc.push(system);
+        acc.push(system);
 
-      applications.forEach(application => {
-        const isProduction = application.environments.findIndex(env => env.env === 'prod') !== -1;
+        applications.forEach(application => {
+          const isProduction =
+            application.environments.findIndex(e => e.env === 'prod') !== -1;
 
-        const component = generateComponentEntity(application, this.provider, {
-          cmdbCode: property.cmdbCode,
-          systemRef: stringifyEntityRef(system),
-          lifecycle: isProduction ? 'production' : 'preproduction',
-        }, logger);
+          const component = generateComponentEntity(
+            application,
+            this.provider,
+            {
+              cmdbCode: property.cmdbCode,
+              systemRef: stringifyEntityRef(system),
+              lifecycle: isProduction ? 'production' : 'preproduction',
+            },
+            logger,
+          );
 
-        acc.push(component);
-      });
+          acc.push(component);
+        });
 
-      return acc;
-    }, [] as Entity[]);
+        return acc;
+      },
+      [] as Entity[],
+    );
 
     await this.connection.applyMutation({
       type: 'full',

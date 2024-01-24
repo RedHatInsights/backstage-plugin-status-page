@@ -81,8 +81,11 @@ You can add a custom/derived namespace by using the customMappings instead.
 
 #### properties
 
-A list of property names to import from SPAship.
-If not defined, all the properties are imported.
+A list of property names to import from SPAship. If not defined, all the properties are imported.
+
+#### excludeProperties
+
+A list of SPAship properties to exlude from being ingested into backstage catalog.
 
 #### overrides
 
