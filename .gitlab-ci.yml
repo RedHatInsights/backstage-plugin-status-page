@@ -19,6 +19,20 @@ yarn_build:
   script:
     - yarn tsc
     - yarn build:all
+  cache:
+    when: on_success
+    key:
+      files:
+        - yarn.lock
+    paths:
+      - "**/node_modules/"
+      - "plugins/**/dist/"
+  artifacts:
+    when: on_success
+    paths:
+      - "**/node_modules/"
+      - "plugins/**/dist/"
+    expire_in: 1 days
 
 publish_plugins:
   stage: Publish-Plugins
@@ -33,7 +47,7 @@ publish_plugins:
     - git config --global http.sslVerify "false"
     - git config --global --add safe.directory /builds/app-dev-platform/backstage-plugins
   script: 
-    - npx multi-semantic-release --ignore-private-packages
+    - yarn release --ignore-private-packages
 
 .mpp_build:
   stage: Mpp-Build
