@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-feedback [1.1.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-feedback@1.1.2...@appdev-platform/backstage-plugin-feedback@1.1.3) (2024-02-07)
+
+
+### Documentation
+
+* **feedback:** add relations for feedback plugins ([10b8e93](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/10b8e930f07452a29266cff122e3011464bf66d3))
+
 ## @appdev-platform/backstage-plugin-feedback [1.1.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-feedback@1.1.1...@appdev-platform/backstage-plugin-feedback@1.1.2) (2024-01-24)
 
 
