@@ -48,7 +48,7 @@ function isValidEntityRefString(entityRefString: string | undefined) {
 function getSpashipOwnerUrl(spashipOwner?: string) {
   if (isValidEntityRefString(spashipOwner)) {
     const entityRef = parseEntityRef(spashipOwner!);
-    return `/${entityRef.namespace}/${entityRef.kind}/${entityRef.name}`;
+    return `/catalog/${entityRef.namespace}/${entityRef.kind}/${entityRef.name}`;
   }
   return '#';
 }
