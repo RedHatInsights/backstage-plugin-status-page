@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.2.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.2.0...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.2.1) (2024-02-27)
+
+
+### Bug Fixes
+
+* **DEE-870:** fix nunjucks template not mapping fields correctly ([aa8f4d5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/aa8f4d54ff3aac45627e1c6fb6e92737beb9101f))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.1.0...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.2.0) (2024-01-23)
 
 
