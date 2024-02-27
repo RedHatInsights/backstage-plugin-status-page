@@ -13,7 +13,12 @@ import {
   CMDB_IMPORT_TAG,
 } from './constants';
 import { getViewUrl, toValidUrl } from './utils';
-import { BusinessApplicationEntity, CMDBDiscoveryEntityProviderConfig, CMDBMeta, CMDBRecord } from './types';
+import {
+  BusinessApplicationEntity,
+  CMDBDiscoveryEntityProviderConfig,
+  CMDBMeta,
+  CMDBRecord,
+} from './types';
 
 export function transformer(
   application: CMDBRecord,
@@ -46,9 +51,12 @@ export function transformer(
 
         [ANNOTATION_CMDB_ID]: sysId,
 
-        ...(application.u_application_id ? {
-          [ANNOTATION_CMDB_APPCODE]: application.u_application_id.toString(),
-        } : undefined),
+        ...(application.u_application_id
+          ? {
+              [ANNOTATION_CMDB_APPCODE]:
+                application.u_application_id.toString(),
+            }
+          : undefined),
       },
       tags: [CMDB_IMPORT_TAG],
       namespace: DEFAULT_NAMESPACE,
@@ -56,8 +64,8 @@ export function transformer(
       sysUpdatedAt: application.sys_updated_on,
       updatedAt: new Date().toISOString(),
       cmdb: {
-        ...(cmdbRecordToCMDBMeta(application)),
-      }
+        ...cmdbRecordToCMDBMeta(application),
+      },
     },
     spec: {
       lifecycle:
@@ -73,17 +81,17 @@ export function transformer(
   return merge(businessApplicationEntity, overrides);
 }
 
-function cmdbRecordToCMDBMeta (record: CMDBRecord): CMDBMeta {
+function cmdbRecordToCMDBMeta(record: CMDBRecord): CMDBMeta {
   return {
     title: record.name?.toString()!,
     ownedBy: record['owned_by.user_name']?.toString()!,
-    ownedByActive: record['owned_by.active']?.toString() === "true",
+    ownedByActive: record['owned_by.active']?.toString() === 'true',
     installStatus: record.install_status?.toString()!,
     businessCriticality: record.business_criticality?.toString()!,
     applicationType: record.application_type?.toString(),
     dataClassification: record.data_classification?.toString(),
     lifecycleStage: record['life_cycle_stage.name']?.toString(),
     lifecycleStageStatus: record['life_cycle_stage_status.name']?.toString(),
-    supportGroup: record.support_group?.toString(),
+    supportGroup: record['support_group.name']?.toString(),
   };
 }
