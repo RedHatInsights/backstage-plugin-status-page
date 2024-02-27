@@ -20,9 +20,17 @@ export function mapper(
     return {};
   }
 
+  const flattenedData = Object.keys(application).reduce((acc, k) => {
+    acc[k.replace(/\./g, '_')] = application[k];
+    return acc;
+  }, {} as any);
+
   const entity = Object.keys(customMappings).reduce((acc, key) => {
-    const template = customMappings[key];
-    const value = renderString(template, { ...application });
+    const template = customMappings[key].replace(
+      /(\{\{\s*) (\w+)\.(\w+)\s*(\}\})/g,
+      '$1 $2_$3 $4',
+    );
+    const value = renderString(template, { ...flattenedData });
     if (value) {
       set(acc, key, value);
     }

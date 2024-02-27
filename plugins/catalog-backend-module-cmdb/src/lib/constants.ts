@@ -22,7 +22,7 @@ export const DEFAULT_CMDB_RECORD_FIELDS = [
   'data_classification',
   'life_cycle_stage.name',
   'life_cycle_stage_status.name',
-  'support_group',
+  'support_group.name',
   'url',
   'sys_updated_on',
 ] as const;
