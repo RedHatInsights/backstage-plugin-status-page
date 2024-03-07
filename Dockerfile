@@ -32,8 +32,6 @@ RUN \
     npm i -g corepack && corepack enable && \
     corepack prepare yarn@3 --activate
 
-USER 1001
-
 # Copy the install dependencies and built packages from the build stage
 COPY --from=build --chown=1001:0 $HOME/yarn.lock $HOME/.yarnrc.yml $HOME/package.json $HOME/packages/backend/dist/skeleton.tar.gz $HOME/packages/backend/dist/bundle.tar.gz ./
 RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz && \
@@ -50,6 +48,8 @@ COPY --chown=1001:0 examples $HOME/examples/
 # The fix-permissions script is important when operating in environments that dynamically use a random UID at runtime, such as OpenShift.
 # The upstream backstage image does not account for this and it causes the container to fail at runtime.
 RUN fix-permissions ./
+
+USER 1001
 
 EXPOSE 7007
 
