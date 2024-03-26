@@ -35,7 +35,7 @@ import {
   YAxis,
 } from 'recharts';
 import { lineCharts } from '../colorPalette';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { Center } from '../Center';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import { parseEntityRef } from '@backstage/catalog-model';
@@ -55,6 +55,7 @@ function getSpashipOwnerUrl(spashipOwner?: string) {
 
 export const SpashipGlobal = () => {
   const config = useApi(configApiRef);
+  const analytics = useAnalytics();
 
   const spashipManagerUrl = config.getOptionalString('spaship.managerHost');
   const spashipSlackUrl = config.getOptionalString('spaship.slackUrl');
@@ -335,7 +336,10 @@ export const SpashipGlobal = () => {
                 style={{ marginTop: '2rem', width: '100%' }}
                 color="primary"
                 disabled={!hasNextPage || isFetchingNextPage}
-                onClick={() => fetchNextPage()}
+                onClick={() => {
+                  fetchNextPage();
+                  analytics.captureEvent('click', 'load more');
+                }}
               >
                 {isFetchingNextPage ? (
                   <CircularProgress size="2rem" />
