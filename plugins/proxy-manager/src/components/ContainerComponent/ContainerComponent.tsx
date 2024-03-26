@@ -39,7 +39,7 @@ export const ContainerComponent = () => {
   return (
     <Page themeId="tool">
       <Header
-        pageTitleOverride='Proxy Manager'
+        pageTitleOverride="Proxy Manager"
         title={
           <a
             target="_blank"
@@ -56,24 +56,30 @@ export const ContainerComponent = () => {
         }
         subtitle="Manage your Proxies with Hydra Proxy Manager"
       >
-        <HeaderLabel label="Owner" value={
-          <Link
-            style={{textDecoration:'none', color: 'white'}} 
-            to={'/catalog/redhat/group/hydra-team'} 
-            target="_blank"
-          >
-            Team Hydra
-          </Link>
-        } />
+        <HeaderLabel
+          label="Owner"
+          value={
+            <Link
+              style={{ textDecoration: 'none', color: 'white' }}
+              to="/catalog/redhat/group/hydra-team"
+              target="_blank"
+            >
+              Team Hydra
+            </Link>
+          }
+        />
 
-        <HeaderLabel label="Mail" value={
-          <a 
-            style={{textDecoration:'none', color: 'white'}} 
-            href={'mailto:hydra-dev@redhat.com'} 
-            target="_blank"
-          >
-            hydra-dev@redhat.com
-          </a>} 
+        <HeaderLabel
+          label="Mail"
+          value={
+            <a
+              style={{ textDecoration: 'none', color: 'white' }}
+              href="mailto:hydra-dev@redhat.com"
+              target="_blank"
+            >
+              hydra-dev@redhat.com
+            </a>
+          }
         />
       </Header>
       <Content>
