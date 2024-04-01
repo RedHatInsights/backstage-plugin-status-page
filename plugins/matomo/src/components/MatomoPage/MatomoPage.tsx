@@ -36,7 +36,7 @@ import {
 } from 'recharts';
 
 import { StatsCard } from './StatsCard';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import Assessment from '@material-ui/icons/Assessment';
 import ContactMail from '@material-ui/icons/ContactMail';
 import { matomoApiRef, transformVisitByTime } from '../../api';
@@ -119,6 +119,8 @@ export const MatomoHomePage = () => {
   const matomoContact = config.getOptionalString('matomo.contact_us');
   const matomoInstanceUrl = config.getOptionalString('matomo.instance_url');
   const isMatomoConfigured = Boolean(matomoSiteId);
+
+  const analytics = useAnalytics();
 
   // visitor data
   const { loading: isVisitSummaryLoading, value: visitSummary } =
@@ -214,7 +216,17 @@ export const MatomoHomePage = () => {
               {Boolean(matomoContact) && (
                 <Grid item>
                   <MuiTooltip title="Contact Us">
-                    <a target="_blank" rel="noopener" href={matomoContact}>
+                    <a
+                      target="_blank"
+                      rel="noopener"
+                      onClick={() =>
+                        analytics.captureEvent(
+                          'click',
+                          `contact_us - ${matomoContact}`,
+                        )
+                      }
+                      href={matomoContact}
+                    >
                       <ContactMail
                         fontSize="large"
                         style={{ color: 'rgba(0, 0, 0, 0.54)' }}
@@ -229,6 +241,12 @@ export const MatomoHomePage = () => {
                     <a
                       target="_blank"
                       rel="noopener"
+                      onClick={() =>
+                        analytics.captureEvent(
+                          'click',
+                          `instance_url - ${matomoInstanceUrl}?idSite=${matomoSiteId}`,
+                        )
+                      }
                       href={`${matomoInstanceUrl}?idSite=${matomoSiteId}`}
                     >
                       <Assessment
@@ -249,7 +267,13 @@ export const MatomoHomePage = () => {
                   labelId="period"
                   label="period"
                   value={period}
-                  onChange={evt => setPeriod(evt.target.value as string)}
+                  onChange={evt => {
+                    setPeriod(evt.target.value as string);
+                    analytics.captureEvent(
+                      'filter',
+                      `period - ${evt.target.value as string}`,
+                    );
+                  }}
                 >
                   <MenuItem value="day">Day</MenuItem>
                   <MenuItem value="week">Week</MenuItem>
@@ -265,7 +289,13 @@ export const MatomoHomePage = () => {
                   label="range"
                   labelId="range"
                   value={range}
-                  onChange={evt => setRange(evt.target.value as string)}
+                  onChange={evt => {
+                    setRange(evt.target.value as string);
+                    analytics.captureEvent(
+                      'filter',
+                      `range - ${evt.target.value as string}`,
+                    );
+                  }}
                 >
                   <MenuItem value="today">Today</MenuItem>
                   <MenuItem value="yesterday">Yesterday</MenuItem>
