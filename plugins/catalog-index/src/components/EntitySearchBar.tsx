@@ -12,6 +12,7 @@ import { useDebounce } from 'react-use';
 import Search from '@material-ui/icons/Search';
 import Clear from '@material-ui/icons/Clear';
 import { EntitySearchFilter } from '../utils/filters';
+import { useAnalytics } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(
   {
@@ -31,12 +32,13 @@ export const EntitySearchBar = () => {
 
   const { filters, updateFilters } = usePaginatedEntityList();
   const [search, setSearch] = useState(filters.text?.value ?? '');
-
+  const analytics = useAnalytics();
   useDebounce(
     () => {
       updateFilters({
         text: search.length ? new EntitySearchFilter(search) : undefined,
       });
+      if (search.length) analytics.captureEvent('search', search);
     },
     250,
     [search, updateFilters],

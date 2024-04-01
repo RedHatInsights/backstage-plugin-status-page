@@ -22,6 +22,7 @@ import {
 import { getEntityIcon } from '../utils/getEntityIcon';
 import FavoriteIcon from '@material-ui/icons/BookmarkTwoTone';
 import FavoriteBorderIcon from '@material-ui/icons/BookmarkBorderTwoTone';
+import { useAnalytics } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   descriptionText: {
@@ -50,12 +51,13 @@ interface CatalogItemProps {
 export const CatalogItem = ({ entity, defaultKind }: CatalogItemProps) => {
   const { descriptionText, actions, smallChip } = useStyles();
   const { isStarredEntity, toggleStarredEntity } = useStarredEntity(entity);
+  const analytics = useAnalytics();
 
   const hasAppCode = Boolean(
     entity.metadata.annotations?.['servicenow.com/appcode'],
   );
 
-  const entityRef = humanizeEntityRef(entity);
+  const entityRef = humanizeEntityRef(entity, { defaultNamespace: false });
 
   const owner = entity.spec?.owner?.toString();
   const shortOwner = owner?.split('/')?.[1] ?? owner;
@@ -80,15 +82,27 @@ export const CatalogItem = ({ entity, defaultKind }: CatalogItemProps) => {
               defaultKind={defaultKind ?? 'Component'}
               title={entity.metadata.title ?? entity.metadata.name}
             />
-            <Box display='inline' marginLeft='0.25rem'>
-            <IconButton
-              size='small'
-              color={isStarredEntity ? 'secondary' : 'default'}
-              aria-label="Favorite"
-              onClick={() => toggleStarredEntity()}
-            >
-              {isStarredEntity ? <FavoriteIcon fontSize='small' /> : <FavoriteBorderIcon fontSize='small' />}
-            </IconButton>
+            <Box display="inline" marginLeft="0.25rem">
+              <IconButton
+                size="small"
+                color={isStarredEntity ? 'secondary' : 'default'}
+                aria-label="Favorite"
+                onClick={() => {
+                  toggleStarredEntity();
+                  analytics.captureEvent(
+                    'click',
+                    `${
+                      isStarredEntity ? 'unfavorite' : 'favorite'
+                    } - ${entityRef}`,
+                  );
+                }}
+              >
+                {isStarredEntity ? (
+                  <FavoriteIcon fontSize="small" />
+                ) : (
+                  <FavoriteBorderIcon fontSize="small" />
+                )}
+              </IconButton>
             </Box>
           </Typography>
         }

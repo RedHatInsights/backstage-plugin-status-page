@@ -27,11 +27,7 @@ export const CatalogToolbar = ({ children }: CatalogToolbarProps) => {
       flexWrap="wrap"
       className={container}
     >
-      <Box
-        alignSelf="flex-end"
-        display="flex"
-        flexDirection="column"
-      >
+      <Box alignSelf="flex-end" display="flex" flexDirection="column">
         <Typography variant="body2" component="label" className={textLabel}>
           Search
         </Typography>

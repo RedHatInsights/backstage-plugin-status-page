@@ -1,5 +1,5 @@
-import { Entity } from "@backstage/catalog-model";
-import { EntityFilter } from "@backstage/plugin-catalog-react";
+import { Entity } from '@backstage/catalog-model';
+import { EntityFilter } from '@backstage/plugin-catalog-react';
 
 export function reduceCatalogFilters(
   filters: EntityFilter[],

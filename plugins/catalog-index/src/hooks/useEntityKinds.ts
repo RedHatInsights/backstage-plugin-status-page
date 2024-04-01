@@ -5,7 +5,7 @@ import { useAsyncFn, useDebounce } from 'react-use';
 
 export const useEntityKinds = () => {
   const catalogApi = useApi(catalogApiRef);
-  const [kinds, setKinds] = useState([] as {value: string, count: number}[]);
+  const [kinds, setKinds] = useState([] as { value: string; count: number }[]);
 
   const [{ loading, error }, refresh] = useAsyncFn(async () => {
     const result = await catalogApi.getEntityFacets({ facets: ['kind'] });

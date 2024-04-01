@@ -1,9 +1,12 @@
-import { useApi } from "@backstage/core-plugin-api";
-import { EntityTypeFilter, catalogApiRef } from "@backstage/plugin-catalog-react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useAsync } from "react-use"
-import { usePaginatedEntityList } from "../contexts/PaginatedEntityListProvider";
-import { isEqual, sortBy } from "lodash";
+import { useApi } from '@backstage/core-plugin-api';
+import {
+  EntityTypeFilter,
+  catalogApiRef,
+} from '@backstage/plugin-catalog-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useAsync } from 'react-use';
+import { usePaginatedEntityList } from '../contexts/PaginatedEntityListProvider';
+import { isEqual, sortBy } from 'lodash';
 
 export function useEntityTypeFilter(): {
   loading: boolean;
