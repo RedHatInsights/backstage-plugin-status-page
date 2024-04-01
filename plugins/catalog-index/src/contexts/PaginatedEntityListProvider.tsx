@@ -196,7 +196,7 @@ export const PaginatedEntityListProvider = <
           totalCount: response.totalItems,
           pageOptions: {
             ...pageOptions,
-            ...response.pageInfo
+            ...response.pageInfo,
           },
         });
       } else {
@@ -241,20 +241,23 @@ export const PaginatedEntityListProvider = <
 
       /* HACK: If the filters are updated, reset the pagination to the first page */
       setPageCursor('');
-      setPageOptions(prevOptions => ({ ...prevOptions, page: 0}));
+      setPageOptions(prevOptions => ({ ...prevOptions, page: 0 }));
     },
     [],
   );
 
-  const updatePageOptions = useCallback((update: Partial<PageOptions>) => {
-    if (update.page! < outputState.pageOptions.page) {
-      setPageCursor(outputState.pageOptions.prevCursor);
-    } else if (update.page! > outputState.pageOptions.page) {
-      setPageCursor(outputState.pageOptions.nextCursor);
-    }
+  const updatePageOptions = useCallback(
+    (update: Partial<PageOptions>) => {
+      if (update.page! < outputState.pageOptions.page) {
+        setPageCursor(outputState.pageOptions.prevCursor);
+      } else if (update.page! > outputState.pageOptions.page) {
+        setPageCursor(outputState.pageOptions.nextCursor);
+      }
 
-    setPageOptions(prevPageOptions => ({ ...prevPageOptions, ...update }));
-  }, [outputState.pageOptions]);
+      setPageOptions(prevPageOptions => ({ ...prevPageOptions, ...update }));
+    },
+    [outputState.pageOptions],
+  );
 
   const value = useMemo(
     () => ({

@@ -32,7 +32,7 @@ const getAPIIcon = (apiType: string) => {
   } else if (apiType === 'openapi') {
     return <OpenAPIIcon />;
   }
-  return <CodeIcon />
+  return <CodeIcon />;
 };
 
 export const getEntityIcon = (entity: Pick<Entity, 'kind' | 'spec'>) => {

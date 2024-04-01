@@ -6,7 +6,7 @@ metadata:
   title: Catalog Index Plugin Backstage
   description: Backstage Plugin for Catalog Index Page
   namespace: devex
-  tags: 
+  tags:
     - backstage
     - idp
     - developers

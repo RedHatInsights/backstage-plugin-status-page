@@ -1,22 +1,27 @@
 import React, { useEffect } from 'react';
 import { Box } from '@material-ui/core';
 import { Select } from '@backstage/core-components';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { capitalize } from 'lodash';
 import { useEntityTypeFilter } from '../hooks/useEntityTypes';
 
-export const EntityTypePicker = (props: { hidden?: boolean, initialFilter?: string }) => {
+export const EntityTypePicker = (props: {
+  hidden?: boolean;
+  initialFilter?: string;
+}) => {
   const { hidden, initialFilter } = props;
 
   const alertApi = useApi(alertApiRef);
+  const analytics = useAnalytics();
 
-  const { error, availableTypes, selectedTypes, setSelectedTypes } = useEntityTypeFilter();
-  
+  const { error, availableTypes, selectedTypes, setSelectedTypes } =
+    useEntityTypeFilter();
+
   useEffect(() => {
     if (error) {
       alertApi.post({
         message: `Fauled to load entity kinds`,
-        severity: 'error'
+        severity: 'error',
       });
     }
     if (initialFilter) {
@@ -40,7 +45,10 @@ export const EntityTypePicker = (props: { hidden?: boolean, initialFilter?: stri
         label="Type"
         items={items}
         selected={(items.length > 1 ? selectedTypes[0] : undefined) ?? 'all'}
-        onChange={value => setSelectedTypes(value === 'all' ? [] : [String(value)])}
+        onChange={value => {
+          setSelectedTypes(value === 'all' ? [] : [String(value)]);
+          analytics.captureEvent('filter', `type - ${String(value)}`);
+        }}
       />
     </Box>
   );

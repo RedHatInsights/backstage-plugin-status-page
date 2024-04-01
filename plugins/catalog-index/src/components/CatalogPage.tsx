@@ -44,23 +44,23 @@ export const CatalogPage = () => {
       pageTitleOverride={`${orgName} Catalog`}
       themeId="home"
     >
-    <PaginatedEntityListProvider>
-      <Content>
-        <Container>
-          <ContentHeader
-            titleComponent={
-              <Typography variant="h2" className={heading}>
-                All {plural(kind)} ({count})
-              </Typography>
-            }
-          >
-            <CreateButton title="Create" to={createComponentLink?.()} />
-            <SupportButton />
-          </ContentHeader>
-          <CatalogList dispatchActiveKind={handleDispatch} />
-        </Container>
-      </Content>
-    </PaginatedEntityListProvider>
+      <PaginatedEntityListProvider>
+        <Content>
+          <Container>
+            <ContentHeader
+              titleComponent={
+                <Typography variant="h2" className={heading}>
+                  All {plural(kind)} ({count})
+                </Typography>
+              }
+            >
+              <CreateButton title="Create" to={createComponentLink?.()} />
+              <SupportButton />
+            </ContentHeader>
+            <CatalogList dispatchActiveKind={handleDispatch} />
+          </Container>
+        </Content>
+      </PaginatedEntityListProvider>
     </PageWithHeader>
   );
 };

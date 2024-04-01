@@ -7,6 +7,6 @@ createDevApp()
   .addPage({
     element: <CatalogPage />,
     title: 'Root Page',
-    path: '/catalog-index'
+    path: '/catalog-index',
   })
   .render();

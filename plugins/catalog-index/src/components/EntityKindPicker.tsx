@@ -4,7 +4,7 @@ import { useEntityKinds } from '../hooks/useEntityKinds';
 import { EntityKindFilter } from '@backstage/plugin-catalog-react';
 import { Box } from '@material-ui/core';
 import { Select } from '@backstage/core-components';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { capitalize } from 'lodash';
 
 export const EntityKindPicker = (props: {
@@ -14,6 +14,7 @@ export const EntityKindPicker = (props: {
   const { hidden, initialFilter = 'component' } = props;
 
   const alertApi = useApi(alertApiRef);
+  const analytics = useAnalytics();
 
   const {
     filters,
@@ -22,7 +23,10 @@ export const EntityKindPicker = (props: {
   } = usePaginatedEntityList();
   const { error, kinds } = useEntityKinds();
 
-  const queryParamKind = useMemo(() => [kindParameter].flat()[0], [kindParameter]);
+  const queryParamKind = useMemo(
+    () => [kindParameter].flat()[0],
+    [kindParameter],
+  );
 
   const [selectedKind, setSelectedKind] = useState(
     queryParamKind ?? filters.kind?.value ?? initialFilter,
@@ -56,9 +60,9 @@ export const EntityKindPicker = (props: {
       });
     }
   }, [filters, selectedKind, updateFilters]);
-  
+
   const items =
-    (!error && kinds?.length > 0)
+    !error && kinds?.length > 0
       ? kinds?.map(key => ({
           value: key.value.toLocaleLowerCase(),
           label: key.value,
@@ -76,7 +80,10 @@ export const EntityKindPicker = (props: {
         label="Kind"
         items={items}
         selected={selectedKind.toLocaleLowerCase()}
-        onChange={value => setSelectedKind(String(value))}
+        onChange={value => {
+          setSelectedKind(String(value));
+          analytics.captureEvent('filter', `kind - ${String(value)}`);
+        }}
       />
     </Box>
   );

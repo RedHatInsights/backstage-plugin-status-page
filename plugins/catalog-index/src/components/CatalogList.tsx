@@ -8,11 +8,16 @@ import {
   TablePagination,
   makeStyles,
 } from '@material-ui/core';
-import { EmptyState, ErrorPanel, Link, Progress } from '@backstage/core-components';
+import {
+  EmptyState,
+  ErrorPanel,
+  Link,
+  Progress,
+} from '@backstage/core-components';
 import { CatalogToolbar } from './CatalogToolbar';
 import { usePaginatedEntityList } from '../contexts/PaginatedEntityListProvider';
 import { plural } from 'pluralize';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   list: {
@@ -32,6 +37,7 @@ interface CatalogListProps {
 export const CatalogList = ({ dispatchActiveKind }: CatalogListProps) => {
   const { list } = useStyles();
   const alertApi = useApi(alertApiRef);
+  const analytics = useAnalytics();
 
   const {
     loading,
@@ -58,6 +64,10 @@ export const CatalogList = ({ dispatchActiveKind }: CatalogListProps) => {
     newPage: number,
   ) => {
     updatePageOptions({ ...pageOptions, page: newPage });
+    analytics.captureEvent(
+      'paginate',
+      `page: ${newPage}, size: ${pageOptions.rowsPerPage}`,
+    );
   };
 
   /* Updates the query params after a rowsPerPage change */
@@ -68,17 +78,23 @@ export const CatalogList = ({ dispatchActiveKind }: CatalogListProps) => {
       rowsPerPage: parseInt(event.target.value ?? '10', 10),
       page: 0,
     });
+    analytics.captureEvent(
+      'paginate',
+      `page: ${pageOptions.page}, size: ${parseInt(
+        event.target.value ?? '10',
+        10,
+      )}`,
+    );
   };
 
   useEffect(() => {
     if (error) {
       alertApi.post({
         message: 'Failed to load entities. Please try again.',
-        severity: 'error'
+        severity: 'error',
       });
     }
   }, [alertApi, error]);
-
 
   const EntitiesList = () => {
     if (error) {
