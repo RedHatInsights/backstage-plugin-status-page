@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-proxy-manager [0.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-proxy-manager@0.1.4...@appdev-platform/backstage-plugin-proxy-manager@0.2.0) (2024-04-03)
+
+
+### Features
+
+* **DEE-929:** capture analytics events for proxy manager plugin ([1827a66](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/1827a6655492afc7feb6c85fae36f0070e634c80))
+
 ## @appdev-platform/backstage-plugin-proxy-manager [0.1.4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-proxy-manager@0.1.3...@appdev-platform/backstage-plugin-proxy-manager@0.1.4) (2024-01-16)
 
 
