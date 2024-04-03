@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-spaship [0.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-spaship@0.1.3...@appdev-platform/backstage-plugin-spaship@0.2.0) (2024-04-03)
+
+
+### Features
+
+* **DEE-931:** capture analytics for SPAship plugin ([5af079a](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/5af079a5cc4f59a99e669d7daf17b86747352ba3))
+
 ## @appdev-platform/backstage-plugin-spaship [0.1.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-spaship@0.1.2...@appdev-platform/backstage-plugin-spaship@0.1.3) (2024-02-08)
 
 
