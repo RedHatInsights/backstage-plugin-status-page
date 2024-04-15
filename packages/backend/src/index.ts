@@ -33,6 +33,7 @@ import feedback from './plugins/feedback';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
+import reportPortal from './plugins/report-portal';
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();
@@ -89,6 +90,9 @@ async function main() {
   const appEnv = useHotMemoize(module, () => createEnv('app'));
   const matomoEnv = useHotMemoize(module, () => createEnv('matomo'));
   const feedbackEnv = useHotMemoize(module, () => createEnv('feedback'));
+  const reportPortalEnv = useHotMemoize(module, () =>
+    createEnv('report-portal'),
+  );
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
@@ -99,6 +103,7 @@ async function main() {
   apiRouter.use('/search', await search(searchEnv));
   apiRouter.use('/matomo', await matomo(matomoEnv));
   apiRouter.use('/feedback', await feedback(feedbackEnv));
+  apiRouter.use('/report-portal', await reportPortal(reportPortalEnv));
 
   // Add backends ABOVE this line; this 404 handler is the catch-all fallback
   apiRouter.use(notFoundHandler());

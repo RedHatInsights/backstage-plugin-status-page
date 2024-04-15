@@ -43,6 +43,7 @@ import {
 } from '@appdev-platform/backstage-plugin-feedback';
 import { MockPluginPage } from '@appdev-platform/plugin-mock-plugin';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
+import { ReportPortalGlobalPage } from '@appdev-platform/backstage-plugin-report-portal';
 
 const app = createApp({
   apis,
@@ -61,7 +62,7 @@ const app = createApp({
       catalogIndex: catalogPlugin.routes.catalogIndex,
     });
     bind(feedbackPlugin.externalRoutes, {
-      viewDocs: techdocsPlugin.routes.root
+      viewDocs: techdocsPlugin.routes.root,
     });
   },
   featureFlags: [
@@ -76,7 +77,6 @@ const app = createApp({
 const routes = (
   <FlatRoutes>
     <Route path="/" element={<Navigate to="catalog" />} />
-
     <FeatureFlagged with="default-catalog-index">
       <Route path="/catalog" element={<CatalogIndexPage />} />
     </FeatureFlagged>
@@ -123,11 +123,11 @@ const routes = (
     <Route path="/proxy-manager" element={<ProxyManagerPage />} />
     <Route path="/feedback" element={<GlobalFeedbackPage />} />
     <Route path="/mock-plugin" element={<MockPluginPage />} />
-
+    <Route path="/report-portal" element={<ReportPortalGlobalPage />} />
     <Route
       path="/catalog-unprocessed-entities"
       element={<CatalogUnprocessedEntitiesPage />}
-    />;
+    />
   </FlatRoutes>
 );
 
