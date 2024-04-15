@@ -79,6 +79,10 @@ import {
   isContactDetailsAvailable,
 } from '@appdev-platform/backstage-plugin-contact-details';
 import { EntityFeedbackPage } from '@appdev-platform/backstage-plugin-feedback';
+import {
+  ReportPortalOverviewCard,
+  isReportPortalAvailable,
+} from '@appdev-platform/backstage-plugin-report-portal';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -189,6 +193,11 @@ const overviewContent = (
       <EntitySwitch.Case if={isContactDetailsAvailable}>
         <Grid item md={4} xs={12}>
           <ContactDetailsCard />
+        </Grid>
+      </EntitySwitch.Case>
+      <EntitySwitch.Case if={isReportPortalAvailable}>
+        <Grid item lg={4} md={6} xs={12}>
+          <ReportPortalOverviewCard variant="gridItem" />
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>

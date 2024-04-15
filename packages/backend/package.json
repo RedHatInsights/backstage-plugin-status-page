@@ -20,6 +20,7 @@
     "@appdev-platform/backstage-plugin-catalog-backend-module-spaship": "*",
     "@appdev-platform/backstage-plugin-feedback-backend": "*",
     "@appdev-platform/backstage-plugin-matomo-backend": "*",
+    "@appdev-platform/backstage-plugin-report-portal-backend": "^0.1.0",
     "@backstage/backend-common": "^0.19.4",
     "@backstage/backend-tasks": "^0.5.7",
     "@backstage/catalog-client": "^1.4.3",
