@@ -141,6 +141,13 @@ catalog:
         - allow: [Component, Group, User]
     - type: file
       target: ./examples/test-data/feedback-plugin.yaml
+    # Test data for report portal
+    - type: file
+      target: ./examples/test-data/report-portal-plugin.yaml
+      rules:
+        - allow:
+            - Component
+            - User
     # Local example template
     - type: file
       target: ./examples/template/template.yaml
