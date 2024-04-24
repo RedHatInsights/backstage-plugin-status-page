@@ -6,7 +6,6 @@ spec:
   owner: group:redhat/one-platform-devs
   lifecycle: producion
   targets:
-    - ./plugins/analytics-module-matomo/catalog-info.yaml
     - ./plugins/catalog-backend-module-cmdb/catalog-info.yaml
     - ./plugins/catalog-backend-module-spaship/catalog-info.yaml
     - ./plugins/cmdb/catalog-info.yaml
@@ -15,6 +14,3 @@ spec:
     - ./plugins/matomo/catalog-info.yaml
     - ./plugins/matomo-backend/catalog-info.yaml
     - ./plugins/spaship/catalog-info.yaml
-    - ./plugins/jira-server/catalog-info.yaml
-    - ./plugins/feedback/catalog-info.yaml
-    - ./plugins/feedback-backend/catalog-info.yaml

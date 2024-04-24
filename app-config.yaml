@@ -3,7 +3,7 @@ app:
   baseUrl: http://localhost:3000
   analytics:
     matomo:
-      instanceUrl: ${ANALYTICS_MATOMO_INSTANCE_URL}
+      host: ${ANALYTICS_MATOMO_INSTANCE_URL}
       siteId: ${ANALYTICS_MATOMO_SITE_ID}
 
 organization:
