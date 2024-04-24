@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { LandingPage } from './helpers/landingPage';
 import { MatomoPage } from './helpers/matomoPage';
+
 require('dotenv').config();
+
 test.describe('Matomo Test App', async () => {
   test('test the section of matomo with no matomo configured', async ({
     page,

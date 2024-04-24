@@ -39,7 +39,7 @@ test.describe('BackStage Lighthouse Plugin', async () => {
     await page.waitForTimeout(2000);
     for (let i = 1; i <= 4; i++) {
       expect(
-        page.locator('//tbody/tr[' + i + ']/td[3]/div[1]/div[1]'),
+        page.locator(`//tbody/tr[${i}]/td[3]/div[1]/div[1]`),
       ).toHaveText('Lighthouse');
     }
     await page.locator("//input[@placeholder='Filter']").clear();
@@ -50,7 +50,7 @@ test.describe('BackStage Lighthouse Plugin', async () => {
     ).toBeDefined();
     await page.locator("div[aria-labelledby='branches']").click();
     for (let i = 1; i < 7; i++) {
-      await page.locator('ul li:nth-child' + '(' + i + ')').click();
+      await page.locator(`ul li:nth-child(${i})`).click();
       expect(page.locator("//div[@class='recharts-wrapper']")).toBeDefined();
       expect(page.locator("//div[@aria-labelledby='urls']")).not.toBeNull();
       if (i < 6) await page.locator("div[aria-labelledby='branches']").click();

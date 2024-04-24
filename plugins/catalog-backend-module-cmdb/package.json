@@ -43,7 +43,8 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "^0.2.6",
     "@backstage/cli": "^0.22.8",
-    "@types/nunjucks": "^3.2.6"
+    "@types/nunjucks": "^3.2.6",
+    "@types/uuid": "^9.0.8"
   },
   "files": [
     "dist",

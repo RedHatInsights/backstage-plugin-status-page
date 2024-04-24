@@ -15,7 +15,7 @@ import {
 import { fetchAll } from '../../apis/ProxyFetch';
 import './proxy-list.css';
 import { Skeleton } from '@material-ui/lab';
-import TablePagination from '@mui/material/TablePagination';
+import TablePagination from '@material-ui/core/TablePagination'
 import { ToastContainer } from 'react-toastify';
 import Search from '@material-ui/icons/Search';
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
@@ -232,7 +232,7 @@ export const ProxyList = () => {
                             </TableCell>
                           </TableRow>
                         );
-                      else return;
+                      return null;
                     })
                   ) : (
                     <TableRow>

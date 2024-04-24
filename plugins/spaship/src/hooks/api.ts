@@ -156,8 +156,8 @@ export const useGetDeploymentCountByEnv = (filters: TApiFilter = {}) => {
       return data?.data;
     },
     select: data => {
-      const sum = data.reduce((prev, { count }) => (prev += count), 0);
-      const eph = data.find(({ env }) => env === 'ephemeral')?.count || 0;
+      const sum = data.reduce((prev, { count }) => (prev + count), 0);
+      const eph = data.find(({ env }) => env === 'ephemeral')?.count ?? 0;
       const others = data.reduce((prev, { count, env }) => {
         if (
           env === 'qa' ||
