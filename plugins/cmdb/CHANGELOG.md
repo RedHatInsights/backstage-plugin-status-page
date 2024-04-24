@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-cmdb [0.2.4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-cmdb@0.2.3...@appdev-platform/backstage-plugin-cmdb@0.2.4) (2024-04-24)
+
+
+### Bug Fixes
+
+* **lint:** Fix yarn lint:all issues ([b32f03b](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/b32f03bb6a4c7ef20367c094c71224ab31e2518b))
+
 ## @appdev-platform/backstage-plugin-cmdb [0.2.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-cmdb@0.2.2...@appdev-platform/backstage-plugin-cmdb@0.2.3) (2024-01-16)
 
 
