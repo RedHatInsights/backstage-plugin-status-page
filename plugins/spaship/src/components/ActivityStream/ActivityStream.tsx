@@ -1,16 +1,14 @@
 import React from 'react';
 import { Chip, Grid, Box } from '@material-ui/core';
-import {
-  Check as CheckIcon,
-  Dialpad as CubesIcon,
-  Camera as ClusterIcon,
-  AlarmOutlined as OutlinedClockIcon,
-  Person as UserIcon,
-  Adjust as TimesIcon,
-  ErrorRounded as ExclamationCircleIcon,
-  SyncAlt as SyncAltIcon,
-  Delete as TrashIcon,
-} from '@material-ui/icons';
+import CheckIcon from '@material-ui/icons/Check'
+import CubesIcon from '@material-ui/icons/Dialpad'
+import ClusterIcon from '@material-ui/icons/Camera'
+import OutlinedClockIcon from '@material-ui/icons/AlarmOutlined'
+import UserIcon from '@material-ui/icons/Person'
+import TimesIcon from '@material-ui/icons/Adjust'
+import ExclamationCircleIcon from '@material-ui/icons/ErrorRounded'
+import SyncAltIcon from '@material-ui/icons/SyncAlt'
+import TrashIcon from '@material-ui/icons/Delete'
 import dayjs from 'dayjs';
 import { TActivityStream } from '../../hooks/types';
 
@@ -26,7 +24,7 @@ const toPascalCase = (sentence: string) =>
     .map(word => word[0].toUpperCase().concat(word.slice(1)))
     .join(' ');
 
-const activities = {
+const _activities = {
   APPLICATION_DEPLOYED: ({
     props,
     message,
@@ -377,8 +375,8 @@ const DeploymentKind = ({
   isGlobal: boolean;
   spashipUrl?: string;
 }) => {
-  if (Object.prototype.hasOwnProperty.call(activities, activity.action)) {
-    return activities[activity.action]({ ...activity, isGlobal, spashipUrl });
+  if (Object.prototype.hasOwnProperty.call(_activities, activity.action)) {
+    return _activities[activity.action]({ ...activity, isGlobal, spashipUrl });
   }
   return <div>Activity message - {activity.message}</div>;
 };

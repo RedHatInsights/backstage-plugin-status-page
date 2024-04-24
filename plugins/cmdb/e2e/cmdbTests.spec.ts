@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { LandingPage } from './helpers/landingPage';
 import { CMDBCardPage } from './helpers/cmdbCard';
-test.describe('BackStage SPAShip Plugin', async () => {
 
+test.describe('BackStage CMDB Plugin', async () => {
   test('Test the CMDB Card plugin with no config in place', async ({
     page,
   }) => {

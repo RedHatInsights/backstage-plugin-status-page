@@ -96,6 +96,38 @@ export const SpashipGlobal = () => {
     { label: '365', value: deploymentTime365Days },
   ];
 
+  const getDeplymentHistoryByMonth = () => {
+    return Object.keys(deploymentHistoryByMonth || {})?.length ? (
+      <ResponsiveContainer width="100%" height={210}>
+        <LineChart
+          data={deploymentHistoryByMonth}
+          margin={{ top: 20, right: 20, bottom: 5, left: 0 }}
+        >
+          <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+          <Tooltip />
+          <Legend />
+          <XAxis dataKey="date" />
+          {Object.keys(deploymentHistoryByMonth?.[0] || {})
+            .filter(key => key !== 'date')
+            .map((env, index) => (
+              <Line
+                type="monotone"
+                dataKey={env}
+                name={env}
+                key={env}
+                stroke={lineCharts[index % lineCharts.length]}
+              />
+            ))}
+          <YAxis />
+        </LineChart>
+      </ResponsiveContainer>
+    ) : (
+      <Center>
+        <EmptyState />
+      </Center>
+    )
+  }
+
   return (
     <Page themeId="tool">
       <Header
@@ -268,35 +300,7 @@ export const SpashipGlobal = () => {
                     <Center>
                       <CircularProgress size={64} />
                     </Center>
-                  ) : Object.keys(deploymentHistoryByMonth || {})?.length ? (
-                    <ResponsiveContainer width="100%" height={210}>
-                      <LineChart
-                        data={deploymentHistoryByMonth}
-                        margin={{ top: 20, right: 20, bottom: 5, left: 0 }}
-                      >
-                        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-                        <Tooltip />
-                        <Legend />
-                        <XAxis dataKey="date" />
-                        {Object.keys(deploymentHistoryByMonth?.[0] || {})
-                          .filter(key => key !== 'date')
-                          .map((env, index) => (
-                            <Line
-                              type="monotone"
-                              dataKey={env}
-                              name={env}
-                              key={env}
-                              stroke={lineCharts[index % lineCharts.length]}
-                            />
-                          ))}
-                        <YAxis />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <Center>
-                      <EmptyState />
-                    </Center>
-                  )}
+                  ) : getDeplymentHistoryByMonth() }
                 </InfoCard>
               </div>
             )}

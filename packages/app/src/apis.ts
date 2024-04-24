@@ -9,7 +9,7 @@ import {
   configApiRef,
   createApiFactory,
 } from '@backstage/core-plugin-api';
-import { MatomoAnalytics } from '@appdev-platform/backstage-plugin-analytics-module-matomo';
+import { MatomoAnalytics } from '@janus-idp/backstage-plugin-analytics-module-matomo';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({

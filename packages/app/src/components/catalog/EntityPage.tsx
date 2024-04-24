@@ -65,7 +65,7 @@ import { SpashipPage } from '@appdev-platform/backstage-plugin-spaship';
 import {
   EntityJiraOverviewCard,
   isJiraAvailable,
-} from '@appdev-platform/backstage-plugin-jira-server';
+} from '@roadiehq/backstage-plugin-jira';
 
 import {
   ServiceDetailsCard,
@@ -78,7 +78,7 @@ import {
   ContactDetailsCard,
   isContactDetailsAvailable,
 } from '@appdev-platform/backstage-plugin-contact-details';
-import { EntityFeedbackPage } from '@appdev-platform/backstage-plugin-feedback';
+import { EntityFeedbackPage } from '@janus-idp/backstage-plugin-feedback';
 import {
   ReportPortalOverviewCard,
   isReportPortalAvailable,

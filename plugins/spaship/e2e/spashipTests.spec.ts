@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LandingPage } from './helpers/landingPage';
 import { SPAshipPage } from './helpers/spashipPage';
+
 test.describe('BackStage SPAShip Plugin', async () => {
   test('Test the section of SPAship plugin with no config in place', async ({
     page,

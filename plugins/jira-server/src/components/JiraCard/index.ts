@@ -1,1 +1,0 @@
-export { JiraCard } from './JiraCard';

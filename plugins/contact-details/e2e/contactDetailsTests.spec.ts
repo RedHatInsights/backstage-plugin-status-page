@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LandingPage } from './helpers/landingPage';
 import { ContactDetailsCard } from './helpers/contactDetailsCard';
+
 test.describe('BackStage Contact Details Tests Plugin', async () => {
 
   test('Test the Contact Details Card plugin with no config in place', async ({

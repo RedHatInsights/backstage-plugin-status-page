@@ -40,7 +40,7 @@ import {
   GlobalFeedbackPage,
   OpcFeedbackComponent,
   feedbackPlugin,
-} from '@appdev-platform/backstage-plugin-feedback';
+} from '@janus-idp/backstage-plugin-feedback';
 import { MockPluginPage } from '@appdev-platform/plugin-mock-plugin';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
 import { ReportPortalGlobalPage } from '@appdev-platform/backstage-plugin-report-portal';

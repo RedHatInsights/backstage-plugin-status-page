@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+
 export class LighthousePage {
   constructor(page) {
     this.page = page;
@@ -9,12 +10,15 @@ export class LighthousePage {
       "xpath=//a[@title='Lighthouse Instance']",
     );
     this.lighthouseMenu = page.getByTestId('menu-button');
-    (this.lighthouseMenuInspect = page.getByRole('menuitem', {
+
+    this.lighthouseMenuInspect = page.getByRole('menuitem', {
       name: 'Inspect entity',
-    })),
-      (this.lighthouseComponentLink = page.locator(
+    });
+
+    this.lighthouseComponentLink = page.locator(
         "xpath=//a[normalize-space()='example-website-for-lighthouse-plugin']",
-      ));
+    );
+
   }
   async openLighthouseTab() {
     await this.lighthouseTab.click();

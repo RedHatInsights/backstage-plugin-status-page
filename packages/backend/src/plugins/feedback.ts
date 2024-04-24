@@ -1,4 +1,4 @@
-import { createRouter } from '@appdev-platform/backstage-plugin-feedback-backend';
+import { createRouter } from '@janus-idp/backstage-plugin-feedback-backend';
 import { PluginEnvironment } from '../types';
 import { Router } from 'express';
 
