@@ -4,7 +4,7 @@ parameters:
   - name: NAMESPACE
     value: one-platform--backstage-plugins-dev
   - name: NAME
-    value: backstage-plugins
+    value: ${NAME}
   - name: CMDB_CODE
     value: ONEP-003
   - name: GIT_URI
@@ -12,9 +12,9 @@ parameters:
   - name: GIT_REF
     value: main
   - name: IMAGE
-    value: images.paas.redhat.com/app-dev-platform/backstage-plugins:latest
+    value: ${IMAGE}
   - name: ROUTER_HOSTNAME
-    value: one-platform-console-plugin-dev.apps.int.spoke.preprod.us-east-1.aws.paas.redhat.com
+    value: ${ROUTER_HOSTNAME}
   - name: SECRET_NAME
     value: backstage-secrets
   - name: CA_CONFIG_MAP
