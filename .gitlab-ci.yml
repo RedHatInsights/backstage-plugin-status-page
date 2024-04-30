@@ -1,20 +1,45 @@
 stages:
-  - Yarn-Build
-  # - Test
-  - Publish-Plugins
-  - Mpp-Build
-  - Mpp-Deploy
+  - install
+  - build
+  - lint
+# - test
+  - publish
+  - image-build
+  - deploy-dev
+  - deploy-qa
 
-yarn_build:
-  stage: Yarn-Build
+yarn_install:
+  stage: install
   image: images.paas.redhat.com/dat/nodeci-base-image:1.0.0
   tags: 
     - one-platform-pipeline-runner
   needs: []
   rules:
     - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == 'merge_request_event')
-  before_script:
+  script:
     - yarn install
+  cache:
+    when: on_success
+    key:
+      files:
+        - yarn.lock
+    paths:
+      - "**/node_modules/"
+  artifacts:
+    when: on_success
+    paths:
+      - "**/node_modules/"
+    expire_in: 1 days
+
+yarn_build:
+  stage: build
+  image: images.paas.redhat.com/dat/nodeci-base-image:1.0.0
+  tags: 
+    - one-platform-pipeline-runner
+  needs: ["yarn_install"]
+  rules:
+    - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == 'merge_request_event')
+  before_script:
     - git config --global --add safe.directory /builds/app-dev-platform/backstage-plugins
   script:
     - yarn tsc
@@ -34,27 +59,45 @@ yarn_build:
       - "plugins/**/dist/"
     expire_in: 1 days
 
+yarn_lint:
+  stage: lint
+  image: images.paas.redhat.com/dat/nodeci-base-image:1.0.0
+  tags: 
+    - one-platform-pipeline-runner
+  needs: ["yarn_install"]
+  rules:
+    - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == 'merge_request_event')
+  before_script:
+    - git config --global --add safe.directory /builds/app-dev-platform/backstage-plugins
+  script:
+    - yarn lint:all
+
 publish_plugins:
-  stage: Publish-Plugins
+  stage: publish
   image: images.paas.redhat.com/dat/nodeci-base-image:1.0.0
   tags:
     - one-platform-pipeline-runner
-  needs: ["yarn_build"]
+  needs: 
+    - job: yarn_build
+      artifacts: true
+    - job: yarn_lint
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   before_script:
-    - yarn install
     - git config --global http.sslVerify "false"
     - git config --global --add safe.directory /builds/app-dev-platform/backstage-plugins
   script: 
     - yarn release --ignore-private-packages
 
 .mpp_build:
-  stage: Mpp-Build
+  stage: image-build
   image: registry.redhat.io/openshift4/ose-cli:v4.8
   tags:
     - one-platform-pipeline-runner
-  needs: ["yarn-build"]
+  needs: 
+    - job: yarn_build
+      artifacts: false
+    - job: yarn_lint
   rules:
   - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   before_script:
@@ -67,10 +110,9 @@ publish_plugins:
     - oc process -f openshift/encrypted-secrets.yaml --ignore-unknown-parameters=true | oc apply -f -
     - oc process -f openshift/buildconfig.yaml -p "TAG=$TAG" --ignore-unknown-parameters=true | oc apply -f -
     - oc start-build bc/backstage-plugins --follow --wait
-    - oc process -f openshift/template.yaml --ignore-unknown-parameters=true | oc apply -f -    
 
 .mpp_deploy:
-  stage: Mpp-Deploy
+  stage: deploy-dev
   image: registry.redhat.io/openshift4/ose-cli:v4.8
   tags:
     - one-platform-pipeline-runner
@@ -83,8 +125,9 @@ publish_plugins:
   script:  
     - oc config use-context one-platform-pipeline-preprod
     - oc project "$namespace"
-    - oc scale deployment backstage-plugins --replicas=0
-    - oc scale deployment backstage-plugins --replicas=1
+    - oc process -f openshift/template.yaml -p "NAME=backstage-plugins-$ENV" -p "IMAGE=$IMAGES_PAAS_REPO:$CI_COMMIT_SHORT_SHA" -p "ROUTER_HOSTNAME=$ROUTER_HOSTNAME" --ignore-unknown-parameters=true | oc apply -f -    
+    - oc scale deployment "backstage-plugins-$ENV" --replicas=0
+    - oc scale deployment "backstage-plugins-$ENV" --replicas=1
 
 # test:
 #   image: mcr.microsoft.com/playwright:latest
@@ -129,17 +172,30 @@ publish_plugins:
 #       - ./playwright-report/
 #     when: always
 
-Build-Image:
+image-build:
   variables:
-    TAG: $IMAGE_VERSION
+    TAG: $CI_COMMIT_SHORT_SHA
     namespace: one-platform--pipeline
   extends: .mpp_build
-  stage: Mpp-Build
-  needs: ["yarn_build"]
+  stage: image-build
 
-MPP-Deploy:
+deploy-dev:
   variables:
     namespace: one-platform--backstage-plugins-dev
+    ENV: dev
+    IMAGES_PAAS_REPO: $IMAGES_PAAS_REPO
+    ROUTER_HOSTNAME: $ROUTER_HOSTNAME_DEV
   extends: .mpp_deploy
-  stage: Mpp-Deploy
-  needs: ["Build-Image"]
+  stage: deploy-dev
+  needs: ["image-build"]
+
+deploy-qa:
+  variables:
+    namespace: one-platform--backstage-plugins-dev
+    ENV: qa
+    IMAGES_PAAS_REPO: $IMAGES_PAAS_REPO
+    ROUTER_HOSTNAME: $ROUTER_HOSTNAME_QA
+  extends: .mpp_deploy
+  stage: deploy-qa
+  needs: ["deploy-dev"]
+  when: manual
