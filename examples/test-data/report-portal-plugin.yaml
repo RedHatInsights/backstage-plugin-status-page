@@ -15,6 +15,20 @@ spec:
   system: examples
 ---
 apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: example-for-report-portal-plugin-2
+  description: Report portal plugin example component 2
+  annotations:
+    reportportal.io/project-name: 'dxp_qe'
+    reportportal.io/launch-name: 'search-language-detection'
+spec:
+  type: service
+  lifecycle: experimental
+  owner: user:default/yoswal
+  system: examples
+---
+apiVersion: backstage.io/v1alpha1
 kind: User
 metadata:
   name: yoswal
