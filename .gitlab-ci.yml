@@ -126,7 +126,7 @@ stages:
     - oc config use-context one-platform-pipeline-preprod
     - oc project "$namespace"
     - oc process -f openshift/template.yaml -p "NAME=backstage-plugins-$ENV" -p "IMAGE=$IMAGES_PAAS_REPO:$CI_COMMIT_SHORT_SHA" -p "ROUTER_HOSTNAME=$ROUTER_HOSTNAME" --ignore-unknown-parameters=true | oc apply -f -    
-    - oc rollout restart deploy/"backstage-plugins-$ENV"
+    - oc rollout restart deploy/backstage-plugins-$ENV
     # - oc scale deployment "backstage-plugins-$ENV" --replicas=0
     # - oc scale deployment "backstage-plugins-$ENV" --replicas=1
 
@@ -199,4 +199,4 @@ deploy-qa:
   extends: .mpp_deploy
   stage: deploy-qa
   # needs: ["deploy-dev"]
-  when: manual
+  # when: manual
