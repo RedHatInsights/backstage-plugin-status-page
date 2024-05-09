@@ -117,7 +117,7 @@ stages:
   tags:
     - one-platform-pipeline-runner
   rules:
-  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
   before_script:
     - mkdir ~/.kube
     - cp /alm/kubeconfig ~/.kube/config
