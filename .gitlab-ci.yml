@@ -12,7 +12,7 @@ yarn_install:
   stage: install
   image: images.paas.redhat.com/dat/nodeci-base-image:1.0.0
   tags: 
-    - one-platform-pipeline-runner
+    - shared
   needs: []
   rules:
     - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == 'merge_request_event')
@@ -35,7 +35,7 @@ yarn_build:
   stage: build
   image: images.paas.redhat.com/dat/nodeci-base-image:1.0.0
   tags: 
-    - one-platform-pipeline-runner
+    - shared
   needs: ["yarn_install"]
   rules:
     - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == 'merge_request_event')
@@ -63,7 +63,7 @@ yarn_lint:
   stage: lint
   image: images.paas.redhat.com/dat/nodeci-base-image:1.0.0
   tags: 
-    - one-platform-pipeline-runner
+    - shared
   needs: ["yarn_install"]
   rules:
     - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == 'merge_request_event')
@@ -76,7 +76,7 @@ publish_plugins:
   stage: publish
   image: images.paas.redhat.com/dat/nodeci-base-image:1.0.0
   tags:
-    - one-platform-pipeline-runner
+    - shared
   needs: 
     - job: yarn_build
       artifacts: true
@@ -126,8 +126,7 @@ publish_plugins:
     - oc config use-context one-platform-pipeline-preprod
     - oc project "$namespace"
     - oc process -f openshift/template.yaml -p "NAME=backstage-plugins-$ENV" -p "IMAGE=$IMAGES_PAAS_REPO:$CI_COMMIT_SHORT_SHA" -p "ROUTER_HOSTNAME=$ROUTER_HOSTNAME" --ignore-unknown-parameters=true | oc apply -f -    
-    - oc scale deployment "backstage-plugins-$ENV" --replicas=0
-    - oc scale deployment "backstage-plugins-$ENV" --replicas=1
+    - oc rollout restart deploy/backstage-plugins-$ENV
 
 # test:
 #   image: mcr.microsoft.com/playwright:latest
