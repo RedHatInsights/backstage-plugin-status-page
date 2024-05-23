@@ -28,8 +28,9 @@ import {
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import { HydraProxyIcon } from '@appdev-platform/backstage-plugin-proxy-manager';
-import TextsmsOutlined from '@material-ui/icons/TextsmsOutlined';
 import { ReportPortalIcon } from '@appdev-platform/backstage-plugin-report-portal';
+import { IconComponent } from '@backstage/core-plugin-api';
+import { FeedbackIcon } from '@janus-idp/backstage-plugin-feedback';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -78,7 +79,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         <SidebarScrollWrapper>
           <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
           <SidebarItem
-            icon={ReportPortalIcon}
+            icon={ReportPortalIcon as IconComponent}
             to="report-portal"
             text="Report Portal"
           />
@@ -94,7 +95,11 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
           />
         </SidebarScrollWrapper>
         <SidebarScrollWrapper>
-          <SidebarItem icon={TextsmsOutlined} to="feedback" text="Feedback" />
+          <SidebarItem
+            icon={FeedbackIcon as IconComponent}
+            to="feedback"
+            text="Feedback"
+          />
         </SidebarScrollWrapper>
       </SidebarGroup>
       <SidebarSpace />
