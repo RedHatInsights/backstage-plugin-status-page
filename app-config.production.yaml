@@ -159,3 +159,12 @@ catalog:
       target: ./examples/org.yaml
       rules:
         - allow: [User, Group]
+
+# Report portal plugin
+reportPortal:
+  supportEmail: ${REPORT_PORTAL_SUPPORT_EMAIL}
+  integrations:
+    - host: ${REPORT_PORTAL_HOST}
+      baseUrl: ${REPORT_PORTAL_BASE_URL}
+      token: ${REPORT_PORTAL_TOKEN}
+      filterType: "INTERNAL"
