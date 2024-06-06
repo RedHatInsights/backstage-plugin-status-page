@@ -15,6 +15,18 @@ The provider is not installed by default, therefore you need to add a dependency
 yarn workspace backend add @appdev-platform/backstage-plugin-catalog-backend-module-cmdb
 ```
 
+### New Backend System
+
+Add the module to the backend:
+
+```ts
+const backend = createBackend();
+// ...
+backend.add(import('@appdev-platform/backstage-plugin-catalog-backend-module-cmdb/alpha'));
+```
+
+### Legacy Backend System
+
 Update the catalog plugin initialization in your backend to add the provider and schedule it:
 ```diff title="packages/backend/src/plugins/catalog.ts"
 // packages/backend/src/plugins/catalog.ts
@@ -28,7 +40,21 @@ export default async function createPlugin(
 +    logger: env.logger,
 +    scheduler: env.scheduler,
 +  });
-+
+
++   const catalogApi = new CatalogClient({
++    discoveryApi: env.discovery,
++  });
+
++  const cmdbProcessor = new BusinessApplicationEntityProcessor({
++    catalogApi,
++    discovery: env.discovery,
++    auth: env.auth,
++    tokenManager: env.tokenManager,
++    logger: env.logger,
++  });
+
++  catalog.addProcessor(cmdbProcessor);+
+
 +  const cmdbProcessor = new BusinessApplicationEntityProcessor();
 +
 +  builder.addEntityProvider(...cmdbProvider);

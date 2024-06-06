@@ -19,6 +19,7 @@ backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
 backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
+backend.add(import('@appdev-platform/backstage-plugin-catalog-backend-module-cmdb/alpha'));
 
 // permission plugin
 backend.add(import('@backstage/plugin-permission-backend/alpha'));
