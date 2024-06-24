@@ -7,3 +7,4 @@ declare module '@backstage/plugin-permission-backend-module-allow-all-policy';
 declare module '@janus-idp/backstage-plugin-matomo-backend/alpha';
 declare module '@appdev-platform/backstage-plugin-report-portal-backend/alpha';
 declare module '@appdev-platform/backstage-plugin-catalog-backend-module-cmdb/alpha';
+declare module '@appdev-platform/backstage-plugin-catalog-backend-module-spaship/alpha';
