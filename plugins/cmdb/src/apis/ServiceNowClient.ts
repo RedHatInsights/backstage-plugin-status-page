@@ -1,4 +1,4 @@
-import { DiscoveryApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, fetchApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   ServiceNowApi,
   ServiceNowCMDBResponse,
@@ -15,6 +15,7 @@ export class ServiceNowClient implements ServiceNowApi {
   private readonly cmdbTableName = 'cmdb_ci_business_app';
   private readonly userTableName = 'sys_user';
   private readonly cmdbCiRelTableName = 'cmdb_rel_ci';
+  private fetchApi = useApi(fetchApiRef);
 
   constructor(private discoveryApi: DiscoveryApi) {}
 
@@ -26,7 +27,7 @@ export class ServiceNowClient implements ServiceNowApi {
     const apiUrl = new URL(this.cmdbTableName, await this.getBaseUrl());
     apiUrl.searchParams.append('sysparm_query', `u_application_id=${appCode}`);
 
-    const response = await fetch(apiUrl.toString());
+    const response = await this.fetchApi.fetch(apiUrl.toString());
 
     if (response.status >= 400 && response.status < 600) {
       throw new Error('Failed to fetch application details');
@@ -41,7 +42,7 @@ export class ServiceNowClient implements ServiceNowApi {
       await this.getBaseUrl(),
     );
 
-    const response = await fetch(apiUrl.toString());
+    const response = await this.fetchApi.fetch(apiUrl.toString());
 
     if (response.status >= 400 && response.status < 600) {
       throw new Error('Failed to fetch user details');
@@ -63,7 +64,7 @@ export class ServiceNowClient implements ServiceNowApi {
       'sysparm_fields',
       'parent.name,parent.sys_class_name,u_display,child.name,sys_updated_on',
     );
-    const response = await fetch(apiUrl.toString());
+    const response = await this.fetchApi.fetch(apiUrl.toString());
     if (response.status >= 400 && response.status < 600) {
       throw new Error('Failed to fetch user details');
     }

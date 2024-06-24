@@ -115,8 +115,8 @@ spaship:
   owner: ${SPASHIP_OWNER_REF}
 
 matomo:
-  api_token: ${MATOMO_API_TOKEN}
-  api_url: ${MATOMO_API_URL}
+  apiToken: ${MATOMO_API_TOKEN}
+  apiUrl: ${MATOMO_API_URL}
   instance_url: ${MATOMO_INSTANCE_URL}
   contact_us: ${MATOMO_CONTACT_URL}
 
@@ -156,6 +156,7 @@ auth:
   # see https://backstage.io/docs/auth/ to learn about auth providers
   environment: development
   providers:
+    guest: {}
     oauth2:
       development:
         authorizationUrl: ${AUTH_SSO_AUTHORIZATION_URL}
