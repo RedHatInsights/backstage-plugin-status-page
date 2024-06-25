@@ -1,4 +1,4 @@
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { SPAship, SPAshipIntegrationConfig } from './types';
 import { pick, omit } from 'lodash';
 
@@ -8,9 +8,9 @@ export type CommonListOptions = {
 
 export class SPAshipClient {
   private readonly config: SPAshipIntegrationConfig;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
 
-  constructor(options: { config: SPAshipIntegrationConfig; logger: Logger }) {
+  constructor(options: { config: SPAshipIntegrationConfig; logger: LoggerService }) {
     this.config = options.config;
     this.logger = options.logger;
   }

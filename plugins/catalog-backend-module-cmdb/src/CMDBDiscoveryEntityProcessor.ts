@@ -22,20 +22,37 @@ import {
 } from './lib';
 import { BusinessApplicationEntity, CMDBMeta } from './lib/types';
 import { JsonValue } from '@backstage/types';
-import { Logger } from 'winston';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
+import {
+  PluginEndpointDiscovery,
+  TokenManager,
+  createLegacyAuthAdapters,
+} from '@backstage/backend-common';
 
 export class BusinessApplicationEntityProcessor implements CatalogProcessor {
   private readonly catalogApi: CatalogClient;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
+  private readonly auth: AuthService;
 
   /* TODO: Add JSON Schema validator for BusinessApplication entity kind */
   private readonly validator = (_entity: Entity) => true;
 
-  constructor(options: { catalogApi: CatalogClient; logger: Logger }) {
+  constructor(options: {
+    catalogApi: CatalogClient;
+    logger: LoggerService;
+    discovery: PluginEndpointDiscovery;
+    auth: AuthService;
+    tokenManager: TokenManager;
+  }) {
     this.catalogApi = options.catalogApi;
     this.logger = options.logger.child({
       target: this.getProcessorName(),
     });
+    this.auth = createLegacyAuthAdapters({
+      auth: options.auth,
+      discovery: options.discovery,
+      tokenManager: options.tokenManager,
+    }).auth;
   }
 
   getProcessorName(): string {
@@ -77,7 +94,7 @@ export class BusinessApplicationEntityProcessor implements CatalogProcessor {
       cmdb?: CMDBMeta | JsonValue | undefined;
     }>(appCode);
 
-    this.logger.debug({ cachedData });
+    this.logger.debug(JSON.stringify({ cachedData }, null, 2));
 
     /* If no cache is found, or the cache has expired, fetch the business application details */
     if (
@@ -85,11 +102,17 @@ export class BusinessApplicationEntityProcessor implements CatalogProcessor {
       (cachedData.created &&
         Date.now() - cachedData.created > PROCESSOR_CACHE_INVALIDATION_PERIOD)
     ) {
+      const { token: serviceToken } = await this.auth.getPluginRequestToken({
+        onBehalfOf: await this.auth.getOwnServiceCredentials(),
+        targetPluginId: 'catalog',
+      });
+
       this.logger.debug(`fetching ${appCode} from catalog`);
 
       const businessApp: BusinessApplicationEntity | Entity | undefined =
         await this.catalogApi.getEntityByRef(
           `businessapplication:redhat/${appCode}`,
+          { token: serviceToken },
         );
 
       /* Update the cache with the new data */
@@ -103,9 +126,15 @@ export class BusinessApplicationEntityProcessor implements CatalogProcessor {
           : {}),
       };
       await cache.set(appCode, cachedData);
-      this.logger.debug({
-        newCache: cachedData,
-      });
+      this.logger.debug(
+        JSON.stringify(
+          {
+            newCache: cachedData,
+          },
+          null,
+          2,
+        ),
+      );
     }
 
     /* If the businessApplication could not be found, skip */

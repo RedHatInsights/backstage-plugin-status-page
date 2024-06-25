@@ -1,6 +1,10 @@
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { CMDBRecord, PagedResponse, SNowIntegrationConfig } from './types';
-import { DEFAULT_CMDB_QUERY_SIZE, CMDB_TABLE_NAME, DEFAULT_CMDB_RECORD_FIELDS } from './constants';
+import {
+  DEFAULT_CMDB_QUERY_SIZE,
+  CMDB_TABLE_NAME,
+  DEFAULT_CMDB_RECORD_FIELDS,
+} from './constants';
 
 export type CommonListOptions = {
   [key: string]: string | number | boolean | undefined;
@@ -11,21 +15,29 @@ export type CommonListOptions = {
 
 export class SNowClient {
   private readonly config: SNowIntegrationConfig;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
 
-  constructor(options: { config: SNowIntegrationConfig; logger: Logger }) {
+  constructor(options: {
+    config: SNowIntegrationConfig;
+    logger: LoggerService;
+  }) {
     this.config = options.config;
     this.logger = options.logger;
   }
 
-  async getBusinessApplications(sysparmQuery: string, options?: CommonListOptions) {
+  async getBusinessApplications(
+    sysparmQuery: string,
+    options?: CommonListOptions,
+  ) {
     const uri = `/api/now/table/${CMDB_TABLE_NAME}`;
     const sysparm_fields = options?.sysparm_fields?.split?.(',') ?? [];
 
     return this.pagedRequest<CMDBRecord>(uri, {
       ...options,
       sysparm_query: sysparmQuery,
-      sysparm_fields: [...DEFAULT_CMDB_RECORD_FIELDS, ...sysparm_fields].join(','),
+      sysparm_fields: [...DEFAULT_CMDB_RECORD_FIELDS, ...sysparm_fields].join(
+        ',',
+      ),
     });
   }
 
@@ -99,7 +111,7 @@ export function getSNowRequestOptions({ credentials }: SNowIntegrationConfig): {
     headers: {
       Authorization: `Basic ${token}`,
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json',
     },
   };
 }

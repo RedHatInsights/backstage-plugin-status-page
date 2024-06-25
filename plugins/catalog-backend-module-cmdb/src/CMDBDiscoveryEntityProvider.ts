@@ -14,9 +14,8 @@ import {
   readProviderConfigs,
   transformer,
 } from './lib';
-import { Logger } from 'winston';
+import { LoggerService, SchedulerService, SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { SNowIntegration } from './integrations/SNowIntegration';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
@@ -25,16 +24,16 @@ import { Entity, ANNOTATION_LOCATION } from '@backstage/catalog-model';
 export class CMDBDiscoveryEntityProvider implements EntityProvider {
   private readonly provider: CMDBDiscoveryEntityProviderConfig;
   private readonly integration: SNowIntegrationConfig;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   scheduleFn?: () => Promise<void>;
   private connection?: EntityProviderConnection;
 
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      logger: LoggerService;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): CMDBDiscoveryEntityProvider[] {
     if (!options.schedule && !options.scheduler) {
@@ -85,8 +84,8 @@ export class CMDBDiscoveryEntityProvider implements EntityProvider {
   constructor(options: {
     provider: CMDBDiscoveryEntityProviderConfig;
     integration: SNowIntegrationConfig;
-    logger: Logger;
-    taskRunner: TaskRunner;
+    logger: LoggerService;
+    taskRunner: SchedulerServiceTaskRunner;
   }) {
     this.provider = options.provider;
     this.integration = options.integration;
@@ -104,7 +103,7 @@ export class CMDBDiscoveryEntityProvider implements EntityProvider {
     await this.scheduleFn?.();
   }
 
-  async read(logger: Logger): Promise<void> {
+  async read(logger: LoggerService): Promise<void> {
     if (!this.connection) {
       throw new Error(
         `CMDB discovery connection not initialized for ${this.getProviderName()}`,
@@ -158,7 +157,7 @@ export class CMDBDiscoveryEntityProvider implements EntityProvider {
     markCommitComplete();
   }
 
-  schedule(taskRunner: TaskRunner) {
+  schedule(taskRunner: SchedulerServiceTaskRunner) {
     this.scheduleFn = async () => {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({
@@ -172,7 +171,7 @@ export class CMDBDiscoveryEntityProvider implements EntityProvider {
 
           try {
             await this.read(logger);
-          } catch (error) {
+          } catch (error: any) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
               error,
@@ -184,7 +183,7 @@ export class CMDBDiscoveryEntityProvider implements EntityProvider {
   }
 }
 
-function trackProgress(logger: Logger) {
+function trackProgress(logger: LoggerService) {
   let timestamp = Date.now();
   let summary: string;
 
