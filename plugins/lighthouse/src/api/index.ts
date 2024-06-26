@@ -1,4 +1,4 @@
-import { ConfigApi, createApiRef } from '@backstage/core-plugin-api';
+import { ConfigApi, createApiRef, FetchApi } from '@backstage/core-plugin-api';
 import { TLhProject, TLhProjectBuild } from './types';
 
 export type LighthouseAPI = {
@@ -18,6 +18,7 @@ export type LighthouseAPI = {
 
 type Options = {
   configApi: ConfigApi;
+  fetchApi: FetchApi
 };
 
 export const lighthouseApiRef = createApiRef<LighthouseAPI>({
@@ -26,14 +27,16 @@ export const lighthouseApiRef = createApiRef<LighthouseAPI>({
 
 export class LighthouseApiClient implements LighthouseAPI {
   private readonly configApi: ConfigApi;
-
+  private readonly fetchApi: FetchApi;
   constructor(options: Options) {
     this.configApi = options.configApi;
+    this.fetchApi = options.fetchApi
   }
 
   async getProjects(projectSlug: string): Promise<TLhProject> {
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const res = await fetch(
+    
+    const res = await this.fetchApi.fetch(
       `${backendUrl}/api/proxy/lighthouse/v1/projects/slug:${projectSlug}`,
       {
         method: 'GET',
@@ -48,7 +51,7 @@ export class LighthouseApiClient implements LighthouseAPI {
 
   async getProjectBuilds(projectId: string): Promise<TLhProjectBuild[]> {
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const res = await fetch(
+    const res = await this.fetchApi.fetch(
       `${backendUrl}/api/proxy/lighthouse/v1/projects/${projectId}/builds?limit=100&lifecycle=sealed`,
       {
         method: 'GET',
@@ -66,7 +69,7 @@ export class LighthouseApiClient implements LighthouseAPI {
     buildId: string,
   ): Promise<{ url: string }[]> {
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const res = await fetch(
+    const res = await this.fetchApi.fetch(
       `${backendUrl}/api/proxy/lighthouse/v1/projects/${projectId}/builds/${buildId}/urls`,
       {
         method: 'GET',
@@ -81,7 +84,7 @@ export class LighthouseApiClient implements LighthouseAPI {
 
   async getProjectBranches(projectId: string): Promise<{ branch: string }[]> {
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const res = await fetch(
+    const res = await this.fetchApi.fetch(
       `${backendUrl}/api/proxy/lighthouse/v1/projects/${projectId}/branches`,
       {
         method: 'GET',
@@ -100,7 +103,7 @@ export class LighthouseApiClient implements LighthouseAPI {
     url: string,
   ): Promise<Record<string, number>> {
     const backendUrl = this.configApi.getString('backend.baseUrl');
-    const res = await fetch(
+    const res = await this.fetchApi.fetch(
       `${backendUrl}/api/proxy/lighthouse/v1/projects/${projectId}/builds/${buildId}/runs?url=${url}&representative=true`,
       {
         method: 'GET',

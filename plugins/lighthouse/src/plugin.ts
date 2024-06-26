@@ -3,6 +3,7 @@ import {
   createApiFactory,
   createPlugin,
   createRoutableExtension,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { LighthouseApiClient, lighthouseApiRef } from './api';
 
@@ -18,8 +19,9 @@ export const lighthousePlugin = createPlugin({
       api: lighthouseApiRef,
       deps: {
         configApi: configApiRef,
+        fetchApi: fetchApiRef
       },
-      factory: ({ configApi }) => new LighthouseApiClient({ configApi }),
+      factory: ({ configApi, fetchApi }) => new LighthouseApiClient({ configApi, fetchApi }),
     }),
   ],
 });

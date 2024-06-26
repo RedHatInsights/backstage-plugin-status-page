@@ -1,4 +1,4 @@
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, fetchApiRef, useApi } from '@backstage/core-plugin-api';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import {
   TActivityStream,
@@ -24,6 +24,7 @@ const apiKeys = {
 export const useGetDeploymentHistoryByMonth = (filters: TApiFilter = {}) => {
   const config = useApi(configApiRef);
   const backendUrl = config.getString('backend.baseUrl');
+  const { fetch } = useApi(fetchApiRef);
 
   const params = new URLSearchParams();
   Object.keys(filters).forEach(key => {
@@ -69,6 +70,7 @@ export const useGetDeploymentHistoryByMonth = (filters: TApiFilter = {}) => {
 export const useGetDeploymentCountByProperty = () => {
   const config = useApi(configApiRef);
   const backendUrl = config.getString('backend.baseUrl');
+  const { fetch } = useApi(fetchApiRef);
 
   return useQuery({
     queryKey: apiKeys.deploymentCountByProperty,
@@ -87,6 +89,7 @@ export const useGetActiviyStream = (
 ) => {
   const config = useApi(configApiRef);
   const backendUrl = config.getString('backend.baseUrl');
+  const { fetch } = useApi(fetchApiRef);
 
   const params = new URLSearchParams({
     action: 'APPLICATION_DEPLOYED',
@@ -115,6 +118,7 @@ export const useGetActiviyStream = (
 export const useGetDeploymentTime = (days = 30, filters: TApiFilter = {}) => {
   const config = useApi(configApiRef);
   const backendUrl = config.getString('backend.baseUrl');
+  const { fetch } = useApi(fetchApiRef);
 
   const params = new URLSearchParams({ days: days.toString() });
   Object.keys(filters).forEach(key => {
@@ -138,6 +142,7 @@ export const useGetDeploymentTime = (days = 30, filters: TApiFilter = {}) => {
 export const useGetDeploymentCountByEnv = (filters: TApiFilter = {}) => {
   const config = useApi(configApiRef);
   const backendUrl = config.getString('backend.baseUrl');
+  const { fetch } = useApi(fetchApiRef);
 
   const params = new URLSearchParams();
   Object.keys(filters).forEach(key => {

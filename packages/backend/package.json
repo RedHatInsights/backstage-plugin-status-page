@@ -19,7 +19,7 @@
     "@appdev-platform/backstage-plugin-catalog-backend-module-cmdb": "*",
     "@appdev-platform/backstage-plugin-catalog-backend-module-spaship": "*",
     "@appdev-platform/backstage-plugin-matomo-backend": "*",
-    "@appdev-platform/backstage-plugin-report-portal-backend": "^0.2.0",
+    "@appdev-platform/backstage-plugin-report-portal-backend": "^0.2.2",
     "@backstage/backend-common": "^0.23.1",
     "@backstage/backend-defaults": "^0.3.2",
     "@backstage/backend-plugin-api": "^0.6.20",
