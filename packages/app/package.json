@@ -24,7 +24,7 @@
     "@appdev-platform/backstage-plugin-lighthouse": "*",
     "@appdev-platform/backstage-plugin-matomo": "*",
     "@appdev-platform/backstage-plugin-proxy-manager": "*",
-    "@appdev-platform/backstage-plugin-report-portal": "^0.2.0",
+    "@appdev-platform/backstage-plugin-report-portal": "^0.2.2",
     "@appdev-platform/backstage-plugin-spaship": "*",
     "@appdev-platform/plugin-mock-plugin": "*",
     "@backstage/app-defaults": "^1.5.6",

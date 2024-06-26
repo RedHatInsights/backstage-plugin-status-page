@@ -1,15 +1,27 @@
 import { LighthouseApiClient } from './index';
-import { ConfigApi } from '@backstage/core-plugin-api';
+import { FetchApi, IdentityApi } from '@backstage/core-plugin-api';
+import { MockConfigApi } from '@backstage/test-utils';
 
 describe('LighthouseApiClient', () => {
   let client: LighthouseApiClient;
-  let mockConfigApi: jest.Mocked<ConfigApi>;
+  const mockConfigApi = new MockConfigApi({
+    backend: { baseUrl: 'https://localhost:7007' },
+  });
+  const identityApi: jest.Mocked<IdentityApi> = {
+    getCredentials: jest.fn(),
+  } as unknown as jest.Mocked<IdentityApi>;
+  const mockFetchApi = {
+    fetch: jest.fn(),
+  } as unknown as jest.Mocked<FetchApi>;
 
   beforeEach(() => {
-    mockConfigApi = {
-      getString: jest.fn(),
-    } as any;
-    client = new LighthouseApiClient({ configApi: mockConfigApi });
+    jest.resetAllMocks();
+    mockFetchApi.fetch.mockClear();
+    identityApi.getCredentials.mockResolvedValue({ token: undefined });
+    client = new LighthouseApiClient({
+      configApi: mockConfigApi,
+      fetchApi: mockFetchApi,
+    });
   });
 
   it('should create an instance', () => {
@@ -17,12 +29,20 @@ describe('LighthouseApiClient', () => {
   });
 
   it('should get projects', async () => {
-    global.fetch = jest.fn(() =>
-      Promise.resolve(new Response(JSON.stringify([{ id: '1', name: 'Project 1' }, { id: '2', name: 'Project 2' }])))
+    mockFetchApi.fetch.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify([
+          { id: '1', name: 'Project 1' },
+          { id: '2', name: 'Project 2' },
+        ]),
+      ),
     );
 
     const projects = await client.getProjects('slug');
-    expect(projects).toEqual([{ id: '1', name: 'Project 1' }, { id: '2', name: 'Project 2' }]);
+    expect(projects).toEqual([
+      { id: '1', name: 'Project 1' },
+      { id: '2', name: 'Project 2' },
+    ]);
   });
 
   it('should get project builds', async () => {
@@ -30,11 +50,8 @@ describe('LighthouseApiClient', () => {
       { id: '1', name: 'Build 1' },
       { id: '2', name: 'Build 2' },
     ];
-
-    global.fetch = jest.fn(() =>
-      Promise.resolve(
-        new Response(JSON.stringify(mockBuilds))
-      )
+    mockFetchApi.fetch.mockResolvedValueOnce(
+      new Response(JSON.stringify(mockBuilds)),
     );
 
     const builds = await client.getProjectBuilds('1');
@@ -42,12 +59,13 @@ describe('LighthouseApiClient', () => {
   });
 
   it('should get project build URLs', async () => {
-    const mockUrls = [{ url: 'http://example.lighthouse.com/build1' }, { url: 'http://example.lighthouse.com/build2' }];
+    const mockUrls = [
+      { url: 'http://example.lighthouse.com/build1' },
+      { url: 'http://example.lighthouse.com/build2' },
+    ];
 
-    global.fetch = jest.fn(() =>
-      Promise.resolve(
-        new Response(JSON.stringify(mockUrls))
-      )
+    mockFetchApi.fetch.mockResolvedValueOnce(
+      new Response(JSON.stringify(mockUrls)),
     );
     const urls = await client.getProjectBuildUrls('1', '1');
     expect(urls).toEqual(mockUrls);
@@ -56,10 +74,8 @@ describe('LighthouseApiClient', () => {
   it('should get project branches', async () => {
     const mockBranches = [{ branch: 'main' }, { branch: 'develop' }];
 
-    global.fetch = jest.fn(() =>
-      Promise.resolve(
-        new Response(JSON.stringify(mockBranches))
-      )
+    mockFetchApi.fetch.mockResolvedValueOnce(
+      new Response(JSON.stringify(mockBranches)),
     );
 
     const branches = await client.getProjectBranches('1');
@@ -78,14 +94,15 @@ describe('LighthouseApiClient', () => {
       },
     ];
 
-    global.fetch = jest.fn(() =>
-      Promise.resolve(
-        new Response(JSON.stringify(mockResponse))
-      )
+    mockFetchApi.fetch.mockResolvedValueOnce(
+      new Response(JSON.stringify(mockResponse)),
     );
 
-    const scores = await client.getProjectBuildRun('1', '1', 'http://example.lighthouse.com');
+    const scores = await client.getProjectBuildRun(
+      '1',
+      '1',
+      'http://example.lighthouse.com',
+    );
     expect(scores).toEqual({ performance: 90, accessibility: 80 });
   });
 });
-

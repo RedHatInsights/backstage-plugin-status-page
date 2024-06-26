@@ -285,14 +285,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-report-portal-backend@npm:^0.2.0":
-  version: 0.2.1
-  resolution: "@appdev-platform/backstage-plugin-report-portal-backend@npm:0.2.1"
+"@appdev-platform/backstage-plugin-report-portal-backend@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "@appdev-platform/backstage-plugin-report-portal-backend@npm:0.2.2"
   dependencies:
-    "@backstage/backend-common": ^0.21.0
-    "@backstage/backend-plugin-api": ^0.6.6
+    "@backstage/backend-common": ^0.23.1
+    "@backstage/backend-plugin-api": ^0.6.20
     "@backstage/backend-plugin-manager": "npm:@janus-idp/backend-plugin-manager@0.0.2-janus.5"
-    "@backstage/config": ^1.1.1
+    "@backstage/config": ^1.2.0
     "@types/express": ^*
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -300,19 +300,19 @@ __metadata:
     node-fetch: ^2.6.7
     winston: ^3.2.1
     yn: ^4.0.0
-  checksum: 317b7715917757582977c4fa95802bb488440fefbca8e4845b687f48f0e72d3217664ae1acb45b05ff9ac5c0cd5c985f8a069e9d3e7b2018b1245e77ffbb9a6d
+  checksum: ebda8ce0f72fa9efcd5b20666460429a5526b144c04613795bf9e9aa95fbab04036912707a019870a211ffdd071ad8c31c13bdf2a8af608f77f4adb0b4229af8
   languageName: node
   linkType: hard
 
-"@appdev-platform/backstage-plugin-report-portal@npm:^0.2.0":
-  version: 0.2.1
-  resolution: "@appdev-platform/backstage-plugin-report-portal@npm:0.2.1"
+"@appdev-platform/backstage-plugin-report-portal@npm:^0.2.2":
+  version: 0.2.2
+  resolution: "@appdev-platform/backstage-plugin-report-portal@npm:0.2.2"
   dependencies:
-    "@backstage/catalog-model": ^1.4.4
-    "@backstage/core-components": ^0.14.0
-    "@backstage/core-plugin-api": ^1.9.0
-    "@backstage/plugin-catalog-react": ^1.10.0
-    "@backstage/theme": ^0.5.1
+    "@backstage/catalog-model": ^1.5.0
+    "@backstage/core-components": ^0.14.8
+    "@backstage/core-plugin-api": ^1.9.3
+    "@backstage/plugin-catalog-react": ^1.12.1
+    "@backstage/theme": ^0.5.6
     "@mui/icons-material": ^5.15.17
     "@mui/material": ^5.15.17
     "@mui/styles": ^5.15.17
@@ -324,7 +324,7 @@ __metadata:
     react: 16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: ^6.22.0
-  checksum: 2284686dcc6d01fe218460758a79f72038fd477ea98957ab1c012bc3dfc0574df53a2ddb764a8c69ea986b3dc584a537b2fec53f8a9bbb30066cdb23f409a54b
+  checksum: b777710285fbd74d66c6c8bd1ffed8d4a42a2e3696bd8c2a296aeb86e7437286b9cdcb11115bcfbb5f7e535f78d9a4d99440359385ffb9f590e564b48a0d89f4
   languageName: node
   linkType: hard
 
@@ -3261,7 +3261,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/backend-common@npm:^0.21.0, @backstage/backend-common@npm:^0.21.3, @backstage/backend-common@npm:^0.21.6":
+"@backstage/backend-common@npm:^0.21.3, @backstage/backend-common@npm:^0.21.6":
   version: 0.21.7
   resolution: "@backstage/backend-common@npm:0.21.7"
   dependencies:
@@ -3731,7 +3731,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/catalog-model@npm:^1.4.3, @backstage/catalog-model@npm:^1.4.4, @backstage/catalog-model@npm:^1.4.5, @backstage/catalog-model@npm:^1.5.0":
+"@backstage/catalog-model@npm:^1.4.3, @backstage/catalog-model@npm:^1.4.5, @backstage/catalog-model@npm:^1.5.0":
   version: 1.5.0
   resolution: "@backstage/catalog-model@npm:1.5.0"
   dependencies:
@@ -3991,7 +3991,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/core-components@npm:^0.14.0, @backstage/core-components@npm:^0.14.4, @backstage/core-components@npm:^0.14.6, @backstage/core-components@npm:^0.14.7, @backstage/core-components@npm:^0.14.8":
+"@backstage/core-components@npm:^0.14.4, @backstage/core-components@npm:^0.14.6, @backstage/core-components@npm:^0.14.7, @backstage/core-components@npm:^0.14.8":
   version: 0.14.8
   resolution: "@backstage/core-components@npm:0.14.8"
   dependencies:
@@ -4040,7 +4040,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/core-plugin-api@npm:^1.9.0, @backstage/core-plugin-api@npm:^1.9.2, @backstage/core-plugin-api@npm:^1.9.3":
+"@backstage/core-plugin-api@npm:^1.9.2, @backstage/core-plugin-api@npm:^1.9.3":
   version: 1.9.3
   resolution: "@backstage/core-plugin-api@npm:1.9.3"
   dependencies:
@@ -4732,7 +4732,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-catalog-react@npm:^1.10.0, @backstage/plugin-catalog-react@npm:^1.11.3, @backstage/plugin-catalog-react@npm:^1.12.0, @backstage/plugin-catalog-react@npm:^1.12.1":
+"@backstage/plugin-catalog-react@npm:^1.11.3, @backstage/plugin-catalog-react@npm:^1.12.0, @backstage/plugin-catalog-react@npm:^1.12.1":
   version: 1.12.1
   resolution: "@backstage/plugin-catalog-react@npm:1.12.1"
   dependencies:
@@ -5823,7 +5823,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/theme@npm:^0.5.1, @backstage/theme@npm:^0.5.3, @backstage/theme@npm:^0.5.5, @backstage/theme@npm:^0.5.6":
+"@backstage/theme@npm:^0.5.3, @backstage/theme@npm:^0.5.5, @backstage/theme@npm:^0.5.6":
   version: 0.5.6
   resolution: "@backstage/theme@npm:0.5.6"
   dependencies:
@@ -15650,7 +15650,7 @@ __metadata:
     "@appdev-platform/backstage-plugin-lighthouse": "*"
     "@appdev-platform/backstage-plugin-matomo": "*"
     "@appdev-platform/backstage-plugin-proxy-manager": "*"
-    "@appdev-platform/backstage-plugin-report-portal": ^0.2.0
+    "@appdev-platform/backstage-plugin-report-portal": ^0.2.2
     "@appdev-platform/backstage-plugin-spaship": "*"
     "@appdev-platform/plugin-mock-plugin": "*"
     "@backstage/app-defaults": ^1.5.6
@@ -16521,7 +16521,7 @@ __metadata:
     "@appdev-platform/backstage-plugin-catalog-backend-module-cmdb": "*"
     "@appdev-platform/backstage-plugin-catalog-backend-module-spaship": "*"
     "@appdev-platform/backstage-plugin-matomo-backend": "*"
-    "@appdev-platform/backstage-plugin-report-portal-backend": ^0.2.0
+    "@appdev-platform/backstage-plugin-report-portal-backend": ^0.2.2
     "@backstage/backend-common": ^0.23.1
     "@backstage/backend-defaults": ^0.3.2
     "@backstage/backend-plugin-api": ^0.6.20
