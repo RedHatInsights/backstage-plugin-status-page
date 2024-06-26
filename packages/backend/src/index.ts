@@ -21,6 +21,7 @@ backend.add(
 backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
 backend.add(import('@appdev-platform/backstage-plugin-catalog-backend-module-cmdb/alpha'));
 backend.add(import('@appdev-platform/backstage-plugin-catalog-backend-module-spaship/alpha'));
+backend.add(import('@appdev-platform/backstage-plugin-catalog-backend-module-enrichment'));
 
 // permission plugin
 backend.add(import('@backstage/plugin-permission-backend/alpha'));

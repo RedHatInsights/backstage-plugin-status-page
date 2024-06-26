@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@appdev-platform/backstage-plugin-catalog-backend-module-cmdb": "*",
+    "@appdev-platform/backstage-plugin-catalog-backend-module-enrichment": "*",
     "@appdev-platform/backstage-plugin-catalog-backend-module-spaship": "*",
     "@appdev-platform/backstage-plugin-matomo-backend": "*",
     "@appdev-platform/backstage-plugin-report-portal-backend": "^0.2.2",

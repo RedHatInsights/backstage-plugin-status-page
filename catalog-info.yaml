@@ -7,6 +7,7 @@ spec:
   lifecycle: producion
   targets:
     - ./plugins/catalog-backend-module-cmdb/catalog-info.yaml
+    - ./plugins/catalog-backend-module-enrichment/catalog-info.yaml
     - ./plugins/catalog-backend-module-spaship/catalog-info.yaml
     - ./plugins/cmdb/catalog-info.yaml
     - ./plugins/contact-details/catalog-info.yaml

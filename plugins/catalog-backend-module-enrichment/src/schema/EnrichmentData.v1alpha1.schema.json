@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "$id": "EnrichmentDataV1alpha1",
+  "description": "Enrichment Data extends an existing backstage entity by providing additional metadata and fields.",
+  "examples": [
+    {
+      "apiVersion": "console.one.redhat.com/v1alpha1",
+      "kind": "EnrichmentData",
+      "metadata": {
+        "name": "LoremService",
+        "description": "Create lorems like a pro.",
+        "labels": {
+          "product_name": "Random value generator"
+        },
+        "annotations": {
+          "docs": "https://github.com/..../tree/develop/doc"
+        }
+      },
+      "spec": {
+        "owner": "user:default/guest",
+        "selectors": [
+          {
+            "entityRef": "component:default/lorem-service"
+          }
+        ],
+        "template": {
+          "metadata": {
+            "tags": [ "tag-1" ]
+          },
+          "spec": {
+            "foo": "bar"
+          }
+        }
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": ["spec"],
+      "properties": {
+        "apiVersion": {
+          "enum": ["console.one.redhat.com/v1alpha1", "redhat.com/v1alpha1"]
+        },
+        "kind": {
+          "enum": ["EnrichmentData"]
+        },
+        "spec": {
+          "type": "object",
+          "required": ["owner", "selectors", "template"],
+          "properties": {
+            "owner": {
+              "type": "string",
+              "description": "An entity reference to the owner of the component.",
+              "examples": ["artist-relations-team", "user:john.johnson"],
+              "minLength": 1
+            },
+            "selectors": {
+              "type": "array",
+              "description": "An array of entity references to the Components",
+              "items": {
+                "type": "object",
+                "required": ["entityRef"],
+                "properties": {
+                  "entityRef": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "template": {
+              "type": "object",
+              "description": "Template is an object that describes the enrichment data that will be added to the selected entities",
+              "properties": {
+                "metadata": {
+                  "type": "object"
+                },
+                "spec": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

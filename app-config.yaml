@@ -209,6 +209,13 @@ catalog:
         - allow:
             - Component
             - User
+
+    - type: file
+      target: ../../examples/test-data/enrichment-data.yaml
+      rules:
+        - allow:
+            - Component
+            - EnrichmentData
     # Local example template
     - type: file
       target: ../../examples/template/template.yaml

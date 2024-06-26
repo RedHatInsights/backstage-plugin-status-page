@@ -1,0 +1,9 @@
+site_name: Enrichment Data Plugin for Backstage Catalog
+repo_url: https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/
+site_description: An extension module for the catalog-backend plugin, providing an EnrichmentData processor used for extending entity data.
+
+nav:
+  - README: 'README.md'
+
+plugins:
+  - techdocs-core

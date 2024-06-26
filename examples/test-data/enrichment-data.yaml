@@ -1,0 +1,46 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: example-website-for-enrichment-data
+  description: An example component to test the enrichment data processor.
+  namespace: default
+spec:
+  type: website
+  lifecycle: production
+  owner: group:guests
+  system: examples
+
+---
+apiVersion: console.one.redhat.com/v1alpha1
+kind: EnrichmentData
+metadata:
+  name: enrichment-data-for-example-website-1
+  description: Enrichment data that extends an existing component
+spec:
+  owner: user:default/guest
+  selectors:
+    - entityRef: component:default/example-website-for-enrichment-data
+  template:
+    metadata:
+      tags:
+        - enriched
+    spec:
+      foo: bar
+
+---
+apiVersion: console.one.redhat.com/v1alpha1
+kind: EnrichmentData
+metadata:
+  name: enrichment-data-for-example-website-2
+  description: Enrichment data that extends an existing component - part 2
+spec:
+  owner: user:default/guest
+  selectors:
+    - entityRef: component:default/example-website-for-enrichment-data
+  template:
+    metadata:
+      tags:
+        - enriched-again
+    spec:
+      x-cortex-test-var: foobar
