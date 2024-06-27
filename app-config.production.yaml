@@ -168,3 +168,11 @@ reportPortal:
       baseUrl: ${REPORT_PORTAL_BASE_URL}
       token: ${REPORT_PORTAL_TOKEN}
       filterType: "INTERNAL"
+
+auth:
+  # see https://backstage.io/docs/auth/ to learn about auth providers
+  environment: development
+  providers:
+    guest:
+      userEntityRef: user:default/guest
+      dangerouslyAllowOutsideDevelopment: true
