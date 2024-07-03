@@ -1,0 +1,21 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-backend-module-enrichment
+  description: |
+    An extension module for the catalog-backend plugin, providing an EnrichmentDataProcessor for extending entity data.
+  namespace: devex
+  tags:
+    - backstage
+    - catalog
+    - enrichment
+
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+
+spec:
+  type: library
+  lifecycle: preproduction
+  owner: group:redhat/one-platform-devs
+  system: devex/redhat-experience-platform
