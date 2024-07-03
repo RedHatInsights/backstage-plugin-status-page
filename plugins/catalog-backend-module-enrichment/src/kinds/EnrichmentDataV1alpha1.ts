@@ -10,10 +10,7 @@ export interface EnrichmentDataV1alpha1 extends Entity {
     selectors: {
       entityRef: string;
     }[];
-    template: {
-      metadata: object;
-      spec: object;
-    };
+    template: Pick<Entity, 'metadata' | 'spec'>;
   };
 }
 
