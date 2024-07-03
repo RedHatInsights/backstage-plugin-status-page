@@ -1,5 +1,18 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.2.2...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.3.0) (2024-07-03)
+
+
+### Features
+
+* **cmdb:** add auth support for cmdb processor ([bd80ec8](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/bd80ec859a93180075ffaeddb1e9999de4d14443))
+* **core:** New backend system ([49c5ef6](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/49c5ef6780c3984c571f9568f49a392123243ed6))
+
+
+### Other changes
+
+* add backstage.pluginId to all plugins ([7159565](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/7159565b799d8281c2648bf21921e4d3ad461a56))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.2.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.2.1...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.2.2) (2024-04-24)
 
 
