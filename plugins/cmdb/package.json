@@ -11,9 +11,14 @@
   },
   "configSchema": "config.d.ts",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "pluginId": "cmdb",
+    "pluginPackages": [
+      "@appdev-platform/backstage-plugin-cmdb"
+    ]
   },
   "author": "deshmukhmayur",
+  "sideEffects": false,
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",

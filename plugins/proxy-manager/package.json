@@ -10,8 +10,13 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "pluginId": "proxy-manager",
+    "pluginPackages": [
+      "@appdev-platform/backstage-plugin-proxy-manager"
+    ]
   },
+  "sideEffects": false,
   "scripts": {
     "qa": "backstage-cli package start HTTPS=true PORT=1337  HOST=qa.foo.redhat.com",
     "start": "HTTPS=true  HOST=qa.foo.redhat.com PORT=1337 backstage-cli package start",
