@@ -1,5 +1,22 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-spaship [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-spaship@1.0.3...@appdev-platform/backstage-plugin-catalog-backend-module-spaship@1.1.0) (2024-07-03)
+
+
+### Features
+
+* **core:** New backend system ([49c5ef6](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/49c5ef6780c3984c571f9568f49a392123243ed6))
+
+
+### Bug Fixes
+
+* **spaship:** new backend system support for catalog-module-spaship ([b04c5bc](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/b04c5bc5b16ea24bdd74f04901b047cd5023b0dc))
+
+
+### Other changes
+
+* add backstage.pluginId to all plugins ([7159565](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/7159565b799d8281c2648bf21921e4d3ad461a56))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-spaship [1.0.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-spaship@1.0.2...@appdev-platform/backstage-plugin-catalog-backend-module-spaship@1.0.3) (2024-04-24)
 
 
