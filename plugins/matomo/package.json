@@ -11,8 +11,14 @@
   },
   "configSchema": "config.d.ts",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "pluginId": "matomo",
+    "pluginPackages": [
+      "@appdev-platform/backstage-plugin-matomo",
+      "@appdev-platform/backstage-plugin-matomo-backend"
+    ]
   },
+  "sideEffects": false,
   "scripts": {
     "start": "backstage-cli package start",
     "build": "backstage-cli package build",

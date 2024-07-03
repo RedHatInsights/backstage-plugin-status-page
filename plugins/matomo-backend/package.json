@@ -10,7 +10,12 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "pluginId": "matomo",
+    "pluginPackages": [
+      "@appdev-platform/backstage-plugin-matomo",
+      "@appdev-platform/backstage-plugin-matomo-backend"
+    ]
   },
   "scripts": {
     "start": "backstage-cli package start",

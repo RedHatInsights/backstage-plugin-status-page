@@ -37,7 +37,7 @@
     "allure-commandline": "^2.17.2",
     "allure-playwright": "^2.4.0",
     "concurrently": "^6.0.0",
-    "conventional-changelog-conventionalcommits": "^7.0.2",
+    "conventional-changelog-conventionalcommits": "^6.1.0",
     "dotenv": "^16.1.4",
     "lerna": "^4.0.0",
     "multi-semantic-release": "^3.0.2",
