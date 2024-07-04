@@ -70,7 +70,7 @@ __metadata:
     "@backstage/cli": ^0.22.8
     "@backstage/plugin-catalog-common": ^1.0.24
     "@backstage/plugin-catalog-node": ^1.12.2
-    lodash: ^4.17.21
+    deepmerge: ^4.3.1
   languageName: unknown
   linkType: soft
 

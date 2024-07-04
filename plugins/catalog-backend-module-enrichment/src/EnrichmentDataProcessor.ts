@@ -25,7 +25,7 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
-import { merge } from 'lodash';
+import merge from 'deepmerge';
 
 export class EnrichmentDataProcessor implements CatalogProcessor {
   private logger: LoggerService;
@@ -100,7 +100,7 @@ export class EnrichmentDataProcessor implements CatalogProcessor {
       }
     }
 
-    if (entity.kind !== 'EnrichmentData') {
+    if (!(entity.kind in ['EnrichmentData', 'Location'])) {
       this.logger.debug(
         `fetching enrichmentdata for ${stringifyEntityRef(selfRef)}`,
       );
@@ -128,24 +128,28 @@ export class EnrichmentDataProcessor implements CatalogProcessor {
         } enrichment data entities for ${stringifyEntityRef(selfRef)}`,
       );
 
-      enrichmentData.items.reduce((mergedEntity, enrichmentDataEntity) => {
-        const template = (enrichmentDataEntity as EnrichmentData).spec.template;
+      return enrichmentData.items.reduce(
+        (mergedEntity, enrichmentDataEntity) => {
+          const template = (enrichmentDataEntity as EnrichmentData).spec
+            .template;
 
-        this.logger.debug(
-          `Merging ${stringifyEntityRef(
-            enrichmentDataEntity,
-          )} into ${stringifyEntityRef(selfRef)}`,
-        );
+          this.logger.debug(
+            `Merging ${stringifyEntityRef(
+              enrichmentDataEntity,
+            )} into ${stringifyEntityRef(selfRef)}`,
+          );
 
-        doEmit(
-          stringifyEntityRef(enrichmentDataEntity),
-          { defaultKind: 'Component', defaultNamespace: selfRef.namespace },
-          RELATION_ENRICHED_BY,
-          RELATION_ENRICHES,
-        );
+          doEmit(
+            stringifyEntityRef(enrichmentDataEntity),
+            { defaultKind: 'Component', defaultNamespace: selfRef.namespace },
+            RELATION_ENRICHED_BY,
+            RELATION_ENRICHES,
+          );
 
-        return merge(template, mergedEntity);
-      }, entity);
+          return merge<Entity>(template, mergedEntity);
+        },
+        entity,
+      );
     }
 
     if (entity.kind === 'EnrichmentData') {
