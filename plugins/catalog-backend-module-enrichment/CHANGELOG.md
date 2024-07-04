@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-enrichment [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-enrichment@1.0.1...@appdev-platform/backstage-plugin-catalog-backend-module-enrichment@1.1.0) (2024-07-04)
+
+
+### Features
+
+* **enrichment:** add deepmerge for entity merging ([34e765d](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/34e765d95d965475940fdacfdccfe4da49c2d4f3))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-enrichment [1.0.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-enrichment@1.0.0...@appdev-platform/backstage-plugin-catalog-backend-module-enrichment@1.0.1) (2024-07-03)
 
 
