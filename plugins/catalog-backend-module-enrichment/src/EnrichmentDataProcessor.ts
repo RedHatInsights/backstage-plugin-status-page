@@ -18,11 +18,13 @@ import {
   enrichmentDataV1alpha1Validator,
   RELATION_ENRICHES,
   RELATION_ENRICHED_BY,
+  DEFAULT_KINDS,
 } from './kinds';
 import {
   AuthService,
   DiscoveryService,
   LoggerService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import merge from 'deepmerge';
@@ -31,16 +33,19 @@ export class EnrichmentDataProcessor implements CatalogProcessor {
   private logger: LoggerService;
   private catalogApi: CatalogClient;
   private auth: AuthService;
+  private config: RootConfigService;
 
   constructor(options: {
     logger: LoggerService;
     catalogApi: CatalogClient;
     discovery: DiscoveryService;
     auth: AuthService;
+    config: RootConfigService;
   }) {
     this.logger = options.logger.child({
       target: this.getProcessorName(),
     });
+    this.config = options.config;
     this.catalogApi = options.catalogApi;
     this.auth = options.auth;
 
@@ -100,7 +105,14 @@ export class EnrichmentDataProcessor implements CatalogProcessor {
       }
     }
 
-    if (!(entity.kind in ['EnrichmentData', 'Location'])) {
+    const acceptedKinds =
+      (this.config.getOptionalStringArray('catalog.enrichment.allowedKinds') ?? DEFAULT_KINDS).map(kind => kind.toLowerCase());
+
+    const isEntityAccepted = acceptedKinds.includes(entity.kind.toLowerCase());
+
+    this.logger.debug(`checking entity kind in allowedKinds: ${acceptedKinds.join(',')}. ${entity.kind} is ${isEntityAccepted}`);
+
+    if (isEntityAccepted) {
       this.logger.debug(
         `fetching enrichmentdata for ${stringifyEntityRef(selfRef)}`,
       );

@@ -6,3 +6,4 @@ export type {
 export { enrichmentDataV1alpha1Validator } from './EnrichmentDataV1alpha1';
 
 export * from './relations';
+export * from './constants';
