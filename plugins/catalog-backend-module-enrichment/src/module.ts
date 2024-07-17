@@ -9,12 +9,17 @@ export const catalogModuleEnrichment = createBackendModule({
   register(reg) {
     reg.registerInit({
       deps: { 
+        config: coreServices.rootConfig,
         catalog: catalogProcessingExtensionPoint,
         discovery: coreServices.discovery,
         auth: coreServices.auth,
         logger: coreServices.logger,
        },
-      async init({ catalog, discovery, auth, logger }) {
+      async init({ config, catalog, discovery, auth, logger }) {
+        if (!config.getOptionalBoolean('catalog.enrichment.enabled')) {
+          return;
+        }
+
         const catalogApi = new CatalogClient({
           discoveryApi: discovery,
         });
@@ -22,6 +27,7 @@ export const catalogModuleEnrichment = createBackendModule({
         const enrichmentProcessor = new EnrichmentDataProcessor({
           auth,
           catalogApi,
+          config,
           discovery: discovery,
           logger,
         });
