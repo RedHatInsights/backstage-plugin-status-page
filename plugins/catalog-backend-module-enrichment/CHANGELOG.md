@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-enrichment [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-enrichment@1.1.0...@appdev-platform/backstage-plugin-catalog-backend-module-enrichment@1.2.0) (2024-07-17)
+
+
+### Features
+
+* **enrichment:** add configuration options for plugin ([3229943](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/3229943d33db23e19f51316481c544461f39a205))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-enrichment [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-enrichment@1.0.1...@appdev-platform/backstage-plugin-catalog-backend-module-enrichment@1.1.0) (2024-07-04)
 
 
