@@ -36,8 +36,8 @@ export const DocsBotPage = () => {
   const [isInputDisabled, setIsInputDisabled] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [userQuestion, setUserQuestion] = useState<string>('');
-  const docsBotSlackUrl = config.getOptionalString('docsBot.slackUrl');
-  const docsBotContactMail = config.getOptionalString('docsBot.contactMail');
+  const docsBotSlackUrl = config.getOptionalString('docsbot.slackUrl');
+  const docsBotContactMail = config.getOptionalString('docsbot.contactMail');
   const [baseUrl, setBaseUrl] = React.useState<string | undefined>();
   const discoveryApiRefDocsBot = useApi(discoveryApiRef);
   const [timeTaken, setTimeTaken] = useState<string | undefined>(undefined);
