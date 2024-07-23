@@ -1,5 +1,5 @@
-import React, { PropsWithChildren } from 'react';
-import { makeStyles } from '@material-ui/core';
+import React, { PropsWithChildren, useState } from 'react';
+import { Grid, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import MapIcon from '@material-ui/icons/MyLocation';
@@ -31,6 +31,11 @@ import { HydraProxyIcon } from '@appdev-platform/backstage-plugin-proxy-manager'
 import { ReportPortalIcon } from '@appdev-platform/backstage-plugin-report-portal';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { FeedbackIcon } from '@janus-idp/backstage-plugin-feedback';
+import {
+  DocsBotPanel,
+  DocsBotButton,
+} from '@appdev-platform/backstage-plugin-docsbot';
+import { DocsBotIcon } from '@appdev-platform/backstage-plugin-docsbot';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -60,58 +65,90 @@ const SidebarLogo = () => {
   );
 };
 
-export const Root = ({ children }: PropsWithChildren<{}>) => (
-  <SidebarPage>
-    <Sidebar>
-      <SidebarLogo />
-      <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
-        <SidebarSearchModal />
-      </SidebarGroup>
-      <SidebarDivider />
-      <SidebarGroup label="Menu" icon={<MenuIcon />}>
-        {/* Global nav, not org-specific */}
-        <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
-        <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
-        <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
-        <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
-        {/* End global nav */}
+export const Root = ({ children }: PropsWithChildren<{}>) => {
+  const [isDocsBotPanelOpen, setIsDocsBotPanelOpen] = useState<boolean>(false);
+
+  const handleDrawerOpen = (flag: boolean) => {
+    setIsDocsBotPanelOpen(flag);
+  };
+
+  const toggleDrawer = (): void => {
+    setIsDocsBotPanelOpen(!isDocsBotPanelOpen);
+  };
+  return (
+    <SidebarPage>
+      <Sidebar>
+        <SidebarLogo />
+        <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+          <Grid container spacing={2}>
+            <Grid item xs={8}>
+              <SidebarSearchModal />
+            </Grid>
+            <Grid item xs={4}>
+              <DocsBotButton handleDrawerOpen={handleDrawerOpen} />
+            </Grid>
+          </Grid>
+        </SidebarGroup>
         <SidebarDivider />
-        <SidebarScrollWrapper>
-          <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+        <SidebarGroup label="Menu" icon={<MenuIcon />}>
+          {/* Global nav, not org-specific */}
+          <SidebarItem icon={HomeIcon} to="catalog" text="Home" />
+          <SidebarItem icon={ExtensionIcon} to="api-docs" text="APIs" />
+          <SidebarItem icon={LibraryBooks} to="docs" text="Docs" />
           <SidebarItem
-            icon={ReportPortalIcon as IconComponent}
-            to="report-portal"
-            text="Report Portal"
+            icon={CreateComponentIcon}
+            to="create"
+            text="Create..."
           />
-        </SidebarScrollWrapper>
-        <SidebarScrollWrapper>
-          <SidebarItem icon={SpashipIcon} to="spaship" text="SPAship" />
-        </SidebarScrollWrapper>
-        <SidebarScrollWrapper>
-          <SidebarItem
-            icon={HydraProxyIcon}
-            to="proxy-manager"
-            text="Hydra Proxy"
-          />
-        </SidebarScrollWrapper>
-        <SidebarScrollWrapper>
-          <SidebarItem
-            icon={FeedbackIcon as IconComponent}
-            to="feedback"
-            text="Feedback"
-          />
-        </SidebarScrollWrapper>
-      </SidebarGroup>
-      <SidebarSpace />
-      <SidebarDivider />
-      <SidebarGroup
-        label="Settings"
-        icon={<UserSettingsSignInAvatar />}
-        to="/settings"
+          {/* End global nav */}
+          <SidebarDivider />
+          <SidebarScrollWrapper>
+            <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+            <SidebarItem
+              icon={ReportPortalIcon as IconComponent}
+              to="report-portal"
+              text="Report Portal"
+            />
+          </SidebarScrollWrapper>
+          <SidebarScrollWrapper>
+            <SidebarItem icon={SpashipIcon} to="spaship" text="SPAship" />
+          </SidebarScrollWrapper>
+          <SidebarScrollWrapper>
+            <SidebarItem
+              icon={HydraProxyIcon}
+              to="proxy-manager"
+              text="Hydra Proxy"
+            />
+          </SidebarScrollWrapper>
+          <SidebarScrollWrapper>
+            <SidebarItem
+              icon={FeedbackIcon as IconComponent}
+              to="feedback"
+              text="Feedback"
+            />
+            <SidebarItem
+              icon={DocsBotIcon as IconComponent}
+              to="docsbot"
+              text="DocsBot"
+            />
+          </SidebarScrollWrapper>
+        </SidebarGroup>
+        <SidebarSpace />
+        <SidebarDivider />
+        <SidebarGroup
+          label="Settings"
+          icon={<UserSettingsSignInAvatar />}
+          to="/settings"
+        >
+          <SidebarSettings />
+        </SidebarGroup>
+      </Sidebar>
+      <div
+        style={{ width: isDocsBotPanelOpen ? `calc(100% - 400px)` : '100%' }}
       >
-        <SidebarSettings />
-      </SidebarGroup>
-    </Sidebar>
-    {children}
-  </SidebarPage>
-);
+        {children}
+      </div>
+      <DocsBotPanel isOpen={false} toggleDrawer={toggleDrawer} />
+    </SidebarPage>
+  );
+};

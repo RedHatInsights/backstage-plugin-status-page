@@ -1,0 +1,1 @@
+export { DocsBotPage } from './DocsBotPage';
