@@ -1,8 +1,8 @@
 export interface Config {
-  docsbot: {
+  docsbot?: {
     /** @visibility frontend */
-    slackUrl: string;
+    slackUrl?: string;
     /** @visibility frontend */
-    contactMail: string;
+    contactMail?: string;
   };
 }

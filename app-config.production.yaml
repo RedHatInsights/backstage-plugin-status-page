@@ -184,3 +184,7 @@ auth:
     guest:
       userEntityRef: user:default/guest
       dangerouslyAllowOutsideDevelopment: true
+
+docsbot:
+  slackUrl: ${DOCSBOT_SLACK_URL}
+  contactMail: ${DOCSBOT_MAIL}

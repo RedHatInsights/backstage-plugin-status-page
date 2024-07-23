@@ -2,7 +2,7 @@ stages:
   - install
   - build
   - lint
-# - test
+  # - test
   - publish
   - image-build
   - deploy-dev
@@ -11,7 +11,7 @@ stages:
 yarn_install:
   stage: install
   image: images.paas.redhat.com/dat/nodeci-base-image:1.0.0
-  tags: 
+  tags:
     - shared
   needs: []
   rules:
@@ -24,19 +24,19 @@ yarn_install:
       files:
         - yarn.lock
     paths:
-      - "**/node_modules/"
+      - '**/node_modules/'
   artifacts:
     when: on_success
     paths:
-      - "**/node_modules/"
+      - '**/node_modules/'
     expire_in: 1 days
 
 yarn_build:
   stage: build
   image: images.paas.redhat.com/dat/nodeci-base-image:1.0.0
-  tags: 
+  tags:
     - shared
-  needs: ["yarn_install"]
+  needs: ['yarn_install']
   rules:
     - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == 'merge_request_event')
   before_script:
@@ -50,21 +50,21 @@ yarn_build:
       files:
         - yarn.lock
     paths:
-      - "**/node_modules/"
-      - "plugins/**/dist/"
+      - '**/node_modules/'
+      - 'plugins/**/dist/'
   artifacts:
     when: on_success
     paths:
-      - "**/node_modules/"
-      - "plugins/**/dist/"
+      - '**/node_modules/'
+      - 'plugins/**/dist/'
     expire_in: 1 days
 
 yarn_lint:
   stage: lint
   image: images.paas.redhat.com/dat/nodeci-base-image:1.0.0
-  tags: 
+  tags:
     - shared
-  needs: ["yarn_install"]
+  needs: ['yarn_install']
   rules:
     - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == 'merge_request_event')
   before_script:
@@ -77,7 +77,7 @@ publish_plugins:
   image: images.paas.redhat.com/dat/nodeci-base-image:1.0.0
   tags:
     - shared
-  needs: 
+  needs:
     - job: yarn_build
       artifacts: true
     - job: yarn_lint
@@ -86,7 +86,7 @@ publish_plugins:
   before_script:
     - git config --global http.sslVerify "false"
     - git config --global --add safe.directory /builds/app-dev-platform/backstage-plugins
-  script: 
+  script:
     - yarn release --ignore-private-packages
 
 .mpp_build:
@@ -94,12 +94,12 @@ publish_plugins:
   image: registry.redhat.io/openshift4/ose-cli:v4.8
   tags:
     - one-platform-pipeline-runner
-  needs: 
+  needs:
     - job: yarn_build
       artifacts: false
     - job: yarn_lint
   rules:
-  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   before_script:
     - mkdir ~/.kube
     - cp /alm/kubeconfig ~/.kube/config
@@ -107,7 +107,6 @@ publish_plugins:
   script:
     - oc config use-context one-platform-pipeline-preprod
     - oc project "$namespace"
-    - oc process -f openshift/encrypted-secrets.yaml --ignore-unknown-parameters=true | oc apply -f -
     - oc process -f openshift/buildconfig.yaml -p "TAG=$TAG" --ignore-unknown-parameters=true | oc apply -f -
     - oc start-build bc/backstage-plugins --follow --wait
 
@@ -117,15 +116,16 @@ publish_plugins:
   tags:
     - one-platform-pipeline-runner
   rules:
-  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
   before_script:
     - mkdir ~/.kube
     - cp /alm/kubeconfig ~/.kube/config
     - unset KUBECONFIG
-  script:  
+  script:
     - oc config use-context one-platform-pipeline-preprod
     - oc project "$namespace"
-    - oc process -f openshift/template.yaml -p "NAME=backstage-plugins-$ENV" -p "IMAGE=$IMAGES_PAAS_REPO:$CI_COMMIT_SHORT_SHA" -p "ROUTER_HOSTNAME=$ROUTER_HOSTNAME" --ignore-unknown-parameters=true | oc apply -f -    
+    - oc process -f openshift/template.yaml -p "NAME=backstage-plugins-$ENV" -p "IMAGE=$IMAGES_PAAS_REPO:$CI_COMMIT_SHORT_SHA" -p "ROUTER_HOSTNAME=$ROUTER_HOSTNAME" --ignore-unknown-parameters=true | oc apply -f -
+    - oc process -f openshift/encrypted-secrets.yaml --ignore-unknown-parameters=true | oc apply -f -
     - oc rollout restart deploy/backstage-plugins-$ENV
 
 # test:
@@ -167,7 +167,7 @@ publish_plugins:
 #     - source playwright/set-env.sh
 #     - yarn playwright test --workers 6
 #   artifacts:
-#     paths:  
+#     paths:
 #       - ./playwright-report/
 #     when: always
 
@@ -186,7 +186,7 @@ deploy-dev:
     ROUTER_HOSTNAME: $ROUTER_HOSTNAME_DEV
   extends: .mpp_deploy
   stage: deploy-dev
-  needs: ["image-build"]
+  needs: ['image-build']
 
 deploy-qa:
   variables:
@@ -196,5 +196,5 @@ deploy-qa:
     ROUTER_HOSTNAME: $ROUTER_HOSTNAME_QA
   extends: .mpp_deploy
   stage: deploy-qa
-  needs: ["deploy-dev"]
+  needs: ['deploy-dev']
   when: manual
