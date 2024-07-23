@@ -21,6 +21,7 @@
     "@appdev-platform/backstage-plugin-catalog-index": "*",
     "@appdev-platform/backstage-plugin-cmdb": "*",
     "@appdev-platform/backstage-plugin-contact-details": "*",
+    "@appdev-platform/backstage-plugin-docsbot": "*",
     "@appdev-platform/backstage-plugin-lighthouse": "*",
     "@appdev-platform/backstage-plugin-matomo": "*",
     "@appdev-platform/backstage-plugin-proxy-manager": "*",

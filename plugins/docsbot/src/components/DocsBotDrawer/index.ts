@@ -1,0 +1,1 @@
+export { DocsBotDrawer } from './DocsBotDrawer';
