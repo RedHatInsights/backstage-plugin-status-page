@@ -1,0 +1,18 @@
+{
+    "channel": "CHANNEL_ID",
+    "thread_ts": "SLACK_TIMESTAMP",
+    "reply_broadcast": false,
+    "attachments": [{
+        "blocks": [
+            {
+                "type": "context",
+                "elements": [
+                    {
+                        "type": "mrkdwn",
+                        "text": "MESSAGE"
+                    }
+                ]
+            }
+        ]
+    }]
+}
