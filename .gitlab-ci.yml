@@ -1,3 +1,9 @@
+variables:
+  GITLAB_DIR: "$CI_PROJECT_DIR/.gitlab"
+  GITLAB_SCRIPTS_DIR: "$GITLAB_DIR/scripts"
+  GITLAB_TEMPLATES_DIR: "$GITLAB_DIR/templates"
+  TEMP_DIR: "$CI_PROJECT_DIR/tmp"
+
 stages:
   - install
   - build
@@ -7,6 +13,14 @@ stages:
   - image-build
   - deploy-dev
   - deploy-qa
+
+.notifySlackAfter: &notifySlackAfter
+  - sh ".gitlab/scripts/slack/notifySlackAfter.sh"
+
+default:
+  after_script:
+    - mkdir -p ${TEMP_DIR}
+    - *notifySlackAfter
 
 yarn_install:
   stage: install
