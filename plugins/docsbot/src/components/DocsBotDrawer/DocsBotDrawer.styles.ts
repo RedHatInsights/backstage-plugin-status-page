@@ -1,17 +1,26 @@
 import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
+  fullHeightContainer: {
+    width: 400, 
+    height: '100vh', 
+    display: 'flex',
+    flexDirection: 'column',
+  },
   container: {
     display: 'flex',
     flexDirection: 'column',
-    height: '80vh',
+    flex: 1, 
+    overflowY: 'hidden', 
   },
   cardContent: {
-    flex: 1,
-    overflowY: 'auto',
+    flex: 1, 
+    overflowY: 'auto', 
+    padding: theme.spacing(2),
   },
   inputContainer: {
     padding: theme.spacing(2),
+    paddingBottom: theme.spacing(10),
     backgroundColor: theme.palette.background.paper,
     borderTop: `1px solid ${theme.palette.divider}`,
     flexShrink: 0,

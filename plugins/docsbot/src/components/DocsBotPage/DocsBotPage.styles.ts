@@ -1,21 +1,47 @@
 import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
+  content: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%', // Fill available height
+  },
+  card: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%', // Full card height
+  },
+  cardContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: '100%', // Ensure full height to support docking
+    padding: 0, // Remove padding to avoid gaps
+  },
   container: {
     display: 'flex',
     flexDirection: 'column',
-    maxHeight: '70vh',
+    flex: 1,
     position: 'relative',
+    overflow: 'hidden', 
+    height: '100%', 
   },
-  cardContent: {
+  messagesContainer: {
+    flex: 1, // Allow it to grow and shrink
+    overflowY: 'auto', // Enable vertical scrolling for messages
+    padding: theme.spacing(2), // Optional: Add padding if needed
+  },
+  innerCardContent: {
     flex: 1,
     overflowY: 'auto',
   },
   inputContainer: {
     padding: theme.spacing(2),
+    paddingBottom: '50px',
     backgroundColor: theme.palette.background.paper,
     borderTop: `1px solid ${theme.palette.divider}`,
-    flexShrink: 0,
+    flexShrink: 0, // Prevent the input area from growing
   },
   chatBubble: {
     backgroundColor: theme.palette.grey[200],

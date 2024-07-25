@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import { Button, Grid, TextField } from '@material-ui/core';
 
-interface DocsBotbotInputProps {
+interface DocsBotInputProps {
   onSendMessage: (message: string) => void;
   isInputDisabled: boolean; // New disabled prop
   placeholder: string;
-  isPanel: boolean;
 }
 
-const DocsBotbotInput: React.FC<DocsBotbotInputProps> = ({
+const DocsBotInput: React.FC<DocsBotInputProps> = ({
   onSendMessage,
   isInputDisabled,
   placeholder,
-  isPanel,
 }) => {
   const [inputValue, setInputValue] = useState('');
 
@@ -28,8 +26,8 @@ const DocsBotbotInput: React.FC<DocsBotbotInputProps> = ({
   };
 
   return (
-    <Grid container spacing={2} alignItems="center">
-      <Grid item style={{ width: isPanel ? '70%' : '90%' }}>
+    <Grid container spacing={1} alignItems="center">
+      <Grid item xs>
         <TextField
           variant="outlined"
           type="text"
@@ -43,7 +41,9 @@ const DocsBotbotInput: React.FC<DocsBotbotInputProps> = ({
       </Grid>
       <Grid item>
         <Button
+          style={{ padding: '14px' }}
           variant="contained"
+          disableElevation
           color="primary"
           onClick={handleMessageSend}
           disabled={isInputDisabled}
@@ -55,4 +55,4 @@ const DocsBotbotInput: React.FC<DocsBotbotInputProps> = ({
   );
 };
 
-export default DocsBotbotInput;
+export default DocsBotInput;

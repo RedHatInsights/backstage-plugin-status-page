@@ -214,7 +214,7 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
         open={isOpen}
         onClose={toggleDrawer}
       >
-        <div style={{ width: 400 }}>
+        <div className={classes.fullHeightContainer}>
           <div className={classes.menuSection}>
             <div className={classes.docsBotSection}>
               <Typography variant="h4" className={classes.docsBotName}>
@@ -282,7 +282,6 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
                     ? 'Kindly wait for bot to finish the response'
                     : 'Type your query here...'
                 }
-                isPanel
               />
             </div>
           </div>

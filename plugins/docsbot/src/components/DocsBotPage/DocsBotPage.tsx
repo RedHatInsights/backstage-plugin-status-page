@@ -15,11 +15,11 @@ import {
 import RefreshIcon from '@material-ui/icons/Refresh';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
-import ChatbotInput from '../DocsBotDrawer/DocsBotInput/DocsBotInput';
-import ChatbotMessage from '../DocsBotDrawer/DocsBotMessage/DocsBotMessage';
 import useStyles from './DocsBotPage.styles';
 import InfoTiles from './InfoTiles/InfoTiles';
 import { disclaimer } from '../DocsBotDrawer/DocsBotDrawer';
+import DocsBotMessage from '../DocsBotDrawer/DocsBotMessage/DocsBotMessage';
+import DocsBotInput from '../DocsBotDrawer/DocsBotInput/DocsBotInput';
 
 interface ChatMessage {
   content: string;
@@ -49,6 +49,7 @@ export const DocsBotPage = () => {
       block: 'end',
     });
   };
+
   const appendMessage = (
     message: string,
     isUserMessage: boolean,
@@ -68,6 +69,7 @@ export const DocsBotPage = () => {
       appendMessage(initialMessage, false);
     }
   };
+
   const handleFeedback = async (
     message: string,
     feedback: number,
@@ -96,6 +98,7 @@ export const DocsBotPage = () => {
       });
     }
   };
+
   const logFeedback = (
     message: string,
     feedback: number,
@@ -103,10 +106,12 @@ export const DocsBotPage = () => {
   ) => {
     handleFeedback(message, feedback, question);
   };
+
   useEffect(() => {
     sendInitialMessage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   const appendMessageToLastBotMessage = (message: string): void => {
     setChatMessages(prevMessages => {
       const lastMessageIndex = prevMessages.length - 1;
@@ -122,9 +127,11 @@ export const DocsBotPage = () => {
     });
     scrollToBottom();
   };
+
   useEffect(() => {
     scrollToBottom();
   }, [chatMessages]);
+
   const handleBotResponse = async (
     botResponse: string,
     question: string,
@@ -134,12 +141,14 @@ export const DocsBotPage = () => {
     appendMessageToLastBotMessage(botResponse);
     setUserQuestion(question);
   };
+
   const handleSendMessage = async (userMessage: string): Promise<void> => {
     appendMessage(userMessage, true);
     setIsBotTyping(true);
     setUserQuestion(userMessage);
     setIsInputDisabled(true);
   };
+
   useEffect(() => {
     if (!baseUrl) {
       discoveryApiRefDocsBot.getBaseUrl('proxy').then(proxy => {
@@ -179,8 +188,9 @@ export const DocsBotPage = () => {
     setIsInputDisabled(false);
     setUserQuestion('');
   };
+
   return (
-    <Page themeId="tool">
+    <Page themeId="tool" >
       <Header
         title="Welcome to DocsBot!"
         subtitle=" 
@@ -217,24 +227,24 @@ Assistance with Your Document Questions."
           />
         )}
       </Header>
-      <Content>
-        <Card>
-          <CardContent>
+      <Content className={classes.content}>
+        <Card className={classes.card}>
+          <CardContent className={classes.cardContent}>
             <div className={classes.container}>
-              <CardContent className={classes.cardContent}>
-                <div className={classes.menuSection}>
-                  <Tooltip title="Refresh Chat">
-                    <IconButton onClick={handleRefresh}>
-                      <RefreshIcon />
-                    </IconButton>
-                  </Tooltip>
-                </div>
+              <div className={classes.menuSection}>
+                <Tooltip title="Refresh Chat">
+                  <IconButton onClick={handleRefresh}>
+                    <RefreshIcon />
+                  </IconButton>
+                </Tooltip>
+              </div>
+              <div className={classes.messagesContainer}>
                 {userQuestion === '' ? (
                   <InfoTiles />
                 ) : (
                   <>
                     {chatMessages.map((message, index) => (
-                      <ChatbotMessage
+                      <DocsBotMessage
                         key={`message-${index}`}
                         message={message.content}
                         isUserMessage={message.isUserMessage}
@@ -256,9 +266,9 @@ Assistance with Your Document Questions."
                     <div ref={messagesEndRef} />
                   </>
                 )}
-              </CardContent>
+              </div>
               <div className={classes.inputContainer}>
-                <ChatbotInput
+                <DocsBotInput
                   onSendMessage={handleSendMessage}
                   isInputDisabled={isInputDisabled}
                   placeholder={
@@ -266,7 +276,6 @@ Assistance with Your Document Questions."
                       ? 'Kindly wait for bot to finish the response'
                       : 'Type your query here...'
                   }
-                  isPanel={false}
                 />
               </div>
             </div>
