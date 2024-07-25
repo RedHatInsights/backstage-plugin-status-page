@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-docsbot [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-docsbot@1.0.0...@appdev-platform/backstage-plugin-docsbot@1.1.0) (2024-07-25)
+
+
+### Features
+
+* **docsbot-plugin:** Updating images in the documentation. ([ab77039](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/ab77039aaba50adfe6b711435153841a8f5f9835))
+
 ## @appdev-platform/backstage-plugin-docsbot 1.0.0 (2024-07-23)
 
 
