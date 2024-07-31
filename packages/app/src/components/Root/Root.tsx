@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useState } from 'react';
-import { Grid, makeStyles } from '@material-ui/core';
+import { Chip, Grid, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import MapIcon from '@material-ui/icons/MyLocation';
@@ -126,12 +126,28 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
               to="feedback"
               text="Feedback"
             />
-            <SidebarItem
-              icon={DocsBotIcon as IconComponent}
-              to="docsbot"
-              text="DocsBot"
-            />
           </SidebarScrollWrapper>
+          <Grid container>
+            <Grid item xs={8}>
+              <SidebarItem
+                icon={DocsBotIcon as IconComponent}
+                to="docsbot"
+                text="DocsBot"
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <Chip
+                style={{
+                  margin: '12px 0px 0px 0px',
+                  color: '#b5b5b5',
+                  borderColor: '#b5b5b5',
+                }}
+                label="Beta"
+                size="small"
+                variant="outlined"
+              />
+            </Grid>
+          </Grid>
         </SidebarGroup>
         <SidebarSpace />
         <SidebarDivider />

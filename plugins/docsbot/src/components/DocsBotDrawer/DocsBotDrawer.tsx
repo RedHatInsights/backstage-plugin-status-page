@@ -6,7 +6,9 @@ import {
 } from '@backstage/core-plugin-api';
 import {
   CardContent,
+  Chip,
   Drawer,
+  Grid,
   IconButton,
   Tooltip,
   Typography,
@@ -217,9 +219,22 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
         <div className={classes.fullHeightContainer}>
           <div className={classes.menuSection}>
             <div className={classes.docsBotSection}>
-              <Typography variant="h4" className={classes.docsBotName}>
-                DocsBot
-              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={8}>
+                  <Typography variant="h4" className={classes.docsBotName}>
+                    DocsBot
+                  </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <Chip
+                    style={{ margin: '8px 0px 0px 0px' }}
+                    label="Beta"
+                    size="small"
+                    color="primary"
+                    variant="outlined"
+                  />
+                </Grid>
+              </Grid>
             </div>
 
             <div className={classes.iconsSection}>

@@ -8,6 +8,7 @@ import {
 import {
   Card,
   CardContent,
+  Chip,
   IconButton,
   Tooltip,
   useTheme,
@@ -190,14 +191,23 @@ export const DocsBotPage = () => {
   };
 
   return (
-    <Page themeId="tool" >
+    <Page themeId="tool">
       <Header
-        title="Welcome to DocsBot!"
-        subtitle=" 
-Assistance with Your Document Questions."
+        title={
+          <>
+            Welcome to DocsBot! &nbsp;
+            <Chip
+              label="Beta"
+              size="small"
+              variant="outlined"
+              color="primary"
+            />
+          </>
+        }
+        subtitle=" Assistance with Your Document Questions."
       >
         <HeaderLabel label="Owner" value="Team DocsBot" />
-        <HeaderLabel label="Lifecycle" value="Alpha" />
+        <HeaderLabel label="Lifecycle" value="Beta" />
         {docsBotSlackUrl && (
           <HeaderLabel
             label="Slack"
