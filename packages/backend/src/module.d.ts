@@ -1,4 +1,3 @@
-declare module '@backstage/backend-defaults';
 declare module '@backstage/plugin-proxy-backend/alpha';
 declare module '@backstage/plugin-auth-backend';
 declare module '@backstage/plugin-auth-backend-module-guest-provider';

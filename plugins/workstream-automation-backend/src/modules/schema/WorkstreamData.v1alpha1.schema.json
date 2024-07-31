@@ -1,0 +1,129 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "WorkstreamDataV1alpha1",
+  "description": "Workstream data extends existing Group kind in backstage",
+  "examples": [
+    {
+      "apiVersion": "console.one.redhat.com/v1alpha1",
+      "kind": "Workstream",
+      "metadata": {
+        "annotations": {
+          "jira/project-key": "PROJECT"
+        },
+        "name": "lorem_workstream",
+        "title": "Lorem - Workstream",
+        "namespace": "company",
+        "createdAt": "timestamp",
+        "updatedAt": "timestamp",
+        "createdBy": "user:company/foo",
+        "description": "Some description of workstream",
+        "links": [
+          {
+            "url": "mailto://team-devs@company.com",
+            "title": "E-Mail",
+            "icon": "mail"
+          },
+          {
+            "url": "https://company.slack.com/archives/#573jf23h",
+            "title": "Slack",
+            "icon": "slack_contact"
+          }
+        ]
+      },
+      "spec": {
+        "members": [
+          {
+            "userRef": "user:company/foo",
+            "role": "Senior Developer"
+          },
+          {
+            "userRef": "user:company/bar",
+            "role": "Assistant Developer"
+          }
+        ],
+        "pillar": "Platform Engineering",
+        "portfolio": [
+          "component:company/component-1",
+          "component:company/component-2",
+          "component:company/component-3"
+        ],
+        "lead": "user:company/baz"
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": ["spec"],
+      "properties": {
+        "apiVersion": {
+          "enum": ["console.one.redhat.com/v1alpha1", "redhat.com/v1alpha1"]
+        },
+        "kind": {
+          "enum": ["Workstream"]
+        },
+        "spec": {
+          "type": "object",
+          "required": ["lead", "members", "portfolio", "pillar"],
+          "properties": {
+            "lead": {
+              "type": "string",
+              "description": "Entity ref to lead of workstream",
+              "examples": ["john", "user:john", "user:redhat/john"],
+              "minLength": 1
+            },
+            "members": {
+              "type": "array",
+              "description": "Array of members",
+              "items": {
+                "type": "object",
+                "required": ["userRef", "role"],
+                "properties": {
+                  "userRef": {
+                    "type": "string",
+                    "description": "Entity ref of members",
+                    "examples": ["emily", "user:emily"]
+                  },
+                  "role": {
+                    "type": "string",
+                    "description": "Role of a member in an workstream",
+                    "examples": [
+                      "Technical Lead",
+                      "Developer",
+                      "Assistant developer"
+                    ]
+                  }
+                }
+              }
+            },
+            "portfolio": {
+              "type": "array",
+              "description": "Portfolio associated with workstream",
+              "items": {
+                "type": "string",
+                "description": "entityRef of Component/System",
+                "examples": ["component:default/example-website"]
+              }
+            },
+            "pillar": {
+              "type": "string",
+              "description": "Under which pillar does it come",
+              "examples": ["Platform Engineering"]
+            },
+            "updatedOn": {
+              "type": "string",
+              "description": "Timestamp when last changes were made to workstream"
+            },
+            "createdBy": {
+              "type": "string",
+              "description": "Entity ref to user who created the workstream"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

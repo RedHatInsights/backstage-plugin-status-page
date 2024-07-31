@@ -402,6 +402,39 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@appdev-platform/backstage-plugin-workstream-automation-backend@workspace:^, @appdev-platform/backstage-plugin-workstream-automation-backend@workspace:plugins/workstream-automation-backend":
+  version: 0.0.0-use.local
+  resolution: "@appdev-platform/backstage-plugin-workstream-automation-backend@workspace:plugins/workstream-automation-backend"
+  dependencies:
+    "@backstage/backend-defaults": ^0.3.3
+    "@backstage/backend-plugin-api": ^0.6.9
+    "@backstage/backend-test-utils": ^0.4.2
+    "@backstage/catalog-client": ^1.6.5
+    "@backstage/catalog-model": ^1.5.0
+    "@backstage/cli": ^0.26.9
+    "@backstage/config": ^1.2.0
+    "@backstage/errors": ^1.2.4
+    "@backstage/plugin-auth-backend": ^0.22.8
+    "@backstage/plugin-auth-backend-module-guest-provider": ^0.1.6
+    "@backstage/plugin-catalog-backend": ^1.24.0
+    "@backstage/plugin-catalog-common": ^1.0.24
+    "@backstage/plugin-catalog-node": ^1.12.3
+    "@types/express": "*"
+    "@types/node-fetch": 2
+    "@types/supertest": ^2.0.12
+    express: ^4.17.1
+    express-promise-router: ^4.1.0
+    knex: ^3.1.0
+    lodash: ^4.17.21
+    msw: ^1.0.0
+    node-fetch: 2
+    short-uuid: ^5.2.0
+    supertest: ^6.2.4
+    winston: ^3.2.1
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
 "@appdev-platform/plugin-mock-plugin@*, @appdev-platform/plugin-mock-plugin@workspace:plugins/mock-plugin":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/plugin-mock-plugin@workspace:plugins/mock-plugin"
@@ -3566,7 +3599,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/backend-defaults@npm:^0.3.2":
+"@backstage/backend-defaults@npm:^0.3.2, @backstage/backend-defaults@npm:^0.3.3":
   version: 0.3.3
   resolution: "@backstage/backend-defaults@npm:0.3.3"
   dependencies:
@@ -4796,7 +4829,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-auth-backend@npm:^0.22.7, @backstage/plugin-auth-backend@npm:^0.22.9":
+"@backstage/plugin-auth-backend@npm:^0.22.7, @backstage/plugin-auth-backend@npm:^0.22.8, @backstage/plugin-auth-backend@npm:^0.22.9":
   version: 0.22.9
   resolution: "@backstage/plugin-auth-backend@npm:0.22.9"
   dependencies:
@@ -5061,7 +5094,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-catalog-node@npm:^1.12.2, @backstage/plugin-catalog-node@npm:^1.12.4":
+"@backstage/plugin-catalog-node@npm:^1.12.2, @backstage/plugin-catalog-node@npm:^1.12.3, @backstage/plugin-catalog-node@npm:^1.12.4":
   version: 1.12.4
   resolution: "@backstage/plugin-catalog-node@npm:1.12.4"
   dependencies:
@@ -15247,6 +15280,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node-fetch@npm:2":
+  version: 2.6.11
+  resolution: "@types/node-fetch@npm:2.6.11"
+  dependencies:
+    "@types/node": "*"
+    form-data: ^4.0.0
+  checksum: 180e4d44c432839bdf8a25251ef8c47d51e37355ddd78c64695225de8bc5dc2b50b7bb855956d471c026bb84bd7295688a0960085e7158cbbba803053492568b
+  languageName: node
+  linkType: hard
+
 "@types/node-forge@npm:^1.3.0":
   version: 1.3.11
   resolution: "@types/node-forge@npm:1.3.11"
@@ -17643,6 +17686,8 @@ __metadata:
     "@appdev-platform/backstage-plugin-catalog-backend-module-spaship": "*"
     "@appdev-platform/backstage-plugin-matomo-backend": "*"
     "@appdev-platform/backstage-plugin-report-portal-backend": ^0.2.2
+    "@appdev-platform/backstage-plugin-workstream-automation-backend": "workspace:^"
+    "@backstage/backend-app-api": ^0.8.0
     "@backstage/backend-common": ^0.23.1
     "@backstage/backend-defaults": ^0.3.2
     "@backstage/backend-plugin-api": ^0.6.20
@@ -17658,6 +17703,7 @@ __metadata:
     "@backstage/plugin-catalog-backend": ^1.23.1
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": ^0.1.18
     "@backstage/plugin-catalog-backend-module-unprocessed": ^0.4.7
+    "@backstage/plugin-events-node": ^0.3.8
     "@backstage/plugin-permission-backend": ^0.5.44
     "@backstage/plugin-permission-backend-module-allow-all-policy": ^0.1.17
     "@backstage/plugin-permission-common": ^0.7.14
@@ -31052,6 +31098,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-fetch@npm:2, node-fetch@npm:^2.6.0, node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.7, node-fetch@npm:^2.6.9, node-fetch@npm:^2.7.0":
+  version: 2.7.0
+  resolution: "node-fetch@npm:2.7.0"
+  dependencies:
+    whatwg-url: ^5.0.0
+  peerDependencies:
+    encoding: ^0.1.0
+  peerDependenciesMeta:
+    encoding:
+      optional: true
+  checksum: d76d2f5edb451a3f05b15115ec89fc6be39de37c6089f1b6368df03b91e1633fd379a7e01b7ab05089a25034b2023d959b47e59759cb38d88341b2459e89d6e5
+  languageName: node
+  linkType: hard
+
 "node-fetch@npm:2.6.7":
   version: 2.6.7
   resolution: "node-fetch@npm:2.6.7"
@@ -31073,20 +31133,6 @@ __metadata:
     encoding: ^0.1.11
     is-stream: ^1.0.1
   checksum: 3bb0528c05d541316ebe52770d71ee25a6dce334df4231fd55df41a644143e07f068637488c18a5b0c43f05041dbd3346752f9e19b50df50569a802484544d5b
-  languageName: node
-  linkType: hard
-
-"node-fetch@npm:^2.6.0, node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.12, node-fetch@npm:^2.6.7, node-fetch@npm:^2.6.9, node-fetch@npm:^2.7.0":
-  version: 2.7.0
-  resolution: "node-fetch@npm:2.7.0"
-  dependencies:
-    whatwg-url: ^5.0.0
-  peerDependencies:
-    encoding: ^0.1.0
-  peerDependenciesMeta:
-    encoding:
-      optional: true
-  checksum: d76d2f5edb451a3f05b15115ec89fc6be39de37c6089f1b6368df03b91e1633fd379a7e01b7ab05089a25034b2023d959b47e59759cb38d88341b2459e89d6e5
   languageName: node
   linkType: hard
 
@@ -36627,6 +36673,16 @@ __metadata:
     any-base: ^1.1.0
     uuid: ^8.3.2
   checksum: 5b718a026897f34483bc95cebb6814cff45538d462583053be9003403f459a104ea88ed893fa462589ef040abd454bf499298d55fa0081d61d987ab85cbf3fe4
+  languageName: node
+  linkType: hard
+
+"short-uuid@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "short-uuid@npm:5.2.0"
+  dependencies:
+    any-base: ^1.1.0
+    uuid: ^9.0.1
+  checksum: 4b8ca0d9141226eea70aaa0c61a92e1bbe9508cd7cc2bbb05e698e55f392d4b365fa5617744b40e3c6f744a5c53f6a9b0462a34b7c244534de1ec1686e71f542
   languageName: node
   linkType: hard
 

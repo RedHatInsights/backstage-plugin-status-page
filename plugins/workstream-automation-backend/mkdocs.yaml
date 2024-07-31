@@ -1,0 +1,8 @@
+site_name: Workstream Automation Backend Plugin for Backstage
+repo_url: https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/
+
+nav:
+  - README.md: 'README.md'
+
+plugins:
+  - techdocs-core

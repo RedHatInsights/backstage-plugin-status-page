@@ -1,0 +1,412 @@
+openapi: 3.0.3
+info:
+  title: Workstream Automation
+  description: ''
+  version: 1.0.0
+servers:
+  - url: http://localhost:7007/api/workstream
+    description: Base url
+    variables: {}
+paths:
+  /:
+    get:
+      summary: All workstreams
+      deprecated: false
+      description: Get all workstreams
+      operationId: getAllWorkstreams
+      tags: []
+      parameters:
+        - name: page
+          in: query
+          description: ''
+          required: false
+          example: '1'
+          schema:
+            type: string
+        - name: size
+          in: query
+          description: ''
+          required: false
+          example: '10'
+          schema:
+            type: string
+        - name: filter
+          in: query
+          description: ''
+          required: false
+          example: '[name]=Devex'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: &ref_2
+                      $ref: '#/components/schemas/Workstream'
+                  count:
+                    type: number
+                    minimum: 0
+                  currentPage:
+                    type: number
+                    minimum: 0
+                  pageSize:
+                    type: number
+                    minimum: 0
+                required:
+                  - data
+                  - count
+                  - pageSize
+                  - currentPage
+              examples:
+                '1':
+                  summary: Success
+                  value:
+                    data:
+                      - id: 18768f18-9793-4a27-ae94-9c132b864d1a
+                        name: fugiat cumque iste
+                        title: sint aut animi
+                        team: sunt culpa Ut velit adipisicing
+                        lead: id dolore deserunt et
+                        members:
+                          - est
+                        jiraProject: quis labore ut
+                      - id: 69ed2579-876d-49fa-a240-ac27bfef4843
+                        name: quasi commodi fugiat
+                        title: dicta ducimus dolorum
+                        team: mollit ullamco
+                        lead: deserunt
+                        members:
+                          - in laboris occaecat
+                          - dolore exercitation adipisicing Duis
+                          - anim
+                        jiraProject: quis eu
+                      - id: 927ae354-2cfb-451c-bf00-cee5a588d355
+                        name: doloribus dolorum incidunt
+                        title: impedit quam error
+                        team: irure ad nostrud eu anim
+                        lead: proident reprehenderit aliquip commodo Excepteur
+                        members:
+                          - est magna pariatur
+                          - et
+                          - pariatur
+                        jiraProject: ad nostrud
+                    count: 3
+                    currentPage: 1
+                    pageSize: 10
+      security: []
+    post:
+      summary: Create Workstream
+      deprecated: false
+      description: ''
+      operationId: createWorkstreams
+      tags: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: unique ID
+                name:
+                  type: string
+                  description: Name of workstream
+                title:
+                  type: string
+                team:
+                  type: string
+                lead:
+                  type: string
+                members: &ref_3
+                  $ref: '#/components/schemas/Members'
+                  description: List of members
+                jiraProject:
+                  type: string
+            example:
+              name: repudiandae sint autem
+              title: accusamus praesentium quia
+              team: Ut qui
+              lead: dolor
+              members:
+                - reprehenderit deserunt minim dolore elit
+                - sit adipisicing Excepteur ex non
+              jiraProject: exercitation
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: &ref_1
+                $ref: '#/components/schemas/CreateResponseSchema'
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema: &ref_0
+                $ref: '#/components/schemas/Error'
+      security: []
+  /{workstream_id}:
+    get:
+      summary: Get workstream entity
+      parameters:
+        - name: workstream_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: devex_appdev_platform_workstream
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  apiVersion:
+                    type: string
+                    example: console.one.redhat.com/v1alpha1
+                  kind:
+                    type: string
+                    example: Workstream
+                  metadata:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: devex_appdev_platform_workstream
+                      title:
+                        type: string
+                        example: Devex - Appdev Platform
+                      description:
+                        type: string
+                        example: Some description about workstream
+                      createdBy:
+                        type: string
+                        example: user:redhat/yoswal
+                      namespace:
+                        type: string
+                        example: redhat
+                      links:
+                        type: array
+                        items: {}
+                  spec:
+                    type: object
+                    properties:
+                      members:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            userRef:
+                              type: string
+                              example: user:redhat/yoswal
+                            role:
+                              type: string
+                              example: Developer
+                      pillar:
+                        type: string
+                        example: Platform Engineering
+                      portfolio:
+                        type: array
+                        items:
+                          type: string
+                          example: component:redhat/example-website
+                      lead:
+                        type: string
+                        example: user:redhat/yoswal
+    put:
+      summary: Update a workstream
+      deprecated: false
+      description: ''
+      operationId: update_workstream
+      tags: []
+      parameters:
+        - name: workstream_id
+          in: path
+          description: ''
+          required: true
+          example: ''
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: *ref_1
+              examples:
+                '1':
+                  summary: Success
+                  value:
+                    message: workstream updated successfully
+                    data:
+                      id: ad684bab-7c97-4c07-99b6-c1c3e17a4371
+                      name: mollitia nesciunt dolores
+                      title: tenetur harum quos
+                      team: commodo laboris magna
+                      lead: deserunt et
+                      members:
+                        - amet
+                        - in ea laboris dolor
+                        - fugiat do
+                      jiraProject: consectetur Lorem dolore reprehenderit laborum
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema: *ref_0
+      security: []
+    delete:
+      summary: Delete workstream
+      deprecated: false
+      description: ''
+      operationId: delete_workstream_by_id
+      tags: []
+      parameters:
+        - name: workstream_name
+          in: path
+          description: ''
+          required: true
+          example: '{% faker datatype.uuid %}'
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+              examples:
+                '1':
+                  summary: Success
+                  value:
+                    message: >-
+                      Workstream {workstreamId}-{workstreamName} deleted
+                      successfully.
+        '404':
+          description: Record Not Found
+          content:
+            application/json:
+              schema: *ref_1
+              examples:
+                '1':
+                  summary: Not found
+                  value:
+                    error: {}
+                    message: Workstream {workstreamId} not found
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema: *ref_1
+              examples:
+                '1':
+                  summary: Exception
+                  value:
+                    error: {}
+                    message: Server Error
+      security: []
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties: {}
+          description: ErrorStack
+        message:
+          type: string
+          description: Error Message
+      required:
+        - error
+        - message
+    CreateResponseSchema:
+      type: object
+      properties:
+        message:
+          type: string
+          description: status message
+        data:
+          anyOf:
+            - *ref_2
+            - type: 'string'
+      required:
+        - message
+        - data
+    Workstream:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of workstream
+        title:
+          type: string
+        pillar:
+          type: string
+        portfolio:
+          type: array
+          description: entity refs of the system that the workstream owns
+          items:
+            type: string
+        lead:
+          type: string
+        members: *ref_3
+        jiraProject:
+          type: string
+        createdAt:
+          type: number
+        createdBy:
+          type: string
+          description: user ref
+        mail:
+          type: string
+          description: Email to connect with
+        slackChannelUrl:
+          type: string
+          description: URL to slack channel
+      required:
+        - name
+        - title
+        - team
+        - lead
+        - members
+        - jiraProject
+        - mail
+        - slackChannelUrl
+        - pillar
+    Members:
+      type: array
+      items:
+        type: object
+        properties:
+          userRef:
+            type: string
+          role:
+            type: string
+            enum:
+              - 'Workstream Lead'
+              - 'Technical Lead'
+              - 'Software Engineer'
+              - 'Quality Engineer'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: 'Bearer XXX'
+security:
+  - bearerAuth: []
