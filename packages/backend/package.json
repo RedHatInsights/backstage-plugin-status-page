@@ -21,7 +21,7 @@
     "@appdev-platform/backstage-plugin-catalog-backend-module-spaship": "*",
     "@appdev-platform/backstage-plugin-matomo-backend": "*",
     "@appdev-platform/backstage-plugin-report-portal-backend": "^0.2.2",
-    "@appdev-platform/backstage-plugin-workstream-automation-backend": "workspace:^",
+    "@appdev-platform/backstage-plugin-workstream-automation-backend": "*",
     "@backstage/backend-app-api": "^0.8.0",
     "@backstage/backend-common": "^0.23.1",
     "@backstage/backend-defaults": "^0.3.2",
