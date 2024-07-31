@@ -1,0 +1,40 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: workstream-automation-backend-plugin
+  title: Workstream Automation Backend Plugin
+  description: Backstage backend plugin for workstream automation
+  namespace: devex
+  tags:
+    - Backstage
+    - idp
+    - workstream
+    - automation
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-workstream-backend
+      title: Backstage CMDB Plugin NPM Package
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: library
+  lifecycle: production
+  owner: group:redhat/one-platform-devs
+  system: devex/redhat-experience-platform
+  providesApis:
+    - devex/workstream-plugin-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: workstream-plugin-api
+  title: Backstage Workstream Automation Backend Plugin ReST API
+  description: ReST API for backstage Workstream Automation Backend plugin
+  namespace: devex
+spec:
+  type: openapi
+  lifecycle: production
+  owner: group:redhat/one-platform-devs
+  system: devex/redhat-experience-platform
+  definition:
+    $text: './docs/workstream-automation.openapi.yaml'
