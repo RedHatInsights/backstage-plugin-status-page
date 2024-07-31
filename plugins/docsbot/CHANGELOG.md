@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-docsbot [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-docsbot@1.1.0...@appdev-platform/backstage-plugin-docsbot@1.2.0) (2024-07-31)
+
+
+### Features
+
+* **docsbot-plugin:** Add a ‘BETA’ tag to both the sidebar and the side panel for DocsBot. ([c11bde1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/c11bde18de3bec56f52fdf54e028c52547b57baf))
+
 ## @appdev-platform/backstage-plugin-docsbot [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-docsbot@1.0.0...@appdev-platform/backstage-plugin-docsbot@1.1.0) (2024-07-25)
 
 
