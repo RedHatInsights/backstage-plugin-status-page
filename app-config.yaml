@@ -93,6 +93,7 @@ proxy:
       allowedMethods: ['GET']
     '/jira':
       target: ${JIRA_URL}
+      credentials: dangerously-allow-unauthenticated
       headers:
         Authorization: Bearer ${JIRA_TOKEN}
         Accept: 'application/json'
@@ -228,9 +229,9 @@ catalog:
       rules:
         - allow: [Template]
 
-    # Local example organizational data
+    # Local example workstream users data
     - type: file
-      target: ../../examples/org.yaml
+      target: ../../examples/test-data/workstream-plugin.yaml
       rules:
         - allow: [User, Group]
 

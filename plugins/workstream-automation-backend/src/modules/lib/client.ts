@@ -1,6 +1,6 @@
 import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { Workstream } from '../../types';
-import { WorkstreamDataV1alpha1 } from './types';
+import { WorkstreamDataV1alpha1 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 
 export interface WorkstreamBackendApi {
   getAllWorkstreams(): Promise<Workstream[]>;

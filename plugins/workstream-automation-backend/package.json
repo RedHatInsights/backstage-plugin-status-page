@@ -26,7 +26,9 @@
     "role": "backend-plugin",
     "pluginId": "workstream-automation",
     "pluginPackages": [
-      "@appdev-platform/backstage-plugin-workstream-automation-backend"
+      "@appdev-platform/backstage-plugin-workstream-automation",
+      "@appdev-platform/backstage-plugin-workstream-automation-backend",
+      "@appdev-platform/backstage-plugin-workstream-automation-common"
     ]
   },
   "scripts": {
@@ -39,6 +41,7 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
+    "@appdev-platform/backstage-plugin-workstream-automation-common": "*",
     "@backstage/backend-defaults": "^0.3.3",
     "@backstage/backend-plugin-api": "^0.6.9",
     "@backstage/catalog-client": "^1.6.5",
@@ -47,6 +50,8 @@
     "@backstage/errors": "^1.2.4",
     "@backstage/plugin-catalog-common": "^1.0.24",
     "@backstage/plugin-catalog-node": "^1.12.3",
+    "@backstage/plugin-permission-common": "^0.8.0",
+    "@backstage/plugin-permission-node": "^0.8.0",
     "@types/express": "*",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
@@ -55,7 +60,8 @@
     "node-fetch": "2",
     "short-uuid": "^5.2.0",
     "winston": "^3.2.1",
-    "yn": "^4.0.0"
+    "yn": "^4.0.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "^0.4.2",

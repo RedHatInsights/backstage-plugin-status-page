@@ -6,7 +6,7 @@ import {
 } from '@backstage/catalog-model';
 import { Workstream } from '../../types';
 import { ANNOTATION_JIRA_PROJECT_KEY } from './constants';
-import { WorkstreamDataV1alpha1 } from './types';
+import { WorkstreamDataV1alpha1 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 
 export function ajvCompiledJsonSchemaValidator(schema: unknown): KindValidator {
   let validator: undefined | ((data: unknown) => any);

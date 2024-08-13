@@ -1,19 +1,33 @@
+import {
+  RESOURCE_TYPE_WORKSTREAM_ENTITY,
+  workstreamCreatePermission,
+  WorkstreamDataV1alpha1,
+  workstreamDeletePermission,
+  workstreamPermissions,
+  workstreamUpdatePermission,
+} from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import {
   AuthService,
   DatabaseService,
   DiscoveryService,
+  HttpAuthService,
   LoggerService,
+  PermissionsService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
+import { NotAllowedError } from '@backstage/errors';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import express from 'express';
 import Router from 'express-promise-router';
 import { WorkstreamBackendDatabase } from '../database';
 import { WorkstreamIntegration } from '../modules/integrations/WorkstreamIntegration';
-import { workstreamToEntityKind } from '../modules/lib/utils';
-import { Workstream } from '../types';
 import { DEFAULT_WORKSTREAM_NAMESPACE } from '../modules/lib/constants';
+import { workstreamToEntityKind } from '../modules/lib/utils';
+import { workstreamPermissionRules } from '../permissions/rules';
+import { Workstream } from '../types';
 
 export interface RouterOptions {
   logger: LoggerService;
@@ -21,12 +35,14 @@ export interface RouterOptions {
   database: DatabaseService;
   auth: AuthService;
   discovery: DiscoveryService;
+  permissions: PermissionsService;
+  httpAuth: HttpAuthService;
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, config, auth, discovery } = options;
+  const { logger, config, auth, discovery, permissions, httpAuth } = options;
 
   const router = Router();
   const database = await WorkstreamBackendDatabase.create({
@@ -36,12 +52,35 @@ export async function createRouter(
   const integrations = WorkstreamIntegration.fromConfig(config);
   const catalogApi = new CatalogClient({ discoveryApi: discovery });
 
+  const permissionIntegrationRouter = createPermissionIntegrationRouter({
+    permissions: workstreamPermissions,
+    resourceType: RESOURCE_TYPE_WORKSTREAM_ENTITY,
+    rules: Object.values(workstreamPermissionRules),
+    getResources: async resourceRefs => {
+      const credentials = await auth.getPluginRequestToken({
+        onBehalfOf: await auth.getOwnServiceCredentials(),
+        targetPluginId: 'catalog',
+      });
+      const resp = await catalogApi.getEntitiesByRefs(
+        {
+          entityRefs: resourceRefs,
+          filter: [{ kind: 'Workstream' }],
+        },
+        credentials,
+      );
+      const { items: workstreamEntities } = resp;
+      return workstreamEntities as WorkstreamDataV1alpha1[];
+    },
+  });
+
   router.use(express.json());
 
   router.get('/health', (_, response) => {
     logger.info('PONG!');
     response.json({ status: 'ok' });
   });
+
+  router.use(permissionIntegrationRouter);
 
   // TODO create filters for member, pillar, lead, jira_project
   router.get('/', async (_req, res) => {
@@ -50,6 +89,16 @@ export async function createRouter(
   });
 
   router.post('/', async (req, res) => {
+    const credentials = await httpAuth.credentials(req);
+    const decision = (
+      await permissions.authorize(
+        [{ permission: workstreamCreatePermission }],
+        { credentials: credentials },
+      )
+    )[0];
+    if (decision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError('Unauthorized');
+    }
     if (!req.body.data) {
       res.status(400).json({ error: 'Request body incomplete' });
       return;
@@ -62,7 +111,7 @@ export async function createRouter(
       throw new Error(`Integration for host: ${req.hostname} missing`);
 
     const workstreamLocation = `${integration.apiBaseUrl}/${result.name}`;
-    const credentials = await auth.getPluginRequestToken({
+    const { token: catalogServiceToken } = await auth.getPluginRequestToken({
       targetPluginId: 'catalog',
       onBehalfOf: await auth.getOwnServiceCredentials(),
     });
@@ -71,18 +120,38 @@ export async function createRouter(
         target: workstreamLocation,
         type: 'url',
       },
-      credentials,
+      { token: catalogServiceToken },
     );
 
     res.status(200).json({ data: result });
   });
 
   router.put('/:workstream_name', async (req, res) => {
+    const workstreamName = req.params.workstream_name;
+    const namespace =
+      integrations.byHost(req.hostname)?.config.namespace ??
+      DEFAULT_WORKSTREAM_NAMESPACE;
+
+    const credentials = await httpAuth.credentials(req);
+    const decision = (
+      await permissions.authorize(
+        [
+          {
+            permission: workstreamUpdatePermission,
+            resourceRef: `workstream:${namespace}/${workstreamName}`,
+          },
+        ],
+        { credentials },
+      )
+    )[0];
+    if (decision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError('Unauthorized');
+    }
+
     if (!req.body.data) {
       return res.status(400).json({ error: 'Invalid data provided' });
     }
     const data: Partial<Workstream> = req.body.data;
-    const workstreamName = req.params.workstream_name;
 
     const originalData = await database.getWorkstreamById(workstreamName);
     if (originalData === null) {
@@ -95,6 +164,7 @@ export async function createRouter(
       ...originalData,
       ...data,
     };
+
     const result = await database.updateWorkstream(workstreamName, updatedData);
     if (result === null) {
       return res.status(500).json({
@@ -102,19 +172,19 @@ export async function createRouter(
       });
     }
 
-    const namespace =
-      integrations.byHost(req.hostname)?.config.namespace ??
-      DEFAULT_WORKSTREAM_NAMESPACE;
-    const credentials = await auth.getPluginRequestToken({
+    const { token: catalogServiceToken } = await auth.getPluginRequestToken({
       targetPluginId: 'catalog',
       onBehalfOf: await auth.getOwnServiceCredentials(),
     });
-    catalogApi.refreshEntity(
-      `workstream:${namespace}/${workstreamName}`,
-      credentials,
-    );
+    catalogApi.refreshEntity(`workstream:${namespace}/${workstreamName}`, {
+      token: catalogServiceToken,
+    });
 
-    return res.status(200).json({ data: result });
+    return res.status(200).json({
+      data: result,
+      message:
+        'Workstream updated successfully (please refresh entity to view changes)',
+    });
   });
 
   router.get('/:workstream_name', async (req, res) => {
@@ -140,10 +210,34 @@ export async function createRouter(
   });
 
   router.delete('/:workstream_name', async (req, res) => {
+    const credentials = await httpAuth.credentials(req);
+    const decision = (
+      await permissions.authorize(
+        [{ permission: workstreamDeletePermission }],
+        { credentials },
+      )
+    )[0];
+    if (decision.result === AuthorizeResult.DENY) {
+      throw new NotAllowedError('Unauthorized');
+    }
     const name = req.params.workstream_name;
     const result = await database.getWorkstreamById(name);
 
     if (result) {
+      const namespace =
+        integrations.byHost(req.hostname)?.config.namespace ??
+        DEFAULT_WORKSTREAM_NAMESPACE;
+      const { token: catalogServiceToken } = await auth.getPluginRequestToken({
+        targetPluginId: 'catalog',
+        onBehalfOf: await auth.getOwnServiceCredentials(),
+      });
+      const resp = await catalogApi.getLocationByEntity(
+        `workstream:${namespace}/${name}`,
+        { token: catalogServiceToken },
+      );
+      await catalogApi.removeLocationById(resp?.id!, {
+        token: catalogServiceToken,
+      });
       await database.deleteWorkstream(name);
       return res.status(200).json({ message: 'Deleted successfully' });
     }
