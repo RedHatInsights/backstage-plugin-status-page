@@ -210,3 +210,17 @@ auth:
 docsbot:
   slackUrl: ${DOCSBOT_SLACK_URL}
   contactMail: ${DOCSBOT_MAIL}
+
+permission:
+  enabled: true
+  rbac:
+    plugins:
+      workstream:
+        permission: [workstream.create, workstream.delete, workstream.update]
+        users: 
+          - name: user:redhat/yoswal
+          - name: user:development/guest
+    admins:
+      - name: user:redhat/yoswal
+      - name: user:redhat/mdeshmuk
+      - name: user:redhat/roommen

@@ -56,6 +56,10 @@ metadata:
   namespace: redhat
 spec:
   memberOf: [one-platform-devs]
+  profile:
+    displayName: Nilesh Patil
+    email: npatil@redhat.com
+  manager: user:redhat/enewby
 ---
 apiVersion: backstage.io/v1alpha1
 kind: User
@@ -67,3 +71,4 @@ spec:
   profile:
     displayName: Mayur Deshmukh
     email: mdeshmuk@redhat.com
+  manager: user:redhat/npatil

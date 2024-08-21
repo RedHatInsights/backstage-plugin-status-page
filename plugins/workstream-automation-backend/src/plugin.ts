@@ -20,8 +20,19 @@ export const workstreamAutomationPlugin = createBackendPlugin({
         auth: coreServices.auth,
         database: coreServices.database,
         discovery: coreServices.discovery,
+        permissions: coreServices.permissions,
+        httpAuth: coreServices.httpAuth,
       },
-      async init({ httpRouter, logger, config, auth, database, discovery }) {
+      async init({
+        httpRouter,
+        logger,
+        config,
+        auth,
+        database,
+        discovery,
+        permissions,
+        httpAuth,
+      }) {
         const isEnabled =
           config.getOptionalBoolean('workstream.enabled') ?? false;
         if (!isEnabled) {
@@ -41,6 +52,8 @@ export const workstreamAutomationPlugin = createBackendPlugin({
             auth,
             database,
             discovery,
+            permissions,
+            httpAuth,
           }),
         );
       },

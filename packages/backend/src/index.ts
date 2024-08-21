@@ -18,9 +18,9 @@ import { eventsServiceFactory } from '@backstage/plugin-events-node';
 import {
   identityServiceFactory,
   tokenManagerServiceFactory,
+  createSpecializedBackend,
 } from '@backstage/backend-app-api';
 
-import { createSpecializedBackend } from '@backstage/backend-app-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 import { urlReaderServiceFactory } from './service/urlReader';
@@ -92,9 +92,7 @@ backend.add(
 
 // permission plugin
 backend.add(import('@backstage/plugin-permission-backend/alpha'));
-backend.add(
-  import('@backstage/plugin-permission-backend-module-allow-all-policy'),
-);
+backend.add(import('./policy'));
 
 // search plugin
 backend.add(import('@backstage/plugin-search-backend/alpha'));

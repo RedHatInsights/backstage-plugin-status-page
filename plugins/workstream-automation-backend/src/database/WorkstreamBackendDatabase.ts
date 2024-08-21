@@ -58,8 +58,6 @@ export class WorkstreamBackendDatabase implements WorkstreamBackendStore {
       .first()
       .update(updatedData, '*');
 
-    console.log(dbResult);
-
     if (dbResult.length < 1) {
       return null;
     }

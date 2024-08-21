@@ -2,10 +2,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import {
-  catalogAnalysisExtensionPoint,
-  catalogProcessingExtensionPoint,
-} from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { WorkstreamEntityProcessor } from './modules';
 import { WorkstreamBackendClient } from './modules/lib/client';
 
@@ -15,13 +12,11 @@ const workstreamCatalogModule = createBackendModule({
   register(reg) {
     reg.registerInit({
       deps: {
-        analyzers: catalogAnalysisExtensionPoint,
         auth: coreServices.auth,
         catalog: catalogProcessingExtensionPoint,
         config: coreServices.rootConfig,
         discovery: coreServices.discovery,
         logger: coreServices.logger,
-        scheduler: coreServices.scheduler,
       },
       async init({ catalog, auth, logger, discovery, config }) {
         const isEnabled =

@@ -1,5 +1,17 @@
-import React from 'react';
-import { Button, Grid } from '@material-ui/core';
+import {
+  RELATION_API_CONSUMED_BY,
+  RELATION_API_PROVIDED_BY,
+  RELATION_CONSUMES_API,
+  RELATION_DEPENDENCY_OF,
+  RELATION_DEPENDS_ON,
+  RELATION_HAS_PART,
+  RELATION_PART_OF,
+  RELATION_PROVIDES_API,
+} from '@backstage/catalog-model';
+import {
+  EmptyState,
+  MissingAnnotationEmptyState,
+} from '@backstage/core-components';
 import {
   EntityApiDefinitionCard,
   EntityConsumedApisCard,
@@ -18,59 +30,47 @@ import {
   EntityHasSystemsCard,
   EntityLayout,
   EntityLinksCard,
-  EntitySwitch,
   EntityOrphanWarning,
   EntityProcessingErrorsPanel,
+  EntityRelationWarning,
+  EntitySwitch,
+  hasCatalogProcessingErrors,
+  hasRelationWarnings,
   isComponentType,
   isKind,
-  hasCatalogProcessingErrors,
   isOrphan,
-  hasRelationWarnings,
-  EntityRelationWarning,
 } from '@backstage/plugin-catalog';
-import {
-  isGithubActionsAvailable,
-  EntityGithubActionsContent,
-} from '@backstage/plugin-github-actions';
-import {
-  EntityUserProfileCard,
-  EntityGroupProfileCard,
-  EntityMembersListCard,
-  EntityOwnershipCard,
-} from '@backstage/plugin-org';
-import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
-import {
-  EmptyState,
-  MissingAnnotationEmptyState,
-} from '@backstage/core-components';
 import {
   Direction,
   EntityCatalogGraphCard,
 } from '@backstage/plugin-catalog-graph';
 import {
-  RELATION_API_CONSUMED_BY,
-  RELATION_API_PROVIDED_BY,
-  RELATION_CONSUMES_API,
-  RELATION_DEPENDENCY_OF,
-  RELATION_DEPENDS_ON,
-  RELATION_HAS_PART,
-  RELATION_PART_OF,
-  RELATION_PROVIDES_API,
-} from '@backstage/catalog-model';
+  EntityGithubActionsContent,
+  isGithubActionsAvailable,
+} from '@backstage/plugin-github-actions';
+import {
+  EntityGroupProfileCard,
+  EntityMembersListCard,
+  EntityOwnershipCard,
+  EntityUserProfileCard,
+} from '@backstage/plugin-org';
+import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
+import { Button, Grid } from '@material-ui/core';
+import React, { useState } from 'react';
 
-import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
-import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { MatomoPage } from '@appdev-platform/backstage-plugin-matomo';
 import { SpashipPage } from '@appdev-platform/backstage-plugin-spaship';
+import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
+import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import {
   EntityJiraOverviewCard,
   isJiraAvailable,
 } from '@roadiehq/backstage-plugin-jira';
 
 import {
+  InfraDetailsPage,
   ServiceDetailsCard,
   isAppCodeAvailable,
-  InfraDetailsPage,
 } from '@appdev-platform/backstage-plugin-cmdb';
 import { LighthousePage } from '@appdev-platform/backstage-plugin-lighthouse';
 
@@ -78,11 +78,21 @@ import {
   ContactDetailsCard,
   isContactDetailsAvailable,
 } from '@appdev-platform/backstage-plugin-contact-details';
-import { EntityFeedbackPage } from '@janus-idp/backstage-plugin-feedback';
 import {
   ReportPortalOverviewCard,
   isReportPortalAvailable,
 } from '@appdev-platform/backstage-plugin-report-portal';
+import {
+  UserWorkstreamCard,
+  WorkstreamAboutCard,
+  WorkstreamDeleteModal,
+  WorkstreamMembersCard,
+  WorkstreamPortfolioCard
+} from '@appdev-platform/backstage-plugin-workstream-automation';
+import { workstreamDeletePermission } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { usePermission } from '@backstage/plugin-permission-react';
+import { EntityFeedbackPage } from '@janus-idp/backstage-plugin-feedback';
+import Delete from '@material-ui/icons/Delete';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -159,22 +169,20 @@ const infraDetailsContent = (
 );
 
 const jiraContent = (
-  <>
-    <EntitySwitch>
-      <EntitySwitch.Case if={isJiraAvailable}>
-        <Grid item md={12}>
-          <EntityJiraOverviewCard />
-        </Grid>
-      </EntitySwitch.Case>
+  <EntitySwitch>
+    <EntitySwitch.Case if={isJiraAvailable}>
+      <Grid item md={12}>
+        <EntityJiraOverviewCard />
+      </Grid>
+    </EntitySwitch.Case>
 
-      <EntitySwitch.Case>
-        <MissingAnnotationEmptyState
-          annotation={['jira/project-key', 'jira/component']}
-          readMoreUrl="https://roadie.io/backstage/plugins/jira/"
-        />
-      </EntitySwitch.Case>
-    </EntitySwitch>
-  </>
+    <EntitySwitch.Case>
+      <MissingAnnotationEmptyState
+        annotation={['jira/project-key', 'jira/component']}
+        readMoreUrl="https://roadie.io/backstage/plugins/jira/"
+      />
+    </EntitySwitch.Case>
+  </EntitySwitch>
 );
 
 const overviewContent = (
@@ -400,6 +408,12 @@ const userPage = (
         <Grid item xs={12} md={6}>
           <EntityUserProfileCard variant="gridItem" />
         </Grid>
+        <Grid item md={9} xs={12}>
+          <UserWorkstreamCard variant="gridItem" />
+        </Grid>
+        <Grid item md={6} xs={12}>
+          <EntityCatalogGraphCard variant="gridItem" height={400} />
+        </Grid>
         <Grid item xs={12} md={6}>
           <EntityOwnershipCard variant="gridItem" />
         </Grid>
@@ -493,10 +507,55 @@ const domainPage = (
   </EntityLayout>
 );
 
+const WorkstreamEntityPage = () => {
+  const { allowed } = usePermission({ permission: workstreamDeletePermission });
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  return (
+    <>
+      {deleteModalOpen && (
+        <WorkstreamDeleteModal
+          open={deleteModalOpen}
+          deleteModalCloseFn={setDeleteModalOpen}
+        />
+      )}
+      <EntityLayout
+        UNSTABLE_contextMenuOptions={{ disableUnregister: true }}
+        {...(allowed && {
+          UNSTABLE_extraContextMenuItems: [
+            {
+              title: 'Delete',
+              Icon: Delete,
+              onClick: () => setDeleteModalOpen(true),
+            },
+          ],
+        })}
+      >
+        <EntityLayout.Route path="/overview" title="Overview">
+          <Grid container spacing={3} alignItems="stretch">
+            <Grid item xs={12} md={6}>
+              <WorkstreamAboutCard variant="gridItem" />
+            </Grid>
+            <Grid item xs={12} md={6} xl={4}>
+              <WorkstreamPortfolioCard variant="gridItem" />
+            </Grid>
+            <Grid item xs={12} lg={8} xl={6}>
+              <WorkstreamMembersCard variant="gridItem" />
+            </Grid>
+          </Grid>
+        </EntityLayout.Route>
+      </EntityLayout>
+    </>
+  );
+};
+
 export const entityPage = (
   <EntitySwitch>
     <EntitySwitch.Case if={isKind('component')} children={componentPage} />
     <EntitySwitch.Case if={isKind('api')} children={apiPage} />
+    <EntitySwitch.Case if={isKind('workstream')}>
+      <WorkstreamEntityPage />
+    </EntitySwitch.Case>
     <EntitySwitch.Case if={isKind('group')} children={groupPage} />
     <EntitySwitch.Case if={isKind('user')} children={userPage} />
     <EntitySwitch.Case if={isKind('system')} children={systemPage} />

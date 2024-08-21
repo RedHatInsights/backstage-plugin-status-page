@@ -45,10 +45,9 @@ export class WorkstreamUrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: UrlReaderServiceReadUrlOptions,
+    _options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse> {
     this.logger.debug(`Fetching ${url.split('/').pop()}`);
-    console.log(options);
     let response: Response;
     try {
       response = await fetch(url, {

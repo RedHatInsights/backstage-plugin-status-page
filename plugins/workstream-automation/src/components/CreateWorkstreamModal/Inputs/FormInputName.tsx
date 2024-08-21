@@ -1,0 +1,100 @@
+import React, { useState } from 'react';
+import { useDebounce } from 'react-use';
+import { Controller, useFormContext } from 'react-hook-form';
+import { Autocomplete } from '@material-ui/lab';
+import { TextField } from '@material-ui/core';
+import { useApi } from '@backstage/core-plugin-api';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { kebabCase } from 'lodash';
+
+export const FormInputName = () => {
+  const catalogApi = useApi(catalogApiRef);
+  const { control } = useFormContext<{ workstreamName: string }>();
+
+  const [loading, setLoading] = useState(false);
+  const [workstreamName, setWorkstreamName] = useState('');
+  const [options, setOptions] = useState<string[]>([]);
+
+  const handleNameChange = async (
+    _event: React.ChangeEvent<{}>,
+    value: string,
+  ) => {
+    if (value.length > 2) {
+      setLoading(true);
+      setWorkstreamName(value);
+    }
+  };
+
+  useDebounce(
+    () => {
+      if (workstreamName.length > 2) {
+        catalogApi
+          .queryEntities({
+            filter: {
+              kind: 'Workstream',
+            },
+            fullTextFilter: {
+              term: workstreamName,
+              fields: ['metadata.name', 'metadata.title'],
+            },
+            fields: ['metadata.title'],
+          })
+          .then(entityResponse => {
+            if (entityResponse.items.length > 0)
+              setOptions(
+                entityResponse.items.map(
+                  entity => entity.metadata.title ?? entity.metadata.name,
+                ),
+              );
+          })
+          .finally(() => setLoading(false));
+      }
+    },
+    400,
+    [workstreamName, setLoading],
+  );
+  return (
+    <Controller
+      name="workstreamName"
+      control={control}
+      rules={{
+        required: 'Workstream name is required',
+        validate: val => {
+          for (const option of options) {
+            if (kebabCase(option) === kebabCase(val.trim()))
+              return 'Cannot use an already available workstream name';
+          }
+          return true;
+        },
+      }}
+      render={({ field, fieldState: { error } }) => {
+        const { onChange, value, ref, onBlur } = field;
+        return (
+          <Autocomplete
+            freeSolo
+            value={value ?? null}
+            options={options}
+            groupBy={() => 'Available workstreams'}
+            onBlur={onBlur}
+            loading={loading}
+            onInputChange={(e, val) => {
+              onChange(val);
+              handleNameChange(e, val);
+            }}
+            renderInput={params => (
+              <TextField
+                {...params}
+                inputRef={ref}
+                label="Workstream Name"
+                variant="outlined"
+                required
+                error={!!error}
+                helperText={error ? error.message : null}
+              />
+            )}
+          />
+        );
+      }}
+    />
+  );
+};

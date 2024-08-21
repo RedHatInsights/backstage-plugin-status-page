@@ -6,6 +6,7 @@ import { createRouter } from './router';
 import { Workstream } from '../types';
 import { DatabaseManager } from '@backstage/backend-defaults/database';
 import { ConfigReader } from '@backstage/config';
+import { PermissionsService } from '@backstage/backend-plugin-api';
 
 jest.mock('../database', () => ({
   WorkstreamBackendDatabase: {
@@ -40,6 +41,8 @@ describe('createRouter', () => {
       auth: mockServices.auth(),
       database: DatabaseManager.fromConfig(mockConfig).forPlugin('workstream'),
       discovery: mockServices.discovery(),
+      httpAuth: mockServices.httpAuth(),
+      permissions: {} as PermissionsService
     });
     app = express().use(router);
   });

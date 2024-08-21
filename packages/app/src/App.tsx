@@ -29,17 +29,18 @@ import { Root } from './components/Root';
 
 import {
   AlertDisplay,
+  EmailIcon,
   OAuthRequestDialog,
   SignInPage,
 } from '@backstage/core-components';
 import { createApp } from '@backstage/app-defaults';
-import { AppRouter, FeatureFlagged, FlatRoutes } from '@backstage/core-app-api';
+import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { SpashipGlobalPage } from '@appdev-platform/backstage-plugin-spaship';
 import { ProxyManagerPage } from '@appdev-platform/backstage-plugin-proxy-manager';
-import { CatalogPage } from '@appdev-platform/backstage-plugin-catalog-index';
+import { CatalogPage } from './components/CatalogPage/CatalogPage';
 import {
   GlobalFeedbackPage,
   OpcFeedbackComponent,
@@ -49,6 +50,9 @@ import { MockPluginPage } from '@appdev-platform/plugin-mock-plugin';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
 import { ReportPortalGlobalPage } from '@appdev-platform/backstage-plugin-report-portal';
 import { DocsBotPage } from '@appdev-platform/backstage-plugin-docsbot';
+import { SlackIcon } from '@appdev-platform/backstage-plugin-workstream-automation';
+import { getThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+import SettingsEthernet from '@material-ui/icons/SettingsEthernet';
 
 const app = createApp({
   apis,
@@ -80,19 +84,20 @@ const app = createApp({
       description: 'Fall back to the default catalog index page.',
     },
   ],
+  icons: {
+    'kind:workstream': SettingsEthernet,
+    mail: EmailIcon,
+    slack_contact: SlackIcon,
+  },
+  themes: getThemes(),
 });
 
 const routes = (
   <FlatRoutes>
     <Route path="/" element={<Navigate to="catalog" />} />
-    <FeatureFlagged with="default-catalog-index">
-      <Route path="/catalog" element={<CatalogIndexPage />} />
-    </FeatureFlagged>
-    <FeatureFlagged without="default-catalog-index">
-      <Route path="/catalog" element={<CatalogIndexPage />}>
-        <CatalogPage />
-      </Route>
-    </FeatureFlagged>
+    <Route path="/catalog" element={<CatalogIndexPage />}>
+      <CatalogPage />
+    </Route>
     <Route
       path="/catalog/:namespace/:kind/:name"
       element={<CatalogEntityPage />}

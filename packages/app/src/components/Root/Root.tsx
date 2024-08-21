@@ -34,8 +34,8 @@ import { FeedbackIcon } from '@janus-idp/backstage-plugin-feedback';
 import {
   DocsBotPanel,
   DocsBotButton,
+  DocsBotIcon,
 } from '@appdev-platform/backstage-plugin-docsbot';
-import { DocsBotIcon } from '@appdev-platform/backstage-plugin-docsbot';
 
 const useSidebarLogoStyles = makeStyles({
   root: {

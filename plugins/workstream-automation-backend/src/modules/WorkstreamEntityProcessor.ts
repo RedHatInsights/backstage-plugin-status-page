@@ -14,7 +14,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { WorkstreamBackendApi } from './lib/client';
 import { RELATION_LEAD_BY, RELATION_LEAD_OF } from './lib/constants';
-import { WorkstreamDataV1alpha1 } from './lib/types';
+import { WorkstreamDataV1alpha1 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { kebabCase } from 'lodash';
 import { workstreamDataV1alpha1Validator } from './lib/validator';
 
