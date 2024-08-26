@@ -67,6 +67,9 @@ catalog:
   # Overrides the default list locations from app-config.yaml as these contain example data.
   # See https://backstage.io/docs/features/software-catalog/software-catalog-overview#adding-components-to-the-catalog for more details
   # on how to get entities into the catalog.
+  readonly: false
+  rules:
+    - allow: [Location, Workstream]
   enrichment:
     enabled: true
   providers:
@@ -190,6 +193,12 @@ catalog:
       rules:
         - allow: [User, Group]
 
+    # Local example workstream users data
+    - type: file
+      target: ../../examples/test-data/workstream-plugin.yaml
+      rules:
+        - allow: [User, Group]
+
 # Report portal plugin
 reportPortal:
   supportEmail: ${REPORT_PORTAL_SUPPORT_EMAIL}
@@ -204,7 +213,6 @@ auth:
   environment: development
   providers:
     guest:
-      userEntityRef: user:default/guest
       dangerouslyAllowOutsideDevelopment: true
 
 docsbot:
@@ -218,7 +226,6 @@ permission:
       workstream:
         permission: [workstream.create, workstream.delete, workstream.update]
         users: 
-          - name: user:redhat/yoswal
           - name: user:development/guest
     admins:
       - name: user:redhat/yoswal
