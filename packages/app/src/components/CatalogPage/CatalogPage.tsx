@@ -18,6 +18,7 @@ import {
   EntityTypePicker,
   EntityNamespacePicker,
   EntityOwnerPicker,
+  useEntityList,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import {
@@ -30,10 +31,7 @@ import { usePermission } from '@backstage/plugin-permission-react';
 import { workstreamCreatePermission } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { createTableColumnsFunc } from './createCatalogTableFunc';
 
-export const CatalogPage = () => {
-  const orgName =
-    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
-
+const HeaderButtons = () => {
   const createComponentLink = useRouteRef(
     catalogPlugin.externalRoutes.createComponent,
   );
@@ -42,17 +40,34 @@ export const CatalogPage = () => {
     permission: workstreamCreatePermission,
   });
 
+  const {
+    filters: { kind },
+  } = useEntityList();
+
+  if (kind?.value === 'workstream')
+    return <>{isAllowed && <CreateWorkstreamModal />}</>;
+
+  return (
+    <>
+      <CreateButton
+        title="Create"
+        to={createComponentLink && createComponentLink()}
+      />
+      <SupportButton>All your software catalog entities</SupportButton>
+    </>
+  );
+};
+
+export const CatalogPage = () => {
+  const orgName =
+    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
+
   return (
     <PageWithHeader title={orgName} themeId="app">
       <Content>
         <EntityListProvider pagination>
           <ContentHeader title="">
-            {isAllowed && <CreateWorkstreamModal />}
-            <CreateButton
-              title="Create"
-              to={createComponentLink && createComponentLink()}
-            />
-            <SupportButton>All your software catalog entities</SupportButton>
+            <HeaderButtons />
           </ContentHeader>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>
