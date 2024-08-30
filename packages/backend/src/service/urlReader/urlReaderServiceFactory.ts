@@ -10,12 +10,14 @@ export const urlReaderServiceFactory = createServiceFactory({
   deps: {
     config: coreServices.rootConfig,
     logger: coreServices.logger,
+    auth: coreServices.auth,
+    discovery: coreServices.discovery
   },
   async factory(deps) {
     return UrlReaders.default({
       config: deps.config,
       logger: deps.logger,
-      factories: [WorkstreamUrlReader.factory],
+      factories: [await WorkstreamUrlReader.getFactory(deps.auth, deps.discovery)],
     });
   },
 });

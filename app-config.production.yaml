@@ -11,8 +11,9 @@ backend:
   baseUrl: http://localhost:7007
   # The listener can also be expressed as a single <host>:<port> string. In this case we bind to
   # all interfaces, the most permissive setting. The right value depends on your specific deployment.
-  listen: ':7007'
-  
+  listen:
+    port: 7007
+
   auth:
     externalAccess:
       - type: static
@@ -21,7 +22,6 @@ backend:
           subject: workstream-catalog-token
         accessRestrictions:
           - plugin: workstream
-          - plugin: catalog         
     keys:
       - secret: ${BACKEND_SECRET}
 
@@ -43,14 +43,6 @@ workstream:
   enabled: ${WORKSTREAM_PLUGIN_ENABLED}
 
 integrations:
-
-  workstreams:
-    - host: ${WORKSTREAM_HOST}
-      apiBaseUrl: http://${WORKSTREAM_HOST}/api/workstream
-      token: Bearer ${WORKSTREAM_FETCH_TOKEN}
-      config:
-        namespace: redhat
-
   servicenow:
     - host: ${SERVICE_NOW_HOST}
       apiBaseUrl: ${SERVICE_NOW_BASE_API_URL}
@@ -225,8 +217,8 @@ permission:
     plugins:
       workstream:
         permission: [workstream.create, workstream.delete, workstream.update]
-        users: 
-          - name: user:development/guest
+        users:
+          - name: group:development/guests
     admins:
       - name: user:redhat/yoswal
       - name: user:redhat/mdeshmuk

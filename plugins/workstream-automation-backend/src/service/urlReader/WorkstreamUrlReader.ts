@@ -3,6 +3,8 @@ import {
   ReadUrlResponseFactory,
 } from '@backstage/backend-defaults/urlReader';
 import {
+  AuthService,
+  DiscoveryService,
   LoggerService,
   UrlReaderService,
   UrlReaderServiceReadTreeResponse,
@@ -12,29 +14,38 @@ import {
 } from '@backstage/backend-plugin-api';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import fetch, { Response } from 'node-fetch';
-import {
-  WorkstreamIntegrationConfig,
-  WorkstreamIntegration,
-} from '../../modules/integrations/WorkstreamIntegration';
 
 export class WorkstreamUrlReader implements UrlReaderService {
+  private static auth: AuthService;
+  private static baseUrl: string;
+
+  public static async getFactory(
+    auth: AuthService,
+    discoveryApi: DiscoveryService,
+  ) {
+    this.auth = auth;
+    this.baseUrl = await discoveryApi.getBaseUrl('workstream');
+    return WorkstreamUrlReader.factory;
+  }
+
   public static readonly factory: ReaderFactory = options => {
-    const { config, logger } = options;
-    const integrations = WorkstreamIntegration.fromConfig(config);
-    return integrations.list().map(integration => {
-      const host = integration.host;
-      const [hostname, _port] = host.split(':');
-      const reader = new WorkstreamUrlReader(integration, logger);
-      const predicate = (url: URL) => url.hostname === hostname;
-      return { reader: reader, predicate: predicate };
-    });
+    const { logger } = options;
+    return [
+      {
+        reader: new WorkstreamUrlReader(logger),
+        predicate: (url: URL) => {
+          const urlPattern = /^https?:\/\/[^\/]+\/api\/workstream\/[^\/]+$/;
+          return (
+            url.toString().includes(WorkstreamUrlReader.baseUrl) ||
+            urlPattern.test(url.toString())
+          );
+        },
+      },
+    ];
   };
 
   private logger: LoggerService;
-  constructor(
-    private integration: WorkstreamIntegrationConfig,
-    logger: LoggerService,
-  ) {
+  constructor(logger: LoggerService) {
     this.logger = logger.child({ name: 'WorkstreamUrlReader' });
   }
 
@@ -47,12 +58,16 @@ export class WorkstreamUrlReader implements UrlReaderService {
     url: string,
     _options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse> {
-    this.logger.debug(`Fetching ${url.split('/').pop()}`);
+    this.logger.info(`Reading ${url}`);
     let response: Response;
     try {
+      const { token } = await WorkstreamUrlReader.auth.getPluginRequestToken({
+        onBehalfOf: await WorkstreamUrlReader.auth.getOwnServiceCredentials(),
+        targetPluginId: 'workstream',
+      });
       response = await fetch(url, {
         headers: {
-          Authorization: this.integration.token,
+          Authorization: `Bearer ${token}`,
         },
       });
     } catch (e) {

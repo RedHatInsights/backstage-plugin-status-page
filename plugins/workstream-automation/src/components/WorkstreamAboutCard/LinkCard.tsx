@@ -23,7 +23,7 @@ export const LinkCard = (props: LinkCardProps) => {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            margin: '4px 0 4px 0',
+            margin: '12px 0 12px 0',
           }}
         >
           <Grid xs={12}>{Icon}</Grid>

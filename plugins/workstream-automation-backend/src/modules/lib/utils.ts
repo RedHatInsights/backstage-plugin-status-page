@@ -45,16 +45,24 @@ export function workstreamToEntityKind(options: {
       },
       description: data.description,
       links: [
-        {
-          url: `mailto://${data.email}`,
-          title: 'E-Mail',
-          icon: 'mail',
-        },
-        {
-          url: data.slackChannelUrl,
-          title: 'Slack',
-          icon: 'slack_contact',
-        },
+        ...(data.email
+          ? [
+              {
+                url: `mailto://${data.email}`,
+                title: 'Email',
+                icon: 'mail',
+              },
+            ]
+          : []),
+        ...(data.slackChannelUrl
+          ? [
+              {
+                url: data.slackChannelUrl,
+                title: 'Slack',
+                icon: 'slack_contact',
+              },
+            ]
+          : []),
       ],
     },
     spec: {

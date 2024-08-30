@@ -23,7 +23,6 @@ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-
 import express from 'express';
 import Router from 'express-promise-router';
 import { WorkstreamBackendDatabase } from '../database';
-import { WorkstreamIntegration } from '../modules/integrations/WorkstreamIntegration';
 import { DEFAULT_WORKSTREAM_NAMESPACE } from '../modules/lib/constants';
 import { workstreamToEntityKind } from '../modules/lib/utils';
 import { workstreamPermissionRules } from '../permissions/rules';
@@ -49,8 +48,8 @@ export async function createRouter(
     knex: await options.database.getClient(),
     skipMigrations: false,
   });
-  const integrations = WorkstreamIntegration.fromConfig(config);
   const catalogApi = new CatalogClient({ discoveryApi: discovery });
+  const apiBaseUrl = await discovery.getBaseUrl('workstream');
 
   const permissionIntegrationRouter = createPermissionIntegrationRouter({
     permissions: workstreamPermissions,
@@ -105,12 +104,8 @@ export async function createRouter(
     }
     const worksteamData: Workstream = req.body.data;
     const result = await database.insertWorkstream(worksteamData);
-    const integration = integrations.byHost(req.hostname);
 
-    if (!integration)
-      throw new Error(`Integration for host: ${req.hostname} missing`);
-
-    const workstreamLocation = `${integration.apiBaseUrl}/${result.name}`;
+    const workstreamLocation = `${apiBaseUrl}/${result.name}`;
     const { token: catalogServiceToken } = await auth.getPluginRequestToken({
       targetPluginId: 'catalog',
       onBehalfOf: await auth.getOwnServiceCredentials(),
@@ -128,17 +123,13 @@ export async function createRouter(
 
   router.put('/:workstream_name', async (req, res) => {
     const workstreamName = req.params.workstream_name;
-    const namespace =
-      integrations.byHost(req.hostname)?.config.namespace ??
-      DEFAULT_WORKSTREAM_NAMESPACE;
-
     const credentials = await httpAuth.credentials(req);
     const decision = (
       await permissions.authorize(
         [
           {
             permission: workstreamUpdatePermission,
-            resourceRef: `workstream:${namespace}/${workstreamName}`,
+            resourceRef: `workstream:${DEFAULT_WORKSTREAM_NAMESPACE}/${workstreamName}`,
           },
         ],
         { credentials },
@@ -176,9 +167,12 @@ export async function createRouter(
       targetPluginId: 'catalog',
       onBehalfOf: await auth.getOwnServiceCredentials(),
     });
-    catalogApi.refreshEntity(`workstream:${namespace}/${workstreamName}`, {
-      token: catalogServiceToken,
-    });
+    catalogApi.refreshEntity(
+      `workstream:${DEFAULT_WORKSTREAM_NAMESPACE}/${workstreamName}`,
+      {
+        token: catalogServiceToken,
+      },
+    );
 
     return res.status(200).json({
       data: result,
@@ -192,15 +186,10 @@ export async function createRouter(
     const result = await database.getWorkstreamById(name);
 
     if (result) {
-      const integration = integrations.byHost(req.hostname);
-
-      if (!integration)
-        throw new Error(`Integration for host: ${req.hostname} missing`);
-
       const workstreamEntity = workstreamToEntityKind({
         data: result,
-        location: `${integration.apiBaseUrl}/${result.name}`,
-        namespace: integration.config.namespace,
+        location: `${apiBaseUrl}/${result.name}`,
+        namespace: DEFAULT_WORKSTREAM_NAMESPACE,
       });
       return res.status(200).json(workstreamEntity);
     }
@@ -224,20 +213,19 @@ export async function createRouter(
     const result = await database.getWorkstreamById(name);
 
     if (result) {
-      const namespace =
-        integrations.byHost(req.hostname)?.config.namespace ??
-        DEFAULT_WORKSTREAM_NAMESPACE;
       const { token: catalogServiceToken } = await auth.getPluginRequestToken({
         targetPluginId: 'catalog',
         onBehalfOf: await auth.getOwnServiceCredentials(),
       });
-      const resp = await catalogApi.getLocationByEntity(
-        `workstream:${namespace}/${name}`,
+
+      const resp = await catalogApi.getLocationByRef(
+        `url:${apiBaseUrl}/${result.name}`,
         { token: catalogServiceToken },
       );
-      await catalogApi.removeLocationById(resp?.id!, {
-        token: catalogServiceToken,
-      });
+      if (resp)
+        await catalogApi.removeLocationById(resp.id, {
+          token: catalogServiceToken,
+        });
       await database.deleteWorkstream(name);
       return res.status(200).json({ message: 'Deleted successfully' });
     }

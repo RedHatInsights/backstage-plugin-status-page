@@ -24,7 +24,9 @@ export const MembersColumn = (props: { members: Member[] }) => {
   const { members } = props;
   const memberUserRefs = members.map(m => m.userRef);
   const catalogApi = useApi(catalogApiRef);
-  const [userProfiles, setUserProfiles] = useState<ProfileInfo[]>([]);
+  const [userProfiles, setUserProfiles] = useState<(ProfileInfo | undefined)[]>(
+    [],
+  );
   const [loading, setLoading] = useState(true);
   const classes = useStyles();
 
@@ -37,15 +39,18 @@ export const MembersColumn = (props: { members: Member[] }) => {
           fields: ['spec.profile'],
         })
         .then(res => {
-          if (res.items.length > 0) {
-            setUserProfiles(
-              (res.items as UserEntity[]).map(entity => ({
-                displayName: entity.spec.profile?.displayName,
-                email: entity.spec.profile?.email,
-                picture: entity.spec.profile?.picture,
-              })),
-            );
-          }
+          setUserProfiles(
+            (res.items as (UserEntity | undefined)[]).map(entity =>
+              entity
+                ? {
+                    displayName: entity.spec.profile?.displayName,
+                    email: entity.spec.profile?.email,
+                    picture: entity.spec.profile?.picture,
+                  }
+                : undefined,
+            ),
+          );
+
           setLoading(false);
         });
     }
@@ -54,17 +59,23 @@ export const MembersColumn = (props: { members: Member[] }) => {
   return !loading ? (
     <AvatarGroup classes={{ avatar: classes.root }} spacing={6} max={3}>
       {userProfiles.length > 0 ? (
-        userProfiles.map(profile => (
-          <Tooltip key={profile.displayName} title={profile.displayName ?? ''}>
-            <Avatar
-              key={profile.displayName}
-              alt={profile.displayName}
-              src={profile.picture}
-            >
-              {profile.displayName?.at(0)}
-            </Avatar>
-          </Tooltip>
-        ))
+        userProfiles.map(
+          profile =>
+            profile && (
+              <Tooltip
+                key={profile.displayName}
+                title={profile.displayName ?? ''}
+              >
+                <Avatar
+                  key={profile.displayName}
+                  alt={profile.displayName}
+                  src={profile.picture}
+                >
+                  {profile.displayName?.at(0)}
+                </Avatar>
+              </Tooltip>
+            ),
+        )
       ) : (
         <>-</>
       )}

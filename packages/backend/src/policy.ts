@@ -1,8 +1,15 @@
 import {
+  isWorkstreamPermission,
+  WorkstreamPolicy,
+} from '@appdev-platform/backstage-plugin-workstream-automation-backend';
+import {
+  AuthService,
+  CacheService,
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
+import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
+import { parseEntityRef } from '@backstage/catalog-model';
 import {
   AuthorizeResult,
   PolicyDecision,
@@ -13,10 +20,6 @@ import {
   PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
-import {
-  WorkstreamPolicy,
-  isWorkstreamPermission,
-} from '@appdev-platform/backstage-plugin-workstream-automation-backend';
 
 type AllowedUsers = {
   name: string;
@@ -45,23 +48,56 @@ type PermissionConfig = {
 
 class CustomPermissionPolicy implements PermissionPolicy {
   private readonly workstreamPolicy: WorkstreamPolicy;
+  private CACHE_KEY = 'backstage:rbac:admins';
 
-  constructor(private config: PermissionConfig) {
-    this.workstreamPolicy = WorkstreamPolicy.fromConfig(this.config.plugins);
-  }
-
-  static fromConfig(config: Config) {
-    const permissionConfig = config.get<PermissionConfig>('permission.rbac');
-    return new CustomPermissionPolicy(permissionConfig);
+  constructor(
+    private config: PermissionConfig,
+    private auth: AuthService,
+    private catalogApi: CatalogApi,
+    private cache: CacheService,
+  ) {
+    this.workstreamPolicy = new WorkstreamPolicy(
+      config.plugins,
+      auth,
+      catalogApi,
+      cache,
+    );
   }
 
   async handle(
     request: PolicyQuery,
-    user?: PolicyQueryUser,
+    user: PolicyQueryUser,
   ): Promise<PolicyDecision> {
-    for (const admin of this.config.admins) {
-      if (user?.info.ownershipEntityRefs.includes(admin.name))
-        return { result: AuthorizeResult.ALLOW };
+    // Check if users are available in cache
+    if (!(await this.cache.get<AllowedUsers[]>(this.CACHE_KEY))) {
+      const allowedUsers: AllowedUsers[] = [];
+      for (const admin of this.config.admins) {
+        if (
+          parseEntityRef(admin.name, {
+            defaultKind: 'user',
+            defaultNamespace: 'redhat',
+          }).kind === 'group'
+        ) {
+          const groupEntity = await this.catalogApi.getEntityByRef(
+            admin.name,
+            await this.auth.getPluginRequestToken({
+              onBehalfOf: await this.auth.getOwnServiceCredentials(),
+              targetPluginId: 'catalog',
+            }),
+          );
+          groupEntity?.relations?.forEach(
+            r =>
+              r.type === 'hasMember' &&
+              allowedUsers.push({ name: r.targetRef }),
+          );
+        } else allowedUsers.push(admin);
+      }
+      await this.cache.set(this.CACHE_KEY, allowedUsers, { ttl: 1800000 }); // Keep the cache for 30 Mins
+    }
+
+    const admins = await this.cache.get<AllowedUsers[]>(this.CACHE_KEY);
+    if (admins?.some(p => p.name === user.info.userEntityRef)) {
+      return { result: AuthorizeResult.ALLOW };
     }
 
     if (isWorkstreamPermission(request.permission)) {
@@ -74,12 +110,25 @@ class CustomPermissionPolicy implements PermissionPolicy {
 
 const createPermissionsModule = createBackendModule({
   pluginId: 'permission',
-  moduleId: 'workstream-policy',
+  moduleId: 'backstage-permission-module',
   register(reg) {
     reg.registerInit({
-      deps: { policy: policyExtensionPoint, config: coreServices.rootConfig },
-      async init({ policy, config }) {
-        policy.setPolicy(CustomPermissionPolicy.fromConfig(config));
+      deps: {
+        policy: policyExtensionPoint,
+        config: coreServices.rootConfig,
+        discoveryApi: coreServices.discovery,
+        auth: coreServices.auth,
+        cache: coreServices.cache,
+      },
+      async init({ policy, config, discoveryApi, auth, cache }) {
+        const catalogApi = new CatalogClient({ discoveryApi });
+
+        const permissionConfig =
+          config.get<PermissionConfig>('permission.rbac');
+
+        policy.setPolicy(
+          new CustomPermissionPolicy(permissionConfig, auth, catalogApi, cache),
+        );
       },
     });
   },
