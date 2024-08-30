@@ -80,7 +80,7 @@ export const UserWorkstreamCard = (props: { variant: InfoCardVariants }) => {
         columns={columns}
         data={workstreams}
         isLoading={loading}
-        options={{ toolbar: false }}
+        options={{ toolbar: false, draggable: false, padding: 'dense' }}
       />
     </InfoCard>
   );

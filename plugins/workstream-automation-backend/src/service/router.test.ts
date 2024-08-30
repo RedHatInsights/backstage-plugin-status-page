@@ -42,7 +42,7 @@ describe('createRouter', () => {
       database: DatabaseManager.fromConfig(mockConfig).forPlugin('workstream'),
       discovery: mockServices.discovery(),
       httpAuth: mockServices.httpAuth(),
-      permissions: {} as PermissionsService
+      permissions: {} as PermissionsService,
     });
     app = express().use(router);
   });
