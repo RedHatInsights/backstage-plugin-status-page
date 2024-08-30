@@ -1,5 +1,7 @@
+import { WorkstreamDataV1alpha1 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import {
   GroupEntity,
+  parseEntityRef,
   RELATION_HAS_MEMBER,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -30,7 +32,6 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDebounce } from 'react-use';
 import { workstreamApiRef } from '../../api';
 import { CustomUserEntity, Member, TableRowDataType } from '../../types';
-import { WorkstreamDataV1alpha1 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 
 interface EditDialogProps {
   columns: TableColumn<TableRowDataType>[];
@@ -188,19 +189,13 @@ export const MembersEditModal = (props: EditDialogProps) => {
     async () => {
       if (loading) {
         if (searchTerm.length > 2 && getValues('kind')) {
-          const res = await catalogApi.queryEntities({
-            filter: [{ kind: getValues('kind').value }],
-            fullTextFilter: {
-              term: searchTerm,
-              fields: [
-                'spec.profile.displayName', // This field filter does not work
-                'metadata.name',
-                'metadata.title',
-                'metadata.annotations.servicenow.com/appcode',
-              ],
-            },
-          });
-          setOptions(res.items as GroupEntity[] | CustomUserEntity[]);
+          const resp = await catalogApi.getEntityByRef(
+            parseEntityRef(searchTerm, {
+              defaultKind: getValues('kind').value,
+              defaultNamespace: 'redhat',
+            }),
+          );
+          if (resp) setOptions([resp as GroupEntity | CustomUserEntity]);
           setLoading(false);
         } else setOptions([]);
       }
@@ -301,6 +296,7 @@ export const MembersEditModal = (props: EditDialogProps) => {
                     getOptionLabel={option => option.label}
                     onChange={(_e, val) => {
                       onChange(val);
+                      setOptions([]);
                       resetField('searchQuery');
                     }}
                     disableClearable
@@ -342,7 +338,15 @@ export const MembersEditModal = (props: EditDialogProps) => {
                       op.metadata.uid === sel.metadata.uid
                     }
                     loading={loading}
-                    onInputChange={(_, val) => handleInputChange(val)}
+                    noOptionsText="Enter correct uid"
+                    onInputChange={(_, val) => {
+                      if (
+                        (value && getOptionLabel(value) === val) ||
+                        options.some(p => getOptionLabel(p) === val)
+                      )
+                        return;
+                      handleInputChange(val);
+                    }}
                     onChange={(_evt, val) => {
                       handleInputSelectedEntity(val);
                       onChange(val);

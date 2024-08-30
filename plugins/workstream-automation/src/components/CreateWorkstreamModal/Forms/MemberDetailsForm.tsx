@@ -1,4 +1,8 @@
-import { GroupEntity, RELATION_HAS_MEMBER } from '@backstage/catalog-model';
+import {
+  GroupEntity,
+  parseEntityRef,
+  RELATION_HAS_MEMBER,
+} from '@backstage/catalog-model';
 import { Table, TableColumn } from '@backstage/core-components';
 import {
   CheckboxProps,
@@ -130,7 +134,7 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
   ];
   const [loading, setLoading] = useState(false);
 
-  function handleInputChange(_e: React.ChangeEvent<{}>, value: string) {
+  function handleInputChange(value: string) {
     if (value.trim().length > 2) {
       setLoading(true);
       setSearchText(value.trim());
@@ -145,15 +149,11 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
     entity: CustomUserEntity,
     workstreamLead?: CustomUserEntity,
   ) {
+    if (entity.metadata.uid === workstreamLead?.metadata.uid) return;
     setTableData(t => {
-      if (
-        t.find(
-          v =>
-            v.user.metadata.uid === entity.metadata.uid ||
-            v.user.metadata.uid === workstreamLead?.metadata.uid,
-        )
-      )
+      if (t.some(p => p.user.metadata.uid === entity.metadata.uid)) {
         return t;
+      }
       return t.concat({ user: entity, role: undefined });
     });
   }
@@ -181,19 +181,13 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
     async () => {
       if (loading) {
         if (searchText.length > 2 && getValues('kind')) {
-          const res = await catalogApi.queryEntities({
-            filter: [{ kind: getValues('kind').value }],
-            fullTextFilter: {
-              term: searchText,
-              fields: [
-                'spec.profile.displayName', // This field filter does not work
-                'metadata.name',
-                'metadata.annotations.servicenow.com/appcode',
-                'metadata.title',
-              ],
-            },
-          });
-          setOptions(res.items as GroupEntity[] | CustomUserEntity[]);
+          const resp = await catalogApi.getEntityByRef(
+            parseEntityRef(searchText, {
+              defaultKind: getValues('kind').value,
+              defaultNamespace: 'redhat',
+            }),
+          );
+          if (resp) setOptions([resp as GroupEntity | CustomUserEntity]);
           setLoading(false);
         } else setOptions([]);
       }
@@ -233,6 +227,7 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
                 getOptionLabel={option => option.label}
                 onChange={(_e, val) => {
                   onChange(val);
+                  setOptions([]);
                   resetField('searchQuery');
                 }}
                 disableClearable
@@ -274,7 +269,15 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
                   op.metadata.uid === sel.metadata.uid
                 }
                 loading={loading}
-                onInputChange={handleInputChange}
+                noOptionsText="Enter correct uid"
+                onInputChange={(_e, val) => {
+                  if (
+                    (value && getOptionLabel(value) === val) ||
+                    options.some(p => getOptionLabel(p) === val)
+                  )
+                    return;
+                  handleInputChange(val);
+                }}
                 onChange={(_e, val) => {
                   handleInputSelectedEntity(val);
                   onChange(val);
