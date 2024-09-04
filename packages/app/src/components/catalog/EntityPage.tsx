@@ -81,7 +81,7 @@ import {
 import {
   ReportPortalOverviewCard,
   isReportPortalAvailable,
-} from '@appdev-platform/backstage-plugin-report-portal';
+} from '@backstage-community/plugin-report-portal';
 import {
   UserWorkstreamCard,
   WorkstreamAboutCard,

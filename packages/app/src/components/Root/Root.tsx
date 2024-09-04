@@ -28,7 +28,7 @@ import {
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import { HydraProxyIcon } from '@appdev-platform/backstage-plugin-proxy-manager';
-import { ReportPortalIcon } from '@appdev-platform/backstage-plugin-report-portal';
+import { ReportPortalIcon } from '@backstage-community/plugin-report-portal';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { FeedbackIcon } from '@janus-idp/backstage-plugin-feedback';
 import {

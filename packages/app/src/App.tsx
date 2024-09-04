@@ -48,7 +48,7 @@ import {
 } from '@janus-idp/backstage-plugin-feedback';
 import { MockPluginPage } from '@appdev-platform/plugin-mock-plugin';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
-import { ReportPortalGlobalPage } from '@appdev-platform/backstage-plugin-report-portal';
+import { ReportPortalGlobalPage } from '@backstage-community/plugin-report-portal';
 import { DocsBotPage } from '@appdev-platform/backstage-plugin-docsbot';
 import { SlackIcon } from '@appdev-platform/backstage-plugin-workstream-automation';
 import { getThemes } from '@redhat-developer/red-hat-developer-hub-theme';

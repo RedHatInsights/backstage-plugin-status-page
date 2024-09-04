@@ -101,6 +101,6 @@ backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
 
 backend.add(import('@janus-idp/backstage-plugin-matomo-backend/alpha'));
 backend.add(import('@janus-idp/backstage-plugin-feedback-backend/alpha'));
-backend.add(import('@appdev-platform/backstage-plugin-report-portal-backend'));
+backend.add(import('@backstage-community/plugin-report-portal-backend'));
 
 backend.start();

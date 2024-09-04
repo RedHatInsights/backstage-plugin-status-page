@@ -1,5 +1,13 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-docsbot [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-docsbot@1.1.0...@appdev-platform/backstage-plugin-docsbot@1.3.0) (2024-09-04)
+
+
+### Features
+
+* **docsbot-plugin:** fix(docsbot-plugin): Fixing UI Bugs ([9db0e6e](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/9db0e6e46e120ac44531b516cd1193b701c68f63))
+
+
 ## @appdev-platform/backstage-plugin-docsbot [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-docsbot@1.1.0...@appdev-platform/backstage-plugin-docsbot@1.2.0) (2024-07-31)
 
 
