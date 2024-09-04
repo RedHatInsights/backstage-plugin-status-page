@@ -1,4 +1,8 @@
-import { stringifyEntityRef, UserEntity } from '@backstage/catalog-model';
+import {
+  parseEntityRef,
+  stringifyEntityRef,
+  UserEntity,
+} from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
@@ -6,38 +10,36 @@ import {
 } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useDebounce } from 'react-use';
 
 export const FormInputLeadName = () => {
   const catalogApi = useApi(catalogApiRef);
+  const { control } = useFormContext<{
+    lead: UserEntity | null;
+  }>();
 
   const [leadOptions, setLeadOptions] = useState<UserEntity[]>([]);
   const [leadName, setLeadName] = useState<string>();
   const [loading, setLoading] = useState(false);
 
-  const { control } = useFormContext<{ lead: UserEntity | null }>();
-  useEffect(() => {
-    catalogApi
-      .queryEntities({
-        filter: { kind: 'User' },
-        limit: 10,
-        ...(leadName && {
-          fullTextFilter: {
-            term: leadName,
-            fields: [
-              'metadata.name',
-              'metadata.title',
-              'spec.profile.displayName',
-            ],
-          },
-        }),
-      })
-      .then(res => {
-        setLeadOptions(res.items as UserEntity[]);
+  useDebounce(
+    async () => {
+      if (loading && leadName) {
+        const res = await catalogApi.getEntityByRef(
+          parseEntityRef(leadName, {
+            defaultKind: 'user',
+            defaultNamespace: 'redhat',
+          }),
+        );
+        if (res) setLeadOptions([res as UserEntity]);
         setLoading(false);
-      });
-  }, [catalogApi, leadName]);
+      }
+    },
+    400,
+    [leadName],
+  );
 
   const handleInput = (val: string) => {
     if (val.trim().length > 1) {
@@ -68,13 +70,20 @@ export const FormInputLeadName = () => {
             value={value ?? null}
             options={leadOptions}
             loading={loading}
-            noOptionsText="No users found"
+            noOptionsText="No users found (enter correct uid)"
             getOptionSelected={(option, val) =>
               stringifyEntityRef(option) === stringifyEntityRef(val)
             }
             getOptionLabel={getLeadOptionLabel}
             onBlur={onBlur}
-            onInputChange={(_e, val) => handleInput(val)}
+            onInputChange={(_e, val) => {
+              if (
+                (value && getLeadOptionLabel(value) === val) ||
+                leadOptions.some(p => getLeadOptionLabel(p) === val)
+              )
+                return;
+              handleInput(val);
+            }}
             onChange={(_e, val) => onChange(val)}
             renderInput={params => (
               <TextField
