@@ -24,7 +24,6 @@ const InfoTiles: React.FC = () => {
       title: 'FAQs & Troubleshooting',
       frontText: 'Find answers and troubleshoot problems quickly.',
       backText: [
-        'Explore our comprehensive FAQ section',
         'Save time and get the information you need right away.',
         'Resolve common issues',
         'Get back on track quickly and efficiently.',
@@ -44,25 +43,23 @@ const InfoTiles: React.FC = () => {
       icon: DocsBotIcon,
     },
     {
-      title: 'Detailed Documentation',
-      frontText: 'Save time.',
+      title: 'Use DocsBot for Your Documentation',
+      frontText: 'Connect Your Data with Backstage.',
       backText: [
-        'Comprehensive guides',
-        'In-depth explanations',
-        'Best practices',
-        'Learn and implement.',
+        'Keep your information up-to-date',
+        'Boost search accuracy and relevance',
       ],
       icon: TutorialIcon,
     },
   ];
   return (
     <div className={classes.root}>
-      <Typography variant="h2" className={classes.welcomeMessage}>
+      <Typography variant="h4" className={classes.welcomeMessage}>
         Hi, I'm here to assist you!
       </Typography>
       <Grid container spacing={1} justifyContent="center">
         {tileInfo.map((card, index) => (
-          <Grid item key={index}> 
+          <Grid item key={index}>
             <div className={classes.cardContainer}>
               <div className={classes.card}>
                 <div className={classes.cardFront}>

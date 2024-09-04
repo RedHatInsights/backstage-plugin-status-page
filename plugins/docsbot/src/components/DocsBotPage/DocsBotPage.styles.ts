@@ -5,43 +5,55 @@ const useStyles = makeStyles(theme => ({
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    height: '100%', // Fill available height
+    // height: '100vh',
+    overflow: 'hidden',
   },
   card: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    height: '100%', // Full card height
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
   },
   cardContent: {
     display: 'flex',
     flexDirection: 'column',
-    height: '100%', // Ensure full height to support docking
-    padding: 0, // Remove padding to avoid gaps
+    height: '100%',
+    padding: 0,
+    maxWidth: '700px',
+    width: '100%',
   },
   container: {
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
     position: 'relative',
-    overflow: 'hidden', 
-    height: '100%', 
+    overflow: 'hidden',
+    height: '100%',
   },
   messagesContainer: {
-    flex: 1, // Allow it to grow and shrink
-    overflowY: 'auto', // Enable vertical scrolling for messages
-    padding: theme.spacing(2), // Optional: Add padding if needed
+    flex: 1,
+    overflowY: 'auto',
+    padding: theme.spacing(2),
   },
   innerCardContent: {
     flex: 1,
     overflowY: 'auto',
   },
   inputContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     padding: theme.spacing(2),
-    paddingBottom: '50px',
+    paddingBottom: '16px',
     backgroundColor: theme.palette.background.paper,
     borderTop: `1px solid ${theme.palette.divider}`,
-    flexShrink: 0, // Prevent the input area from growing
+    position: 'sticky',
+    bottom: 0,
+    width: '100%',
+    flexShrink: 0,
+    zIndex: 2,
   },
   chatBubble: {
     backgroundColor: theme.palette.grey[200],
@@ -116,6 +128,17 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
+    position: 'sticky',
+    top: 0,
+    zIndex: 1,
+    width: '100%',
+  },
+  disclaimer: {
+    textAlign: 'center',
+    borderRadius: 4,
+    color: '#6a6a6a',
+    fontSize: '12px',
+    marginBottom: theme.spacing(1),
   },
 }));
 

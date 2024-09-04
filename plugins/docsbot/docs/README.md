@@ -26,6 +26,8 @@ DocsBot is seamlessly integrated with Backstage, providing an embedded chat wind
 
 ![Docs Bot Main Page](./DocsBotMainPage.png)
 
+![Docs Bot Main Question](./DocsBotMainQuestion.png)
+
 ## How to Use DocsBot
 
 Using DocsBot is straightforward. Follow these steps to get started:

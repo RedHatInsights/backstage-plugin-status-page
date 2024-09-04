@@ -205,6 +205,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     axios: ^1.7.2
+    marked: ^14.1.0
     msw: ^1.0.0
     react: ^16.13.1 || ^17.0.0
     react-use: ^17.2.4
@@ -29928,6 +29929,15 @@ __metadata:
   peerDependencies:
     marked: ^1.0.0 || ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
   checksum: 5bd8e3af32361db96a7341f2a719c0dd9857f239be94cda65c24e8d923f03b7d1b72d1c07fb41ba3b6009b5ca257f2c72eeb7676a5665a614ed0a8862da3d218
+  languageName: node
+  linkType: hard
+
+"marked@npm:^14.1.0":
+  version: 14.1.0
+  resolution: "marked@npm:14.1.0"
+  bin:
+    marked: bin/marked.js
+  checksum: e7a8f41a1a0dd4c5884449ef5c8712569adc7bac28bf84118cd346fe43b4f32301d0e6b6b52dd5de8a9309e99f3d32e63181cfcbd0418370d359696a76ac1e89
   languageName: node
   linkType: hard
 

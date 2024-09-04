@@ -44,13 +44,11 @@ export const DocsBotInfoTiles: React.FC = () => {
       icon: DocsBotIcon,
     },
     {
-      title: 'Detailed Documentation',
-      frontText: 'Save time.',
+      title: 'Use DocsBot for Your Documentation',
+      frontText: 'Connect Your Data with Backstage.',
       backText: [
-        'Comprehensive guides',
-        'In-depth explanations',
-        'Best practices',
-        'Learn and implement.',
+        'Keep your information up-to-date',
+        'Boost search accuracy and relevance',
       ],
       icon: TutorialIcon,
     },
