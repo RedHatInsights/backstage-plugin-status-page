@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
     justifyContent: 'flex-start',
   },
   userMessageContainer: {
-    backgroundColor: '#ccb1f4',
+    backgroundColor: '#aac7ef',
     padding: theme.spacing(2, 3.5),
     borderRadius: theme.shape.borderRadius * 4,
     borderBottomRightRadius: theme.shape.borderRadius * 0.2,
@@ -25,17 +25,28 @@ const useStyles = makeStyles(theme => ({
     borderBottomLeftRadius: theme.shape.borderRadius * 0.2,
     maxWidth: '80%',
   },
-  messageContent: {
-    whiteSpace: 'pre-wrap',
-  },
+
   feedbackButtonSelection: {
     border: `2px solid ${theme.palette.primary.main}`,
   },
+  footer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginTop: theme.spacing(1),
+  },
   timeTaken: {
-    textAlign: 'right',
     fontSize: theme.typography.pxToRem(12),
     color: theme.palette.text.secondary,
-    marginTop: theme.spacing(1),
+  },
+  feedbackButtons: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  feedbackButton: {
+    padding: theme.spacing(0.5),
+    minWidth: 0,
+    marginLeft: theme.spacing(1),
   },
 }));
 

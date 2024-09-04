@@ -2,20 +2,20 @@ import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   fullHeightContainer: {
-    width: 400, 
-    height: '100vh', 
+    width: 400,
+    height: '100vh',
     display: 'flex',
     flexDirection: 'column',
   },
   container: {
     display: 'flex',
     flexDirection: 'column',
-    flex: 1, 
-    overflowY: 'hidden', 
+    flex: 1,
+    overflowY: 'hidden',
   },
   cardContent: {
-    flex: 1, 
-    overflowY: 'auto', 
+    flex: 1,
+    overflowY: 'auto',
     padding: theme.spacing(2),
   },
   inputContainer: {
@@ -28,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   chatBubble: {
     backgroundColor: theme.palette.grey[200],
     padding: theme.spacing(1, 2),
-    borderRadius: theme.shape.borderRadius,
+    borderRadius: 15,
     borderBottomLeftRadius: 0,
     display: 'inline-block',
     maxWidth: '80%',
@@ -114,6 +114,13 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     marginLeft: 'auto',
+  },
+  disclaimer: {
+    textAlign: 'center',
+    borderRadius: 4,
+    color: '#6a6a6a',
+    fontSize: '12px',
+    marginBottom: theme.spacing(1),
   },
 }));
 

@@ -1,6 +1,7 @@
 import {
   alertApiRef,
   discoveryApiRef,
+  identityApiRef,
   useApi,
   useRouteRef,
 } from '@backstage/core-plugin-api';
@@ -15,12 +16,14 @@ import {
   useTheme,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
+import InfoIcon from '@material-ui/icons/Info';
 import OpenInNewOutlinedIcon from '@material-ui/icons/OpenInNewOutlined';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { rootRouteRef } from '../../routes';
 import useStyles from './DocsBotDrawer.styles';
+import DocsBotExpectationBanner from './DocsBotExpectationBanner/DocsBotExpectationBanner';
 import { DocsBotInfoTiles } from './DocsBotInfoTiles/DocsBotInfoTiles';
 import DocsBotInput from './DocsBotInput/DocsBotInput';
 import DocsBotMessage from './DocsBotMessage/DocsBotMessage';
@@ -29,6 +32,7 @@ interface ChatMessage {
   content: string;
   isUserMessage: boolean;
   userQuestion?: string;
+  timeTaken?: string;
 }
 type Props = {
   isOpen: boolean;
@@ -42,18 +46,30 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
   const theme = useTheme();
   const classes = useStyles(theme);
   const alertApi = useApi(alertApiRef);
+  const identityApi = useApi(identityApiRef);
   const discoveryApiRefDocsBot = useApi(discoveryApiRef);
   const docsBotLink = useRouteRef(rootRouteRef); // Use the route reference
-
+  const [previousQuestion, setPreviousQuestion] = useState<string | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [isInputDisabled, setIsInputDisabled] = useState(false);
   const [userQuestion, setUserQuestion] = useState<string>('');
-  const [timeTaken, setTimeTaken] = useState<string | undefined>(undefined);
   const [baseUrl, setBaseUrl] = useState<string | undefined>();
+  const [isBannerOpen, setIsBannerOpen] = useState<boolean>(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const [username, setUsername] = useState<string | undefined>(undefined);
+  const getCurrentUser = async () => {
+    try {
+      const identity = await identityApi.getBackstageIdentity();
+      const user = identity.userEntityRef;
+      setUsername(user);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error fetching current user:', error);
+    }
+  };
   const scrollToBottom = (): void => {
     messagesEndRef.current?.scrollIntoView({
       behavior: 'smooth',
@@ -82,6 +98,7 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
   };
 
   useEffect(() => {
+    getCurrentUser();
     // NOTE:This should be called only when component is mounted hence eslint disable
     sendInitialMessage();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -90,13 +107,20 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
   const handleFeedback = async (
     message: string,
     feedback: number,
-    question?: string,
+    question: string,
+    description?: string | undefined,
   ) => {
     try {
       if (baseUrl) {
         await axios.post(
           `${baseUrl}/docsbot-feedback`,
-          { message, feedback, UserQuestion: question },
+          {
+            answer: message,
+            description,
+            feedback,
+            question,
+            user: username,
+          },
           {
             headers: {
               'Content-Type': 'application/json',
@@ -109,33 +133,47 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
         });
       }
     } catch (error) {
-      alertApi.post({
-        message: 'Failed to submit feedback for bot message.',
-        severity: 'error',
-      });
+      // eslint-disable-next-line no-console
+      console.log('error', error);
     }
   };
 
   const logFeedback = (
     message: string,
     feedback: number,
-    question?: string,
+    question: string,
+
+    description?: string | undefined,
   ) => {
-    handleFeedback(message, feedback, question);
+    handleFeedback(message, feedback, question, description);
   };
 
-  const appendMessageToLastBotMessage = (message: string): void => {
+  const appendMessageToLastBotMessage = (
+    message: string,
+    timeTaken?: string,
+  ): void => {
     setChatMessages(prevMessages => {
       const lastMessageIndex = prevMessages.length - 1;
       if (
         lastMessageIndex >= 0 &&
         !prevMessages[lastMessageIndex].isUserMessage
       ) {
-        const updatedMessage = `${prevMessages[lastMessageIndex].content} ${message}`;
-        prevMessages[lastMessageIndex].content = updatedMessage;
+        prevMessages[lastMessageIndex].content += message;
+
+        if (timeTaken) {
+          prevMessages[lastMessageIndex].timeTaken = timeTaken;
+        }
+
         return [...prevMessages];
       }
-      return [...prevMessages, { content: message, isUserMessage: false }];
+      return [
+        ...prevMessages,
+        {
+          content: message.trim().replace(/\n/g, '<br/>'), // Process message
+          isUserMessage: false,
+          timeTaken,
+        },
+      ];
     });
     scrollToBottom();
   };
@@ -147,20 +185,42 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
   const handleBotResponse = async (
     botResponse: string,
     question: string,
+    timeTaken: string,
   ): Promise<void> => {
     setIsBotTyping(false);
     setIsInputDisabled(false);
-    setUserQuestion(question);
-    if (botResponse) {
-      appendMessageToLastBotMessage(botResponse);
+
+    if (botResponse?.trim().toLowerCase() === 'empty response') {
+      const apologyMessage =
+        'Sorry, I couldn’t find an answer to your question. Currently, DocsBot supports content from Backstage and Spaship. Could you please try rephrasing your question or ask something else?';
+      appendMessageToLastBotMessage(apologyMessage, timeTaken);
+    } else {
+      appendMessageToLastBotMessage(botResponse || '', timeTaken);
     }
+
+    setUserQuestion(question);
   };
 
   const handleSendMessage = async (userMessage: string): Promise<void> => {
+    // Check if the current question is the same as the previous one
+    if (
+      userMessage.trim().toLowerCase() ===
+      previousQuestion?.trim().toLowerCase()
+    ) {
+      // Respond with the specific message and reset input
+      appendMessage(
+        'It seems like you have asked the same question which I have already answered. Do you want to ask something else?',
+        false,
+      );
+      setIsBotTyping(false);
+      setIsInputDisabled(false);
+      return;
+    }
     appendMessage(userMessage, true);
     setIsBotTyping(true);
     setUserQuestion(userMessage);
     setIsInputDisabled(true);
+    setPreviousQuestion(userMessage);
   };
 
   useEffect(() => {
@@ -177,13 +237,12 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
       let fullMessage = '';
       eventSource.onmessage = event => {
         const { text, time_taken } = JSON.parse(event.data);
-        handleBotResponse(text, userQuestion);
         fullMessage += text;
-        setTimeTaken(time_taken);
+        handleBotResponse(text, userQuestion, time_taken);
       };
       eventSource.onerror = () => {
         if (chatMessages.length > 2) {
-          logFeedback(fullMessage, 0, userQuestion);
+          logFeedback(fullMessage, 0, userQuestion, '');
         }
         eventSource.close();
       };
@@ -201,11 +260,20 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
     setIsBotTyping(false);
     setIsInputDisabled(false);
     setUserQuestion('');
+    setPreviousQuestion(null);
   };
 
   const handleExpand = () => {
     toggleDrawer();
-    window.location.href = docsBotLink(); // Use useRouteRef for routing
+    window.location.href = docsBotLink();
+  };
+
+  const handleCloseBanner = () => {
+    setIsBannerOpen(false);
+  };
+
+  const handleInfoIconClick = () => {
+    setIsBannerOpen(true);
   };
 
   return (
@@ -238,6 +306,11 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
             </div>
 
             <div className={classes.iconsSection}>
+              <Tooltip title="DocsBot Expectations">
+                <IconButton onClick={handleInfoIconClick}>
+                  <InfoIcon />
+                </IconButton>
+              </Tooltip>
               <Tooltip title="Refresh Chat">
                 <IconButton onClick={handleRefresh}>
                   <RefreshIcon />
@@ -255,7 +328,10 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
               </Tooltip>
             </div>
           </div>
-
+          <DocsBotExpectationBanner
+            open={isBannerOpen}
+            onClose={handleCloseBanner}
+          />
           <div className={classes.container}>
             <CardContent className={classes.cardContent}>
               {userQuestion === '' ? (
@@ -272,7 +348,7 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
                       onFeedback={handleFeedback}
                       userQuestion={userQuestion}
                       isInitialMessage={index === 0 || index === 1}
-                      timeTaken={timeTaken}
+                      timeTaken={message.timeTaken}
                     />
                   ))}
                   {isBotTyping && (
@@ -298,6 +374,11 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
                     : 'Type your query here...'
                 }
               />
+              <div className={classes.disclaimer}>
+                Disclaimer: Due to hardware constraints, responses may be
+                delayed, and since DocsBot is still in training, some answers
+                may not be accurate.
+              </div>
             </div>
           </div>
         </div>

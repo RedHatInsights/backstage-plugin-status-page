@@ -33,6 +33,8 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: theme.palette.background.paper, // Ensure background color is set
+    zIndex: 2,
   },
   cardBack: {
     backfaceVisibility: 'hidden',
@@ -47,6 +49,8 @@ const useStyles = makeStyles(theme => ({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: theme.palette.background.paper, // Ensure background color is set
+    zIndex: 3,
   },
   title: {
     fontSize: theme.typography.pxToRem(12),
