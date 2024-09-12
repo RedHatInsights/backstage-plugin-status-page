@@ -1,5 +1,23 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation-backend [1.2.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.2.0...@appdev-platform/backstage-plugin-workstream-automation-backend@1.2.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* **DEE-1440:** make email field as optional ([edcf8ed](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/edcf8ed81329ff437618f428d1f4b32b0e00ed48))
+
+
+### Other changes
+
+* **release:** 1.3.0 [skip ci] ([2a74246](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/2a7424670e62c139a22cb5a72359be78e207bf1c))
+
+
+
+### Dependencies
+
+* **@appdev-platform/backstage-plugin-workstream-automation-common:** upgraded to 1.0.1
+
 ## @appdev-platform/backstage-plugin-workstream-automation-backend [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.0.0...@appdev-platform/backstage-plugin-workstream-automation-backend@1.1.0) (2024-08-30)
 
 
