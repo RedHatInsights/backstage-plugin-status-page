@@ -1,4 +1,5 @@
 export type WorkstreamDatabaseModel = {
+  id: string;
   name: string;
   title: string;
   portfolio: string;
@@ -9,7 +10,7 @@ export type WorkstreamDatabaseModel = {
   jira_project: string;
   created_by: string;
   slack_channel_url: string;
-  email: string;
+  email?: string;
   created_at?: string;
   updated_at?: string;
 };

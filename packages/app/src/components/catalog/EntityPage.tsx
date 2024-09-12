@@ -87,7 +87,7 @@ import {
   WorkstreamAboutCard,
   WorkstreamDeleteModal,
   WorkstreamMembersCard,
-  WorkstreamPortfolioCard
+  WorkstreamPortfolioCard,
 } from '@appdev-platform/backstage-plugin-workstream-automation';
 import { workstreamDeletePermission } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { usePermission } from '@backstage/plugin-permission-react';
@@ -533,6 +533,7 @@ const WorkstreamEntityPage = () => {
       >
         <EntityLayout.Route path="/overview" title="Overview">
           <Grid container spacing={3} alignItems="stretch">
+            {entityWarningContent}
             <Grid item xs={12} md={6}>
               <WorkstreamAboutCard variant="gridItem" />
             </Grid>

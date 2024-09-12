@@ -17,7 +17,7 @@ import {
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
-import { NotAllowedError } from '@backstage/errors';
+import { ConflictError, NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import express from 'express';
@@ -27,6 +27,7 @@ import { DEFAULT_WORKSTREAM_NAMESPACE } from '../modules/lib/constants';
 import { workstreamToEntityKind } from '../modules/lib/utils';
 import { workstreamPermissionRules } from '../permissions/rules';
 import { Workstream } from '../types';
+import { v4 } from 'uuid';
 
 export interface RouterOptions {
   logger: LoggerService;
@@ -102,7 +103,13 @@ export async function createRouter(
       res.status(400).json({ error: 'Request body incomplete' });
       return;
     }
+    req.body.data.workstreamId = v4();
     const worksteamData: Workstream = req.body.data;
+    if (await database.getWorkstreamById(worksteamData.name)) {
+      throw new ConflictError(
+        `Workstream ${worksteamData.name} already exists`,
+      );
+    }
     const result = await database.insertWorkstream(worksteamData);
 
     const workstreamLocation = `${apiBaseUrl}/${result.name}`;
@@ -162,16 +169,39 @@ export async function createRouter(
         error: 'Something went wrong',
       });
     }
-
-    const { token: catalogServiceToken } = await auth.getPluginRequestToken({
+    const catalogServiceToken = await auth.getPluginRequestToken({
       targetPluginId: 'catalog',
       onBehalfOf: await auth.getOwnServiceCredentials(),
     });
-    catalogApi.refreshEntity(
+    if (workstreamName !== updatedData.name) {
+      // remove original location
+      const currLoc = await catalogApi.getLocationByEntity(
+        `workstream:${DEFAULT_WORKSTREAM_NAMESPACE}/${workstreamName}`,
+        catalogServiceToken,
+      );
+      await catalogApi.removeLocationById(
+        currLoc?.id ?? '',
+        catalogServiceToken,
+      );
+
+      // add new location with updated target name
+      await catalogApi.addLocation(
+        {
+          type: 'url',
+          target: `${apiBaseUrl}/${updatedData.name}`,
+        },
+        catalogServiceToken,
+      );
+      return res.status(200).json({
+        data: result,
+        message:
+          'Workstream updated successfully (please refresh entity to view changes)',
+      });
+    }
+
+    await catalogApi.refreshEntity(
       `workstream:${DEFAULT_WORKSTREAM_NAMESPACE}/${workstreamName}`,
-      {
-        token: catalogServiceToken,
-      },
+      catalogServiceToken,
     );
 
     return res.status(200).json({

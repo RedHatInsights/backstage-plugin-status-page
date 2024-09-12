@@ -33,9 +33,11 @@ export function workstreamToEntityKind(options: {
       name: data.name,
       title: data.title,
       namespace: namespace,
+      description: data.description,
       createdAt: data.createdAt ?? new Date().toISOString(),
       updatedAt: data.updatedAt ?? new Date().toISOString(),
       createdBy: data.createdBy,
+      workstreamId: data.workstreamId,
       annotations: {
         [ANNOTATION_LOCATION]: location,
         [ANNOTATION_ORIGIN_LOCATION]: location,
@@ -43,7 +45,6 @@ export function workstreamToEntityKind(options: {
           ? { [ANNOTATION_JIRA_PROJECT_KEY]: data.jiraProject }
           : null),
       },
-      description: data.description,
       links: [
         ...(data.email
           ? [

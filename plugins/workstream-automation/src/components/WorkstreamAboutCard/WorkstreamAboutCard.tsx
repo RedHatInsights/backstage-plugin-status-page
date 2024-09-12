@@ -119,11 +119,13 @@ export const WorkstreamAboutCard = (props: { variant: InfoCardVariants }) => {
                 />
               );
             })}
-            <LinkCard
-              href={`https://issues.redhat.com/browse/${entity.metadata.annotations['jira/project-key']}`}
-              title="Jira"
-              Icon={<JiraIcon fontSize="large" />}
-            />
+            {entity.metadata.annotations['jira/project-key'] && (
+              <LinkCard
+                href={`https://issues.redhat.com/browse/${entity.metadata.annotations['jira/project-key']}`}
+                title="Jira"
+                Icon={<JiraIcon fontSize="large" />}
+              />
+            )}
           </Box>
         </Grid>
         <Grid item xs={12}>

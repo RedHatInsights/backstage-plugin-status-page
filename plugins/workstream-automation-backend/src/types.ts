@@ -4,6 +4,7 @@ export type Member = {
 };
 
 export type Workstream = {
+  workstreamId: string;
   name: string;
   title: string;
   description?: string;
@@ -16,5 +17,5 @@ export type Workstream = {
   updatedAt?: string;
   createdBy: string;
   slackChannelUrl: string;
-  email: string;
+  email?: string;
 };

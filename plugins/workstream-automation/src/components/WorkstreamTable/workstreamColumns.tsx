@@ -109,17 +109,18 @@ export const columnFactories = Object.freeze({
   createJiraProjectKeyColumn(): TableColumn<CatalogTableRow> {
     return {
       title: 'JIRA Project',
-      field: "entity.metadata?.annotations.['jira/project-key']",
+      field: 'entity.metadata.annotations.jira/project-key',
       width: '18%',
-      render: ({ entity }) => (
-        <Link
-          to={`https://issues.redhat.com/browse/${
-            entity.metadata?.annotations!['jira/project-key']
-          }`}
-        >
-          {entity.metadata?.annotations!['jira/project-key']}
-        </Link>
-      ),
+      render: ({ entity }) =>
+        entity.metadata?.annotations!['jira/project-key'] ? (
+          <Link
+            to={`https://issues.redhat.com/browse/${entity.metadata.annotations['jira/project-key']}`}
+          >
+            {entity.metadata.annotations['jira/project-key']}
+          </Link>
+        ) : (
+          '-'
+        ),
     };
   },
   createMembersColumn(): TableColumn<CatalogTableRow> {
