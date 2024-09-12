@@ -389,8 +389,8 @@ __metadata:
     lodash: ^4.17.21
     msw: ^1.0.0
     node-fetch: 2
-    short-uuid: ^5.2.0
     supertest: ^6.2.4
+    uuid: ^10.0.0
     winston: ^3.2.1
     yn: ^4.0.0
     zod: ^3.23.8
@@ -37155,16 +37155,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"short-uuid@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "short-uuid@npm:5.2.0"
-  dependencies:
-    any-base: ^1.1.0
-    uuid: ^9.0.1
-  checksum: 4b8ca0d9141226eea70aaa0c61a92e1bbe9508cd7cc2bbb05e698e55f392d4b365fa5617744b40e3c6f744a5c53f6a9b0462a34b7c244534de1ec1686e71f542
-  languageName: node
-  linkType: hard
-
 "side-channel@npm:^1.0.4, side-channel@npm:^1.0.6":
   version: 1.0.6
   resolution: "side-channel@npm:1.0.6"
@@ -40475,6 +40465,15 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 5575a8a75c13120e2f10e6ddc801b2c7ed7d8f3c8ac22c7ed0c7b2ba6383ec0abda88c905085d630e251719e0777045ae3236f04c812184b7c765f63a70e58df
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "uuid@npm:10.0.0"
+  bin:
+    uuid: dist/bin/uuid
+  checksum: 4b81611ade2885d2313ddd8dc865d93d8dccc13ddf901745edca8f86d99bc46d7a330d678e7532e7ebf93ce616679fb19b2e3568873ac0c14c999032acb25869
   languageName: node
   linkType: hard
 

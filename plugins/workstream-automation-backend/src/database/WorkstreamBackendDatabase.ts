@@ -105,6 +105,7 @@ export class WorkstreamBackendDatabase implements WorkstreamBackendStore {
     workstream: Workstream,
   ): WorkstreamDatabaseModel {
     return {
+      id: workstream.workstreamId,
       name: workstream.name,
       title: workstream.title,
       portfolio: workstream.portfolio.join(','),
@@ -123,6 +124,7 @@ export class WorkstreamBackendDatabase implements WorkstreamBackendStore {
     dbModel: WorkstreamDatabaseModel,
   ): Workstream {
     return {
+      workstreamId: dbModel.id,
       name: dbModel.name,
       title: dbModel.title,
       description: dbModel.description,

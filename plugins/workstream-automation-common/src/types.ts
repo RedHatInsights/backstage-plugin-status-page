@@ -13,6 +13,7 @@ export interface WorkstreamDataV1alpha1 extends Entity {
     updatedAt: string;
     createdBy: string;
     createdAt: string;
+    workstreamId: string;
   };
   spec: {
     members: {
