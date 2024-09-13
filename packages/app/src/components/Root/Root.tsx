@@ -2,6 +2,7 @@ import React, { PropsWithChildren, useState } from 'react';
 import { Chip, Grid, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExtensionIcon from '@material-ui/icons/Extension';
+import DataUsageIcon from '@material-ui/icons/DataUsage';
 import MapIcon from '@material-ui/icons/MyLocation';
 import SpashipIcon from '@material-ui/icons/FlightTakeoff';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
@@ -133,6 +134,27 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
                 icon={DocsBotIcon as IconComponent}
                 to="docsbot"
                 text="DocsBot"
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <Chip
+                style={{
+                  margin: '12px 0px 0px 0px',
+                  color: '#b5b5b5',
+                  borderColor: '#b5b5b5',
+                }}
+                label="Beta"
+                size="small"
+                variant="outlined"
+              />
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={8}>
+              <SidebarItem
+                icon={DataUsageIcon as IconComponent}
+                to="hydra-support-dashboard"
+                text="Hydra Dashboard"
               />
             </Grid>
             <Grid item xs={4}>

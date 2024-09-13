@@ -53,6 +53,7 @@ import { DocsBotPage } from '@appdev-platform/backstage-plugin-docsbot';
 import { SlackIcon } from '@appdev-platform/backstage-plugin-workstream-automation';
 import { getThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 import SettingsEthernet from '@material-ui/icons/SettingsEthernet';
+import { HydraSupportDashboardPage } from '@appdev-platform/backstage-plugin-hydra-support-dashboard';
 
 const app = createApp({
   apis,
@@ -142,6 +143,7 @@ const routes = (
       element={<CatalogUnprocessedEntitiesPage />}
     />
     <Route path="/docsbot" element={<DocsBotPage />} />
+    <Route path="/hydra-support-dashboard" element={<HydraSupportDashboardPage />} />
   </FlatRoutes>
 );
 
