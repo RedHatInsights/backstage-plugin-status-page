@@ -13,7 +13,7 @@ export const StoryPointsChart = (props: IProps) => {
         <Grid
           container
           spacing={1}
-          style={{ textAlign: 'center', padding: '0.9rem 0' }}
+          style={{ textAlign: 'center', padding: '1rem 0', height: '18.3rem' }}
         >
           <Grid item xs={12}>
             <div

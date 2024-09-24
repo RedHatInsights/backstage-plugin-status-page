@@ -6,7 +6,6 @@ import { useApi } from '@backstage/core-plugin-api';
 import { cmdbApiRef, jiraApiRef } from '../../api';
 import useStyles from './AnalyticsDashboard.styles';
 import { SankeyChart } from './SankeyChart/SankryChart';
-import { StoryPointsChart } from './CountIssueStory/StoryPointsChart';
 import { SortableTable } from './IssuesTable/SortableTable';
 import { HighLevelGoals } from './HighLevelGoals/HighLevelGoals';
 import {
@@ -22,6 +21,7 @@ import {
   prepareProgressData,
   prepareStatsIssueCountData,
 } from './utils';
+import { NewAndSupportWorkChart } from './NewWorkAndSupportWork/NewAndSupportWork';
 
 interface IPageVars {
   selectedEpic: string;
@@ -30,6 +30,8 @@ interface IPageVars {
   progressData: IProgressData[];
   tableData: ITableData[];
   statsIssueCountData: { totalJiras: number; totalStoryPoints: number };
+  loadingWorkData: boolean;
+  workData: { supportWorkStoryPoints: number; newWorkStoryPoints: number };
 }
 
 export const AnalyticsDashboard = () => {
@@ -45,6 +47,8 @@ export const AnalyticsDashboard = () => {
     progressData: [],
     tableData: [],
     statsIssueCountData: { totalJiras: 0, totalStoryPoints: 0 },
+    loadingWorkData: false,
+    workData: { supportWorkStoryPoints: 0, newWorkStoryPoints: 0 },
   });
 
   const [fetchedEpicData, setFetchedData] = useState<any>();
@@ -147,38 +151,11 @@ export const AnalyticsDashboard = () => {
                         <SankeyChart
                           visualData={pageVars.sankeyData}
                           mode={theme.palette.mode}
+                          totalJiras={pageVars.statsIssueCountData.totalJiras}
                         />
                       )}
                   </div>
                 </div>
-              </Grid>
-              <Grid container spacing={2}>
-                <Grid item xs={10}>
-                  <div className={classes.contentTitle}>High Level Goals</div>
-                  <div
-                    className={classes.jiraContent}
-                    style={{ height: 'auto' }}
-                  >
-                    <HighLevelGoals
-                      totalStoryPoint={
-                        pageVars.statsIssueCountData.totalStoryPoints
-                      }
-                    />
-                  </div>
-                </Grid>
-                <Grid item xs={2}>
-                  <div>
-                    <div className={classes.contentTitle}>Stats</div>
-                    <div className={classes.jiraContent}>
-                      {!pageVars.loadingVisualData && (
-                        <StoryPointsChart
-                          data={pageVars.statsIssueCountData}
-                          mode={theme.palette.mode}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </Grid>
               </Grid>
               <Grid>
                 <div className={classes.contentTitle}>JIRA Details</div>
@@ -187,6 +164,42 @@ export const AnalyticsDashboard = () => {
                     <SortableTable tableData={pageVars.tableData} />
                   )}
                 </div>
+              </Grid>
+              <Grid container spacing={2}>
+                <Grid item xs={9}>
+                  <div className={classes.contentTitle}>High Level Goals</div>
+                  <div
+                    className={classes.jiraContent}
+                    style={{ height: 'auto' }}
+                  >
+                    <HighLevelGoals
+                      totalSupportStoryPoint={
+                        pageVars.statsIssueCountData.totalStoryPoints
+                      }
+                      onLoad={(load, data) =>
+                        setPageVars({
+                          ...pageVars,
+                          loadingWorkData: load,
+                          workData: data,
+                        })
+                      }
+                    />
+                  </div>
+                </Grid>
+                <Grid item xs={3}>
+                  <div>
+                    <div className={classes.contentTitle}>Stats</div>
+                    <div className={classes.jiraContent}>
+                      {!pageVars.loadingVisualData && (
+                        <NewAndSupportWorkChart
+                          data={pageVars.workData}
+                          mode={theme.palette.mode}
+                          loading={pageVars.loadingWorkData}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </Grid>
               </Grid>
             </>
           )}

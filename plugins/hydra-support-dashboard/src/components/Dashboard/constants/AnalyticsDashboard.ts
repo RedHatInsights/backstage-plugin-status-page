@@ -19,6 +19,7 @@ export const EPIC_TITLES: any = {
 export enum JiraCustomFields {
   epicNumber = 'customfield_12311140',
   storyPoints = 'customfield_12310243',
+  browserLink = 'https://issues.redhat.com/browse/',
 }
 
 export const HLG_EPICS = [

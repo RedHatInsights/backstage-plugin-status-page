@@ -16,6 +16,7 @@ interface ISankeyData {
 interface ISankeyProps {
   visualData: ISankeyData[];
   mode: string;
+  totalJiras: number;
 }
 
 export const SankeyChart = (props: ISankeyProps) => {
@@ -32,7 +33,7 @@ export const SankeyChart = (props: ISankeyProps) => {
   ];
 
   const sankeyHeaders = [
-    'Hydra Support Pillar Name',
+    'Hydra Support EPIC Name',
     'CMDB Criticality',
     'JIRA Status',
   ];
@@ -65,6 +66,16 @@ export const SankeyChart = (props: ISankeyProps) => {
           onClick(_event, _elements, _chart) {
             // narrow down code
           },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                label: tooltipItem => {
+                  const data: any = tooltipItem.raw;
+                  return ` ${JSON.stringify(data.flow)} JIRAs`;
+                },
+              },
+            },
+          },
         },
         data: {
           datasets: [
@@ -76,7 +87,7 @@ export const SankeyChart = (props: ISankeyProps) => {
                 getColors(color.dataset.data[color.dataIndex].to),
               borderWidth: 0,
               color: currentTheme === 'dark' ? 'white' : 'black',
-              font: { size: 15 },
+              font: { size: 17 },
               nodeWidth: 10,
               priority: { C1: 100 },
             },
@@ -109,6 +120,11 @@ export const SankeyChart = (props: ISankeyProps) => {
       </div>
       <div className="chart">
         <canvas ref={canvasCtx} id="chart2" />
+      </div>
+      <div
+        style={{ textAlign: 'right', fontSize: '1.1rem', fontWeight: 'bold' }}
+      >
+        The above stats are based on {props.totalJiras} total JIRAS
       </div>
     </div>
   );

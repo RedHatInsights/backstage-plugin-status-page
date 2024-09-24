@@ -6,7 +6,11 @@ import { HLG_EPICS, JiraCustomFields } from '../constants/AnalyticsDashboard';
 import { Loader } from '../utils';
 
 interface IProps {
-  totalStoryPoint: number;
+  totalSupportStoryPoint: number;
+  onLoad: (
+    loading: boolean,
+    data: { supportWorkStoryPoints: number; newWorkStoryPoints: number },
+  ) => void;
 }
 
 export const HighLevelGoals = (_props: IProps) => {
@@ -15,6 +19,7 @@ export const HighLevelGoals = (_props: IProps) => {
       title: 'Support Model',
       desc: 'Captures maintenance, compliance, enhancements & other support work done for all Hydra Modules',
       epic: 'HYDRA-11575',
+      value: _props.totalSupportStoryPoint,
     },
     {
       title: 'Hydra Case Bot',
@@ -70,6 +75,19 @@ export const HighLevelGoals = (_props: IProps) => {
       totalStoryPoints: totalStoryPoints,
       loadingVisualData: false,
     });
+
+    const totalSupportWork =
+      _props.totalSupportStoryPoint +
+      storyPointsPerEpic['HYDRA-11589'] +
+      storyPointsPerEpic['HYDRA-11015'];
+    const totalNewWork =
+      storyPointsPerEpic['HYDRA-11773'] +
+      storyPointsPerEpic['HYDRA-11590'] +
+      storyPointsPerEpic['HYDRA-11590'];
+    _props.onLoad(false, {
+      supportWorkStoryPoints: totalSupportWork,
+      newWorkStoryPoints: totalNewWork,
+    });
   };
 
   const fetchEpicData = async () => {
@@ -77,6 +95,7 @@ export const HighLevelGoals = (_props: IProps) => {
       ...pageVars,
       loadingVisualData: true,
     });
+    _props.onLoad(true, { supportWorkStoryPoints: 0, newWorkStoryPoints: 0 });
 
     jiraApi
       .getCombinedEpicData(HLG_EPICS)
@@ -106,7 +125,7 @@ export const HighLevelGoals = (_props: IProps) => {
       style={{
         display: 'flex',
         flexWrap: 'wrap',
-        minHeight: '14.5rem',
+        minHeight: '17.7rem',
         padding: '0 1rem',
       }}
     >
@@ -120,7 +139,7 @@ export const HighLevelGoals = (_props: IProps) => {
                 <Gauge
                   width={100}
                   height={100}
-                  value={pageVars.storyPointsPerEpic[data.epic]}
+                  value={data.value || pageVars.storyPointsPerEpic[data.epic]}
                   startAngle={-90}
                   endAngle={90}
                   valueMax={pageVars.totalStoryPoints}
