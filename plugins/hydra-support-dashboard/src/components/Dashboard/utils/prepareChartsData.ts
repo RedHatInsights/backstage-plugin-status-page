@@ -118,10 +118,10 @@ export const prepareSankeyData = async (
           sankeyData.push({
             from: `${EPIC_TITLES[epic]} (${Math.round(
               (countJiraPerEpic[epic] / totalJiras) * 100,
-            )}%)`,
+            )}% | ${countJiraPerEpic[epic]} JIRAs)`,
             to: `${tier} (${Math.round(
               (countJiraPerCriticalityTier[tier] / totalJiras) * 100,
-            )}%)`,
+            )}% | ${countJiraPerCriticalityTier[tier]} JIRAs)`,
             flow: epicToCriticalityMapData[epic][tier],
           });
         });
@@ -135,10 +135,10 @@ export const prepareSankeyData = async (
           sankeyData.push({
             from: `${tier} (${Math.round(
               (countJiraPerCriticalityTier[tier] / totalJiras) * 100,
-            )}%)`,
+            )}% | ${countJiraPerCriticalityTier[tier]} JIRAs)`,
             to: `${status} (${Math.round(
               (countJiraPerStatus[status] / totalJiras) * 100,
-            )}%)`,
+            )}% | ${countJiraPerStatus[status]} JIRAs)`,
             flow: criticalityToJiraStatus[tier][status],
           });
         });

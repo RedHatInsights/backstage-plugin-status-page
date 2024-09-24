@@ -12,6 +12,8 @@ import {
   Paper,
   TablePagination,
 } from '@material-ui/core';
+import { Link } from '@backstage/core-components';
+import { JiraCustomFields } from '../constants';
 
 interface IData {
   id: number;
@@ -221,7 +223,12 @@ export const SortableTable = (props: IProps) => {
                       scope="row"
                       padding="none"
                     >
-                      {row.key}
+                      <Link
+                        to={`${JiraCustomFields.browserLink}${row.key}`}
+                        target="_blank"
+                      >
+                        {row.key}
+                      </Link>
                     </TableCell>
                     <TableCell align="right">{row.summary}</TableCell>
                     <TableCell align="right">
