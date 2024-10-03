@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.1.1...@appdev-platform/backstage-plugin-workstream-automation@1.2.0) (2024-10-03)
+
+
+### Features
+
+* **DEE-1437:** use autocomplete for users api and other fixes ([1121ba6](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/1121ba67e5acdbfe7d0edf3307dcde6d88798893))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.1.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.1.0...@appdev-platform/backstage-plugin-workstream-automation@1.1.1) (2024-09-12)
 
 
