@@ -1,5 +1,18 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation-backend [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.2.1...@appdev-platform/backstage-plugin-workstream-automation-backend@1.3.0) (2024-10-03)
+
+
+### Features
+
+* **DEE-1474:** fixed members being removed when hit back ([e5eda43](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/e5eda432e2cb199804bb68fa21d8e277424a0ddf))
+
+
+
+### Dependencies
+
+* **@appdev-platform/backstage-plugin-workstream-automation-common:** upgraded to 1.1.0
+
 ## @appdev-platform/backstage-plugin-workstream-automation-backend [1.2.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.2.0...@appdev-platform/backstage-plugin-workstream-automation-backend@1.2.1) (2024-09-12)
 
 
