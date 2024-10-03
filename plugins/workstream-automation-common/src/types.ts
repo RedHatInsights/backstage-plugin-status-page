@@ -21,7 +21,7 @@ export interface WorkstreamDataV1alpha1 extends Entity {
       role: string;
     }[];
     pillar: string;
-    lead: string;
+    lead?: string;
     portfolio: string[];
   };
 }

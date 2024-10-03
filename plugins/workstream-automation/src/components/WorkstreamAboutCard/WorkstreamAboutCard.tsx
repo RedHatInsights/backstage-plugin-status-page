@@ -135,7 +135,11 @@ export const WorkstreamAboutCard = (props: { variant: InfoCardVariants }) => {
             </Typography>
           </StyledGrid>
           <StyledGrid xs={12}>
-            <EntityRefLink entityRef={entity.spec.lead} />
+            {entity.spec.lead ? (
+              <EntityRefLink entityRef={entity.spec.lead} />
+            ) : (
+              '-'
+            )}
           </StyledGrid>
         </Grid>
         <Grid item xs={6}>

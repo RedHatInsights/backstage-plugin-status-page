@@ -6,7 +6,7 @@ export type WorkstreamDatabaseModel = {
   members: string;
   description?: string;
   pillar: string;
-  lead: string;
+  lead?: string;
   jira_project: string;
   created_by: string;
   slack_channel_url: string;

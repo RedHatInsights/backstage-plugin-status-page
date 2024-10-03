@@ -56,12 +56,12 @@ export const MembersEditModal = (props: EditDialogProps) => {
   const { control, resetField, getValues, reset, handleSubmit, setValue } =
     useForm<{
       kind: { label: string; value: string };
-      searchQuery: GroupEntity | CustomUserEntity | undefined;
+      searchQuery: GroupEntity | CustomUserEntity | null;
       members: Member[];
     }>({
       values: {
         kind: selectOptions[0],
-        searchQuery: undefined,
+        searchQuery: null,
         members: [],
       },
     });
@@ -251,8 +251,9 @@ export const MembersEditModal = (props: EditDialogProps) => {
       } else {
         setTableDataFn(entity, lead);
       }
+      setValue('searchQuery', null);
     }
-  }, [selectedEntity, catalogApi, lead]);
+  }, [selectedEntity, catalogApi, lead, setValue]);
 
   const getOptionLabel = (option: GroupEntity | CustomUserEntity) =>
     option.spec.profile

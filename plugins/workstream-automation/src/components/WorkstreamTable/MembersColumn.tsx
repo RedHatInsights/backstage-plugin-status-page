@@ -57,7 +57,7 @@ export const MembersColumn = (props: { members: Member[] }) => {
   }, [loading, catalogApi, memberUserRefs]);
 
   return !loading ? (
-    <AvatarGroup classes={{ avatar: classes.root }} spacing={6} max={3}>
+    <AvatarGroup classes={{ avatar: classes.root }} spacing={6} max={4}>
       {userProfiles.length > 0 ? (
         userProfiles.map(
           profile =>

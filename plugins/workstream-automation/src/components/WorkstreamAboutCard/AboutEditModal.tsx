@@ -41,8 +41,11 @@ export const AboutEditModal = (props: EditDialogProps) => {
   const alertApi = useApi(alertApiRef);
 
   const { value: leadEntity, loading: leadEntityFetch } = useAsync(async () => {
-    const resp = await catalogApi.getEntityByRef(entity.spec.lead);
-    return resp as CustomUserEntity;
+    if (entity.spec.lead) {
+      const resp = await catalogApi.getEntityByRef(entity.spec.lead);
+      return resp as CustomUserEntity;
+    }
+    return undefined;
   }, []);
 
   const { value: jiraOptions, loading: isJiraLoading } = useAsync(async () => {

@@ -62,9 +62,12 @@ export const UserWorkstreamCard = (props: { variant: InfoCardVariants }) => {
     {
       title: 'Lead',
       tooltip: 'Workstream lead',
-      render: data => (
-        <EntityDisplayName entityRef={parseEntityRef(data.spec.lead)} />
-      ),
+      render: data =>
+        data.spec.lead ? (
+          <EntityDisplayName entityRef={parseEntityRef(data.spec.lead)} />
+        ) : (
+          '-'
+        ),
     },
     {
       title: 'Members',

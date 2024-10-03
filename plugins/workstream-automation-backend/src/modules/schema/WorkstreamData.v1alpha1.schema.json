@@ -51,29 +51,61 @@
       }
     }
   ],
+  "type": "object",
+  "required": ["apiVersion", "kind"],
+
   "allOf": [
     {
       "$ref": "Entity"
     },
     {
       "type": "object",
-      "required": ["spec"],
+      "required": ["spec", "metadata"],
       "properties": {
         "apiVersion": {
           "enum": ["console.one.redhat.com/v1alpha1", "redhat.com/v1alpha1"]
         },
         "kind": {
+          "type": "string",
+          "description": "The high level entity type being described.",
+          "minLength": 1,
           "enum": ["Workstream"]
+        },
+        "metadata": {
+          "$ref": "EntityMeta",
+          "type": "object",
+          "properties": {
+            "workstreamId": {
+              "type": "string",
+              "description": "Unique UUID of workstream"
+            },
+            "createdOn": {
+              "type": "string",
+              "description": "Timestamp when workstream was created"
+            },
+            "updatedOn": {
+              "type": "string",
+              "description": "Timestamp when last changes were made to workstream"
+            },
+            "createdBy": {
+              "type": "string",
+              "description": "Entity ref to user who created the workstream"
+            }
+          }
         },
         "spec": {
           "type": "object",
-          "required": ["lead", "members", "portfolio", "pillar"],
+          "required": ["members", "portfolio", "pillar"],
           "properties": {
             "lead": {
-              "type": "string",
-              "description": "Entity ref to lead of workstream",
-              "examples": ["john", "user:john", "user:redhat/john"],
-              "minLength": 1
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                { "type": "null" }
+              ],
+              "examples": [null, "user:john", "user:default/john"],
+              "description": "Entity ref of user who is lead of the workstream"
             },
             "members": {
               "type": "array",
@@ -112,14 +144,6 @@
               "type": "string",
               "description": "Under which pillar does it come",
               "examples": ["Platform Engineering"]
-            },
-            "updatedOn": {
-              "type": "string",
-              "description": "Timestamp when last changes were made to workstream"
-            },
-            "createdBy": {
-              "type": "string",
-              "description": "Entity ref to user who created the workstream"
             }
           }
         }

@@ -56,7 +56,7 @@ export class WorkstreamBackendDatabase implements WorkstreamBackendStore {
       .select('*')
       .where('name', id)
       .first()
-      .update(updatedData, '*');
+      .update({ ...updatedData, updated_at: this.db.fn.now() }, '*');
 
     if (dbResult.length < 1) {
       return null;
