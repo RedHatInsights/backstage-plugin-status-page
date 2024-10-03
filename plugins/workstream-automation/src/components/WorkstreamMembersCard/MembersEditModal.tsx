@@ -1,7 +1,6 @@
 import { WorkstreamDataV1alpha1 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import {
   GroupEntity,
-  parseEntityRef,
   RELATION_HAS_MEMBER,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -44,19 +43,28 @@ export const MembersEditModal = (props: EditDialogProps) => {
   const { lead } = currentEntity.spec;
   const { setEditModal: setEditModalOpen } = props;
   const [tableData, setTableData] = useState(props.tableData);
-  const {
-    control,
-    resetField,
-    getFieldState,
-    getValues,
-    reset,
-    handleSubmit,
-    setValue,
-  } = useForm<{
-    kind: { label: string; value: string };
-    searchQuery: GroupEntity | CustomUserEntity;
-    members: Member[];
-  }>();
+  const selectOptions = [
+    {
+      label: 'Rover User',
+      value: 'User',
+    },
+    {
+      label: 'Rover Group',
+      value: 'Group',
+    },
+  ];
+  const { control, resetField, getValues, reset, handleSubmit, setValue } =
+    useForm<{
+      kind: { label: string; value: string };
+      searchQuery: GroupEntity | CustomUserEntity | undefined;
+      members: Member[];
+    }>({
+      values: {
+        kind: selectOptions[0],
+        searchQuery: undefined,
+        members: [],
+      },
+    });
 
   const roleOptions = [
     'Workstream Lead',
@@ -163,16 +171,6 @@ export const MembersEditModal = (props: EditDialogProps) => {
   const [options, setOptions] = useState<(GroupEntity | CustomUserEntity)[]>(
     [],
   );
-  const selectOptions = [
-    {
-      label: 'Rover User',
-      value: 'User',
-    },
-    {
-      label: 'Rover Group',
-      value: 'Group',
-    },
-  ];
   const [loading, setLoading] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -189,13 +187,18 @@ export const MembersEditModal = (props: EditDialogProps) => {
     async () => {
       if (loading) {
         if (searchTerm.length > 2 && getValues('kind')) {
-          const resp = await catalogApi.getEntityByRef(
-            parseEntityRef(searchTerm, {
-              defaultKind: getValues('kind').value,
-              defaultNamespace: 'redhat',
-            }),
-          );
-          if (resp) setOptions([resp as GroupEntity | CustomUserEntity]);
+          const res = await catalogApi.queryEntities({
+            filter: [{ kind: getValues('kind').value }],
+            fullTextFilter: {
+              term: searchTerm,
+              fields: [
+                'spec.profile.displayName', // This field filter does not work
+                'metadata.name',
+                'metadata.title',
+              ],
+            },
+          });
+          setOptions(res.items as GroupEntity[] | CustomUserEntity[]);
           setLoading(false);
         } else setOptions([]);
       }
@@ -218,20 +221,16 @@ export const MembersEditModal = (props: EditDialogProps) => {
     CustomUserEntity | GroupEntity
   >();
 
-  function handleInputSelectedEntity(val: CustomUserEntity | GroupEntity) {
-    setSelectedEntity(val);
+  function handleInputSelectedEntity(
+    val: CustomUserEntity | GroupEntity | null,
+  ) {
+    if (val) setSelectedEntity(val);
   }
 
   function setTableDataFn(entity: CustomUserEntity, leadRef?: string) {
+    if (stringifyEntityRef(entity) === leadRef) return;
     setTableData(t => {
-      if (
-        t.find(
-          v =>
-            v.user.metadata.uid === entity.metadata.uid ||
-            stringifyEntityRef(v.user) === leadRef,
-        )
-      )
-        return t;
+      if (t.some(p => p.user.metadata.uid === entity.metadata.uid)) return t;
       return t.concat({ user: entity, role: '-' });
     });
   }
@@ -338,7 +337,6 @@ export const MembersEditModal = (props: EditDialogProps) => {
                       op.metadata.uid === sel.metadata.uid
                     }
                     loading={loading}
-                    noOptionsText="Enter correct uid"
                     onInputChange={(_, val) => {
                       if (
                         (value && getOptionLabel(value) === val) ||
@@ -351,8 +349,6 @@ export const MembersEditModal = (props: EditDialogProps) => {
                       handleInputSelectedEntity(val);
                       onChange(val);
                     }}
-                    disableClearable
-                    disabled={!getFieldState('kind').isDirty}
                     value={value ?? null}
                     onBlur={onBlur}
                     renderInput={params => {
@@ -419,6 +415,8 @@ export const MembersEditModal = (props: EditDialogProps) => {
           color="primary"
           onClick={() => {
             reset();
+            setOptions([]);
+            setSelectedEntity(undefined);
             setEditModalOpen(false);
           }}
         >

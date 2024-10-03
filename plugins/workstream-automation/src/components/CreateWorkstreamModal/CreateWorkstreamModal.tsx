@@ -1,5 +1,5 @@
 import { stringifyEntityRef, SystemEntity } from '@backstage/catalog-model';
-import { Table, TableColumn } from '@backstage/core-components';
+import { ErrorBoundary, Table, TableColumn } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   EntityDisplayName,
@@ -289,7 +289,7 @@ export const CreateWorkstreamModal = () => {
 
   const form2 = useForm<Form2>({
     values: {
-      kind: null,
+      kind: { label: 'Rover User', value: 'user' },
       searchQuery: null,
       selectedMembers: [],
     },
@@ -361,9 +361,11 @@ export const CreateWorkstreamModal = () => {
       index: '2',
       label: 'Member details',
       children: (
-        <FormProvider {...form2}>
-          <MemberDetailsForm form1={form1} />
-        </FormProvider>
+        <ErrorBoundary slackChannel={{ name: 'one-platform' }}>
+          <FormProvider {...form2}>
+            <MemberDetailsForm form1={form1} />
+          </FormProvider>
+        </ErrorBoundary>
       ),
     },
     {
@@ -406,8 +408,13 @@ export const CreateWorkstreamModal = () => {
   const backButtonProps = (): ButtonProps => {
     return {
       onClick: () => {
-        if (value === '2') setValue('1');
-        else if (value === '3') setValue('2');
+        if (value === '2') {
+          setValue('1');
+          form2.resetField('searchQuery');
+        } else if (value === '3') {
+          setValue('2');
+          form2.resetField('searchQuery');
+        }
       },
       children: 'Back',
     };

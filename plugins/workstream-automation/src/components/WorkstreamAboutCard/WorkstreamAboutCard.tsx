@@ -4,7 +4,6 @@ import {
 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
-  HeaderActionMenu,
   InfoCard,
   InfoCardVariants,
   Progress,
@@ -15,6 +14,7 @@ import { RequirePermission } from '@backstage/plugin-permission-react';
 import {
   Box,
   Grid,
+  IconButton,
   makeStyles,
   Typography,
   withStyles,
@@ -67,29 +67,21 @@ export const WorkstreamAboutCard = (props: { variant: InfoCardVariants }) => {
             resourceRef={stringifyEntityRef(entity)}
             errorPage={<></>}
           >
-            <HeaderActionMenu
-              actionItems={[
-                {
-                  label: 'Edit',
-                  icon: <EditTwoTone />,
-                  onClick: () => {
-                    setEditModalOpen(true);
-                  },
-                },
-                {
-                  icon: <CachedIcon />,
-                  label: 'Refresh',
-                  onClick: () => {
-                    alertApi.post({
-                      message: 'Entity refresh scheduled',
-                      severity: 'info',
-                      display: 'transient',
-                    });
-                    refresh?.();
-                  },
-                },
-              ]}
-            />
+            <IconButton
+              onClick={() => {
+                alertApi.post({
+                  message: 'Entity refresh scheduled',
+                  severity: 'info',
+                  display: 'transient',
+                });
+                refresh?.();
+              }}
+            >
+              <CachedIcon />
+            </IconButton>
+            <IconButton onClick={() => setEditModalOpen(true)}>
+              <EditTwoTone />
+            </IconButton>
           </RequirePermission>
         ),
       }}

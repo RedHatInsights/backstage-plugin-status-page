@@ -1,8 +1,4 @@
-import {
-  GroupEntity,
-  parseEntityRef,
-  RELATION_HAS_MEMBER,
-} from '@backstage/catalog-model';
+import { GroupEntity, RELATION_HAS_MEMBER } from '@backstage/catalog-model';
 import { Table, TableColumn } from '@backstage/core-components';
 import {
   CheckboxProps,
@@ -19,7 +15,7 @@ import {
   EntityDisplayName,
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
-import { Autocomplete } from '@material-ui/lab';
+import { Alert, Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';
 import { Controller, useFormContext, UseFormReturn } from 'react-hook-form';
 import { useDebounce } from 'react-use';
@@ -31,12 +27,11 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
   const { form1 } = props;
   const { lead } = form1.getValues();
   const catalogApi = useApi(catalogApiRef);
-  const { getFieldState, getValues, control, resetField, setValue } =
-    useFormContext<{
-      searchQuery: GroupEntity | CustomUserEntity;
-      kind: { label: string; value: string };
-      selectedMembers: TableRowDataType[];
-    }>();
+  const { getValues, control, resetField, setValue } = useFormContext<{
+    searchQuery: GroupEntity | CustomUserEntity;
+    kind: { label: string; value: string };
+    selectedMembers: TableRowDataType[];
+  }>();
   const [tableData, setTableData] = useState<TableRowDataType[]>(
     getValues('selectedMembers'),
   );
@@ -141,8 +136,10 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
     }
   }
 
-  function handleInputSelectedEntity(entity: CustomUserEntity | GroupEntity) {
-    setSearchedEntity(entity);
+  function handleInputSelectedEntity(
+    entity: CustomUserEntity | GroupEntity | null,
+  ) {
+    if (entity) setSearchedEntity(entity);
   }
 
   function setTableDataFn(
@@ -154,7 +151,10 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
       if (t.some(p => p.user.metadata.uid === entity.metadata.uid)) {
         return t;
       }
-      return t.concat({ user: entity, role: undefined });
+      return t.concat({
+        user: entity,
+        role: undefined,
+      });
     });
   }
 
@@ -181,13 +181,18 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
     async () => {
       if (loading) {
         if (searchText.length > 2 && getValues('kind')) {
-          const resp = await catalogApi.getEntityByRef(
-            parseEntityRef(searchText, {
-              defaultKind: getValues('kind').value,
-              defaultNamespace: 'redhat',
-            }),
-          );
-          if (resp) setOptions([resp as GroupEntity | CustomUserEntity]);
+          const res = await catalogApi.queryEntities({
+            filter: [{ kind: getValues('kind').value }],
+            fullTextFilter: {
+              term: searchText,
+              fields: [
+                'spec.profile.displayName', // This field filter does not work
+                'metadata.name',
+                'metadata.title',
+              ],
+            },
+          });
+          setOptions(res.items as GroupEntity[] | CustomUserEntity[]);
           setLoading(false);
         } else setOptions([]);
       }
@@ -250,7 +255,7 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
           }}
         />
       </Grid>
-      <Grid item lg={7} md={6}>
+      <Grid item lg={8} md={6}>
         <Controller
           name="searchQuery"
           control={control}
@@ -282,8 +287,6 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
                   handleInputSelectedEntity(val);
                   onChange(val);
                 }}
-                disableClearable
-                disabled={!getFieldState('kind').isDirty}
                 value={value ?? null}
                 onBlur={onBlur}
                 renderInput={params => {
@@ -325,6 +328,7 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
               data.map(v => ({
                 role: v.role,
                 user: v.user,
+                tableData: v.tableData ?? _rowData?.tableData,
               })),
             );
           }}
@@ -349,11 +353,15 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
                   !roleOptions.includes(data.role),
                 color: 'primary',
                 style: { marginLeft: '20px' },
+                ...(data.tableData?.checked && { checked: true }),
                 ...(data.role === 'Workstream Lead' && { checked: true }),
               };
             },
           }}
         />
+      </Grid>
+      <Grid item xs={12}>
+        <Alert severity="info">Note: Members can be added later too</Alert>
       </Grid>
     </Grid>
   );
