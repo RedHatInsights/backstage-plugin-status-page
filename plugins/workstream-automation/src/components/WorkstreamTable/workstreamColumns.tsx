@@ -93,9 +93,12 @@ export const columnFactories = Object.freeze({
       title: 'Workstream Lead',
       field: 'entity.spec.lead',
       width: '18%',
-      render: ({ entity }) => (
-        <EntityRefLink entityRef={entity.spec?.lead as string} />
-      ),
+      render: ({ entity }) =>
+        entity.spec?.lead ? (
+          <EntityRefLink entityRef={entity.spec.lead as string} />
+        ) : (
+          '-'
+        ),
     };
   },
   createPillarColumn(): TableColumn<CatalogTableRow> {

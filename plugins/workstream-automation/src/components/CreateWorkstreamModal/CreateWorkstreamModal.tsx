@@ -256,7 +256,7 @@ const ReviewDetailsContent = (props: {
                   },
                 ]
               : []),
-            ...selectedMembers,
+            ...selectedMembers.filter(v => v.tableData?.checked),
           ]}
           options={{
             toolbar: false,
@@ -308,19 +308,23 @@ export const CreateWorkstreamModal = () => {
   const { selectedMembers } = form2.getValues();
 
   function handleCreate(_e: React.MouseEvent<HTMLButtonElement>) {
-    if (workstreamDetails.workstreamName && workstreamDetails.lead) {
+    if (workstreamDetails.workstreamName) {
       setLoading(true);
       setWorkstreamData({
         name: kebabCase(workstreamDetails.workstreamName),
         title: workstreamDetails.workstreamName,
-        members: selectedMembers.map<Member>(val => ({
-          userRef: stringifyEntityRef(val.user),
-          role: val.role ?? '-',
-        })),
+        members: selectedMembers
+          .filter(p => p.tableData?.checked)
+          .map<Member>(val => ({
+            userRef: stringifyEntityRef(val.user),
+            role: val.role ?? '-',
+          })),
         description: workstreamDetails.description,
         email: workstreamDetails.email,
         jiraProject: workstreamDetails.jiraProject?.key,
-        lead: stringifyEntityRef(workstreamDetails.lead),
+        lead: workstreamDetails.lead
+          ? stringifyEntityRef(workstreamDetails.lead)
+          : undefined,
         pillar: workstreamDetails.pillar,
         slackChannelUrl: workstreamDetails.slackChannelUrl,
         portfolio: workstreamDetails.portfolio.map<string>(val =>

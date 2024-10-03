@@ -28,7 +28,7 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
   const { lead } = form1.getValues();
   const catalogApi = useApi(catalogApiRef);
   const { getValues, control, resetField, setValue } = useFormContext<{
-    searchQuery: GroupEntity | CustomUserEntity;
+    searchQuery: GroupEntity | CustomUserEntity | null;
     kind: { label: string; value: string };
     selectedMembers: TableRowDataType[];
   }>();
@@ -59,14 +59,18 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
     evt: React.ChangeEvent<{ name?: string; value: unknown }>,
     data: TableRowDataType,
   ) {
-    setValue('selectedMembers', []);
-    setTableData(t =>
-      t.map(u =>
-        u.user.metadata.uid === data.user.metadata.uid
-          ? { ...u, role: evt.target.value as string }
-          : u,
-      ),
-    );
+    setTableData(prevTableData => {
+      const updatedMembers = prevTableData.map(u => {
+        const isMatchedUser = u.user.metadata.uid === data.user.metadata.uid;
+        return {
+          user: u.user,
+          role: isMatchedUser ? (evt.target.value as string) : u.role,
+          tableData: isMatchedUser ? data.tableData : u.tableData,
+        };
+      });
+      setValue('selectedMembers', updatedMembers);
+      return updatedMembers;
+    });
   }
 
   const columns: TableColumn<TableRowDataType>[] = [
@@ -142,23 +146,28 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
     if (entity) setSearchedEntity(entity);
   }
 
-  function setTableDataFn(
-    entity: CustomUserEntity,
-    workstreamLead?: CustomUserEntity,
-  ) {
-    if (entity.metadata.uid === workstreamLead?.metadata.uid) return;
-    setTableData(t => {
-      if (t.some(p => p.user.metadata.uid === entity.metadata.uid)) {
-        return t;
-      }
-      return t.concat({
-        user: entity,
-        role: undefined,
-      });
-    });
-  }
-
   useEffect(() => {
+    function setTableDataFn(
+      entity: CustomUserEntity,
+      workstreamLead?: CustomUserEntity,
+    ) {
+      if (entity.metadata.uid === workstreamLead?.metadata.uid) return;
+      setTableData(prevTableData => {
+        const isUserPresent = prevTableData.some(
+          p => p.user.metadata.uid === entity.metadata.uid,
+        );
+        if (isUserPresent) return prevTableData;
+        const updatedTableData = [
+          ...prevTableData,
+          {
+            user: entity,
+            role: undefined,
+          },
+        ];
+        setValue('selectedMembers', updatedTableData);
+        return updatedTableData;
+      });
+    }
     if (searchedEntity) {
       const entity = searchedEntity;
       if (entity.kind === 'Group') {
@@ -174,8 +183,9 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
       } else {
         setTableDataFn(entity, lead);
       }
+      setValue('searchQuery', null);
     }
-  }, [searchedEntity, catalogApi, lead]);
+  }, [searchedEntity, catalogApi, setValue, lead]);
 
   useDebounce(
     async () => {
@@ -323,21 +333,23 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
           ]}
           columns={columns}
           onSelectionChange={(data, _rowData) => {
-            setValue(
-              'selectedMembers',
-              data.map(v => ({
-                role: v.role,
-                user: v.user,
-                tableData: v.tableData ?? _rowData?.tableData,
-              })),
-            );
+            const tempData = tableData;
+            tempData.forEach(t => {
+              if (data.some(p => p.user.metadata.uid === t.user.metadata.uid)) {
+                t.tableData = { checked: true };
+              } else t.tableData = { checked: false };
+            });
+            setValue('selectedMembers', tempData);
+            setTableData(tempData);
           }}
           options={{
+            pageSize: 10,
             search: false,
             showTitle: false,
             toolbar: true,
             padding: 'dense',
             selection: true,
+            paginationPosition: 'both',
             showTextRowsSelected: true,
             headerSelectionProps: {
               disabled: false,

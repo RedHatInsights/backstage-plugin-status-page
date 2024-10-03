@@ -10,7 +10,7 @@ export type Workstream = {
   description?: string;
   pillar: string;
   portfolio: string[];
-  lead: string;
+  lead?: string;
   members: Member[];
   jiraProject: string;
   createdAt?: string;

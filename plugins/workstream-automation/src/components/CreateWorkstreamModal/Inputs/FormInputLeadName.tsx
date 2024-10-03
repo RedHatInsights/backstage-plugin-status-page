@@ -10,7 +10,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useDebounce } from 'react-use';
 
@@ -23,6 +23,23 @@ export const FormInputLeadName = () => {
   const [leadOptions, setLeadOptions] = useState<UserEntity[]>([]);
   const [leadName, setLeadName] = useState<string>();
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    catalogApi
+      .queryEntities({
+        filter: { kind: 'User' },
+        limit: 10,
+        ...(leadName && {
+          fullTextFilter: {
+            term: leadName,
+            fields: ['metadata.name', 'metadata.title'],
+          },
+        }),
+      })
+      .then(res => {
+        setLeadOptions(res.items as UserEntity[]);
+      });
+  }, [catalogApi, leadName]);
 
   useDebounce(
     async () => {
@@ -60,7 +77,6 @@ export const FormInputLeadName = () => {
     <Controller
       name="lead"
       control={control}
-      rules={{ required: 'Lead name is required' }}
       render={({
         field: { onChange, onBlur, value },
         fieldState: { error },
@@ -90,7 +106,6 @@ export const FormInputLeadName = () => {
                 {...params}
                 fullWidth
                 label="Lead name"
-                required
                 error={!!error}
                 helperText={error ? error.message : null}
                 variant="outlined"

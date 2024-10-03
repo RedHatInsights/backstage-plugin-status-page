@@ -19,8 +19,8 @@ import { kebabCase } from 'lodash';
 import { workstreamDataV1alpha1Validator } from './lib/validator';
 
 export class WorkstreamEntityProcessor implements CatalogProcessor {
-  private logger: LoggerService;
-  private workstreamClient: WorkstreamBackendApi;
+  private readonly logger: LoggerService;
+  private readonly workstreamClient: WorkstreamBackendApi;
 
   constructor(options: {
     logger: LoggerService;
