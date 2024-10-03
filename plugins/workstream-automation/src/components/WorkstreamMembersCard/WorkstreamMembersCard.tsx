@@ -3,7 +3,6 @@ import {
   workstreamUpdatePermission,
 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import {
-  HeaderActionMenu,
   InfoCard,
   InfoCardVariants,
   Progress,
@@ -17,7 +16,7 @@ import {
   EntityRefLink,
   useAsyncEntity,
 } from '@backstage/plugin-catalog-react';
-import { makeStyles } from '@material-ui/core';
+import { IconButton, makeStyles } from '@material-ui/core';
 import EditTwoTone from '@material-ui/icons/EditTwoTone';
 import React, { useEffect, useState } from 'react';
 import { CustomUserEntity, TableRowDataType } from '../../types';
@@ -44,19 +43,21 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
 
   useEffect(() => {
     if (loading && members) {
-      for (const member of members) {
-        catalogApi.getEntityByRef(member.userRef).then(e => {
-          if (e) {
-            setTableData(t =>
-              t.concat({
-                role: member.role,
-                user: e as CustomUserEntity,
-              }),
-            );
+      const getMemberEntites = async () => {
+        const tempArr: TableRowDataType[] = [];
+        for (const member of members) {
+          const resp = await catalogApi.getEntityByRef(member.userRef);
+          if (resp) {
+            tempArr.push({
+              role: member.role,
+              user: resp as CustomUserEntity,
+            });
           }
-        });
-      }
-      setLoading(false);
+        }
+        setTableData(tempArr);
+        setLoading(false);
+      };
+      getMemberEntites();
     }
   }, [catalogApi, members, loading]);
 
@@ -64,14 +65,13 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
     if (isLoading) {
       setTableData([]);
       setLoading(true);
-    } else setLoading(false);
+    }
   }, [isLoading]);
 
   const columns: TableColumn<TableRowDataType>[] = [
     {
       title: 'Name',
       field: 'user.spec.profile.displayName',
-      defaultSort: 'asc',
       render: data => <EntityRefLink entityRef={data.user} />,
     },
     {
@@ -105,15 +105,9 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
             resourceRef={stringifyEntityRef(entity!)}
             errorPage={<></>}
           >
-            <HeaderActionMenu
-              actionItems={[
-                {
-                  label: 'Edit members',
-                  icon: <EditTwoTone />,
-                  onClick: () => setOpenEditModal(true),
-                },
-              ]}
-            />
+            <IconButton onClick={() => setOpenEditModal(true)}>
+              <EditTwoTone />
+            </IconButton>
           </RequirePermission>
         ),
       }}

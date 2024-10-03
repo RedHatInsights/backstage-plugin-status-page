@@ -7,7 +7,7 @@ interface TJiraProject {
 }
 
 export type Form2 = {
-  kind: null;
+  kind: { label: string; value: string } | null;
   searchQuery: CustomUserEntity | GroupEntity | null;
   selectedMembers: TableRowDataType[];
 };

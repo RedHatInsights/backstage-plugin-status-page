@@ -75,7 +75,7 @@ export const UserWorkstreamCard = (props: { variant: InfoCardVariants }) => {
   ];
 
   return (
-    <InfoCard {...props} title={`Worksrtreams (${inWorkstreams?.length})`}>
+    <InfoCard {...props} title={`Workstreams (${inWorkstreams?.length})`}>
       <Table
         columns={columns}
         data={workstreams}
