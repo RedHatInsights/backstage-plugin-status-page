@@ -32,3 +32,9 @@ export const workstreamPermissions = [
 ];
 
 export { type WorkstreamDataV1alpha1 } from './types';
+
+export {
+  WORKSTREAM_RELATION_PAIR,
+  RELATION_LEAD_BY,
+  RELATION_LEAD_OF,
+} from './constants';

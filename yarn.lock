@@ -394,7 +394,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-workstream-automation-backend@workspace:plugins/workstream-automation-backend"
   dependencies:
-    "@appdev-platform/backstage-plugin-workstream-automation-common": 1.0.1
+    "@appdev-platform/backstage-plugin-workstream-automation-common": 1.1.0
     "@backstage/backend-defaults": ^0.3.3
     "@backstage/backend-plugin-api": ^0.6.9
     "@backstage/backend-test-utils": ^0.4.2
@@ -427,7 +427,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-workstream-automation-common@*, @appdev-platform/backstage-plugin-workstream-automation-common@1.0.1, @appdev-platform/backstage-plugin-workstream-automation-common@workspace:plugins/workstream-automation-common":
+"@appdev-platform/backstage-plugin-workstream-automation-common@*, @appdev-platform/backstage-plugin-workstream-automation-common@1.1.0, @appdev-platform/backstage-plugin-workstream-automation-common@workspace:plugins/workstream-automation-common":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-workstream-automation-common@workspace:plugins/workstream-automation-common"
   dependencies:
@@ -441,7 +441,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-workstream-automation@workspace:plugins/workstream-automation"
   dependencies:
-    "@appdev-platform/backstage-plugin-workstream-automation-common": 1.0.1
+    "@appdev-platform/backstage-plugin-workstream-automation-common": 1.1.0
     "@backstage/catalog-client": ^1.6.5
     "@backstage/catalog-model": ^1.5.0
     "@backstage/cli": ^0.26.9
