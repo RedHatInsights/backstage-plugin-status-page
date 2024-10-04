@@ -35,7 +35,10 @@ import {
 } from '@backstage/core-components';
 import { createApp } from '@backstage/app-defaults';
 import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
-import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
+import {
+  ALL_RELATION_PAIRS,
+  CatalogGraphPage,
+} from '@backstage/plugin-catalog-graph';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { SpashipGlobalPage } from '@appdev-platform/backstage-plugin-spaship';
@@ -54,6 +57,7 @@ import { SlackIcon } from '@appdev-platform/backstage-plugin-workstream-automati
 import { getThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 import SettingsEthernet from '@material-ui/icons/SettingsEthernet';
 import { HydraSupportDashboardPage } from '@appdev-platform/backstage-plugin-hydra-support-dashboard';
+import { WORKSTREAM_RELATION_PAIR } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 
 const app = createApp({
   apis,
@@ -132,7 +136,14 @@ const routes = (
       {searchPage}
     </Route>
     <Route path="/settings" element={<UserSettingsPage />} />
-    <Route path="/catalog-graph" element={<CatalogGraphPage />} />
+    <Route
+      path="/catalog-graph"
+      element={
+        <CatalogGraphPage
+          relationPairs={[WORKSTREAM_RELATION_PAIR, ...ALL_RELATION_PAIRS]}
+        />
+      }
+    />
     <Route path="/spaship" element={<SpashipGlobalPage />} />
     <Route path="/proxy-manager" element={<ProxyManagerPage />} />
     <Route path="/feedback" element={<GlobalFeedbackPage />} />
@@ -143,7 +154,10 @@ const routes = (
       element={<CatalogUnprocessedEntitiesPage />}
     />
     <Route path="/docsbot" element={<DocsBotPage />} />
-    <Route path="/hydra-support-dashboard" element={<HydraSupportDashboardPage />} />
+    <Route
+      path="/hydra-support-dashboard"
+      element={<HydraSupportDashboardPage />}
+    />
   </FlatRoutes>
 );
 
