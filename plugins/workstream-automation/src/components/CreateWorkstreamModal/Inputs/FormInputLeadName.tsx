@@ -1,8 +1,4 @@
-import {
-  parseEntityRef,
-  stringifyEntityRef,
-  UserEntity,
-} from '@backstage/catalog-model';
+import { stringifyEntityRef, UserEntity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
@@ -29,28 +25,30 @@ export const FormInputLeadName = () => {
       .queryEntities({
         filter: { kind: 'User' },
         limit: 10,
-        ...(leadName && {
-          fullTextFilter: {
-            term: leadName,
-            fields: ['metadata.name', 'metadata.title'],
-          },
-        }),
       })
       .then(res => {
         setLeadOptions(res.items as UserEntity[]);
       });
-  }, [catalogApi, leadName]);
+  }, [catalogApi]);
 
   useDebounce(
     async () => {
       if (loading && leadName) {
-        const res = await catalogApi.getEntityByRef(
-          parseEntityRef(leadName, {
-            defaultKind: 'user',
-            defaultNamespace: 'redhat',
+        const res = await catalogApi.queryEntities({
+          filter: { kind: 'User' },
+          limit: 10,
+          ...(leadName && {
+            fullTextFilter: {
+              term: leadName,
+              fields: [
+                'metadata.name',
+                'metadata.title',
+                'spec.profile.displayName', // This field filter does not work
+              ],
+            },
           }),
-        );
-        if (res) setLeadOptions([res as UserEntity]);
+        });
+        setLeadOptions(res.items as UserEntity[]);
         setLoading(false);
       }
     },
