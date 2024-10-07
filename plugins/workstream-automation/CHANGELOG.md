@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.3.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.3.0...@appdev-platform/backstage-plugin-workstream-automation@1.3.1) (2024-10-07)
+
+
+### Bug Fixes
+
+* **WA:** useDebounce for searching instead of useEffect ([5f4f493](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/5f4f493ce221abfbb077094dea3cbd2e973c490c))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.2.0...@appdev-platform/backstage-plugin-workstream-automation@1.3.0) (2024-10-03)
 
 
