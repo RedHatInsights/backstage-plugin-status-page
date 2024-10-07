@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation-common [1.1.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-common@1.1.0...@appdev-platform/backstage-plugin-workstream-automation-common@1.1.1) (2024-10-07)
+
+
+### Bug Fixes
+
+* **DEE-1513:** export WA relation pairs from common package ([0d533af](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/0d533af3295af1b9ad9165fbd020904abe502c1f))
+
 ## @appdev-platform/backstage-plugin-workstream-automation-common [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-common@1.0.1...@appdev-platform/backstage-plugin-workstream-automation-common@1.1.0) (2024-10-03)
 
 
