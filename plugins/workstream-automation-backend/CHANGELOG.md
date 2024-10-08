@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation-backend [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.3.1...@appdev-platform/backstage-plugin-workstream-automation-backend@1.4.0) (2024-10-08)
+
+
+### Features
+
+* **DEE-1477:** create relations for portfolio ([55ecb13](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/55ecb131852b6219ec6d4c7d51da7b2ad07bf11d))
+
 ## @appdev-platform/backstage-plugin-workstream-automation-backend [1.3.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.3.0...@appdev-platform/backstage-plugin-workstream-automation-backend@1.3.1) (2024-10-07)
 
 
