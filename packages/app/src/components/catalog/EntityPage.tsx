@@ -540,8 +540,11 @@ const WorkstreamEntityPage = () => {
             <Grid item xs={12} md={6} xl={4}>
               <WorkstreamPortfolioCard variant="gridItem" />
             </Grid>
-            <Grid item xs={12} lg={8} xl={6}>
+            <Grid item xs={12} lg={6} xl={6}>
               <WorkstreamMembersCard variant="gridItem" />
+            </Grid>
+            <Grid item xs={12} lg={6} xl={6}>
+              <EntityCatalogGraphCard height={350} />
             </Grid>
           </Grid>
         </EntityLayout.Route>

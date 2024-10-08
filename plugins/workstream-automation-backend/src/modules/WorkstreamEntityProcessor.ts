@@ -1,8 +1,15 @@
+import {
+  RELATION_LEAD_BY,
+  RELATION_LEAD_OF,
+  WorkstreamDataV1alpha1,
+} from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   Entity,
   getCompoundEntityRef,
   parseEntityRef,
+  RELATION_HAS_PART,
+  RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
@@ -12,13 +19,8 @@ import {
   CatalogProcessorParser,
   processingResult,
 } from '@backstage/plugin-catalog-node';
-import { WorkstreamBackendApi } from './lib/client';
-import {
-  WorkstreamDataV1alpha1,
-  RELATION_LEAD_BY,
-  RELATION_LEAD_OF,
-} from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { kebabCase } from 'lodash';
+import { WorkstreamBackendApi } from './lib/client';
 import { workstreamDataV1alpha1Validator } from './lib/validator';
 
 export class WorkstreamEntityProcessor implements CatalogProcessor {
@@ -117,6 +119,16 @@ export class WorkstreamEntityProcessor implements CatalogProcessor {
           { defaultNamespace: selfRef.namespace },
           kebabCase(member.role),
           kebabCase(member.role),
+        );
+      });
+
+      const portfolios = workstreamEntity.spec.portfolio;
+      portfolios.forEach(portfolio => {
+        doEmit(
+          portfolio,
+          { defaultNamespace: selfRef.namespace },
+          RELATION_HAS_PART,
+          RELATION_PART_OF,
         );
       });
 
