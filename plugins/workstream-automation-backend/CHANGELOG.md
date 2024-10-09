@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation-backend [1.4.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.4.0...@appdev-platform/backstage-plugin-workstream-automation-backend@1.4.1) (2024-10-09)
+
+
+### Bug Fixes
+
+* **DEE-1521:** fixed few UI related issues ([df20cfb](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/df20cfb062684276bba03c6018b440d504797f0c))
+
 ## @appdev-platform/backstage-plugin-workstream-automation-backend [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.3.1...@appdev-platform/backstage-plugin-workstream-automation-backend@1.4.0) (2024-10-08)
 
 
