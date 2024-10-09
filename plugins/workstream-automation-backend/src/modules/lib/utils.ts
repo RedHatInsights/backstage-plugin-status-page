@@ -33,7 +33,7 @@ export function workstreamToEntityKind(options: {
       name: data.name,
       title: data.title,
       namespace: namespace,
-      description: data.description,
+      ...(data.description && { description: data.description }),
       createdAt: data.createdAt ?? new Date().toISOString(),
       updatedAt: data.updatedAt ?? new Date().toISOString(),
       createdBy: data.createdBy,
