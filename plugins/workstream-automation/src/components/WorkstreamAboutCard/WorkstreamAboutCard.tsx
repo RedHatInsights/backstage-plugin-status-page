@@ -126,7 +126,11 @@ export const WorkstreamAboutCard = (props: { variant: InfoCardVariants }) => {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="body2">{entity.metadata.description}</Typography>
+          <Typography variant="body2">
+            {entity.metadata.description
+              ? entity.metadata.description
+              : 'No Description'}
+          </Typography>
         </Grid>
         <Grid item xs={6}>
           <StyledGrid xs={12}>
@@ -138,7 +142,7 @@ export const WorkstreamAboutCard = (props: { variant: InfoCardVariants }) => {
             {entity.spec.lead ? (
               <EntityRefLink entityRef={entity.spec.lead} />
             ) : (
-              '-'
+              'No Lead'
             )}
           </StyledGrid>
         </Grid>

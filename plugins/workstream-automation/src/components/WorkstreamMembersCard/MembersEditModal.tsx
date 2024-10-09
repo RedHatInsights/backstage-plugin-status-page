@@ -23,6 +23,7 @@ import {
   MenuItem,
   Select,
   TextField,
+  Tooltip,
 } from '@material-ui/core';
 import RemoveCircleOutlineOutlinedIcon from '@material-ui/icons/RemoveCircleOutlineOutlined';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -36,12 +37,13 @@ interface EditDialogProps {
   columns: TableColumn<TableRowDataType>[];
   tableData: TableRowDataType[];
   setEditModal: Function;
+  leadEntity?: CustomUserEntity;
 }
 
 export const MembersEditModal = (props: EditDialogProps) => {
   const { entity: currentEntity } = useEntity<WorkstreamDataV1alpha1>();
-  const { lead } = currentEntity.spec;
-  const { setEditModal: setEditModalOpen } = props;
+  const leadRef = currentEntity.spec.lead;
+  const { setEditModal: setEditModalOpen, leadEntity } = props;
   const [tableData, setTableData] = useState(props.tableData);
   const selectOptions = [
     {
@@ -53,18 +55,26 @@ export const MembersEditModal = (props: EditDialogProps) => {
       value: 'Group',
     },
   ];
-  const { control, resetField, getValues, reset, handleSubmit, setValue } =
-    useForm<{
-      kind: { label: string; value: string };
-      searchQuery: GroupEntity | CustomUserEntity | null;
-      members: Member[];
-    }>({
-      values: {
-        kind: selectOptions[0],
-        searchQuery: null,
-        members: [],
-      },
-    });
+  const {
+    control,
+    resetField,
+    getValues,
+    reset,
+    handleSubmit,
+    setValue,
+    setError,
+    clearErrors,
+  } = useForm<{
+    kind: { label: string; value: string };
+    searchQuery: GroupEntity | CustomUserEntity | null;
+    members: Member[];
+  }>({
+    values: {
+      kind: selectOptions[0],
+      searchQuery: null,
+      members: [],
+    },
+  });
 
   const roleOptions = [
     'Workstream Lead',
@@ -151,16 +161,25 @@ export const MembersEditModal = (props: EditDialogProps) => {
       align: 'right',
       width: '5%',
       render: data => (
-        <IconButton
-          size="small"
-          onClick={() => {
-            setTableData(t =>
-              t.filter(v => v.user.metadata.uid !== data.user.metadata.uid),
-            );
-          }}
+        <Tooltip
+          title={
+            data.role === 'Workstream Lead'
+              ? 'You can remove workstream lead from about card'
+              : 'Remove member'
+          }
         >
-          <RemoveCircleOutlineOutlinedIcon color="secondary" fontSize="small" />
-        </IconButton>
+          <IconButton
+            size="small"
+            color="secondary"
+            onClick={() => {
+              setTableData(t =>
+                t.filter(v => v.user.metadata.uid !== data.user.metadata.uid),
+              );
+            }}
+          >
+            <RemoveCircleOutlineOutlinedIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
       ),
     },
   ];
@@ -175,6 +194,7 @@ export const MembersEditModal = (props: EditDialogProps) => {
 
   const [searchTerm, setSearchTerm] = useState<string>('');
   function handleInputChange(val: string) {
+    if (val.length === 1) clearErrors('searchQuery');
     if (val.length > 2) {
       setLoading(true);
       setSearchTerm(val);
@@ -227,15 +247,26 @@ export const MembersEditModal = (props: EditDialogProps) => {
     if (val) setSelectedEntity(val);
   }
 
-  function setTableDataFn(entity: CustomUserEntity, leadRef?: string) {
-    if (stringifyEntityRef(entity) === leadRef) return;
-    setTableData(t => {
-      if (t.some(p => p.user.metadata.uid === entity.metadata.uid)) return t;
-      return t.concat({ user: entity, role: '-' });
-    });
-  }
-
   useEffect(() => {
+    function setTableDataFn(entity: CustomUserEntity) {
+      if (stringifyEntityRef(entity) === leadRef) {
+        setError('searchQuery', {
+          message: 'User is already added to workstream',
+          type: 'validate',
+        });
+        return;
+      }
+      setTableData(t => {
+        if (t.some(p => p.user.metadata.uid === entity.metadata.uid)) {
+          setError('searchQuery', {
+            message: 'User is already added to workstream',
+            type: 'validate',
+          });
+          return t;
+        }
+        return t.concat({ user: entity, role: '-' });
+      });
+    }
     if (selectedEntity) {
       const entity = selectedEntity;
       if (entity.kind === 'Group') {
@@ -244,16 +275,17 @@ export const MembersEditModal = (props: EditDialogProps) => {
         for (const relation of relations) {
           if (relation.type === RELATION_HAS_MEMBER) {
             catalogApi.getEntityByRef(relation.targetRef).then(res => {
-              if (res) setTableDataFn(res as CustomUserEntity, lead);
+              if (res) setTableDataFn(res as CustomUserEntity);
             });
           }
         }
       } else {
-        setTableDataFn(entity, lead);
+        setTableDataFn(entity);
       }
       setValue('searchQuery', null);
+      setOptions([]);
     }
-  }, [selectedEntity, catalogApi, lead, setValue]);
+  }, [selectedEntity, catalogApi, leadRef, setValue, setError]);
 
   const getOptionLabel = (option: GroupEntity | CustomUserEntity) =>
     option.spec.profile
@@ -372,9 +404,21 @@ export const MembersEditModal = (props: EditDialogProps) => {
           </Grid>
           <Grid item xs={12}>
             <Table
-              data={tableData}
+              data={[
+                ...(leadEntity
+                  ? [
+                      {
+                        user: leadEntity,
+                        role: 'Workstream Lead',
+                      },
+                    ]
+                  : []),
+                ...tableData,
+              ]}
               columns={columns}
               options={{
+                pageSize: 20,
+                pageSizeOptions: [10, 20, 30],
                 padding: 'dense',
                 toolbar: true,
               }}

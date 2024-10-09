@@ -38,6 +38,8 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const members = entity?.spec.members;
+  const leadRef = entity?.spec.lead;
+  const [leadEntity, setLeadEntity] = useState<CustomUserEntity>();
   const [tableData, setTableData] = useState<TableRowDataType[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -45,6 +47,10 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
     if (loading && members) {
       const getMemberEntites = async () => {
         const tempArr: TableRowDataType[] = [];
+        if (leadRef) {
+          const resp = await catalogApi.getEntityByRef(leadRef);
+          if (resp) setLeadEntity(resp as CustomUserEntity);
+        }
         for (const member of members) {
           const resp = await catalogApi.getEntityByRef(member.userRef);
           if (resp) {
@@ -59,7 +65,7 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
       };
       getMemberEntites();
     }
-  }, [catalogApi, members, loading]);
+  }, [catalogApi, members, loading, leadRef]);
 
   useEffect(() => {
     if (isLoading) {
@@ -117,16 +123,29 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
           columns={columns}
           tableData={tableData}
           setEditModal={setOpenEditModal}
+          leadEntity={leadEntity}
         />
       )}
       {!loading ? (
         <Table
           columns={columns}
-          data={tableData}
+          data={[
+            ...(leadEntity
+              ? [
+                  {
+                    user: leadEntity,
+                    role: 'Workstream Lead',
+                  },
+                ]
+              : []),
+            ...tableData,
+          ]}
           options={{
             padding: 'dense',
             toolbar: false,
             draggable: false,
+            pageSize: 10,
+            pageSizeOptions: [10, 20, 30],
           }}
         />
       ) : (

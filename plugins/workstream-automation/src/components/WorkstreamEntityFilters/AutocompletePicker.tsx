@@ -145,7 +145,5 @@ export const AutocompletePicker = (props: PickerProps) => {
         />
       </Typography>
     </Box>
-  ) : (
-    <></>
-  );
+  ) : null;
 };
