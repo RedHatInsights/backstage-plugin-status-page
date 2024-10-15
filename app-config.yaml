@@ -244,3 +244,16 @@ catalog:
     #   target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
     #   rules:
     #     - allow: [User, Group]
+
+permission:
+  enabled: false
+  rbac:
+    plugins:
+      workstream:
+        permission: [workstream.create, workstream.delete, workstream.update]
+        users:
+          - name: group:development/guests
+    admins:
+      - name: user:redhat/yoswal
+      - name: user:redhat/mdeshmuk
+      - name: user:redhat/roommen
