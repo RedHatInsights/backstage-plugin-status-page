@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.3.0...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.4.0) (2024-10-15)
+
+
+### Features
+
+* **module-cmdb:** upgrade cmdb module to support latest backstage core versions ([0b3f977](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/0b3f9774de97ed7eb2ab437d9959a5f8b524ffae))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.2.2...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.3.0) (2024-07-03)
 
 
