@@ -23,11 +23,6 @@ import {
 import { BusinessApplicationEntity, CMDBMeta } from './lib/types';
 import { JsonValue } from '@backstage/types';
 import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
-import {
-  PluginEndpointDiscovery,
-  TokenManager,
-  createLegacyAuthAdapters,
-} from '@backstage/backend-common';
 
 export class BusinessApplicationEntityProcessor implements CatalogProcessor {
   private readonly catalogApi: CatalogClient;
@@ -40,19 +35,13 @@ export class BusinessApplicationEntityProcessor implements CatalogProcessor {
   constructor(options: {
     catalogApi: CatalogClient;
     logger: LoggerService;
-    discovery: PluginEndpointDiscovery;
     auth: AuthService;
-    tokenManager: TokenManager;
   }) {
     this.catalogApi = options.catalogApi;
     this.logger = options.logger.child({
       target: this.getProcessorName(),
     });
-    this.auth = createLegacyAuthAdapters({
-      auth: options.auth,
-      discovery: options.discovery,
-      tokenManager: options.tokenManager,
-    }).auth;
+    this.auth = options.auth;
   }
 
   getProcessorName(): string {

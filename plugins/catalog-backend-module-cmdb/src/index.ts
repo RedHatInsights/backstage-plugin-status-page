@@ -7,4 +7,4 @@
 
 export { CMDBDiscoveryEntityProvider } from './CMDBDiscoveryEntityProvider';
 export { BusinessApplicationEntityProcessor } from './CMDBDiscoveryEntityProcessor';
-export { catalogModuleCmdb } from './module';
+export { catalogModuleCmdb as default } from './module';

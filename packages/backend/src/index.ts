@@ -79,7 +79,7 @@ backend.add(
   ),
 );
 backend.add(
-  import('@appdev-platform/backstage-plugin-catalog-backend-module-cmdb/alpha'),
+  import('@appdev-platform/backstage-plugin-catalog-backend-module-cmdb'),
 );
 backend.add(
   import(

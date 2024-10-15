@@ -17,7 +17,6 @@ export const catalogModuleCmdb = createBackendModule({
         config: coreServices.rootConfig,
         discovery: coreServices.discovery,
         auth: coreServices.auth,
-        tokenManager: coreServices.tokenManager,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
       },
@@ -26,7 +25,6 @@ export const catalogModuleCmdb = createBackendModule({
         config,
         discovery,
         auth,
-        tokenManager,
         logger,
         scheduler,
       }) {
@@ -43,9 +41,7 @@ export const catalogModuleCmdb = createBackendModule({
 
         const cmdbProcessor = new BusinessApplicationEntityProcessor({
           catalogApi,
-          discovery,
           auth,
-          tokenManager,
           logger: logger,
         });
 
