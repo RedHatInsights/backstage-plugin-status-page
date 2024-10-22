@@ -25,6 +25,7 @@ import {
   SidebarSpace,
   useSidebarOpenState,
   Link,
+  WarningIcon,
 } from '@backstage/core-components';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
@@ -173,6 +174,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
         </SidebarGroup>
         <SidebarSpace />
         <SidebarDivider />
+        <SidebarItem to='catalog-unprocessed-entities' icon={WarningIcon} text='Unprocessed Entites' />
         <SidebarGroup
           label="Settings"
           icon={<UserSettingsSignInAvatar />}

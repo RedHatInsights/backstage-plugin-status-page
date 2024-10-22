@@ -20,6 +20,7 @@ import {
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';
+import { useDebounce } from 'react-use';
 import { workstreamApiRef } from '../../api';
 
 type EditDialogProps = {
@@ -31,6 +32,7 @@ type EditDialogProps = {
 export const PortfolioEditModal = (props: EditDialogProps) => {
   const { portfolio, open, setEditModalOpen } = props;
   const [allSystems, setAllSystems] = useState<SystemEntity[]>([]);
+  const [searchText, setSearchText] = useState<string>();
   const [selectedSystems, setSelectedSystems] = useState<SystemEntity[]>([]);
   const { entity } = useEntity();
   const [loading, setLoading] = useState(false);
@@ -39,18 +41,39 @@ export const PortfolioEditModal = (props: EditDialogProps) => {
   const workstreamApi = useApi(workstreamApiRef);
 
   useEffect(() => {
-    catalogApi.queryEntities({ filter: [{ kind: 'System' }] }).then(res => {
-      setAllSystems(res.items as SystemEntity[]);
-    });
+    catalogApi
+      .queryEntities({ filter: [{ kind: 'System' }], limit: 20 })
+      .then(res => {
+        setAllSystems(res.items as SystemEntity[]);
+      });
     catalogApi.getEntitiesByRefs({ entityRefs: portfolio }).then(res => {
       if (res.items) setSelectedSystems(res.items as SystemEntity[]);
     });
   }, [catalogApi, portfolio]);
 
+  useDebounce(
+    () => {
+      if (searchText) {
+        catalogApi
+          .queryEntities({
+            limit: 20,
+            filter: { kind: 'System' },
+            fullTextFilter: {
+              term: searchText,
+              fields: ['metadata.name', 'metadata.title'],
+            },
+          })
+          .then(res => setAllSystems(res.items as SystemEntity[]));
+      }
+    },
+    400,
+    [searchText],
+  );
+
   function handleSubmit() {
     setLoading(true);
     workstreamApi
-      .updateWorkstream({
+      .updateWorkstream(entity.metadata.name, {
         name: entity.metadata.name,
         portfolio: selectedSystems.map(system => stringifyEntityRef(system)),
       })
@@ -90,6 +113,9 @@ export const PortfolioEditModal = (props: EditDialogProps) => {
               getOptionSelected={(option, val) =>
                 option.metadata.uid === val.metadata.uid
               }
+              onInputChange={(_, val) => {
+                if (val.length > 2) setSearchText(val);
+              }}
               value={selectedSystems}
               options={allSystems}
               getOptionLabel={option => stringifyEntityRef(option)}

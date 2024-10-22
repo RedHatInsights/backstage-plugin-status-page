@@ -58,10 +58,10 @@ export class WorkstreamApi {
     return await resp.json();
   }
 
-  async updateWorkstream(data: Workstream) {
+  async updateWorkstream(workstreamName: string, data: Workstream) {
     if (data.name) {
       const baseUrl = await this.getBaseUrl();
-      const resp = await this.fetchApi.fetch(`${baseUrl}/${data.name}`, {
+      const resp = await this.fetchApi.fetch(`${baseUrl}/${workstreamName}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

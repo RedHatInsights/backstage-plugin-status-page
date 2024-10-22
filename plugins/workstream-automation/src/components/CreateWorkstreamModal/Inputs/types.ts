@@ -13,7 +13,7 @@ export type Form2 = {
 };
 
 export type Form1 = {
-  workstreamName: string | null;
+  workstreamName: string | undefined;
   description?: string;
   lead?: CustomUserEntity;
   pillar?: string;

@@ -275,7 +275,7 @@ export const CreateWorkstreamModal = () => {
 
   const form1 = useForm<Form1>({
     values: {
-      workstreamName: null,
+      workstreamName: undefined,
       description: undefined,
       lead: undefined,
       pillar: undefined,

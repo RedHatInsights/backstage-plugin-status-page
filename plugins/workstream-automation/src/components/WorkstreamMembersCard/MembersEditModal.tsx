@@ -442,7 +442,7 @@ export const MembersEditModal = (props: EditDialogProps) => {
             setRoleFieldError([]);
             setFetchLoading(true);
             workstreamApi
-              .updateWorkstream({
+              .updateWorkstream(currentEntity.metadata.name, {
                 name: currentEntity.metadata.name,
                 members: formData.members,
               })
