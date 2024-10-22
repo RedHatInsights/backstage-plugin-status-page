@@ -1,18 +1,12 @@
 import { WorkstreamDataV1alpha1 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   alertApiRef,
   discoveryApiRef,
   useApi,
+  useRouteRef,
 } from '@backstage/core-plugin-api';
-import React from 'react';
-import { workstreamApiRef } from '../../api';
-import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { FormProvider, useForm } from 'react-hook-form';
-import {
-  FormInputJiraProject,
-  FormInputLeadName,
-  FormInputTextField,
-} from '../CreateWorkstreamModal/Inputs';
+import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import {
   Button,
   Dialog,
@@ -21,10 +15,21 @@ import {
   DialogTitle,
   Grid,
 } from '@material-ui/core';
-import { Form1 } from '../CreateWorkstreamModal/Inputs/types';
+import { kebabCase } from 'lodash';
+import React, { useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
+import { workstreamApiRef } from '../../api';
 import { CustomUserEntity } from '../../types';
-import { stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  FormInputJiraProject,
+  FormInputLeadName,
+  FormInputName,
+  FormInputTextField,
+} from '../CreateWorkstreamModal/Inputs';
+import { FormInputPath } from './FormInputPath';
+import { Form } from './type';
 
 type EditDialogProps = {
   entity: WorkstreamDataV1alpha1;
@@ -39,6 +44,9 @@ export const AboutEditModal = (props: EditDialogProps) => {
   const catalogApi = useApi(catalogApiRef);
   const discoveryApi = useApi(discoveryApiRef);
   const alertApi = useApi(alertApiRef);
+  const navigate = useNavigate();
+  const entityRoute = useRouteRef(entityRouteRef);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const { value: leadEntity, loading: leadEntityFetch } = useAsync(async () => {
     if (entity.spec.lead) {
@@ -59,9 +67,9 @@ export const AboutEditModal = (props: EditDialogProps) => {
     };
   }, []);
 
-  const form = useForm<Form1>({
+  const form = useForm<Form>({
     values: {
-      workstreamName: null,
+      workstreamName: entity.metadata.title,
       lead: !leadEntityFetch ? leadEntity : undefined,
       pillar: entity.spec.pillar,
       description: entity.metadata.description,
@@ -75,6 +83,7 @@ export const AboutEditModal = (props: EditDialogProps) => {
 
   function handleClose() {
     form.reset();
+    setIsSubmitted(false);
     editModalCloseFn();
   }
 
@@ -89,6 +98,12 @@ export const AboutEditModal = (props: EditDialogProps) => {
       <DialogContent dividers>
         <FormProvider {...form}>
           <Grid container>
+            <Grid item xs={12}>
+              <FormInputName currentEntity={entity} />
+            </Grid>
+            <Grid item xs={12}>
+              <FormInputPath entity={entity} />
+            </Grid>
             <Grid item xs={12}>
               <FormInputTextField
                 name="description"
@@ -152,11 +167,13 @@ export const AboutEditModal = (props: EditDialogProps) => {
         <Button
           variant="contained"
           color="primary"
-          disabled={!form.formState.isDirty}
+          disabled={isSubmitted}
           onClick={form.handleSubmit(data => {
+            setIsSubmitted(true);
             workstreamApi
-              .updateWorkstream({
-                name: entity.metadata.name,
+              .updateWorkstream(entity.metadata.name, {
+                name: kebabCase(data.workstreamPath),
+                title: data.workstreamName,
                 lead: data.lead && stringifyEntityRef(data.lead),
                 pillar: data.pillar,
                 description: data.description,
@@ -170,6 +187,19 @@ export const AboutEditModal = (props: EditDialogProps) => {
                   display: 'transient',
                   severity: 'info',
                 });
+                if (entity.metadata.name !== kebabCase(data.workstreamPath)) {
+                  setTimeout(() => {
+                    navigate(
+                      entityRoute({
+                        name:
+                          kebabCase(data.workstreamPath) ??
+                          entity.metadata.name,
+                        kind: entity.kind,
+                        namespace: entity.metadata.namespace,
+                      }),
+                    );
+                  }, 1000);
+                }
                 handleClose();
               });
           })}

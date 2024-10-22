@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
-import { useDebounce } from 'react-use';
-import { Controller, useFormContext } from 'react-hook-form';
-import { Autocomplete } from '@material-ui/lab';
-import { TextField } from '@material-ui/core';
+import { WorkstreamDataV1alpha1 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { TextField } from '@material-ui/core';
+import { Autocomplete } from '@material-ui/lab';
 import { kebabCase } from 'lodash';
+import React, { useState } from 'react';
+import { Controller, useFormContext } from 'react-hook-form';
+import { useDebounce } from 'react-use';
 
-export const FormInputName = () => {
+export const FormInputName = (props: {
+  currentEntity?: WorkstreamDataV1alpha1;
+}) => {
+  const { currentEntity } = props;
   const catalogApi = useApi(catalogApiRef);
   const { control } = useFormContext<{ workstreamName: string }>();
 
@@ -37,7 +41,7 @@ export const FormInputName = () => {
               term: workstreamName,
               fields: ['metadata.name', 'metadata.title'],
             },
-            fields: ['metadata.title'],
+            fields: ['metadata.title', 'metadata.name'],
           })
           .then(entityResponse => {
             if (entityResponse.items.length > 0)
@@ -46,6 +50,7 @@ export const FormInputName = () => {
                   entity => entity.metadata.title ?? entity.metadata.name,
                 ),
               );
+            else setOptions([]);
           })
           .finally(() => setLoading(false));
       }
@@ -61,6 +66,11 @@ export const FormInputName = () => {
         required: 'Workstream name is required',
         validate: val => {
           for (const option of options) {
+            if (
+              kebabCase(option) === kebabCase(currentEntity?.metadata.name) ||
+              kebabCase(option) === kebabCase(currentEntity?.metadata.title)
+            )
+              return true;
             if (kebabCase(option) === kebabCase(val.trim()))
               return 'Cannot use an already available workstream name';
           }

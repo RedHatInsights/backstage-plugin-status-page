@@ -8,18 +8,39 @@ import { Checkbox, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
+import { useDebounce } from 'react-use';
 
 export const FormInputPortfolio = () => {
   const catalogApi = useApi(catalogApiRef);
   const [portfolioOptions, setPortfolioOptions] = useState<SystemEntity[]>([]);
+  const [searchText, setSearchText] = useState<string>();
 
   const { control } = useFormContext<{ portfolio: SystemEntity[] }>();
 
   useEffect(() => {
     catalogApi
-      .queryEntities({ filter: { kind: 'System' } })
+      .queryEntities({ filter: { kind: 'System' }, limit: 20 })
       .then(res => setPortfolioOptions(res.items as SystemEntity[]));
   }, [catalogApi]);
+
+  useDebounce(
+    () => {
+      if (searchText) {
+        catalogApi
+          .queryEntities({
+            limit: 20,
+            filter: { kind: 'System' },
+            fullTextFilter: {
+              term: searchText,
+              fields: ['metadata.name', 'metadata.title'],
+            },
+          })
+          .then(res => setPortfolioOptions(res.items as SystemEntity[]));
+      }
+    },
+    400,
+    [searchText],
+  );
 
   return (
     <Controller
@@ -46,7 +67,10 @@ export const FormInputPortfolio = () => {
             }}
             onBlur={onBlur}
             onChange={(_e, val) => onChange(val)}
-            value={value.length > 0 ? value : []}
+            onInputChange={(_, val) => {
+              if (val.length > 2) setSearchText(val);
+            }}
+            value={value}
             renderInput={params => (
               <TextField
                 {...params}
