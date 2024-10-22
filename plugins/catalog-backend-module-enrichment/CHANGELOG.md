@@ -1,5 +1,17 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-enrichment [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-enrichment@1.2.0...@appdev-platform/backstage-plugin-catalog-backend-module-enrichment@1.3.0) (2024-10-22)
+
+
+### Features
+
+* **module-cmdb:** upgrade cmdb module to support latest backstage core versions ([0b3f977](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/0b3f9774de97ed7eb2ab437d9959a5f8b524ffae))
+
+
+### Other changes
+
+* **release:** 1.0.0 [skip ci] ([92c24e8](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/92c24e85cb6a966cb915b78dae4df26b3b2fae96))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-enrichment 1.0.0 (2024-10-15)
 
 
