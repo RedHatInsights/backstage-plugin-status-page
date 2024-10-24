@@ -44,9 +44,8 @@ export const WorkstreamDetailsForm = () => {
         <FormInputTextField
           name="email"
           rules={{
-            required: 'Email is required',
             validate: (val: string) => {
-              if (!RegExp(/^\S+@\S+\.\S+$/).exec(val))
+              if (val && !RegExp(/^\S+@\S+\.\S+$/).exec(val))
                 return 'Email should be in format: your-name@company.com';
               return true;
             },
@@ -60,18 +59,22 @@ export const WorkstreamDetailsForm = () => {
           name="slackChannelUrl"
           label="Slack Link"
           rules={{
-            required: 'Slack link is required',
             validate: (val: string) => {
               if (
+                val &&
                 !RegExp(
                   /^https:\/\/([a-zA-Z0-9-.]+\.)?slack\.com\/archives\/[a-zA-Z0-9]+$/,
                 ).exec(val)
               )
-                return 'Slack link should be in format: https://*.slack.com/archives/CHANNEL_ID';
+                return 'Slack link should be in format: https://**.slack.com/archives/CHANNEL_ID';
               return true;
             },
           }}
           placeholder="Enter link"
+          textFieldProps={{
+            helperText:
+              'Provide a link to a public channel where the members of this workstream can be reached',
+          }}
         />
       </Grid>
       <Grid item xs={12}>
