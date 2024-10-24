@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.4.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.4.0...@appdev-platform/backstage-plugin-workstream-automation@1.4.1) (2024-10-24)
+
+
+### Other changes
+
+* **DEE-1547:** make slack and email field as optional ([ad0683b](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/ad0683b760e346925341f80f0082be1c9fc5105a))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.3.2...@appdev-platform/backstage-plugin-workstream-automation@1.4.0) (2024-10-22)
 
 
