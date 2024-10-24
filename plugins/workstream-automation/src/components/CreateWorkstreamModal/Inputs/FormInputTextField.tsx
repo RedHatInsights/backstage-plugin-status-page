@@ -28,7 +28,7 @@ export const FormInputTextField = (props: {
             placeholder={placeholder}
             required={!!rules?.required}
             error={!!error}
-            helperText={error ? error.message : null}
+            helperText={error ? error.message : textFieldProps?.helperText}
             onBlur={onBlur}
             onChange={e => onChange(e.target.value)}
             value={value ?? ''}

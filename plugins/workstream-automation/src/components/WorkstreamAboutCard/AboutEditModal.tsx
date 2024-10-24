@@ -130,9 +130,8 @@ export const AboutEditModal = (props: EditDialogProps) => {
               <FormInputTextField
                 name="email"
                 rules={{
-                  required: 'Email is required',
                   validate: (val: string) => {
-                    if (!RegExp(/^\S+@\S+\.\S+$/).exec(val))
+                    if (val && !RegExp(/^\S+@\S+\.\S+$/).exec(val))
                       return 'Email should be in format: your-name@company.com';
                     return true;
                   },
@@ -146,9 +145,9 @@ export const AboutEditModal = (props: EditDialogProps) => {
                 name="slackChannelUrl"
                 label="Slack Link"
                 rules={{
-                  required: 'Slack link is required',
                   validate: (val: string) => {
                     if (
+                      val &&
                       !RegExp(
                         /^https:\/\/([a-zA-Z0-9-.]+\.)?slack\.com\/archives\/[a-zA-Z0-9]+$/,
                       ).exec(val)
@@ -158,6 +157,10 @@ export const AboutEditModal = (props: EditDialogProps) => {
                   },
                 }}
                 placeholder="Enter link"
+                textFieldProps={{
+                  helperText:
+                    'Provide a link to a public channel where the members of this workstream can be reached',
+                }}
               />
             </Grid>
           </Grid>
