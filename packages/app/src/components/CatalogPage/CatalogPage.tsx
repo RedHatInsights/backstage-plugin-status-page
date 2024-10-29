@@ -23,6 +23,7 @@ import {
 import React from 'react';
 import {
   CreateWorkstreamModal,
+  UserWorkstreamPicker,
   WorkstreamLeadPicker,
   WorkstreamPillarPicker,
   WorkstreamPortfolioPicker,
@@ -79,6 +80,7 @@ export const CatalogPage = () => {
               <WorkstreamLeadPicker />
               <WorkstreamPillarPicker />
               <WorkstreamPortfolioPicker />
+              <UserWorkstreamPicker />
               <EntityLifecyclePicker />
               <EntityTagPicker />
               <EntityOwnerPicker />
