@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.5.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.4.1...@appdev-platform/backstage-plugin-workstream-automation@1.5.0) (2024-10-29)
+
+
+### Features
+
+* **DEE-1347:** create workstream filter for users ([45673a9](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/45673a9e1d06ed5128117a12affeaf7defd71355))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.4.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.4.0...@appdev-platform/backstage-plugin-workstream-automation@1.4.1) (2024-10-24)
 
 
