@@ -8,7 +8,9 @@ import {
   Entity,
   getCompoundEntityRef,
   parseEntityRef,
+  RELATION_HAS_MEMBER,
   RELATION_HAS_PART,
+  RELATION_MEMBER_OF,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
@@ -110,6 +112,7 @@ export class WorkstreamEntityProcessor implements CatalogProcessor {
         );
       }
     }
+
     if (entity.kind === 'Workstream') {
       const workstreamEntity = entity as WorkstreamDataV1alpha1;
       const members = workstreamEntity.spec.members;
@@ -117,11 +120,17 @@ export class WorkstreamEntityProcessor implements CatalogProcessor {
         doEmit(
           member.userRef,
           { defaultNamespace: selfRef.namespace },
+          RELATION_HAS_MEMBER,
+          RELATION_MEMBER_OF,
+        );
+
+        doEmit(
+          member.userRef,
+          { defaultNamespace: selfRef.namespace },
           kebabCase(member.role),
           kebabCase(member.role),
         );
       });
-
       const portfolios = workstreamEntity.spec.portfolio;
       portfolios.forEach(portfolio => {
         doEmit(
@@ -137,6 +146,12 @@ export class WorkstreamEntityProcessor implements CatalogProcessor {
         { defaultNamespace: selfRef.namespace },
         RELATION_LEAD_BY,
         RELATION_LEAD_OF,
+      );
+      doEmit(
+        workstreamEntity.spec.lead,
+        { defaultNamespace: selfRef.namespace },
+        RELATION_HAS_MEMBER,
+        RELATION_MEMBER_OF,
       );
     }
 
