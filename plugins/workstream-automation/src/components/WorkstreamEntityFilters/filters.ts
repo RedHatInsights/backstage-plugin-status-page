@@ -54,8 +54,31 @@ export class WorkstreamPortfolioFilter implements EntityFilter {
   toQueryValue = () => this.values;
 }
 
+export class UserWorkstreamFilter implements EntityFilter {
+  constructor(readonly values: string[]) {}
+
+  filterEntity(entity: Entity): boolean {
+    const relations = entity.relations;
+    if (relations) {
+      return relations.some(r =>
+        this.values.some(value => r.targetRef.includes(value)),
+      );
+    }
+    return false;
+  }
+
+  getCatalogFilters(): Record<string, string | string[]> {
+    return {
+      'relations.memberOf': this.values,
+    };
+  }
+
+  toQueryValue = () => this.values;
+}
+
 export interface ExtendedFilters extends DefaultEntityFilters {
   pillar?: WorkstreamPillarFilter;
   lead?: WorkstreamLeadFilter;
   portfolio?: WorkstreamPortfolioFilter;
+  workstream: UserWorkstreamFilter;
 }
