@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation-backend [1.5.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.4.1...@appdev-platform/backstage-plugin-workstream-automation-backend@1.5.0) (2024-10-29)
+
+
+### Features
+
+* **DEE-1347:** emit member relationships along with role ([2db4c58](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/2db4c5846066235b64f274203cab987f69b168ca))
+
 ## @appdev-platform/backstage-plugin-workstream-automation-backend [1.4.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.4.0...@appdev-platform/backstage-plugin-workstream-automation-backend@1.4.1) (2024-10-09)
 
 
