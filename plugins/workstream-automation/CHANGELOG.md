@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.5.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.5.0...@appdev-platform/backstage-plugin-workstream-automation@1.5.1) (2024-10-30)
+
+
+### Bug Fixes
+
+* **PULSE-135:** fixed slack link being shown in email field ([b29b6aa](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/b29b6aaf79ecd88b8d0ccf18add269c3772f2501))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.5.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.4.1...@appdev-platform/backstage-plugin-workstream-automation@1.5.0) (2024-10-29)
 
 
