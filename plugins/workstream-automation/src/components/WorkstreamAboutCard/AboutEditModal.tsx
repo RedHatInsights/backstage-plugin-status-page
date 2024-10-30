@@ -67,14 +67,21 @@ export const AboutEditModal = (props: EditDialogProps) => {
     };
   }, []);
 
+  const emailLink = entity.metadata.links.find(link =>
+    link.url.startsWith('mailto:'),
+  );
+  const slackLink = entity.metadata.links.find(link =>
+    link.url.includes('slack.com/archives'),
+  );
+
   const form = useForm<Form>({
     values: {
       workstreamName: entity.metadata.title,
       lead: !leadEntityFetch ? leadEntity : undefined,
       pillar: entity.spec.pillar,
       description: entity.metadata.description,
-      email: entity.metadata.links.at(0)?.url.replace('mailto://', ''),
-      slackChannelUrl: entity.metadata.links.at(1)?.url,
+      email: emailLink?.url.replace('mailto://', ''),
+      slackChannelUrl: slackLink?.url,
       jiraProject: !isJiraLoading ? jiraOptions : undefined,
       portfolio: [],
     },
