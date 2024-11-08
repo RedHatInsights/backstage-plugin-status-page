@@ -48,16 +48,11 @@ export class WorkstreamEntityProcessor implements CatalogProcessor {
   async readLocation?(
     location: LocationSpec,
     _optional: boolean,
-    emit: CatalogProcessorEmit,
+    _emit: CatalogProcessorEmit,
     _parser: CatalogProcessorParser,
     _cache: CatalogProcessorCache,
   ): Promise<boolean> {
     if (location.target.match(/api\/workstream/g)) {
-      this.logger.debug(`Reading location: ${location.target}`);
-      const data = await this.workstreamClient.getWorkstreamByLocation(
-        location.target,
-      );
-      emit(processingResult.entity(location, data));
       return true;
     }
     return false;
@@ -115,6 +110,9 @@ export class WorkstreamEntityProcessor implements CatalogProcessor {
 
     if (entity.kind === 'Workstream') {
       const workstreamEntity = entity as WorkstreamDataV1alpha1;
+      this.logger.debug(
+        `Creating relations for ${workstreamEntity.metadata.name} workstream.`,
+      );
       const members = workstreamEntity.spec.members;
       members.forEach(member => {
         doEmit(

@@ -9,8 +9,7 @@ export type WorkstreamDatabaseModel = {
   lead?: string;
   jira_project: string;
   created_by: string;
-  slack_channel_url: string;
-  email?: string;
   created_at?: string;
   updated_at?: string;
+  links: string;
 };

@@ -1,3 +1,5 @@
+import { EntityLink } from '@backstage/catalog-model';
+
 export type Member = {
   userRef: string;
   role: string;
@@ -16,6 +18,5 @@ export type Workstream = {
   createdAt?: string;
   updatedAt?: string;
   createdBy: string;
-  slackChannelUrl: string;
-  email?: string;
+  links: EntityLink[];
 };
