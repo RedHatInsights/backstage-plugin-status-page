@@ -53,11 +53,15 @@ import { MockPluginPage } from '@appdev-platform/plugin-mock-plugin';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
 import { ReportPortalGlobalPage } from '@backstage-community/plugin-report-portal';
 import { DocsBotPage } from '@appdev-platform/backstage-plugin-docsbot';
-import { SlackIcon } from '@appdev-platform/backstage-plugin-workstream-automation';
+import {
+  JiraIcon,
+  SlackIcon,
+} from '@appdev-platform/backstage-plugin-workstream-automation';
 import { getThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 import SettingsEthernet from '@material-ui/icons/SettingsEthernet';
 import { HydraSupportDashboardPage } from '@appdev-platform/backstage-plugin-hydra-support-dashboard';
 import { WORKSTREAM_RELATION_PAIR } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import WebLinkIcon from '@material-ui/icons/Language';
 
 const app = createApp({
   apis,
@@ -93,6 +97,8 @@ const app = createApp({
     'kind:workstream': SettingsEthernet,
     mail: EmailIcon,
     slack_contact: SlackIcon,
+    jira: JiraIcon,
+    link: WebLinkIcon
   },
   themes: getThemes(),
 });

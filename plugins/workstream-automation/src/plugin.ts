@@ -93,3 +93,15 @@ export const UserWorkstreamCard = workstreamAutomationPlugin.provide(
     },
   }),
 );
+
+export const WorkstreamLinksCard = workstreamAutomationPlugin.provide(
+  createComponentExtension({
+    name: 'WorkstreamLinksCard',
+    component: {
+      lazy: () =>
+        import('./components/WorkstreamLinksCard').then(
+          m => m.WorkstreamLinksCard,
+        ),
+    },
+  }),
+);

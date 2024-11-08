@@ -79,17 +79,18 @@ import {
   isContactDetailsAvailable,
 } from '@appdev-platform/backstage-plugin-contact-details';
 import {
-  ReportPortalOverviewCard,
-  isReportPortalAvailable,
-} from '@backstage-community/plugin-report-portal';
-import {
   UserWorkstreamCard,
   WorkstreamAboutCard,
   WorkstreamDeleteModal,
+  WorkstreamLinksCard,
   WorkstreamMembersCard,
   WorkstreamPortfolioCard,
 } from '@appdev-platform/backstage-plugin-workstream-automation';
 import { workstreamDeletePermission } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import {
+  ReportPortalOverviewCard,
+  isReportPortalAvailable,
+} from '@backstage-community/plugin-report-portal';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { EntityFeedbackPage } from '@janus-idp/backstage-plugin-feedback';
 import Delete from '@material-ui/icons/Delete';
@@ -534,10 +535,13 @@ const WorkstreamEntityPage = () => {
         <EntityLayout.Route path="/overview" title="Overview">
           <Grid container spacing={3} alignItems="stretch">
             {entityWarningContent}
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} lg={6} xl={7}>
               <WorkstreamAboutCard variant="gridItem" />
             </Grid>
-            <Grid item xs={12} md={6} xl={4}>
+            <Grid item xs={12} lg={6} xl={5}>
+              <WorkstreamLinksCard variant="flex" />
+            </Grid>
+            <Grid item xs={12} md={6} xl={6}>
               <WorkstreamPortfolioCard variant="gridItem" />
             </Grid>
             <Grid item xs={12} lg={6} xl={6}>

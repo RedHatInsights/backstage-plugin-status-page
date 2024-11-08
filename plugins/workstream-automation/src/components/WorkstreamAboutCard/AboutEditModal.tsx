@@ -67,21 +67,12 @@ export const AboutEditModal = (props: EditDialogProps) => {
     };
   }, []);
 
-  const emailLink = entity.metadata.links.find(link =>
-    link.url.startsWith('mailto:'),
-  );
-  const slackLink = entity.metadata.links.find(link =>
-    link.url.includes('slack.com/archives'),
-  );
-
   const form = useForm<Form>({
     values: {
       workstreamName: entity.metadata.title,
       lead: !leadEntityFetch ? leadEntity : undefined,
       pillar: entity.spec.pillar,
       description: entity.metadata.description,
-      email: emailLink?.url.replace('mailto://', ''),
-      slackChannelUrl: slackLink?.url,
       jiraProject: !isJiraLoading ? jiraOptions : undefined,
       portfolio: [],
     },
@@ -133,43 +124,6 @@ export const AboutEditModal = (props: EditDialogProps) => {
             <Grid item xs={12}>
               <FormInputJiraProject />
             </Grid>
-            <Grid item xs={12}>
-              <FormInputTextField
-                name="email"
-                rules={{
-                  validate: (val: string) => {
-                    if (val && !RegExp(/^\S+@\S+\.\S+$/).exec(val))
-                      return 'Email should be in format: your-name@company.com';
-                    return true;
-                  },
-                }}
-                label="Email"
-                placeholder="Enter team email"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormInputTextField
-                name="slackChannelUrl"
-                label="Slack Link"
-                rules={{
-                  validate: (val: string) => {
-                    if (
-                      val &&
-                      !RegExp(
-                        /^https:\/\/([a-zA-Z0-9-.]+\.)?slack\.com\/archives\/[a-zA-Z0-9]+$/,
-                      ).exec(val)
-                    )
-                      return 'Slack link should be in format: https://*.slack.com/archives/CHANNEL_ID';
-                    return true;
-                  },
-                }}
-                placeholder="Enter link"
-                textFieldProps={{
-                  helperText:
-                    'Provide a link to a public channel where the members of this workstream can be reached',
-                }}
-              />
-            </Grid>
           </Grid>
         </FormProvider>
       </DialogContent>
@@ -187,8 +141,6 @@ export const AboutEditModal = (props: EditDialogProps) => {
                 lead: data.lead && stringifyEntityRef(data.lead),
                 pillar: data.pillar,
                 description: data.description,
-                email: data.email,
-                slackChannelUrl: data.slackChannelUrl,
                 jiraProject: data.jiraProject?.key,
               })
               .then(resp => {
