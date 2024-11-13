@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.5.1...@appdev-platform/backstage-plugin-workstream-automation@1.6.0) (2024-11-13)
+
+
+### Features
+
+* **PULSE-137:** wa-frontend links card ([7ce5279](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/7ce5279ca508c0c1e70c18e54b49713d59f6260e))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.5.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.5.0...@appdev-platform/backstage-plugin-workstream-automation@1.5.1) (2024-10-30)
 
 
