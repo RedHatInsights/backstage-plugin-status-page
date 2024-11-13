@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation-backend [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.5.0...@appdev-platform/backstage-plugin-workstream-automation-backend@1.6.0) (2024-11-13)
+
+
+### Features
+
+* **PULSE-137:** wa-backend plugin links support ([8c3f7be](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/8c3f7be7b73378c202babc605286ae000bd4ebfe))
+
 ## @appdev-platform/backstage-plugin-workstream-automation-backend [1.5.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.4.1...@appdev-platform/backstage-plugin-workstream-automation-backend@1.5.0) (2024-10-29)
 
 
