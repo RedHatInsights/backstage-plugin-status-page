@@ -19,12 +19,11 @@ export const LinkCard = (props: LinkCardProps) => {
     <Card variant="outlined" style={{ margin: '4px', width: '5rem' }}>
       <CardActionArea target="_blank" href={href}>
         <Box
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            margin: '12px 0 12px 0',
-          }}
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          margin="12px 0 12px 0"
+          textAlign="center"
         >
           <Grid xs={12}>{Icon}</Grid>
           <Grid xs={12}>

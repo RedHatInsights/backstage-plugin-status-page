@@ -320,16 +320,36 @@ export const CreateWorkstreamModal = () => {
             role: val.role ?? '-',
           })),
         description: workstreamDetails.description,
-        email: workstreamDetails.email,
         jiraProject: workstreamDetails.jiraProject?.key,
         lead: workstreamDetails.lead
           ? stringifyEntityRef(workstreamDetails.lead)
           : undefined,
         pillar: workstreamDetails.pillar,
-        slackChannelUrl: workstreamDetails.slackChannelUrl,
         portfolio: workstreamDetails.portfolio.map<string>(val =>
           stringifyEntityRef(val),
         ),
+        links: [
+          ...(workstreamDetails.slackChannelUrl
+            ? [
+                {
+                  url: workstreamDetails.slackChannelUrl,
+                  title: 'Slack',
+                  type: 'Contact',
+                  icon: 'slack_contact',
+                },
+              ]
+            : []),
+          ...(workstreamDetails.email
+            ? [
+                {
+                  url: workstreamDetails.email,
+                  title: 'Email',
+                  type: 'Email',
+                  icon: 'email',
+                },
+              ]
+            : []),
+        ],
       });
     }
   }

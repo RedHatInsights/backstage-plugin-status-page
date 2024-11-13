@@ -42,6 +42,7 @@
     "@material-ui/lab": "^4.0.0-alpha.60",
     "lodash": "^4.17.21",
     "material-table": "^2.0.5",
+    "pluralize": "^8.0.0",
     "react-hook-form": "^7.52.1",
     "react-use": "^17.2.4"
   },

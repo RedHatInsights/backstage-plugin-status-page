@@ -1,11 +1,4 @@
-export {
-  workstreamAutomationPlugin,
-  WorkstreamsPage,
-  WorkstreamAboutCard,
-  WorkstreamMembersCard,
-  WorkstreamPortfolioCard,
-  UserWorkstreamCard,
-} from './plugin';
+export * from './plugin';
 
 export { workstreamColumns } from './components/WorkstreamTable';
 export { CreateWorkstreamModal } from './components/CreateWorkstreamModal';
