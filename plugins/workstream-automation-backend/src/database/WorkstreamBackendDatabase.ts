@@ -2,6 +2,7 @@ import { Knex } from 'knex';
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { Member, Workstream } from '../types';
 import { WorkstreamDatabaseModel } from './types';
+import { EntityLink } from '@backstage/catalog-model';
 
 const migrationsDir = resolvePackagePath(
   '@appdev-platform/backstage-plugin-workstream-automation-backend',
@@ -115,8 +116,14 @@ export class WorkstreamBackendDatabase implements WorkstreamBackendStore {
       lead: workstream.lead,
       jira_project: workstream.jiraProject,
       created_by: workstream.createdBy,
-      slack_channel_url: workstream.slackChannelUrl,
-      email: workstream.email,
+      links: JSON.stringify(
+        workstream.links.map(link => ({
+          ...link,
+          ...(link.type?.toLowerCase() === 'email' && {
+            url: `mailto://${link.url}`,
+          }),
+        })),
+      ),
     };
   }
 
@@ -136,8 +143,7 @@ export class WorkstreamBackendDatabase implements WorkstreamBackendStore {
       createdAt: dbModel.created_at,
       updatedAt: dbModel.updated_at,
       createdBy: dbModel.created_by,
-      slackChannelUrl: dbModel.slack_channel_url,
-      email: dbModel.email,
+      links: JSON.parse(dbModel.links) as EntityLink[],
     };
   }
 }

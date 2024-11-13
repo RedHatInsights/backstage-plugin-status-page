@@ -45,26 +45,7 @@ export function workstreamToEntityKind(options: {
           ? { [ANNOTATION_JIRA_PROJECT_KEY]: data.jiraProject }
           : null),
       },
-      links: [
-        ...(data.email
-          ? [
-              {
-                url: `mailto://${data.email}`,
-                title: 'Email',
-                icon: 'mail',
-              },
-            ]
-          : []),
-        ...(data.slackChannelUrl
-          ? [
-              {
-                url: data.slackChannelUrl,
-                title: 'Slack',
-                icon: 'slack_contact',
-              },
-            ]
-          : []),
-      ],
+      links: data.links,
     },
     spec: {
       members: data.members,

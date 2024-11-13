@@ -105,6 +105,8 @@ export async function createRouter(
     }
     req.body.data.workstreamId = v4();
     const worksteamData: Workstream = req.body.data;
+    worksteamData.links = worksteamData.links ?? [];
+
     if (await database.getWorkstreamById(worksteamData.name)) {
       throw new ConflictError(
         `Workstream ${worksteamData.name} already exists`,
