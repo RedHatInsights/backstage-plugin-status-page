@@ -375,6 +375,7 @@ export const DocsBotPage = () => {
                 </Tooltip>
 
                 {/* Main Settings Menu */}
+
                 <Menu
                   anchorEl={anchorEl}
                   open={Boolean(anchorEl)}
