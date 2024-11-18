@@ -241,6 +241,7 @@ export const DocsBotPage = () => {
       });
     }
     if (baseUrl) {
+      const nocache = selectedCacheOption === 'Cache Enabled' ? 0 : 1;
       const eventSource = new EventSource(
         `${baseUrl}/query-stream?query=${userQuestion}&workspace=${selectedNamespaceOption}&nocache=${nocache}`,
       );
@@ -375,7 +376,6 @@ export const DocsBotPage = () => {
                 </Tooltip>
 
                 {/* Main Settings Menu */}
-
                 <Menu
                   anchorEl={anchorEl}
                   open={Boolean(anchorEl)}
