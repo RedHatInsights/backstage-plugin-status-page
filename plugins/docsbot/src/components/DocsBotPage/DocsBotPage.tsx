@@ -241,7 +241,6 @@ export const DocsBotPage = () => {
       });
     }
     if (baseUrl) {
-      const nocache = selectedCacheOption === 'Cache Enabled' ? 0 : 1;
       const eventSource = new EventSource(
         `${baseUrl}/query-stream?query=${userQuestion}&workspace=${selectedNamespaceOption}&nocache=${nocache}`,
       );
