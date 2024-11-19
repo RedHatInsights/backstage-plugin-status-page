@@ -10,11 +10,17 @@ import {
   Card,
   CardContent,
   Chip,
+  FormControlLabel,
   IconButton,
+  Menu,
+  MenuItem,
+  Switch,
   Tooltip,
   useTheme,
 } from '@material-ui/core';
+import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import InfoIcon from '@material-ui/icons/Info';
+import MenuIcon from '@material-ui/icons/Menu';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
@@ -50,6 +56,18 @@ export const DocsBotPage = () => {
   const alertApi = useApi(alertApiRef);
   const [isBannerOpen, setIsBannerOpen] = useState<boolean>(false);
   const [username, setUsername] = useState<string | undefined>(undefined);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [workspaceAnchorEl, setWorkspaceAnchorEl] =
+    useState<null | HTMLElement>(null);
+  const [selectedNamespaceOption, setSelectedNamespaceOption] =
+    useState<string>('backstage');
+  const [isCacheEnabled, setIsCacheEnabled] = useState<boolean>(true);
+
+  const handleCacheToggle = () => {
+    setIsCacheEnabled(prev => !prev);
+  };
+
   const getCurrentUser = async () => {
     try {
       const identity = await identityApi.getBackstageIdentity();
@@ -215,6 +233,7 @@ export const DocsBotPage = () => {
     setPreviousQuestion(userMessage);
   };
 
+  const nocache = isCacheEnabled ? 0 : 1;
   useEffect(() => {
     if (!baseUrl) {
       discoveryApiRefDocsBot.getBaseUrl('proxy').then(proxy => {
@@ -223,7 +242,7 @@ export const DocsBotPage = () => {
     }
     if (baseUrl) {
       const eventSource = new EventSource(
-        `${baseUrl}/query-stream?query=${userQuestion}`,
+        `${baseUrl}/query-stream?query=${userQuestion}&workspace=${selectedNamespaceOption}&nocache=${nocache}`,
       );
 
       let fullMessage = '';
@@ -265,6 +284,24 @@ export const DocsBotPage = () => {
 
   const handleInfoIconClick = () => {
     setIsBannerOpen(true);
+  };
+
+  const handleSettingsClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleWorkspaceClick = (event: React.MouseEvent<HTMLElement>) => {
+    setWorkspaceAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setWorkspaceAnchorEl(null);
+  };
+
+  const handleWorkspaceOptionClick = (option: string) => {
+    setSelectedNamespaceOption(option);
+    handleClose();
   };
 
   return (
@@ -329,6 +366,92 @@ export const DocsBotPage = () => {
                     <RefreshIcon />
                   </IconButton>
                 </Tooltip>
+
+                {/* Settings Menu Button */}
+                <Tooltip title="Settings">
+                  <IconButton onClick={handleSettingsClick}>
+                    <MenuIcon />
+                  </IconButton>
+                </Tooltip>
+
+                {/* Main Settings Menu */}
+
+                <Menu
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                >
+                  {/* Workspace Option */}
+                  <Tooltip title="Workspace">
+                    <MenuItem
+                      onClick={handleWorkspaceClick}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        width: '200px',
+                      }}
+                    >
+                      <span>
+                        {selectedNamespaceOption === 'backstage'
+                          ? 'Backstage'
+                          : 'SPAship'}
+                      </span>
+
+                      <ArrowRightIcon fontSize="small" />
+                    </MenuItem>
+                  </Tooltip>
+
+                  <FormControlLabel
+                    label={`Cache ${isCacheEnabled ? 'Enabled' : 'Disabled'}`}
+                    control={
+                      <Switch
+                        checked={isCacheEnabled}
+                        onChange={handleCacheToggle}
+                        color="primary"
+                      />
+                    }
+                    labelPlacement="start"
+                  />
+                </Menu>
+                {/* Workspace Submenu */}
+                <Menu
+                  anchorEl={workspaceAnchorEl}
+                  open={Boolean(workspaceAnchorEl)}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                  }}
+                >
+                  <MenuItem
+                    onClick={() => handleWorkspaceOptionClick('backstage')}
+                    style={{
+                      fontWeight:
+                        selectedNamespaceOption === 'backstage'
+                          ? 'bold'
+                          : 'normal',
+                      minWidth: '150px',
+                    }}
+                  >
+                    Backstage
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => handleWorkspaceOptionClick('spaship_docs')}
+                    style={{
+                      fontWeight:
+                        selectedNamespaceOption === 'spaship_docs'
+                          ? 'bold'
+                          : 'normal',
+                      minWidth: '150px',
+                    }}
+                  >
+                    SPAship
+                  </MenuItem>
+                </Menu>
 
                 <DocsBotExpectationBanner
                   open={isBannerOpen}

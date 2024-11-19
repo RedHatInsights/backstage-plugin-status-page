@@ -9,15 +9,19 @@ import {
   CardContent,
   Chip,
   Drawer,
+  FormControlLabel,
   Grid,
   IconButton,
+  Menu,
+  MenuItem,
+  Switch,
   Tooltip,
   Typography,
   useTheme,
 } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import InfoIcon from '@material-ui/icons/Info';
-import OpenInNewOutlinedIcon from '@material-ui/icons/OpenInNewOutlined';
+import MenuIcon from '@material-ui/icons/Menu';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
@@ -60,6 +64,16 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [username, setUsername] = useState<string | undefined>(undefined);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [workspaceAnchorEl, setWorkspaceAnchorEl] =
+    useState<null | HTMLElement>(null);
+  const [selectedNamespaceOption, setSelectedNamespaceOption] =
+    useState<string>('backstage');
+  const [isCacheEnabled, setIsCacheEnabled] = useState<boolean>(true);
+  const handleCacheToggle = () => {
+    setIsCacheEnabled(prev => !prev);
+  };
+
   const getCurrentUser = async () => {
     try {
       const identity = await identityApi.getBackstageIdentity();
@@ -222,17 +236,17 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
     setIsInputDisabled(true);
     setPreviousQuestion(userMessage);
   };
-
+  const nocache = isCacheEnabled ? 0 : 1;
   useEffect(() => {
     if (!baseUrl) {
       discoveryApiRefDocsBot.getBaseUrl('proxy').then(proxy => {
-        setBaseUrl(`${proxy}/docsbot`); // Use template literal here
+        setBaseUrl(`${proxy}/docsbot`);
       });
     }
 
     if (baseUrl) {
       const eventSource = new EventSource(
-        `${baseUrl}/query-stream?query=${userQuestion}`,
+        `${baseUrl}/query-stream?query=${userQuestion}&workspace=${selectedNamespaceOption}&nocache=${nocache}`,
       );
       let fullMessage = '';
       eventSource.onmessage = event => {
@@ -261,21 +275,41 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
     setIsInputDisabled(false);
     setUserQuestion('');
     setPreviousQuestion(null);
-  };
-
-  const handleExpand = () => {
-    toggleDrawer();
-    window.location.href = docsBotLink();
-  };
-
-  const handleCloseBanner = () => {
-    setIsBannerOpen(false);
+    setIsCacheEnabled(true);
   };
 
   const handleInfoIconClick = () => {
     setIsBannerOpen(true);
   };
 
+  const handleSettingsClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleWorkspaceClick = (event: React.MouseEvent<HTMLElement>) => {
+    setWorkspaceAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+    setWorkspaceAnchorEl(null);
+  };
+
+  const handleWorkspaceOptionClick = (option: string) => {
+    setSelectedNamespaceOption(option);
+    handleClose();
+  };
+
+  const handleExpand = () => {
+    toggleDrawer();
+    window.location.href = docsBotLink();
+    handleClose();
+  };
+
+  const handleCloseBanner = () => {
+    setIsBannerOpen(false);
+    toggleDrawer();
+  };
   return (
     <div>
       <Drawer
@@ -316,22 +350,104 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
                   <RefreshIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Expand Chat">
-                <IconButton onClick={handleExpand}>
-                  <OpenInNewOutlinedIcon />
+              <Tooltip title="Settings">
+                <IconButton onClick={handleSettingsClick}>
+                  <MenuIcon />
                 </IconButton>
               </Tooltip>
-              <Tooltip title="Close Chat">
-                <IconButton onClick={toggleDrawer}>
-                  <CloseIcon />
-                </IconButton>
-              </Tooltip>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                {/* Workspace Option */}
+                <Tooltip title="Workspace">
+                  <MenuItem
+                    onClick={handleWorkspaceClick}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      width: '200px',
+                    }}
+                  >
+                    <span>
+                      {selectedNamespaceOption === 'backstage'
+                        ? 'Backstage'
+                        : 'SPAship'}
+                    </span>
+
+                    <ArrowRightIcon fontSize="small" />
+                  </MenuItem>
+                </Tooltip>
+
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={isCacheEnabled}
+                      onChange={handleCacheToggle}
+                      color="primary"
+                    />
+                  }
+                  label={`Cache ${isCacheEnabled ? 'Enabled' : 'Disabled'}`}
+                  labelPlacement="start"
+                />
+
+                <MenuItem onClick={handleExpand}>Expand Chat</MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    toggleDrawer();
+                    handleClose();
+                  }}
+                >
+                  Close Chat
+                </MenuItem>
+              </Menu>
+
+              <Menu
+                anchorEl={workspaceAnchorEl}
+                open={Boolean(workspaceAnchorEl)}
+                onClose={handleClose}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'left',
+                }}
+              >
+                <MenuItem
+                  onClick={() => handleWorkspaceOptionClick('backstage')}
+                  style={{
+                    fontWeight:
+                      selectedNamespaceOption === 'backstage'
+                        ? 'bold'
+                        : 'normal',
+                    minWidth: '150px',
+                  }}
+                >
+                  Backstage
+                </MenuItem>
+                <MenuItem
+                  onClick={() => handleWorkspaceOptionClick('spaship_docs')}
+                  style={{
+                    fontWeight:
+                      selectedNamespaceOption === 'spaship_docs'
+                        ? 'bold'
+                        : 'normal',
+                    minWidth: '150px',
+                  }}
+                >
+                  SPAship
+                </MenuItem>
+              </Menu>
             </div>
           </div>
           <DocsBotExpectationBanner
             open={isBannerOpen}
             onClose={handleCloseBanner}
           />
+
           <div className={classes.container}>
             <CardContent className={classes.cardContent}>
               {userQuestion === '' ? (
