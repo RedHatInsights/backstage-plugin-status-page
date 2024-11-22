@@ -9,6 +9,7 @@ import {
 import CloseIcon from '@material-ui/icons/Close';
 import React from 'react';
 import useStyles from './DocsBotExpectationBanner.styles';
+import CacheToggle from '../../../utils/cache_toggle.png';
 
 interface DocsBotExpectationBannerProps {
   open: boolean;
@@ -85,6 +86,15 @@ const DocsBotExpectationBanner: React.FC<DocsBotExpectationBannerProps> = ({
                 please note that cached responses may not always reflect the
                 most up-to-date information.
               </li>
+              You can adjust this by <b>disabling caching </b>if you prefer to
+              receive non-cached responses.
+              <br />
+              <img
+                src={CacheToggle}
+                alt="icon"
+                height={300}
+                style={{ display: 'block', margin: '20px auto' }}
+              />
             </ul>
             <p>
               We are committed to enhancing your experience with DocsBot. While
