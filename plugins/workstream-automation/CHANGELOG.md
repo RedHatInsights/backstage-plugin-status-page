@@ -1,5 +1,13 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.6.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.6.0...@appdev-platform/backstage-plugin-workstream-automation@1.6.1) (2024-11-25)
+
+
+### Bug Fixes
+
+* **PULSE-235:** fix duplicate workstream  entries on users page ([365d1dd](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/365d1dd296d7d70931d7d6c7e4374ca543453967))
+* **PULSE-236:** fix workstream path field ([892dd51](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/892dd51fc5940e2ce0ad588b8e48f5026d46707b))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.5.1...@appdev-platform/backstage-plugin-workstream-automation@1.6.0) (2024-11-13)
 
 
