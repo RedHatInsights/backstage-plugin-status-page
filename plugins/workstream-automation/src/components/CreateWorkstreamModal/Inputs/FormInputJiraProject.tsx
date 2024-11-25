@@ -1,4 +1,8 @@
-import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  alertApiRef,
+  discoveryApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
 import { TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';
@@ -6,6 +10,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 export const FormInputJiraProject = () => {
   const discoveryApi = useApi(discoveryApiRef);
+  const alertApi = useApi(alertApiRef);
   const [jiraOptions, setJiraOptions] = useState<any[]>([]);
 
   const { control } = useFormContext<{ jiraProject: any | string | null }>();
@@ -13,12 +18,21 @@ export const FormInputJiraProject = () => {
     discoveryApi.getBaseUrl('proxy').then(url => {
       const base = `${url}/jira/rest/api/2/project`;
       fetch(base).then(res =>
-        res.json().then(val => {
-          setJiraOptions(val);
-        }),
+        res
+          .json()
+          .then(val => {
+            setJiraOptions(val);
+          })
+          .catch(err =>
+            alertApi.post({
+              message: err as string,
+              severity: 'error',
+              display: 'transient',
+            }),
+          ),
       );
     });
-  }, [discoveryApi]);
+  }, [discoveryApi, alertApi]);
   return (
     <Controller
       name="jiraProject"
