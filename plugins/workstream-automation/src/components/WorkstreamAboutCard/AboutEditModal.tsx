@@ -100,9 +100,6 @@ export const AboutEditModal = (props: EditDialogProps) => {
               <FormInputName currentEntity={entity} />
             </Grid>
             <Grid item xs={12}>
-              <FormInputPath entity={entity} />
-            </Grid>
-            <Grid item xs={12}>
               <FormInputTextField
                 name="description"
                 label="Description"
@@ -123,6 +120,12 @@ export const AboutEditModal = (props: EditDialogProps) => {
             </Grid>
             <Grid item xs={12}>
               <FormInputJiraProject />
+            </Grid>
+            <Grid item xs={12}>
+              <FormInputPath
+                entity={entity}
+                currentWorkstreamName={entity.metadata.name}
+              />
             </Grid>
           </Grid>
         </FormProvider>
