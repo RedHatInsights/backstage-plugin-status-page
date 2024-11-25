@@ -9,25 +9,5 @@ metadata:
 spec:
   type: service
   lifecycle: experimental
-  owner: user:default/mdeshmuk
+  owner: user:redhat/mdeshmuk
   system: examples
----
-apiVersion: backstage.io/v1alpha1
-kind: User
-metadata:
-  name: npatil
-spec:
-  memberOf: [guests]
-  profile:
-    displayName: Nilesh Patil
-    email: npatil@redhat.com
----
-apiVersion: backstage.io/v1alpha1
-kind: User
-metadata:
-  name: mdeshmuk
-spec:
-  memberOf: [guests]
-  profile:
-    displayName: Mayur Deshmukh
-    email: mdeshmuk@redhat.com

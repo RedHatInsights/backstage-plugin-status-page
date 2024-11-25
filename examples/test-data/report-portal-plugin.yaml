@@ -11,7 +11,7 @@ metadata:
 spec:
   type: service
   lifecycle: experimental
-  owner: user:default/yoswal
+  owner: user:redhat/yoswal
   system: examples
 ---
 apiVersion: backstage.io/v1alpha1
@@ -25,5 +25,5 @@ metadata:
 spec:
   type: service
   lifecycle: experimental
-  owner: user:default/yoswal
+  owner: user:redhat/yoswal
   system: examples

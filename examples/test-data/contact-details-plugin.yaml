@@ -44,7 +44,7 @@ spec:
     email: one-platform-devs@redhat.com
   children: []
   members:
-    - user:redhat/mdesmuk
+    - user:redhat/mdeshmuk
     - user:redhat/roommen
     - user:redhat/denair
     - user:redhat/yoswal
@@ -67,7 +67,7 @@ metadata:
   name: mdeshmuk
   namespace: redhat
 spec:
-  memberOf: [guests]
+  memberOf: [one-platform-devs]
   profile:
     displayName: Mayur Deshmukh
     email: mdeshmuk@redhat.com

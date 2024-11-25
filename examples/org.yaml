@@ -18,3 +18,64 @@ metadata:
 spec:
   type: team
   children: []
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: yoswal
+  namespace: redhat
+spec:
+  memberOf: [one-platform-devs]
+  manager: user:redhat/npatil
+  profile:
+    displayName: Yash Oswal
+    email: yoswal@redhat.com
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: denair
+  namespace: redhat
+spec:
+  memberOf: [one-platform-devs]
+  manager: user:redhat/npatil
+  profile:
+    displayName: Deepesh Nair
+    email: denair@redhat.com
+
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: goudas
+  namespace: redhat
+spec:
+  memberOf: [one-platform-devs]
+  manager: user:redhat/npatil
+  profile:
+    displayName: Gourisankar Das
+    email: goudas@redhat.com
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: roommen
+  namespace: redhat
+spec:
+  memberOf: [one-platform-devs]
+  manager: user:redhat/npatil
+  profile:
+    displayName: Rigin Oommen
+    email: roommen@redhat.com
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: shrpande
+  namespace: redhat
+spec:
+  memberOf: [one-platform-devs]
+  manager: user:redhat/npatil
+  profile:
+    displayName: Shruti Pandey
+    email: shrpande@redhat.com
