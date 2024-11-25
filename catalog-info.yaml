@@ -16,3 +16,4 @@ spec:
     - ./plugins/matomo-backend/catalog-info.yaml
     - ./plugins/spaship/catalog-info.yaml
     - ./plugins/workstream-automation-backend/catalog-info.yaml
+    - ./plugins/docsbot/catalog-info.yaml
