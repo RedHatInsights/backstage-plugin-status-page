@@ -31,7 +31,4 @@ export interface CustomUserEntity extends UserEntity {
 export interface TableRowDataType {
   user: CustomUserEntity;
   role?: string;
-  tableData?: {
-    checked: boolean;
-  };
 }

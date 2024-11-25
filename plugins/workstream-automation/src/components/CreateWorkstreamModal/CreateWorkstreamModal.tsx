@@ -256,7 +256,7 @@ const ReviewDetailsContent = (props: {
                   },
                 ]
               : []),
-            ...selectedMembers.filter(v => v.tableData?.checked),
+            ...selectedMembers,
           ]}
           options={{
             toolbar: false,
@@ -293,7 +293,7 @@ export const CreateWorkstreamModal = () => {
       searchQuery: null,
       selectedMembers: [],
     },
-    mode: 'all',
+    mode: 'onSubmit',
   });
 
   const handleChange = (val: string) => {
@@ -313,12 +313,10 @@ export const CreateWorkstreamModal = () => {
       setWorkstreamData({
         name: kebabCase(workstreamDetails.workstreamName),
         title: workstreamDetails.workstreamName,
-        members: selectedMembers
-          .filter(p => p.tableData?.checked)
-          .map<Member>(val => ({
-            userRef: stringifyEntityRef(val.user),
-            role: val.role ?? '-',
-          })),
+        members: selectedMembers.map<Member>(val => ({
+          userRef: stringifyEntityRef(val.user),
+          role: val.role ?? '-',
+        })),
         description: workstreamDetails.description,
         jiraProject: workstreamDetails.jiraProject?.key,
         lead: workstreamDetails.lead

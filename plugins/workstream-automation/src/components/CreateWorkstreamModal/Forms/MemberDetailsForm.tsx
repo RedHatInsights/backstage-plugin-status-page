@@ -1,11 +1,13 @@
 import { GroupEntity, RELATION_HAS_MEMBER } from '@backstage/catalog-model';
 import { Table, TableColumn } from '@backstage/core-components';
 import {
-  CheckboxProps,
+  FormHelperText,
   Grid,
+  IconButton,
   MenuItem,
   Select,
   TextField,
+  Tooltip,
   Typography,
 } from '@material-ui/core';
 
@@ -17,9 +19,16 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { Alert, Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';
-import { Controller, useFormContext, UseFormReturn } from 'react-hook-form';
+import {
+  Controller,
+  FieldArrayWithId,
+  useFieldArray,
+  useFormContext,
+  UseFormReturn,
+} from 'react-hook-form';
 import { useDebounce } from 'react-use';
 import { CustomUserEntity, TableRowDataType } from '../../../types';
+import RemoveCircleOutlineOutlinedIcon from '@material-ui/icons/RemoveCircleOutlineOutlined';
 
 import { Form1 } from '../Inputs/types';
 
@@ -27,21 +36,48 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
   const { form1 } = props;
   const { lead } = form1.getValues();
   const catalogApi = useApi(catalogApiRef);
-  const { getValues, control, resetField, setValue } = useFormContext<{
+  const {
+    getValues,
+    control,
+    resetField,
+    setValue,
+    formState,
+    setError,
+    clearErrors,
+  } = useFormContext<{
     searchQuery: GroupEntity | CustomUserEntity | null;
     kind: { label: string; value: string };
     selectedMembers: TableRowDataType[];
   }>();
-  const [tableData, setTableData] = useState<TableRowDataType[]>(
-    getValues('selectedMembers'),
-  );
+
+  const { fields, append, remove, update } = useFieldArray({
+    control: control,
+    name: 'selectedMembers',
+    rules: {
+      validate: val => {
+        if (val.length > 0) {
+          val.forEach((eachValue, index) => {
+            if (!eachValue.role) {
+              setError(`selectedMembers.${index}.role`, {
+                type: 'required',
+                message: 'Please select role',
+              });
+            } else {
+              clearErrors(`selectedMembers.${index}.role`);
+            }
+          });
+          return val.every(p => Boolean(p.role));
+        }
+        return true;
+      },
+    },
+    keyName: 'id',
+  });
+
   const [options, setOptions] = useState<(GroupEntity | CustomUserEntity)[]>(
     [],
   );
   const [searchText, setSearchText] = useState('');
-  const [searchedEntity, setSearchedEntity] = useState<
-    CustomUserEntity | GroupEntity
-  >();
 
   const selectOptions = [
     { label: 'Rover User', value: 'user' },
@@ -58,26 +94,22 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
   function handleRoleChange(
     evt: React.ChangeEvent<{ name?: string; value: unknown }>,
     data: TableRowDataType,
+    index: number,
   ) {
-    setTableData(prevTableData => {
-      const updatedMembers = prevTableData.map(u => {
-        const isMatchedUser = u.user.metadata.uid === data.user.metadata.uid;
-        return {
-          user: u.user,
-          role: isMatchedUser ? (evt.target.value as string) : u.role,
-          tableData: isMatchedUser ? data.tableData : u.tableData,
-        };
-      });
-      setValue('selectedMembers', updatedMembers);
-      return updatedMembers;
-    });
+    update(index, { user: data.user, role: evt.target.value as string });
   }
 
-  const columns: TableColumn<TableRowDataType>[] = [
+  const columns: TableColumn<
+    FieldArrayWithId<
+      { selectedMembers: TableRowDataType[] },
+      'selectedMembers',
+      'id'
+    >
+  >[] = [
     {
       id: 'name',
       title: 'Name',
-      field: 'spec.profile.displayName',
+      field: 'user.spec.profile.displayName',
       render: data => (
         <EntityDisplayName entityRef={data.user} hideIcon disableTooltip />
       ),
@@ -92,26 +124,40 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
       id: 'role',
       title: 'Role',
       render: data => {
+        const index = fields.findIndex(p => p.id === data.id);
+        const fieldError = formState.errors.selectedMembers
+          ? formState.errors.selectedMembers[index]?.role
+          : undefined;
+
         return (
-          <Select
-            variant="standard"
-            style={{ padding: '0' }}
-            placeholder="Select a role"
-            fullWidth
-            value={data.role}
-            disabled={data.role === 'Workstream Lead'}
-            onChange={evt => handleRoleChange(evt, data)}
-          >
-            {roleOptions.map(option => (
-              <MenuItem
-                disabled={option === 'Workstream Lead'}
-                key={option}
-                value={option}
-              >
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
+          <>
+            <Select
+              variant="standard"
+              style={{ padding: '0' }}
+              placeholder="Select a role"
+              fullWidth
+              error={!!fieldError}
+              value={data.role}
+              label="Select Role"
+              disabled={data.role === 'Workstream Lead'}
+              onChange={evt => {
+                handleRoleChange(evt, data, index);
+              }}
+            >
+              {roleOptions.map(option => (
+                <MenuItem
+                  disabled={option === 'Workstream Lead'}
+                  key={option}
+                  value={option}
+                >
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+            {!!fieldError && (
+              <FormHelperText error>Please select role</FormHelperText>
+            )}
+          </>
         );
       },
     },
@@ -130,6 +176,25 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
           '-'
         ),
     },
+    {
+      id: 'action',
+      align: 'center',
+      title: 'Actions',
+      sorting: false,
+      width: '5%',
+      render: data =>
+        data.role !== 'Workstream Lead' && (
+          <Tooltip title="Remove member">
+            <IconButton
+              color="secondary"
+              size="small"
+              onClick={() => remove(fields.findIndex(p => p.id === data.id))}
+            >
+              <RemoveCircleOutlineOutlinedIcon />
+            </IconButton>
+          </Tooltip>
+        ),
+    },
   ];
   const [loading, setLoading] = useState(false);
 
@@ -140,52 +205,37 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
     }
   }
 
+  function setTableDataFn(
+    entity: CustomUserEntity,
+    workstreamLead?: CustomUserEntity,
+  ) {
+    if (entity.metadata.uid === workstreamLead?.metadata.uid) return;
+    if (fields.some(p => p.user.metadata.uid === entity.metadata.uid)) return;
+    append({ user: entity, role: undefined });
+  }
   function handleInputSelectedEntity(
     entity: CustomUserEntity | GroupEntity | null,
   ) {
-    if (entity) setSearchedEntity(entity);
-  }
-
-  useEffect(() => {
-    function setTableDataFn(
-      entity: CustomUserEntity,
-      workstreamLead?: CustomUserEntity,
-    ) {
-      if (entity.metadata.uid === workstreamLead?.metadata.uid) return;
-      setTableData(prevTableData => {
-        const isUserPresent = prevTableData.some(
-          p => p.user.metadata.uid === entity.metadata.uid,
-        );
-        if (isUserPresent) return prevTableData;
-        const updatedTableData = [
-          ...prevTableData,
-          {
-            user: entity,
-            role: undefined,
-          },
-        ];
-        setValue('selectedMembers', updatedTableData);
-        return updatedTableData;
-      });
-    }
-    if (searchedEntity) {
-      const entity = searchedEntity;
+    if (entity) {
       if (entity.kind === 'Group') {
         const relations = entity.relations;
         if (!relations) return;
         for (const relation of relations) {
           if (relation.type === RELATION_HAS_MEMBER) {
             catalogApi.getEntityByRef(relation.targetRef).then(res => {
-              if (res) setTableDataFn(res as CustomUserEntity, lead);
+              if (res) {
+                setTableDataFn(res as CustomUserEntity, lead);
+              }
             });
           }
         }
-      } else {
-        setTableDataFn(entity, lead);
-      }
-      setValue('searchQuery', null);
+      } else setTableDataFn(entity, lead);
     }
-  }, [searchedEntity, catalogApi, setValue, lead]);
+  }
+
+  useEffect(() => {
+    setValue('searchQuery', null);
+  }, [fields, setValue]);
 
   useDebounce(
     async () => {
@@ -325,50 +375,21 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
                   {
                     role: 'Workstream Lead',
                     user: lead,
-                    tableData: undefined,
+                    id: 'first',
                   },
                 ]
               : []),
-            ...tableData,
+            ...fields,
           ]}
           columns={columns}
-          onSelectionChange={(data, _rowData) => {
-            const tempData = tableData;
-            tempData.forEach(t => {
-              if (data.some(p => p.user.metadata.uid === t.user.metadata.uid)) {
-                t.tableData = { checked: true };
-              } else t.tableData = { checked: false };
-            });
-            setValue('selectedMembers', tempData);
-            setTableData(tempData);
-          }}
           options={{
+            draggable: false,
             pageSize: 10,
             search: false,
             showTitle: false,
             toolbar: true,
             padding: 'dense',
-            selection: true,
             paginationPosition: 'both',
-            showTextRowsSelected: true,
-            headerSelectionProps: {
-              disabled: false,
-              size: 'small',
-              style: { paddingTop: '0', paddingBottom: '0px' },
-            },
-            selectionProps: (data: TableRowDataType): CheckboxProps => {
-              return {
-                hidden: data.role === 'Workstream Lead',
-                disabled:
-                  !data.role ||
-                  data.role === 'Workstream Lead' ||
-                  !roleOptions.includes(data.role),
-                color: 'primary',
-                style: { marginLeft: '20px' },
-                ...(data.tableData?.checked && { checked: true }),
-                ...(data.role === 'Workstream Lead' && { checked: true }),
-              };
-            },
           }}
         />
       </Grid>
