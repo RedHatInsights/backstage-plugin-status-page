@@ -1,5 +1,14 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-docsbot [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-docsbot@1.3.0...@appdev-platform/backstage-plugin-docsbot@1.4.0) (2024-11-25)
+
+
+### Features
+
+* **docsbot-plugin:** Add cache enable image and update documentation in catalog.yaml ([52d9f85](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/52d9f85598daa7d3450721ebbee404a6b8130f91))
+* **docsbot-plugin:** Adding a toggle button for cache enable/disable ([9784b65](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/9784b650ab185eeaa30ea75b97592f9bd54b3bef))
+* **docsbot-plugin:** Adding Settings option for enabling workspace and nocache option ([8f8c2a2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/8f8c2a28ca07783a0333ce5997d5d599d360ce63))
+
 ## @appdev-platform/backstage-plugin-docsbot [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-docsbot@1.1.0...@appdev-platform/backstage-plugin-docsbot@1.3.0) (2024-09-04)
 
 
