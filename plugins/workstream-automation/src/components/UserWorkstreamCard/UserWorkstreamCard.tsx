@@ -13,7 +13,11 @@ import {
 } from '@backstage/plugin-catalog-react';
 import React, { useEffect, useState } from 'react';
 import { CustomUserEntity } from '../../types';
-import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  parseEntityRef,
+  RELATION_MEMBER_OF,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { MembersColumn } from '../WorkstreamTable/MembersColumn';
 import { useApi } from '@backstage/core-plugin-api';
 
@@ -23,7 +27,9 @@ export const UserWorkstreamCard = (props: { variant: InfoCardVariants }) => {
   const [workstreams, setWorkstreams] = useState<WorkstreamDataV1alpha1[]>([]);
   const [loading, setLoading] = useState(true);
   const inWorkstreams = entity.relations?.filter(
-    m => parseEntityRef(m.targetRef).kind === 'workstream',
+    relation =>
+      relation.type !== RELATION_MEMBER_OF &&
+      parseEntityRef(relation.targetRef).kind === 'workstream',
   );
 
   useEffect(() => {
