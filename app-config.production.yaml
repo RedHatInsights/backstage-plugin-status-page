@@ -60,8 +60,6 @@ catalog:
   # See https://backstage.io/docs/features/software-catalog/software-catalog-overview#adding-components-to-the-catalog for more details
   # on how to get entities into the catalog.
   readonly: false
-  rules:
-    - allow: [Location, Workstream]
   enrichment:
     enabled: true
   providers:
@@ -132,6 +130,16 @@ catalog:
           timeout:
             minutes: 5
 
+  rules:
+    - allow:
+        - Component
+        - System
+        - API
+        - Resource
+        - Location
+        - Workstream
+        - EnrichmentData
+
   locations:
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
     - type: file
@@ -150,29 +158,29 @@ catalog:
     # Test data for CMDB plugin
     - type: file
       target: ./examples/test-data/cmdb-plugin.yaml
-      rules:
-        - allow: [Component, User]
+
+    # Test data for jira plugin
     - type: file
       target: ./examples/test-data/jira-server-plugin.yaml
+
+    # Test data for contact details plugin
     - type: file
       target: ./examples/test-data/contact-details-plugin.yaml
       rules:
         - allow: [Component, Group, User]
+
+    # Test data for feedback plugin
     - type: file
       target: ./examples/test-data/feedback-plugin.yaml
-    # Test data for report portal
+
+    # Test data for report portal plugin
     - type: file
       target: ./examples/test-data/report-portal-plugin.yaml
-      rules:
-        - allow:
-            - Component
-            - User
+
+    # Test entity for enrichment data plugin
     - type: file
       target: ./examples/test-data/enrichment-data.yaml
-      rules:
-        - allow:
-            - Component
-            - EnrichmentData
+
     # Local example template
     - type: file
       target: ./examples/template/template.yaml
@@ -185,12 +193,6 @@ catalog:
       rules:
         - allow: [User, Group]
 
-    # Local example workstream users data
-    - type: file
-      target: ../../examples/test-data/workstream-plugin.yaml
-      rules:
-        - allow: [User, Group]
-
 # Report portal plugin
 reportPortal:
   supportEmail: ${REPORT_PORTAL_SUPPORT_EMAIL}
@@ -198,7 +200,7 @@ reportPortal:
     - host: ${REPORT_PORTAL_HOST}
       baseUrl: ${REPORT_PORTAL_BASE_URL}
       token: ${REPORT_PORTAL_TOKEN}
-      filterType: "INTERNAL"
+      filterType: 'INTERNAL'
 
 auth:
   # see https://backstage.io/docs/auth/ to learn about auth providers

@@ -18,7 +18,7 @@ metadata:
   name: enrichment-data-for-example-website-1
   description: Enrichment data that extends an existing component
 spec:
-  owner: user:default/guest
+  owner: user:redhat/mdeshmuk
   selectors:
     - entityRef: component:default/example-website-for-enrichment-data
   template:
@@ -35,7 +35,7 @@ metadata:
   name: enrichment-data-for-example-website-2
   description: Enrichment data that extends an existing component - part 2
 spec:
-  owner: user:default/guest
+  owner: user:redhat/mdeshmuk
   selectors:
     - entityRef: component:default/example-website-for-enrichment-data
   template:
