@@ -70,6 +70,7 @@ export const AboutEditModal = (props: EditDialogProps) => {
   const form = useForm<Form>({
     values: {
       workstreamName: entity.metadata.title,
+      workstreamPath: entity.metadata.name,
       lead: !leadEntityFetch ? leadEntity : undefined,
       pillar: entity.spec.pillar,
       description: entity.metadata.description,
