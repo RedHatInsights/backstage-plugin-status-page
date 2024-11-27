@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.6.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.6.1...@appdev-platform/backstage-plugin-workstream-automation@1.6.2) (2024-11-27)
+
+
+### Bug Fixes
+
+* **PULSE-242:** add default value for workstreamPath var ([4de0582](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/4de0582b11594ac030c1058469fe727fdf2e978f))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.6.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.6.0...@appdev-platform/backstage-plugin-workstream-automation@1.6.1) (2024-11-25)
 
 
