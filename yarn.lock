@@ -26956,6 +26956,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"isolated-vm@npm:4.5.0":
+  version: 4.5.0
+  resolution: "isolated-vm@npm:4.5.0"
+  dependencies:
+    node-gyp: latest
+  checksum: 86626a72d35ed0ee731e00ad19bc6e8a0433c4f34a5dd5b1d415d425f1f0f6b0d04c6d10e7a588025b2956d562fcf7a69e9e20f96746978d3a4e7862374a3806
+  languageName: node
+  linkType: hard
+
 "isolated-vm@npm:^4.5.0":
   version: 4.7.2
   resolution: "isolated-vm@npm:4.7.2"
@@ -36388,6 +36397,7 @@ __metadata:
     concurrently: ^6.0.0
     conventional-changelog-conventionalcommits: ^6.1.0
     dotenv: ^16.1.4
+    isolated-vm: 4.5.0
     lerna: ^4.0.0
     multi-semantic-release: ^3.0.2
     node-gyp: ^9.0.0

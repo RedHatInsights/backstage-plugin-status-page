@@ -18,7 +18,7 @@ import {
   Tooltip,
   useTheme,
 } from '@material-ui/core';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import InfoIcon from '@material-ui/icons/Info';
 import MenuIcon from '@material-ui/icons/Menu';
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -355,7 +355,9 @@ export const DocsBotPage = () => {
         <Card className={classes.card}>
           <CardContent className={classes.cardContent}>
             <div className={classes.container}>
+              {/* Menu Section */}
               <div className={classes.menuSection}>
+                {/* Tooltip Buttons */}
                 <Tooltip title="DocsBot Expectations">
                   <IconButton onClick={handleInfoIconClick}>
                     <InfoIcon />
@@ -366,41 +368,82 @@ export const DocsBotPage = () => {
                     <RefreshIcon />
                   </IconButton>
                 </Tooltip>
-
-                {/* Settings Menu Button */}
+                {/* Workspace Selection */}
+                <MenuItem
+                  onClick={handleWorkspaceClick}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    width: '200px',
+                  }}
+                >
+                  <Tooltip
+                    title={
+                      selectedNamespaceOption === 'backstage'
+                        ? 'Backstage'
+                        : selectedNamespaceOption ===
+                          'portfolio_management_and_strategy'
+                        ? 'Portfolio Management and Strategy'
+                        : 'SPAship'
+                    }
+                  >
+                    <span className="workspaceName">
+                      Source:&nbsp;
+                      {selectedNamespaceOption === 'backstage'
+                        ? 'Backstage'
+                        : selectedNamespaceOption ===
+                          'portfolio_management_and_strategy'
+                        ? 'Portfolio M...'
+                        : 'SPAship'}
+                    </span>
+                  </Tooltip>
+                  <ArrowDropDownIcon fontSize="small" />
+                </MenuItem>
+                <Menu
+                  anchorEl={workspaceAnchorEl}
+                  open={Boolean(workspaceAnchorEl)}
+                  onClose={handleClose}
+                >
+                  {[
+                    'backstage',
+                    'portfolio_management_and_strategy',
+                    'spaship_docs',
+                  ].map(option => (
+                    <MenuItem
+                      key={option}
+                      onClick={() => handleWorkspaceOptionClick(option)}
+                      style={{
+                        fontWeight:
+                          selectedNamespaceOption === option
+                            ? 'bold'
+                            : 'normal',
+                        minWidth: '150px',
+                      }}
+                    >
+                      {option === 'backstage'
+                        ? 'Backstage'
+                        : option === 'portfolio_management_and_strategy'
+                        ? 'Portfolio Management and Strategy'
+                        : 'SPAship'}
+                    </MenuItem>
+                  ))}
+                </Menu>
+                {/* Settings Menu */}
                 <Tooltip title="Settings">
                   <IconButton onClick={handleSettingsClick}>
                     <MenuIcon />
                   </IconButton>
                 </Tooltip>
-
-                {/* Main Settings Menu */}
-
                 <Menu
                   anchorEl={anchorEl}
                   open={Boolean(anchorEl)}
                   onClose={handleClose}
+                  MenuListProps={{
+                    style: {
+                      padding: '10px',
+                    },
+                  }}
                 >
-                  {/* Workspace Option */}
-                  <Tooltip title="Workspace">
-                    <MenuItem
-                      onClick={handleWorkspaceClick}
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        width: '200px',
-                      }}
-                    >
-                      <span>
-                        {selectedNamespaceOption === 'backstage'
-                          ? 'Backstage'
-                          : 'SPAship'}
-                      </span>
-
-                      <ArrowRightIcon fontSize="small" />
-                    </MenuItem>
-                  </Tooltip>
-
                   <FormControlLabel
                     label={`Cache ${isCacheEnabled ? 'Enabled' : 'Disabled'}`}
                     control={
@@ -413,69 +456,31 @@ export const DocsBotPage = () => {
                     labelPlacement="start"
                   />
                 </Menu>
-                {/* Workspace Submenu */}
-                <Menu
-                  anchorEl={workspaceAnchorEl}
-                  open={Boolean(workspaceAnchorEl)}
-                  onClose={handleClose}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'left',
-                  }}
-                >
-                  <MenuItem
-                    onClick={() => handleWorkspaceOptionClick('backstage')}
-                    style={{
-                      fontWeight:
-                        selectedNamespaceOption === 'backstage'
-                          ? 'bold'
-                          : 'normal',
-                      minWidth: '150px',
-                    }}
-                  >
-                    Backstage
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => handleWorkspaceOptionClick('spaship_docs')}
-                    style={{
-                      fontWeight:
-                        selectedNamespaceOption === 'spaship_docs'
-                          ? 'bold'
-                          : 'normal',
-                      minWidth: '150px',
-                    }}
-                  >
-                    SPAship
-                  </MenuItem>
-                </Menu>
 
+                {/* Expectations Banner */}
                 <DocsBotExpectationBanner
                   open={isBannerOpen}
                   onClose={handleCloseBanner}
                 />
               </div>
+
+              {/* Messages Section */}
               <div className={classes.messagesContainer}>
                 {userQuestion === '' ? (
                   <InfoTiles />
                 ) : (
                   <>
-                    {chatMessages.map((message, index) => {
-                      return (
-                        <DocsBotMessage
-                          key={`message-${index}`}
-                          message={message.content}
-                          isUserMessage={message.isUserMessage}
-                          onFeedback={handleFeedback}
-                          userQuestion={userQuestion}
-                          isInitialMessage={index === 0 || index === 1}
-                          timeTaken={message.timeTaken} // Pass timeTaken from message
-                        />
-                      );
-                    })}
+                    {chatMessages.map((message, index) => (
+                      <DocsBotMessage
+                        key={`message-${index}`}
+                        message={message.content}
+                        isUserMessage={message.isUserMessage}
+                        onFeedback={handleFeedback}
+                        userQuestion={userQuestion}
+                        isInitialMessage={index === 0 || index === 1}
+                        timeTaken={message.timeTaken} // Pass timeTaken from message
+                      />
+                    ))}
                     {isBotTyping && (
                       <div className={classes.chatBubble}>
                         <div className={classes.typing}>
@@ -489,6 +494,8 @@ export const DocsBotPage = () => {
                   </>
                 )}
               </div>
+
+              {/* Input Section */}
               <div className={classes.inputContainer}>
                 <DocsBotInput
                   onSendMessage={handleSendMessage}
@@ -501,6 +508,7 @@ export const DocsBotPage = () => {
                 />
               </div>
 
+              {/* Disclaimer Section */}
               <div className={classes.disclaimer}>
                 Disclaimer: Due to hardware constraints, responses may be
                 delayed, and since DocsBot is still in training, some answers
