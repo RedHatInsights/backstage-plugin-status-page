@@ -1,0 +1,27 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: workstream-automation-plugin
+  title: Workstream Automation Plugin
+  description: Create, Manage and View workstreams within backstage using this plugin
+  tags:
+    - workstream
+    - automation
+    - backstage
+    - idp
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-workstream
+      title: Backstage Workstream Automation Plugin Package
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+  namespace: devex
+spec:
+  type: library
+  lifecycle: production
+  owner: group:redhat/one-platform-devs
+  system: devex/redhat-experience-platform
+  providesApis:
+    - api:devex/workstream-plugin-api
+  consumesApis:
+    - other-api-name
