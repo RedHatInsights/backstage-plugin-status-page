@@ -311,6 +311,18 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
     setIsBannerOpen(false);
     toggleDrawer();
   };
+
+  const getWorkspaceTitle = (option: string): string => {
+    const titles: Record<string, string> = {
+      backstage: 'Backstage',
+      portfolio_management_and_strategy: 'Portfolio Management and Strategy',
+      spaship_docs: 'SPAship',
+    };
+
+    const title = titles[option] || 'Unknown Workspace';
+    return title;
+  };
+
   return (
     <div>
       <Drawer
@@ -376,26 +388,18 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
                     width: '200px',
                   }}
                 >
-                  <Tooltip
-                    title={
-                      selectedNamespaceOption === 'backstage'
-                        ? 'Backstage'
-                        : selectedNamespaceOption ===
-                          'portfolio_management_and_strategy'
-                        ? 'Portfolio Management and Strategy'
-                        : 'SPAship'
-                    }
-                  >
+                  <Tooltip title={getWorkspaceTitle(selectedNamespaceOption)}>
                     <span className="workspaceName">
                       Source:&nbsp;
-                      {selectedNamespaceOption === 'backstage'
-                        ? 'Backstage'
-                        : selectedNamespaceOption ===
-                          'portfolio_management_and_strategy'
-                        ? 'Portfolio M...'
-                        : 'SPAship'}
+                      {getWorkspaceTitle(selectedNamespaceOption).length > 11
+                        ? `${getWorkspaceTitle(selectedNamespaceOption).slice(
+                            0,
+                            11,
+                          )}...`
+                        : getWorkspaceTitle(selectedNamespaceOption)}
                     </span>
                   </Tooltip>
+
                   <ArrowDropDownIcon fontSize="small" />
                 </MenuItem>
                 <FormControlLabel
@@ -439,11 +443,7 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
                       minWidth: '150px',
                     }}
                   >
-                    {option === 'backstage'
-                      ? 'Backstage'
-                      : option === 'portfolio_management_and_strategy'
-                      ? 'Portfolio Management and Strategy'
-                      : 'SPAship'}
+                    {getWorkspaceTitle(option)}
                   </MenuItem>
                 ))}
               </Menu>
