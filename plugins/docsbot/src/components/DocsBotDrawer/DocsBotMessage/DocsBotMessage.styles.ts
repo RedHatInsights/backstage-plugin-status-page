@@ -48,6 +48,13 @@ const useStyles = makeStyles(theme => ({
     minWidth: 0,
     marginLeft: theme.spacing(1),
   },
+  link: {
+    color: 'blue',
+    textDecoration: 'underline',
+    '&:hover': {
+      color: 'darkblue',
+    },
+  },
 }));
 
 export default useStyles;

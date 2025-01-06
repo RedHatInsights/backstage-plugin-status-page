@@ -6,22 +6,25 @@ const useStyles = makeStyles(theme => ({
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '60%', // Increased width
+    width: '60%',
+    maxHeight: '80vh',
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[5],
     padding: theme.spacing(4),
     outline: 'none',
-    borderRadius: '8px', // Rounded corners for a more modern look
+    borderRadius: '8px',
+    overflowY: 'auto',
   },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: theme.spacing(3), // Added more space
+    marginBottom: theme.spacing(2),
+    position: 'relative',
   },
   modalTitle: {
     fontWeight: 'bold',
-    fontSize: '1.5rem', // Slightly larger title
+    fontSize: '1.5rem',
     color: '#1F5493',
   },
   modalText: {
@@ -30,13 +33,13 @@ const useStyles = makeStyles(theme => ({
     lineHeight: '1.6',
   },
   importantText: {
-    fontWeight: 'bold', // Bold for emphasis
+    fontWeight: 'bold',
   },
   list: {
     paddingLeft: theme.spacing(3),
     marginBottom: theme.spacing(2),
     '& li': {
-      marginBottom: theme.spacing(1), // Spacing between list items
+      marginBottom: theme.spacing(1),
     },
   },
   proTip: {
@@ -46,6 +49,10 @@ const useStyles = makeStyles(theme => ({
   },
   closeButton: {
     padding: theme.spacing(0.5),
+    position: 'absolute',
+    top: theme.spacing(1),
+    right: theme.spacing(1),
+    zIndex: 1,
   },
 }));
 

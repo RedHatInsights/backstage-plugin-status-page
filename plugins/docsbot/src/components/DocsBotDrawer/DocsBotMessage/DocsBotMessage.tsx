@@ -51,7 +51,15 @@ const DocsBotMessage: React.FC<DocsBotMessageProps> = ({
   useEffect(() => {
     const convertMarkdown = async () => {
       try {
-        const htmlContent = await marked(message);
+        const renderer = new marked.Renderer();
+        renderer.link = ({ href, title, tokens }) => {
+          const text = tokens.map((token: any) => token.text).join('');
+          return `<a href="${href}" title="${title ?? ''}" class="${
+            classes.link
+          }" target="_blank" rel="noopener noreferrer">${text}</a>`;
+        };
+
+        const htmlContent = await marked(message, { renderer });
         setRenderedMessage(htmlContent);
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -61,7 +69,7 @@ const DocsBotMessage: React.FC<DocsBotMessageProps> = ({
     };
 
     convertMarkdown();
-  }, [message]);
+  }, [message, classes.link]);
 
   return (
     <div
@@ -95,6 +103,7 @@ const DocsBotMessage: React.FC<DocsBotMessageProps> = ({
                 onClick={() => handleFeedback(1)}
                 className={classes.feedbackButton}
                 title="Happy with answer"
+                disabled={feedbackValue === -1} // Disable if thumbs down is clicked
               >
                 <Tooltip title="Liked the answer">
                   <ThumbUpIcon />
@@ -106,6 +115,7 @@ const DocsBotMessage: React.FC<DocsBotMessageProps> = ({
                 onClick={() => handleFeedback(-1)}
                 className={classes.feedbackButton}
                 title="Unhappy with answer"
+                disabled={feedbackValue === 1} // Disable if thumbs up is clicked
               >
                 <Tooltip title="Unhappy with answer">
                   <ThumbDownIcon />
