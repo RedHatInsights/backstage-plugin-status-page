@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.6.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.6.2...@appdev-platform/backstage-plugin-workstream-automation@1.6.3) (2025-01-06)
+
+
+### Documentation
+
+* **APD-27:** add documentation for workstream plugin ([d907cb5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/d907cb51c0dd04cc0b1c0c8fead4b4be85248a8d))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.6.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.6.1...@appdev-platform/backstage-plugin-workstream-automation@1.6.2) (2024-11-27)
 
 
