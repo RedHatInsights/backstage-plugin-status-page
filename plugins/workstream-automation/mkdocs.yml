@@ -1,0 +1,14 @@
+site_name: Workstream Automation Plugin Docs
+edit_uri: https://gitlab.cee.redhat.com/yoswal/backstage-plugins/-/blob/main/plugins/workstream-automation/docs
+theme: readthedocs
+nav:
+  - Getting Started: index.md
+  - Installation & Setup: installation.md
+  - Add RBAC: rbac.md
+  - Usage:
+      - New Workstreams: usage/create-new-workstream.md
+      - Add Members: usage/adding-members.md
+      - Add Portfolios: usage/adding-portfolio.md
+
+plugins:
+  - techdocs-core
