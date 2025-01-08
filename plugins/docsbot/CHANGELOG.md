@@ -1,5 +1,14 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-docsbot [1.5.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-docsbot@1.4.0...@appdev-platform/backstage-plugin-docsbot@1.5.0) (2025-01-08)
+
+
+### Features
+
+* **docsbot-plugin:** Adjust link color, banner size, and disable repeated feedback options ([031736b](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/031736bdf1ed857242647659cba51496f03752ac))
+* **docsbot-plugin:** Fixing nested code linting issues ([0bf4cf6](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/0bf4cf645327554671929c5299794ac4032ba397))
+* **docsbot-plugin:** Move workspace dropdown out of the settings menu ([87789c7](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/87789c7e1cbc5744579c99090f838f3ec560de75))
+
 ## @appdev-platform/backstage-plugin-docsbot [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-docsbot@1.3.0...@appdev-platform/backstage-plugin-docsbot@1.4.0) (2024-11-25)
 
 
