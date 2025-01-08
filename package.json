@@ -66,8 +66,5 @@
       "prettier --write"
     ]
   },
-  "packageManager": "yarn@3.6.4",
-  "dependencies": {
-    "isolated-vm": "4.5.0"
-  }
+  "packageManager": "yarn@3.6.4"
 }
