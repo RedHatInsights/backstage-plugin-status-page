@@ -19,9 +19,10 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import InfoIcon from '@material-ui/icons/Info';
 import MenuIcon from '@material-ui/icons/Menu';
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
@@ -310,6 +311,18 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
     setIsBannerOpen(false);
     toggleDrawer();
   };
+
+  const getWorkspaceTitle = (option: string): string => {
+    const titles: Record<string, string> = {
+      backstage: 'Backstage',
+      portfolio_management_and_strategy: 'Portfolio Management and Strategy',
+      spaship_docs: 'SPAship',
+    };
+
+    const title = titles[option] || 'Unknown Workspace';
+    return title;
+  };
+
   return (
     <div>
       <Drawer
@@ -327,9 +340,9 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
                     DocsBot
                   </Typography>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={4} style={{ padding: 0 }}>
                   <Chip
-                    style={{ margin: '8px 0px 0px 0px' }}
+                    style={{ margin: '8px 0px 0px 0px', padding: 0 }}
                     label="Beta"
                     size="small"
                     color="primary"
@@ -355,31 +368,40 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
                   <MenuIcon />
                 </IconButton>
               </Tooltip>
+
+              <Tooltip title="Expand window">
+                <IconButton onClick={handleExpand}>
+                  <OpenInNewIcon />
+                </IconButton>
+              </Tooltip>
               <Menu
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
                 {/* Workspace Option */}
-                <Tooltip title="Workspace">
-                  <MenuItem
-                    onClick={handleWorkspaceClick}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      width: '200px',
-                    }}
-                  >
-                    <span>
-                      {selectedNamespaceOption === 'backstage'
-                        ? 'Backstage'
-                        : 'SPAship'}
+                <MenuItem
+                  onClick={handleWorkspaceClick}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    width: '200px',
+                  }}
+                >
+                  <Tooltip title={getWorkspaceTitle(selectedNamespaceOption)}>
+                    <span className="workspaceName">
+                      Source:&nbsp;
+                      {getWorkspaceTitle(selectedNamespaceOption).length > 11
+                        ? `${getWorkspaceTitle(selectedNamespaceOption).slice(
+                            0,
+                            11,
+                          )}...`
+                        : getWorkspaceTitle(selectedNamespaceOption)}
                     </span>
+                  </Tooltip>
 
-                    <ArrowRightIcon fontSize="small" />
-                  </MenuItem>
-                </Tooltip>
-
+                  <ArrowDropDownIcon fontSize="small" />
+                </MenuItem>
                 <FormControlLabel
                   control={
                     <Switch
@@ -392,7 +414,6 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
                   labelPlacement="start"
                 />
 
-                <MenuItem onClick={handleExpand}>Expand Chat</MenuItem>
                 <MenuItem
                   onClick={() => {
                     toggleDrawer();
@@ -407,39 +428,24 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
                 anchorEl={workspaceAnchorEl}
                 open={Boolean(workspaceAnchorEl)}
                 onClose={handleClose}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'left',
-                }}
               >
-                <MenuItem
-                  onClick={() => handleWorkspaceOptionClick('backstage')}
-                  style={{
-                    fontWeight:
-                      selectedNamespaceOption === 'backstage'
-                        ? 'bold'
-                        : 'normal',
-                    minWidth: '150px',
-                  }}
-                >
-                  Backstage
-                </MenuItem>
-                <MenuItem
-                  onClick={() => handleWorkspaceOptionClick('spaship_docs')}
-                  style={{
-                    fontWeight:
-                      selectedNamespaceOption === 'spaship_docs'
-                        ? 'bold'
-                        : 'normal',
-                    minWidth: '150px',
-                  }}
-                >
-                  SPAship
-                </MenuItem>
+                {[
+                  'backstage',
+                  'portfolio_management_and_strategy',
+                  'spaship_docs',
+                ].map(option => (
+                  <MenuItem
+                    key={option}
+                    onClick={() => handleWorkspaceOptionClick(option)}
+                    style={{
+                      fontWeight:
+                        selectedNamespaceOption === option ? 'bold' : 'normal',
+                      minWidth: '150px',
+                    }}
+                  >
+                    {getWorkspaceTitle(option)}
+                  </MenuItem>
+                ))}
               </Menu>
             </div>
           </div>

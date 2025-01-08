@@ -92,7 +92,7 @@ const DocsBotExpectationBanner: React.FC<DocsBotExpectationBannerProps> = ({
               <img
                 src={CacheToggle}
                 alt="icon"
-                height={300}
+                height="300vh"
                 style={{ display: 'block', margin: '20px auto' }}
               />
             </ul>
