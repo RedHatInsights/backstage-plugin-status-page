@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-docsbot [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-docsbot@1.5.0...@appdev-platform/backstage-plugin-docsbot@1.6.0) (2025-01-09)
+
+
+### Features
+
+* **docsbot-plugin:** Adding analytics for docsbot ([cc5d762](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/cc5d762f831b20ebb9841d6e781c3c5191f0d79d))
+
 ## @appdev-platform/backstage-plugin-docsbot [1.5.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-docsbot@1.4.0...@appdev-platform/backstage-plugin-docsbot@1.5.0) (2025-01-08)
 
 
