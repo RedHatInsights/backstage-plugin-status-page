@@ -31,6 +31,11 @@ import {
 import { usePermission } from '@backstage/plugin-permission-react';
 import { workstreamCreatePermission } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { createTableColumnsFunc } from './createCatalogTableFunc';
+import {
+  ExportCsv as exportCsv,
+  ExportPdf as exportPdf,
+} from '@material-table/exporters';
+
 
 const HeaderButtons = () => {
   const createComponentLink = useRouteRef(
@@ -66,7 +71,7 @@ export const CatalogPage = () => {
   return (
     <PageWithHeader title={orgName} themeId="app">
       <Content>
-        <EntityListProvider pagination>
+        <EntityListProvider>
           <ContentHeader title="">
             <HeaderButtons />
           </ContentHeader>
@@ -94,7 +99,27 @@ export const CatalogPage = () => {
                 columns={createTableColumnsFunc}
                 tableOptions={{
                   padding: 'dense',
-                  draggable: false,
+                  draggable: true,
+                  columnsButton: true,
+                  paginationPosition: 'both',
+                  exportAllData: true,
+                  exportMenu: [
+                    {
+                      label: 'Export to PDF',
+                      exportFunc: (columns, renderData) =>
+                        exportPdf(
+                          columns,
+                          renderData,
+                          `pdf_${new Date().getTime()}`,
+                        ),
+                    },
+                    {
+                      label: 'Export to CSV',
+                      exportFunc: (col, rData) => {
+                        exportCsv(col, rData, `csv_${new Date().getTime()}`);
+                      },
+                    },
+                  ],
                 }}
                 actions={[]}
               />
