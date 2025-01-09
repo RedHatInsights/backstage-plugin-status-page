@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import { useAnalytics } from '@backstage/core-plugin-api';
 import { Button, Grid, TextField } from '@material-ui/core';
+import React, { useState } from 'react';
 
 interface DocsBotInputProps {
   onSendMessage: (message: string) => void;
@@ -13,10 +14,11 @@ const DocsBotInput: React.FC<DocsBotInputProps> = ({
   placeholder,
 }) => {
   const [inputValue, setInputValue] = useState('');
-
+  const analytics = useAnalytics();
   const handleMessageSend = () => {
     onSendMessage(inputValue);
     setInputValue('');
+    analytics.captureEvent('click', `Docsbot query asked`);
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {

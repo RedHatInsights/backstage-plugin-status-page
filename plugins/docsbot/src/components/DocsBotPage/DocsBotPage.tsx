@@ -2,6 +2,7 @@ import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
 import {
   alertApiRef,
   configApiRef,
+  useAnalytics,
   discoveryApiRef,
   identityApiRef,
   useApi,
@@ -40,6 +41,7 @@ interface ChatMessage {
 
 export const DocsBotPage = () => {
   const theme = useTheme();
+  const analytics = useAnalytics();
   const config = useApi(configApiRef);
   const identityApi = useApi(identityApiRef);
   const classes = useStyles(theme);
@@ -272,6 +274,7 @@ export const DocsBotPage = () => {
     setIsInputDisabled(false);
     setUserQuestion('');
     setPreviousQuestion(null);
+    analytics.captureEvent('click', 'Docsbot session refreshed');
   };
 
   useEffect(() => {
@@ -302,6 +305,7 @@ export const DocsBotPage = () => {
   const handleWorkspaceOptionClick = (option: string) => {
     setSelectedNamespaceOption(option);
     handleClose();
+    analytics.captureEvent('click', `Docsbot source: ${option}`);
   };
   const getWorkspaceTitle = (option: string): string => {
     const titles: Record<string, string> = {

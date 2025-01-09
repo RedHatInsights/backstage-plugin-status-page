@@ -4,6 +4,7 @@ import {
   identityApiRef,
   useApi,
   useRouteRef,
+  useAnalytics,
 } from '@backstage/core-plugin-api';
 import {
   CardContent,
@@ -63,7 +64,7 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
   const [isBannerOpen, setIsBannerOpen] = useState<boolean>(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
+  const analytics = useAnalytics();
   const [username, setUsername] = useState<string | undefined>(undefined);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [workspaceAnchorEl, setWorkspaceAnchorEl] =
@@ -277,6 +278,7 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
     setUserQuestion('');
     setPreviousQuestion(null);
     setIsCacheEnabled(true);
+    analytics.captureEvent('click', 'Docsbot session refreshed');
   };
 
   const handleInfoIconClick = () => {
@@ -299,11 +301,13 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
   const handleWorkspaceOptionClick = (option: string) => {
     setSelectedNamespaceOption(option);
     handleClose();
+    analytics.captureEvent('click', `Docsbot source changed: ${option}`);
   };
 
   const handleExpand = () => {
     toggleDrawer();
     window.location.href = docsBotLink();
+    analytics.captureEvent('navigate', '/docsbot');
     handleClose();
   };
 
