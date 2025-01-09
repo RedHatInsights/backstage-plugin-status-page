@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.7.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.6.3...@appdev-platform/backstage-plugin-workstream-automation@1.7.0) (2025-01-09)
+
+
+### Features
+
+* **PLUSE-126:** add catalog export option for all entities ([28b6a79](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/28b6a79541f449b20acff89c3d0cb1f881fe4014))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.6.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.6.2...@appdev-platform/backstage-plugin-workstream-automation@1.6.3) (2025-01-06)
 
 
