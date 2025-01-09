@@ -5,6 +5,7 @@ import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import { marked } from 'marked';
 import DocsBotFeedbackPopup from '../DocsBotFeedbackPopup/DocsBotFeedbackPopup';
 import useStyles from './DocsBotMessage.styles';
+import { useAnalytics } from '@backstage/core-plugin-api';
 
 interface DocsBotMessageProps {
   message: string;
@@ -30,7 +31,7 @@ const DocsBotMessage: React.FC<DocsBotMessageProps> = ({
 }) => {
   const theme = useTheme();
   const classes = useStyles(theme);
-
+  const analytics = useAnalytics();
   const [feedbackValue, setFeedbackValue] = useState<number | null>(null);
   const [isFeedbackPopupOpen, setIsFeedbackPopupOpen] =
     useState<boolean>(false);
@@ -45,6 +46,7 @@ const DocsBotMessage: React.FC<DocsBotMessageProps> = ({
     if (feedbackValue !== null) {
       onFeedback(message, feedbackValue, userQuestion, description);
     }
+    analytics.captureEvent('click', `Docsbot feedback: ${feedbackValue}`);
     setIsFeedbackPopupOpen(false);
   };
 
