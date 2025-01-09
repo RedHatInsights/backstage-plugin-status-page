@@ -2,7 +2,7 @@
  * reference: https://github.com/backstage/backstage/blob/master/plugins/catalog/src/components/CatalogTable/columns.tsx
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, parseEntityRef } from '@backstage/catalog-model';
 import { Link, OverflowTooltip, TableColumn } from '@backstage/core-components';
 import { CatalogTableRow } from '@backstage/plugin-catalog';
 import {
@@ -71,6 +71,8 @@ export const columnFactories = Object.freeze({
         return <EntityRefLink entityRef={entity} />;
       },
       width: '20%',
+      customExport: ({ entity }) =>
+        entity.metadata.title ?? entity.metadata.title,
     };
   },
 
@@ -99,6 +101,8 @@ export const columnFactories = Object.freeze({
         ) : (
           '-'
         ),
+      customExport: ({ entity }) =>
+        parseEntityRef(entity.spec?.lead as string).name,
     };
   },
   createPillarColumn(): TableColumn<CatalogTableRow> {
@@ -113,7 +117,7 @@ export const columnFactories = Object.freeze({
     return {
       title: 'JIRA Project',
       field: 'entity.metadata.annotations.jira/project-key',
-      width: '18%',
+      width: '10%',
       render: ({ entity }) =>
         entity.metadata?.annotations!['jira/project-key'] ? (
           <Link
@@ -128,22 +132,85 @@ export const columnFactories = Object.freeze({
   },
   createMembersColumn(): TableColumn<CatalogTableRow> {
     return {
+      field: 'enitity.spec.members',
       title: 'Members',
       sorting: false,
       width: '18%',
       render: ({ entity }) => (
         <MembersColumn members={entity.spec?.members as Member[]} />
       ),
+      customExport: ({ entity }) => {
+        return (
+          (entity.spec?.members as Member[])
+            .map(
+              member =>
+                `${parseEntityRef(member.userRef).name} - ${member.role}`,
+            )
+            .join(',\n') ?? '-'
+        );
+      },
     };
   },
 
   createActionsColumn(): TableColumn<CatalogTableRow> {
     return {
-      title: '',
+      title: 'Actions',
       sorting: false,
       align: 'left',
       width: '5%',
       render: data => <ActionIcons entity={data.entity} />,
+    };
+  },
+
+  // Kept if required in future
+  createTechLeadColumn(): TableColumn<CatalogTableRow> {
+    return {
+      field: 'enitity.spec.members',
+      title: 'Technical Lead',
+      sorting: false,
+      width: '12%',
+      customExport: ({ entity }) =>
+        (entity.spec?.members as Member[])
+          .filter(member => member.role === 'Technical Lead')
+          .map(member => parseEntityRef(member.userRef).name)
+          .join(',\n') ?? '-',
+      hidden: true,
+      hiddenByColumnsButton: true,
+      export: true,
+    };
+  },
+  createSEColumn(): TableColumn<CatalogTableRow> {
+    return {
+      field: 'enitity.spec.members',
+      title: 'Software Engineer',
+      sorting: false,
+      width: '12%',
+      customExport: ({ entity }) =>
+        (entity.spec?.members as Member[])
+          .filter(member => member.role === 'Software Engineer')
+          .map(
+            member => `${parseEntityRef(member.userRef).name} ${member.role}`,
+          )
+          .join(',\n') ?? '-',
+      hidden: true,
+      hiddenByColumnsButton: true,
+      export: true,
+    };
+  },
+  createQEColumn(): TableColumn<CatalogTableRow> {
+    return {
+      field: 'enitity.spec.members',
+      title: 'Quality Engineer',
+      sorting: false,
+      width: '12%',
+      customExport: ({ entity }) =>
+        (entity.spec?.members as Member[])
+          .filter(member => member.role === 'Quality Engineer')
+          .map(member => parseEntityRef(member.userRef).name)
+          .join(',\n') ?? '-',
+      hidden: true,
+      hiddenByColumnsButton: true,
+      export: true,
     };
   },
 });

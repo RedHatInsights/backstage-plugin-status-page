@@ -3076,6 +3076,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.23.2":
+  version: 7.26.0
+  resolution: "@babel/runtime@npm:7.26.0"
+  dependencies:
+    regenerator-runtime: ^0.14.0
+  checksum: c8e2c0504ab271b3467a261a8f119bf2603eb857a0d71e37791f4e3fae00f681365073cc79f141ddaa90c6077c60ba56448004ad5429d07ac73532be9f7cf28a
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.24.7, @babel/template@npm:^7.25.0, @babel/template@npm:^7.3.3":
   version: 7.25.0
   resolution: "@babel/template@npm:7.25.0"
@@ -9423,6 +9432,19 @@ __metadata:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
   checksum: 707e85cfcb8c1cfc8eb78ea6991509879f774081d7a54ad428f702fe00478b6d3707d0fd85f4ad443ebcfac0c0cab79c046c4d5083adcbc767615445667b50cf
+  languageName: node
+  linkType: hard
+
+"@material-table/exporters@npm:^1.2.19":
+  version: 1.2.19
+  resolution: "@material-table/exporters@npm:1.2.19"
+  dependencies:
+    filefy: ^0.1.11
+    jspdf: ^2.5.1
+    jspdf-autotable: ^3.6.0
+  peerDependencies:
+    "@material-table/core": "*"
+  checksum: 7cfdabb7ae2979b874a9dc13e14c4beda86f22d1f618ddc01cb6f71d9e04a46be2d9cf49351efa8676353516d03cf42a8bd63520b610ee2a293165155dd7faf3
   languageName: node
   linkType: hard
 
@@ -17147,6 +17169,7 @@ __metadata:
     "@backstage/types": ^1.1.1
     "@janus-idp/backstage-plugin-analytics-module-matomo": ^1.2.2
     "@janus-idp/backstage-plugin-feedback": ^1.3.2
+    "@material-table/exporters": ^1.2.19
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@redhat-developer/red-hat-developer-hub-theme": ^0.2.0
@@ -21875,6 +21898,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dompurify@npm:^2.5.4":
+  version: 2.5.8
+  resolution: "dompurify@npm:2.5.8"
+  checksum: 8d7acd42bfc75d3dd9030d61201e346fffc4fd5f62e491a446564f0d5e0ffc1635712ccf7781302b00c4fefe412a030b5434c9e803605d81343e923b088cde7e
+  languageName: node
+  linkType: hard
+
 "dompurify@npm:^3.0.0":
   version: 3.1.6
   resolution: "dompurify@npm:3.1.6"
@@ -23694,6 +23724,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fflate@npm:^0.8.1":
+  version: 0.8.2
+  resolution: "fflate@npm:0.8.2"
+  checksum: 29470337b85d3831826758e78f370e15cda3169c5cd4477c9b5eea2402261a74b2975bae816afabe1c15d21d98591e0d30a574f7103aa117bff60756fa3035d4
+  languageName: node
+  linkType: hard
+
 "figures@npm:^2.0.0":
   version: 2.0.0
   resolution: "figures@npm:2.0.0"
@@ -23743,6 +23780,13 @@ __metadata:
   version: 0.1.10
   resolution: "filefy@npm:0.1.10"
   checksum: d31993448f2125f2f74623ebe2f5904ae7d992fe4187fa8a433e83a8cb59e8941646d62ed8c832d1d8384d8bc98ee16c229f54b2ecea03696cf26f15255fa4c4
+  languageName: node
+  linkType: hard
+
+"filefy@npm:^0.1.11":
+  version: 0.1.11
+  resolution: "filefy@npm:0.1.11"
+  checksum: b65e7a92ec80f8bb4d9f7d8df6434b4b13c8202b3dc0feefeda53f2e7525a11a89a507ac7b6ae512f813b8ef6bf216202ae609a3f5d062198017dee4fa56e74b
   languageName: node
   linkType: hard
 
@@ -28134,6 +28178,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jspdf-autotable@npm:^3.6.0":
+  version: 3.8.4
+  resolution: "jspdf-autotable@npm:3.8.4"
+  peerDependencies:
+    jspdf: ^2.5.1
+  checksum: dfcc127f7e838da1487d4dddefb2b71c2d677017feb15bc526103321e98019fa105e1cb2c1d5eb02f1ede358787cc30ee614a25051626cef4ed0ba4d790f5d59
+  languageName: node
+  linkType: hard
+
 "jspdf@npm:2.1.0":
   version: 2.1.0
   resolution: "jspdf@npm:2.1.0"
@@ -28154,6 +28207,31 @@ __metadata:
     html2canvas:
       optional: true
   checksum: f604cb5b4749ca4c54eae933afe88527f9a92f533c3bc41790abdfc6ee04c7d2f7f3cdb184c23861797fa1980c96db79c7e59b65780c553d66b7b3ea74496bd4
+  languageName: node
+  linkType: hard
+
+"jspdf@npm:^2.5.1":
+  version: 2.5.2
+  resolution: "jspdf@npm:2.5.2"
+  dependencies:
+    "@babel/runtime": ^7.23.2
+    atob: ^2.1.2
+    btoa: ^1.2.1
+    canvg: ^3.0.6
+    core-js: ^3.6.0
+    dompurify: ^2.5.4
+    fflate: ^0.8.1
+    html2canvas: ^1.0.0-rc.5
+  dependenciesMeta:
+    canvg:
+      optional: true
+    core-js:
+      optional: true
+    dompurify:
+      optional: true
+    html2canvas:
+      optional: true
+  checksum: e59ab3e5f6ac68ec13d8041f9ccbc2ea4b48c353ae7c078d81cd8940c647ac0b8d2274c9c88083709d18946384579a2956f1f66c4c0cab81ec5d09e24ee361d2
   languageName: node
   linkType: hard
 
