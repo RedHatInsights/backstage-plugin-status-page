@@ -83,7 +83,7 @@ export const WorkstreamLinksCard = (props: { variant: InfoCardVariants }) => {
           <RequirePermission
             permission={workstreamUpdatePermission}
             resourceRef={stringifyEntityRef(entity)}
-            errorPage={null}
+            errorPage={<></>}
           >
             <IconButton onClick={() => setOpen(true)}>
               <EditTwoTone />
