@@ -1,5 +1,18 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.7.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.7.1...@appdev-platform/backstage-plugin-workstream-automation@1.7.2) (2025-01-10)
+
+
+### Bug Fixes
+
+* **wa:** fixed LinksCard permission component ([4b8097d](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/4b8097dc39aa979c44dc2d0c502cd9dc06ebbed7))
+
+
+
+### Dependencies
+
+* **@appdev-platform/backstage-plugin-workstream-automation-common:** upgraded to 1.0.0
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.7.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.7.0...@appdev-platform/backstage-plugin-workstream-automation@1.7.1) (2025-01-10)
 
 
