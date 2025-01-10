@@ -102,7 +102,9 @@ export const columnFactories = Object.freeze({
           '-'
         ),
       customExport: ({ entity }) =>
-        parseEntityRef(entity.spec?.lead as string).name,
+        entity.spec?.lead
+          ? parseEntityRef(entity.spec.lead as string).name
+          : '-',
     };
   },
   createPillarColumn(): TableColumn<CatalogTableRow> {
