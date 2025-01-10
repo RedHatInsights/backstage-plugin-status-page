@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.7.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.7.0...@appdev-platform/backstage-plugin-workstream-automation@1.7.1) (2025-01-10)
+
+
+### Bug Fixes
+
+* **wa:** add condition for lead column ([d2e6f4b](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/d2e6f4b7124bcbfd65c5d1147259480292ac5211))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.7.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.6.3...@appdev-platform/backstage-plugin-workstream-automation@1.7.0) (2025-01-09)
 
 
