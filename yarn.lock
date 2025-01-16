@@ -437,11 +437,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@appdev-platform/backstage-plugin-workstream-automation-common@npm:1.0.0":
+  version: 1.0.0
+  resolution: "@appdev-platform/backstage-plugin-workstream-automation-common@npm:1.0.0"
+  dependencies:
+    "@backstage/catalog-model": ^1.5.0
+    "@backstage/plugin-permission-common": ^0.8.0
+  checksum: 307aeda82270b6fe328c74284a11997a7f9a981d1288ffbbba41a57f37b171742be16ac227fd5efc7169f58b02116719cd883aa3aab8d2669848e6a1e9e12a37
+  languageName: node
+  linkType: hard
+
 "@appdev-platform/backstage-plugin-workstream-automation@*, @appdev-platform/backstage-plugin-workstream-automation@workspace:plugins/workstream-automation":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-workstream-automation@workspace:plugins/workstream-automation"
   dependencies:
-    "@appdev-platform/backstage-plugin-workstream-automation-common": 1.1.1
+    "@appdev-platform/backstage-plugin-workstream-automation-common": 1.0.0
     "@backstage/catalog-client": ^1.6.5
     "@backstage/catalog-model": ^1.5.0
     "@backstage/cli": ^0.26.9
