@@ -122,6 +122,18 @@ const useStyles = makeStyles(theme => ({
     fontSize: '12px',
     marginBottom: theme.spacing(1),
   },
+  betaChip: {
+    padding: '0!important',
+    margin: '8px 0px 0px 0px',
+  },
+  linkDecoration: {
+    textDecoration: 'underline',
+    cursor: 'pointer',
+    backgroundColor: 'transparent',
+    border: 0,
+    padding: 0,
+    color: '#6A6A6A',
+  },
 }));
 
 export default useStyles;

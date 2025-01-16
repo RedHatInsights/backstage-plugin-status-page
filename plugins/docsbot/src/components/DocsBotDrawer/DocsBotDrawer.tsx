@@ -2,9 +2,9 @@ import {
   alertApiRef,
   discoveryApiRef,
   identityApiRef,
+  useAnalytics,
   useApi,
   useRouteRef,
-  useAnalytics,
 } from '@backstage/core-plugin-api';
 import {
   CardContent,
@@ -21,8 +21,9 @@ import {
   useTheme,
 } from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import InfoIcon from '@material-ui/icons/Info';
+import CloseIcon from '@material-ui/icons/Close';
 import MenuIcon from '@material-ui/icons/Menu';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import axios from 'axios';
@@ -344,9 +345,8 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
                     DocsBot
                   </Typography>
                 </Grid>
-                <Grid item xs={4} style={{ padding: 0 }}>
+                <Grid item xs={4} className={classes.betaChip}>
                   <Chip
-                    style={{ margin: '8px 0px 0px 0px', padding: 0 }}
                     label="Beta"
                     size="small"
                     color="primary"
@@ -357,11 +357,6 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
             </div>
 
             <div className={classes.iconsSection}>
-              <Tooltip title="DocsBot Expectations">
-                <IconButton onClick={handleInfoIconClick}>
-                  <InfoIcon />
-                </IconButton>
-              </Tooltip>
               <Tooltip title="Refresh Chat">
                 <IconButton onClick={handleRefresh}>
                   <RefreshIcon />
@@ -369,7 +364,7 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
               </Tooltip>
               <Tooltip title="Settings">
                 <IconButton onClick={handleSettingsClick}>
-                  <MenuIcon />
+                  <MoreVertIcon />
                 </IconButton>
               </Tooltip>
 
@@ -378,6 +373,17 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
                   <OpenInNewIcon />
                 </IconButton>
               </Tooltip>
+              <Tooltip title="Close Chat">
+                <IconButton
+                  onClick={() => {
+                    toggleDrawer();
+                    handleClose();
+                  }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Tooltip>
+
               <Menu
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
@@ -417,15 +423,6 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
                   label={`Cache ${isCacheEnabled ? 'Enabled' : 'Disabled'}`}
                   labelPlacement="start"
                 />
-
-                <MenuItem
-                  onClick={() => {
-                    toggleDrawer();
-                    handleClose();
-                  }}
-                >
-                  Close Chat
-                </MenuItem>
               </Menu>
 
               <Menu
@@ -461,9 +458,7 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
           <div className={classes.container}>
             <CardContent className={classes.cardContent}>
               {userQuestion === '' ? (
-                <>
-                  <DocsBotInfoTiles />
-                </>
+                <DocsBotInfoTiles />
               ) : (
                 <>
                   {chatMessages.map((message, index) => (
@@ -503,7 +498,13 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
               <div className={classes.disclaimer}>
                 Disclaimer: Due to hardware constraints, responses may be
                 delayed, and since DocsBot is still in training, some answers
-                may not be accurate.
+                may not be accurate.{' '}
+                <button
+                  className={classes.linkDecoration}
+                  onClick={handleInfoIconClick}
+                >
+                  More info
+                </button>
               </div>
             </div>
           </div>

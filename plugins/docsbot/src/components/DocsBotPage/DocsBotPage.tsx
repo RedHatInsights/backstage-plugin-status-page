@@ -2,9 +2,9 @@ import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
 import {
   alertApiRef,
   configApiRef,
-  useAnalytics,
   discoveryApiRef,
   identityApiRef,
+  useAnalytics,
   useApi,
 } from '@backstage/core-plugin-api';
 import {
@@ -21,7 +21,7 @@ import {
 } from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import InfoIcon from '@material-ui/icons/Info';
-import MenuIcon from '@material-ui/icons/Menu';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
@@ -432,7 +432,7 @@ export const DocsBotPage = () => {
                 {/* Settings Menu */}
                 <Tooltip title="Settings">
                   <IconButton onClick={handleSettingsClick}>
-                    <MenuIcon />
+                    <MoreVertIcon />
                   </IconButton>
                 </Tooltip>
                 <Menu

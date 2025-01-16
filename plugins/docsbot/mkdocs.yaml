@@ -3,7 +3,10 @@ repo_url: https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/
 site_description: A Plugin that displays chatbot in panel and main component for documentation.
 
 nav:
-  - README: 'README.md'
+  - Introduction: introduction.md
+  - Installation & Setup: installation.md
+  - Usage Guide: usage_guide.md
+  - FAQs: faqs.md
 
 plugins:
   - techdocs-core
