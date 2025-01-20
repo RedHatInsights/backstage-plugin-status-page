@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.7.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.7.2...@appdev-platform/backstage-plugin-workstream-automation@1.7.3) (2025-01-20)
+
+
+### Bug Fixes
+
+* **no-release:** fix WA dependencies ([c66f58c](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/c66f58c102dde2ec66b5e719c5c8151e5eae069b))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.7.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.7.1...@appdev-platform/backstage-plugin-workstream-automation@1.7.2) (2025-01-10)
 
 
