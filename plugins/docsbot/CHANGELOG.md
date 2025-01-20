@@ -1,5 +1,13 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-docsbot [1.7.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-docsbot@1.6.0...@appdev-platform/backstage-plugin-docsbot@1.7.0) (2025-01-20)
+
+
+### Features
+
+* **docsbot-plugin:** Adding Docs and moving expectations icon in drawer in disclaimer ([139bd43](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/139bd43756bbcd35cef3b3a3113d89a12759609f))
+* **docsbot-plugin:** Resolving build and lint issues ([3744891](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/374489159774821a871ea45b9de5672756e5e8da))
+
 ## @appdev-platform/backstage-plugin-docsbot [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-docsbot@1.5.0...@appdev-platform/backstage-plugin-docsbot@1.6.0) (2025-01-09)
 
 
