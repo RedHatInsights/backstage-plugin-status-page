@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-index [1.0.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-index@1.0.0...@appdev-platform/backstage-plugin-catalog-index@1.0.1) (2025-01-20)
+
+
+### Other changes
+
+* **release:** 1.0.0 [skip ci] ([6ced933](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/6ced933430b5723c8133c1dd32b8f13fde99438f))
+
 ## @appdev-platform/backstage-plugin-catalog-index 1.0.0 (2025-01-10)
 
 
