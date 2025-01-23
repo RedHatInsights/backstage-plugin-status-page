@@ -1,6 +1,6 @@
 import { outageTemplatePlugin } from './plugin';
 
-describe('outage-template', () => {
+describe('outages', () => {
   it('should export plugin', () => {
     expect(outageTemplatePlugin).toBeDefined();
   });

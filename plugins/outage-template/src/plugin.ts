@@ -8,11 +8,11 @@ import {
   FetchApi,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
-import { OutageApi, outageApiRef } from './api';
+import { StatuspageApi, outageApiRef } from './api';
 import { rootRouteRef } from './routes';
 
 export const outageTemplatePlugin = createPlugin({
-  id: 'outage-template',
+  id: 'outages',
   routes: {
     root: rootRouteRef,
   },
@@ -29,7 +29,7 @@ export const outageTemplatePlugin = createPlugin({
         fetchApi: FetchApi;
         alertApi: AlertApi;
       }) {
-        return new OutageApi(deps);
+        return new StatuspageApi(deps);
       },
     },
   ],

@@ -62,7 +62,7 @@ import SettingsEthernet from '@material-ui/icons/SettingsEthernet';
 import { HydraSupportDashboardPage } from '@appdev-platform/backstage-plugin-hydra-support-dashboard';
 import { WORKSTREAM_RELATION_PAIR } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import WebLinkIcon from '@material-ui/icons/Language';
-import { OutageTemplatePage } from '@appdev-platform/backstage-plugin-outage-template';
+import { OutageTemplatePage } from '@appdev-platform/backstage-plugin-outages';
 
 const app = createApp({
   apis,
@@ -165,7 +165,7 @@ const routes = (
       path="/hydra-support-dashboard"
       element={<HydraSupportDashboardPage />}
     />
-    <Route path="/outage-template" element={<OutageTemplatePage />} />
+    <Route path="/outages" element={<OutageTemplatePage />} />
   </FlatRoutes>
 );
 

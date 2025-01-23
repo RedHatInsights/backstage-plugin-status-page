@@ -11,14 +11,12 @@ metadata:
     - developers
     - outage-template
     - documentation
-    - chatbot
+    - statuspage
   links:
     - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-outage-template
-      title: Backstage outage-template Plugin NPM Package
-  annotations:
-    backstage.io/techdocs-ref: dir:.
+      title: Backstage outage Plugin NPM Package
 spec:
   type: library
   lifecycle: production
-  owner: group:redhat/chaturdocs
+  owner: group:redhat/one-platform-devs
   system: devex/redhat-experience-platform

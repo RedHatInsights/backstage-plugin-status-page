@@ -20,19 +20,9 @@ export const OutageComponent = () => {
   const [editingIncident, setEditingIncident] = useState<any | null>(null);
   const [deletingIncident, setDeletingIncident] = useState<any | null>(null);
   const discoveryApiRefOutage = useApi(discoveryApiRef);
-  const [baseUrl, setBaseUrl] = useState<string>('');
   const outageApi = useApi(outageApiRef);
 
   useEffect(() => {
-    const loadBaseUrl = async () => {
-      try {
-        const proxy = await discoveryApiRefOutage.getBaseUrl('proxy');
-        setBaseUrl(`${proxy}/statuspage`);
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error fetching base URL:', error);
-      }
-    };
     const loadIncidents = async () => {
       try {
         const fetchedIncidents = await outageApi.fetchIncidents();
@@ -42,11 +32,8 @@ export const OutageComponent = () => {
         console.error('Error fetching incidents:', error);
       }
     };
-    if (!baseUrl) {
-      loadBaseUrl();
-    }
     loadIncidents();
-  }, [baseUrl, discoveryApiRefOutage, outageApi]);
+  }, [discoveryApiRefOutage, outageApi]);
 
   const handleCreateSubmit = async (incidentData: Incident) => {
     const updatedIncidents = await outageApi.createIncident(incidentData);

@@ -328,9 +328,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-outage-template@^0.1.0, @appdev-platform/backstage-plugin-outage-template@workspace:plugins/outage-template":
+"@appdev-platform/backstage-plugin-outages@*, @appdev-platform/backstage-plugin-outages@workspace:plugins/outage-template":
   version: 0.0.0-use.local
-  resolution: "@appdev-platform/backstage-plugin-outage-template@workspace:plugins/outage-template"
+  resolution: "@appdev-platform/backstage-plugin-outages@workspace:plugins/outage-template"
   dependencies:
     "@backstage/cli": ^0.26.9
     "@backstage/core-app-api": ^1.14.0
@@ -17136,7 +17136,7 @@ __metadata:
     "@appdev-platform/backstage-plugin-hydra-support-dashboard": "*"
     "@appdev-platform/backstage-plugin-lighthouse": "*"
     "@appdev-platform/backstage-plugin-matomo": "*"
-    "@appdev-platform/backstage-plugin-outage-template": ^0.1.0
+    "@appdev-platform/backstage-plugin-outages": "*"
     "@appdev-platform/backstage-plugin-proxy-manager": "*"
     "@appdev-platform/backstage-plugin-spaship": "*"
     "@appdev-platform/backstage-plugin-workstream-automation": "*"
