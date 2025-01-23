@@ -19,7 +19,6 @@ export const OutageComponent = () => {
   );
   const [editingIncident, setEditingIncident] = useState<any | null>(null);
   const [deletingIncident, setDeletingIncident] = useState<any | null>(null);
-  const discoveryApiRefOutage = useApi(discoveryApiRef);
   const outageApi = useApi(outageApiRef);
 
   useEffect(() => {
@@ -33,7 +32,7 @@ export const OutageComponent = () => {
       }
     };
     loadIncidents();
-  }, [discoveryApiRefOutage, outageApi]);
+  }, [outageApi]);
 
   const handleCreateSubmit = async (incidentData: Incident) => {
     const updatedIncidents = await outageApi.createIncident(incidentData);
