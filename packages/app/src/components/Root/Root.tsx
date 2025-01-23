@@ -153,6 +153,15 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
           <Grid container>
             <Grid item xs={8}>
               <SidebarItem
+                 icon={FeedbackIcon as IconComponent}
+                to="outage-template"
+                text="Outage"
+              />
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={8}>
+              <SidebarItem
                 icon={DataUsageIcon as IconComponent}
                 to="hydra-support-dashboard"
                 text="Hydra Dashboard"

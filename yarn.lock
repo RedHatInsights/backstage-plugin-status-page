@@ -328,6 +328,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@appdev-platform/backstage-plugin-outage-template@^0.1.0, @appdev-platform/backstage-plugin-outage-template@workspace:plugins/outage-template":
+  version: 0.0.0-use.local
+  resolution: "@appdev-platform/backstage-plugin-outage-template@workspace:plugins/outage-template"
+  dependencies:
+    "@backstage/cli": ^0.26.9
+    "@backstage/core-app-api": ^1.14.0
+    "@backstage/core-components": ^0.14.9
+    "@backstage/core-plugin-api": ^1.9.3
+    "@backstage/dev-utils": ^1.0.33
+    "@backstage/test-utils": ^1.5.6
+    "@backstage/theme": ^0.5.6
+    "@material-ui/core": ^4.9.13
+    "@material-ui/icons": ^4.9.1
+    "@material-ui/lab": ^4.0.0-alpha.60
+    "@testing-library/jest-dom": ^6.0.0
+    "@testing-library/react": ^14.0.0
+    "@testing-library/user-event": ^14.0.0
+    msw: ^1.0.0
+    react: ^16.13.1 || ^17.0.0
+    react-use: ^17.2.4
+  peerDependencies:
+    react: "^16.13.1 || ^17.0.0 "
+  languageName: unknown
+  linkType: soft
+
 "@appdev-platform/backstage-plugin-proxy-manager@*, @appdev-platform/backstage-plugin-proxy-manager@workspace:plugins/proxy-manager":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-proxy-manager@workspace:plugins/proxy-manager"
@@ -17111,6 +17136,7 @@ __metadata:
     "@appdev-platform/backstage-plugin-hydra-support-dashboard": "*"
     "@appdev-platform/backstage-plugin-lighthouse": "*"
     "@appdev-platform/backstage-plugin-matomo": "*"
+    "@appdev-platform/backstage-plugin-outage-template": ^0.1.0
     "@appdev-platform/backstage-plugin-proxy-manager": "*"
     "@appdev-platform/backstage-plugin-spaship": "*"
     "@appdev-platform/backstage-plugin-workstream-automation": "*"

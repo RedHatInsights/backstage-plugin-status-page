@@ -1,0 +1,24 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: outage-template-plugin
+  title: Outage Template Plugin Backstage
+  description: Backstage Plugin for Outage Template
+  namespace: devex
+  tags:
+    - backstage
+    - idp
+    - developers
+    - outage-template
+    - documentation
+    - chatbot
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-outage-template
+      title: Backstage outage-template Plugin NPM Package
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: library
+  lifecycle: production
+  owner: group:redhat/chaturdocs
+  system: devex/redhat-experience-platform

@@ -105,6 +105,14 @@ proxy:
       credentials: dangerously-allow-unauthenticated
       changeOrigin: true
       allowedMethods: ['GET', 'POST']
+    '/statuspage':
+      target: ${STATUSPAGE_URL}
+      credentials: dangerously-allow-unauthenticated
+      changeOrigin: true
+      headers:
+        Authorization: ${STATUSPAGE_AUTH}
+        Content-Type: 'application/json'
+      allowedMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
 
 jira:
   proxyPath: /jira
@@ -145,7 +153,7 @@ feedback:
       port: ${EMAIL_PORT}
       from: ${EMAIL_FROM}
       secure: false # true if port is 465
-      caCert: ${NODE_EXTRA_CA_CERTS}
+      #caCert: ${NODE_EXTRA_CA_CERTS}
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 # Note: After experimenting with basic setup, use CI/CD to generate docs
@@ -257,3 +265,12 @@ permission:
       - name: user:redhat/yoswal
       - name: user:redhat/mdeshmuk
       - name: user:redhat/roommen
+
+# Report portal plugin
+reportPortal:
+  supportEmail: ${REPORT_PORTAL_SUPPORT_EMAIL}
+  integrations:
+    - host: ${REPORT_PORTAL_HOST}
+      baseUrl: ${REPORT_PORTAL_BASE_URL}
+      token: ${REPORT_PORTAL_TOKEN}
+      filterType: 'INTERNAL'
