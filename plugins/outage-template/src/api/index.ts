@@ -25,16 +25,15 @@ export class StatuspageApi {
   }
 
   private async getBaseUrl(): Promise<string> {
-    return this.discoveryApi.getBaseUrl('proxy');
+    return `${await this.discoveryApi.getBaseUrl('proxy')}/statuspage`;
   }
 
   async fetchIncidents() {
     try {
       const baseUrl = await this.getBaseUrl();
-      const response = await this.fetchApi.fetch(
-        `${baseUrl}/statuspage/incidents.json`,
-        { method: 'GET' },
-      );
+      const response = await this.fetchApi.fetch(`${baseUrl}/incidents.json`, {
+        method: 'GET',
+      });
       if (!response.ok) {
         throw new Error(
           `Failed to fetch incidents: ${response.status} ${response.statusText}`,
@@ -69,7 +68,7 @@ export class StatuspageApi {
   async createIncident(incidentData: Incident) {
     try {
       const baseUrl = await this.getBaseUrl();
-      await this.fetchApi.fetch(`${baseUrl}/statuspage/incidents`, {
+      await this.fetchApi.fetch(`${baseUrl}/incidents`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ incident: incidentData }),
@@ -94,7 +93,7 @@ export class StatuspageApi {
     try {
       const baseUrl = await this.getBaseUrl();
       const response = await this.fetchApi.fetch(
-        `${baseUrl}/statuspage/incidents/${incidentId}`,
+        `${baseUrl}/incidents/${incidentId}`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
@@ -132,12 +131,9 @@ export class StatuspageApi {
   async deleteIncident(incidentId: string) {
     try {
       const baseUrl = await this.getBaseUrl();
-      await this.fetchApi.fetch(
-        `${baseUrl}/statuspage/incidents/${incidentId}.json`,
-        {
-          method: 'DELETE',
-        },
-      );
+      await this.fetchApi.fetch(`${baseUrl}/incidents/${incidentId}.json`, {
+        method: 'DELETE',
+      });
       this.alertApi.post({
         message: 'Incident deleted successfully',
         severity: 'success',
