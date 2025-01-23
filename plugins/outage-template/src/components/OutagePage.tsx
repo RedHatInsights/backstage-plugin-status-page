@@ -1,5 +1,5 @@
 import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
-import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import { Button, Grid, TextField } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { outageApiRef } from '../api';
