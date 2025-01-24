@@ -107,8 +107,6 @@ proxy:
       allowedMethods: ['GET', 'POST']
     '/statuspage':
       target: ${STATUSPAGE_URL}
-      credentials: dangerously-allow-unauthenticated
-      changeOrigin: true
       headers:
         Authorization: ${STATUSPAGE_AUTH}
         Content-Type: 'application/json'
