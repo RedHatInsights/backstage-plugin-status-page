@@ -2,6 +2,7 @@ import React, { PropsWithChildren, useState } from 'react';
 import { Chip, Grid, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExtensionIcon from '@material-ui/icons/Extension';
+import Report from '@material-ui/icons/Report';
 import DataUsageIcon from '@material-ui/icons/DataUsage';
 import MapIcon from '@material-ui/icons/MyLocation';
 import SpashipIcon from '@material-ui/icons/FlightTakeoff';
@@ -147,6 +148,15 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
                 label="Beta"
                 size="small"
                 variant="outlined"
+              />
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={8}>
+              <SidebarItem
+                icon={Report as IconComponent}
+                to="outages"
+                text="Outages"
               />
             </Grid>
           </Grid>

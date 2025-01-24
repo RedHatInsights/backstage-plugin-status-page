@@ -105,6 +105,14 @@ proxy:
       credentials: dangerously-allow-unauthenticated
       changeOrigin: true
       allowedMethods: ['GET', 'POST']
+    '/statuspage':
+      target: ${STATUSPAGE_URL}
+      credentials: dangerously-allow-unauthenticated
+      changeOrigin: true
+      headers:
+        Authorization: ${STATUSPAGE_AUTH}
+        Content-Type: 'application/json'
+      allowedMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
 
 jira:
   proxyPath: /jira
@@ -257,3 +265,12 @@ permission:
       - name: user:redhat/yoswal
       - name: user:redhat/mdeshmuk
       - name: user:redhat/roommen
+
+# Report portal plugin
+reportPortal:
+  supportEmail: ${REPORT_PORTAL_SUPPORT_EMAIL}
+  integrations:
+    - host: ${REPORT_PORTAL_HOST}
+      baseUrl: ${REPORT_PORTAL_BASE_URL}
+      token: ${REPORT_PORTAL_TOKEN}
+      filterType: 'INTERNAL'

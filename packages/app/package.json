@@ -25,6 +25,7 @@
     "@appdev-platform/backstage-plugin-hydra-support-dashboard": "*",
     "@appdev-platform/backstage-plugin-lighthouse": "*",
     "@appdev-platform/backstage-plugin-matomo": "*",
+    "@appdev-platform/backstage-plugin-outages": "*",
     "@appdev-platform/backstage-plugin-proxy-manager": "*",
     "@appdev-platform/backstage-plugin-spaship": "*",
     "@appdev-platform/backstage-plugin-workstream-automation": "*",

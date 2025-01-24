@@ -18,3 +18,4 @@ spec:
     - ./plugins/workstream-automation/catalog-info.yaml
     - ./plugins/workstream-automation-backend/catalog-info.yaml
     - ./plugins/docsbot/catalog-info.yaml
+    - ./plugins/outage-template/catalog-info.yaml
