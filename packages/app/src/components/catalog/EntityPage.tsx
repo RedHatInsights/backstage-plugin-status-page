@@ -58,7 +58,7 @@ import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { Button, Grid } from '@material-ui/core';
 import React, { useState } from 'react';
 
-import { MatomoPage } from '@appdev-platform/backstage-plugin-matomo';
+import { MatomoPage } from '@backstage-community/plugin-matomo';
 import { SpashipPage } from '@appdev-platform/backstage-plugin-spaship';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
