@@ -40,7 +40,7 @@ export class StatuspageApi {
         );
       }
       const data = await response.json();
-      return data.map((incident: any) => ({
+      return data.data.map((incident: any) => ({
         id: incident.id,
         name: incident.name,
         status: incident.status,

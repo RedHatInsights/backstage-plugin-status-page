@@ -110,7 +110,6 @@ proxy:
       headers:
         Authorization: ${STATUSPAGE_AUTH}
         Content-Type: 'application/json'
-      allowedMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
 
 jira:
   proxyPath: /jira
@@ -215,6 +214,7 @@ catalog:
     # Test data for Feedback plugin
     - type: file
       target: ../../examples/test-data/feedback-plugin.yaml
+
     # Test data for report portal
     - type: file
       target: ../../examples/test-data/report-portal-plugin.yaml
