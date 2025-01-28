@@ -77,6 +77,8 @@ proxy:
   endpoints:
     '/spaship':
       target: ${SPASHIP_API_URL}
+      secure: false
+      credentials: dangerously-allow-unauthenticated
       changeOrigin: true
       allowedMethods: ['GET']
       headers:
@@ -130,6 +132,7 @@ matomo:
   apiUrl: ${MATOMO_API_URL}
   instance_url: ${MATOMO_INSTANCE_URL}
   contact_us: ${MATOMO_CONTACT_URL}
+  secure: false
 
 cmdb:
   host: ${SERVICE_NOW_BASE_API_URL}

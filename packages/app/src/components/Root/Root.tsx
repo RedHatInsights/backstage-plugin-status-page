@@ -26,7 +26,7 @@ import {
   SidebarSpace,
   useSidebarOpenState,
   Link,
-  WarningIcon,
+  WarningIcon
 } from '@backstage/core-components';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
@@ -151,6 +151,28 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
               />
             </Grid>
           </Grid>
+          <SidebarScrollWrapper>
+            <SidebarItem
+              icon={DataUsageIcon as IconComponent}
+              to="dashboard/pulse"
+              text="Pulse Dashboard"
+            />
+            <SidebarItem
+              icon={DataUsageIcon as IconComponent}
+              to="dashboard/app-dev"
+              text="AppDev Dashboard"
+            />
+            <SidebarItem
+              icon={DataUsageIcon as IconComponent}
+              to="dashboard/hydra"
+              text="Hydra Dashboard"
+            />
+            <SidebarItem
+              icon={DataUsageIcon as IconComponent}
+              to="dashboard/data-layer"
+              text="Data Layer Dashboard"
+            />
+          </SidebarScrollWrapper>
           <Grid container>
             <Grid item xs={8}>
               <SidebarItem
@@ -160,31 +182,14 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
               />
             </Grid>
           </Grid>
-          <Grid container>
-            <Grid item xs={8}>
-              <SidebarItem
-                icon={DataUsageIcon as IconComponent}
-                to="hydra-support-dashboard"
-                text="Hydra Dashboard"
-              />
-            </Grid>
-            <Grid item xs={4}>
-              <Chip
-                style={{
-                  margin: '12px 0px 0px 0px',
-                  color: '#b5b5b5',
-                  borderColor: '#b5b5b5',
-                }}
-                label="Beta"
-                size="small"
-                variant="outlined"
-              />
-            </Grid>
-          </Grid>
         </SidebarGroup>
         <SidebarSpace />
         <SidebarDivider />
-        <SidebarItem to='catalog-unprocessed-entities' icon={WarningIcon} text='Unprocessed Entites' />
+        <SidebarItem
+          to="catalog-unprocessed-entities"
+          icon={WarningIcon}
+          text="Unprocessed Entites"
+        />
         <SidebarGroup
           label="Settings"
           icon={<UserSettingsSignInAvatar />}

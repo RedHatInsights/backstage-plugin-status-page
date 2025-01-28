@@ -99,7 +99,7 @@ backend.add(import('@backstage/plugin-search-backend/alpha'));
 backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
 backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
 
-backend.add(import('@janus-idp/backstage-plugin-matomo-backend/alpha'));
+backend.add(import('@backstage-community/plugin-matomo-backend'));
 backend.add(import('@janus-idp/backstage-plugin-feedback-backend/alpha'));
 backend.add(import('@backstage-community/plugin-report-portal-backend'));
 
