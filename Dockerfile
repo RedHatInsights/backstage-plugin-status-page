@@ -1,5 +1,5 @@
 ## Stage 1: Installing dependencies
-FROM registry.access.redhat.com/ubi9/nodejs-18:latest as build
+FROM registry.access.redhat.com/ubi9/nodejs-20:latest as build
 
 USER 0
 
@@ -7,7 +7,7 @@ USER 0
 RUN \
     dnf install -y python3 make g++ zlib-devel openssl-devel brotli-devel && \
     npm i -g corepack && corepack enable && \
-    corepack prepare yarn@3 --activate
+    corepack prepare yarn@4.6.0 --activate
 
 COPY . .
 
@@ -21,7 +21,7 @@ RUN yarn tsc && yarn build:all
 
 
 ## Stage 3: Final stage
-FROM registry.access.redhat.com/ubi9/nodejs-18-minimal:latest as runner
+FROM registry.access.redhat.com/ubi9/nodejs-20-minimal:latest as runner
 
 USER 0
 
@@ -30,7 +30,7 @@ RUN \
     microdnf clean all && \
     pip3 install mkdocs-techdocs-core==1.1.7 && \
     npm i -g corepack && corepack enable && \
-    corepack prepare yarn@3 --activate
+    corepack prepare yarn@4.6.0 --activate
 
 # Copy the install dependencies and built packages from the build stage
 COPY --from=build --chown=1001:0 $HOME/yarn.lock $HOME/.yarnrc.yml $HOME/package.json $HOME/packages/backend/dist/skeleton.tar.gz $HOME/packages/backend/dist/bundle.tar.gz ./
@@ -38,8 +38,7 @@ RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz && \
     tar xzf bundle.tar.gz && rm bundle.tar.gz
 
 # Install production dependencies
-RUN yarn plugin import workspace-tools && \
-    yarn workspaces focus --all --production
+RUN yarn workspaces focus --all --production
 
 # Copy backstage app-config files
 COPY --chown=1001:0 ./app-config*.yaml $HOME/
@@ -53,4 +52,4 @@ USER 1001
 
 EXPOSE 7007
 
-CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]
+CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml", "--no-node-snapshot"]

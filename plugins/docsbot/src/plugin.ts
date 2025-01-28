@@ -32,14 +32,7 @@ export const DocsBotPanel = docsBotPlugin.provide(
     },
   }),
 );
-export const DocsBotIcon = docsBotPlugin.provide(
-  createComponentExtension({
-    name: 'DocsBotIcon',
-    component: {
-      lazy: () => import('./utils/DocsBotIcon').then(m => m.DocsBotIcon),
-    },
-  }),
-);
+
 export const DocsBotPage = docsBotPlugin.provide(
   createRoutableExtension({
     name: 'DocsBotChatWindowExpanded',

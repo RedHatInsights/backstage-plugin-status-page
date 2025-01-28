@@ -13,13 +13,10 @@ import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLif
 import { rootLoggerServiceFactory } from '@backstage/backend-defaults/rootLogger';
 import { schedulerServiceFactory } from '@backstage/backend-defaults/scheduler';
 import { userInfoServiceFactory } from '@backstage/backend-defaults/userInfo';
+import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth';
 import { eventsServiceFactory } from '@backstage/plugin-events-node';
 
-import {
-  identityServiceFactory,
-  tokenManagerServiceFactory,
-  createSpecializedBackend,
-} from '@backstage/backend-app-api';
+import { createSpecializedBackend } from '@backstage/backend-app-api';
 
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
@@ -28,26 +25,25 @@ import { urlReaderServiceFactory } from './service/urlReader';
 const defaultServiceFactories: Array<
   ServiceFactory<unknown, 'plugin' | 'root'>
 > = [
-  authServiceFactory(),
-  cacheServiceFactory(),
-  rootConfigServiceFactory(),
-  databaseServiceFactory(),
-  discoveryServiceFactory(),
-  httpAuthServiceFactory(),
-  httpRouterServiceFactory(),
-  identityServiceFactory(),
-  lifecycleServiceFactory(),
-  loggerServiceFactory(),
-  permissionsServiceFactory(),
-  rootHttpRouterServiceFactory(),
-  rootLifecycleServiceFactory(),
-  rootLoggerServiceFactory(),
-  schedulerServiceFactory(),
-  tokenManagerServiceFactory(),
-  userInfoServiceFactory(),
-  eventsServiceFactory(),
+  authServiceFactory,
+  cacheServiceFactory,
+  rootConfigServiceFactory,
+  databaseServiceFactory,
+  discoveryServiceFactory,
+  httpAuthServiceFactory,
+  httpRouterServiceFactory,
+  lifecycleServiceFactory,
+  loggerServiceFactory,
+  permissionsServiceFactory,
+  rootHttpRouterServiceFactory,
+  rootLifecycleServiceFactory,
+  rootLoggerServiceFactory,
+  schedulerServiceFactory,
+  userInfoServiceFactory,
+  eventsServiceFactory,
+  rootHealthServiceFactory,
   // Custom url reader
-  urlReaderServiceFactory(),
+  urlReaderServiceFactory,
 ];
 
 const backend = createSpecializedBackend({ defaultServiceFactories });
@@ -96,7 +92,7 @@ backend.add(import('./policy'));
 
 // search plugin
 backend.add(import('@backstage/plugin-search-backend/alpha'));
-backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-catalog'));
 backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
 
 backend.add(import('@backstage-community/plugin-matomo-backend'));

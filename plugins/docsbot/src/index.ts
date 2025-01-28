@@ -3,5 +3,6 @@ export {
   DocsBotPanel,
   DocsBotPage,
   DocsBotButton,
-  DocsBotIcon,
 } from './plugin';
+
+export { DocsBotIcon } from './utils/DocsBotIcon';

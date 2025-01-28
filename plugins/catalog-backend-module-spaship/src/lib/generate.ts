@@ -16,12 +16,12 @@ import {
   SPASHIP_IMPORT_TAG,
 } from './constants';
 import { mapper } from './mapper';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api/index';
 
 export function generateSystemEntity(
   property: SPAship.Property,
   provider: SPAshipDiscoveryEntityProviderConfig,
-  logger?: Logger,
+  logger?: LoggerService,
 ) {
   const location = `url://${provider.host}/api/v1/properties/?identifier=${property.identifier}`;
   const viewUrl = `https://${provider.host}/properties/${property.identifier}`;
@@ -35,7 +35,7 @@ export function generateSystemEntity(
       : 'unknown';
 
   if (!property.identifier) {
-    logger?.debug(property);
+    logger?.debug('Property: ', property);
   }
 
   const system: SystemEntity = {
@@ -79,7 +79,7 @@ export function generateComponentEntity(
     systemRef?: string;
     lifecycle?: string;
   },
-  logger?: Logger,
+  logger?: LoggerService,
 ) {
   const location = `url://${provider.host}/api/v1/properties/?applicationIdentifier=${application.identifier}`;
   const viewUrl = `https://${provider.host}/properties/${application.identifier}`;
@@ -93,7 +93,7 @@ export function generateComponentEntity(
       : 'unknown';
 
   if (!application.identifier) {
-    logger?.debug(application);
+    logger?.debug('application:', application);
   }
 
   const component: ComponentEntity = {
@@ -129,7 +129,10 @@ export function generateComponentEntity(
   };
 
   const overrides = provider.overrides;
-  const customMappings = mapper(application, provider.customApplicationMappings);
+  const customMappings = mapper(
+    application,
+    provider.customApplicationMappings,
+  );
 
   return merge(component, overrides, customMappings);
 }
