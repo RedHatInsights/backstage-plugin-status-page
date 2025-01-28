@@ -3,7 +3,6 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { Logger } from 'winston';
 import {
   SPAship,
   SPAshipClient,
@@ -13,7 +12,10 @@ import {
   generateSystemEntity,
   readProviderConfigs,
 } from './lib';
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
+import {
+  SchedulerService as PluginTaskScheduler,
+  SchedulerServiceTaskRunner as TaskRunner,
+} from '@backstage/backend-plugin-api';
 import * as uuid from 'uuid';
 import {
   ANNOTATION_LOCATION,
@@ -23,18 +25,19 @@ import {
 import { Config } from '@backstage/config';
 import { SPAshipIntegration } from './integrations';
 import { isEmpty } from 'lodash';
+import { LoggerService } from '@backstage/backend-plugin-api/index';
 
 export class SPAshipDiscoveryEntityProvider implements EntityProvider {
   private readonly provider: SPAshipDiscoveryEntityProviderConfig;
   private readonly integration: SPAshipIntegrationConfig;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private connection?: EntityProviderConnection;
   scheduleFn?: () => Promise<void>;
 
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
@@ -81,7 +84,7 @@ export class SPAshipDiscoveryEntityProvider implements EntityProvider {
   constructor(options: {
     provider: SPAshipDiscoveryEntityProviderConfig;
     integration: SPAshipIntegrationConfig;
-    logger: Logger;
+    logger: LoggerService;
     taskRunner: TaskRunner;
   }) {
     this.provider = options.provider;
@@ -99,7 +102,7 @@ export class SPAshipDiscoveryEntityProvider implements EntityProvider {
     await this.scheduleFn?.();
   }
 
-  async read(logger: Logger): Promise<void> {
+  async read(logger: LoggerService): Promise<void> {
     if (!this.connection) {
       throw new Error(
         `SPAship discovery connection not initialized for ${this.getProviderName()}`,
@@ -215,7 +218,7 @@ export class SPAshipDiscoveryEntityProvider implements EntityProvider {
           } catch (error) {
             logger.error(
               `${this.getProviderName()} refresh failed, ${error}`,
-              error,
+              error ?? {},
             );
           }
         },
@@ -224,7 +227,7 @@ export class SPAshipDiscoveryEntityProvider implements EntityProvider {
   }
 }
 
-function trackProgress(logger: Logger) {
+function trackProgress(logger: LoggerService) {
   let timestamp = Date.now();
   let summary: string;
 

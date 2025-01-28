@@ -39,7 +39,10 @@ describe('createRouter', () => {
       logger: mockServices.logger.mock(),
       config: mockServices.rootConfig(),
       auth: mockServices.auth(),
-      database: DatabaseManager.fromConfig(mockConfig).forPlugin('workstream'),
+      database: DatabaseManager.fromConfig(mockConfig).forPlugin('workstream', {
+        lifecycle: mockServices.lifecycle.mock(),
+        logger: mockServices.logger.mock(),
+      }),
       discovery: mockServices.discovery(),
       httpAuth: mockServices.httpAuth(),
       permissions: {} as PermissionsService,

@@ -14,7 +14,7 @@ metadata:
     - matomo
     - backend
   links:
-    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-matomo-backend
+    - url: https://www.npmjs.com/package/@backstage-community/plugin-matomo-backend
       title: Backstage Matomo Backend Plugin NPM Package
 spec:
   type: library

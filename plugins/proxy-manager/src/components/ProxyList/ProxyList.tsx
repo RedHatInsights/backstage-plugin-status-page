@@ -15,7 +15,7 @@ import {
 import { fetchAll } from '../../apis/ProxyFetch';
 import './proxy-list.css';
 import { Skeleton } from '@material-ui/lab';
-import TablePagination from '@material-ui/core/TablePagination'
+import TablePagination from '@material-ui/core/TablePagination';
 import { ToastContainer } from 'react-toastify';
 import Search from '@material-ui/icons/Search';
 import { configApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
@@ -45,7 +45,7 @@ export const ProxyList = () => {
   ];
 
   const getAllProxies = useCallback(
-    async token => {
+    async (token: string) => {
       const apiBaseUrl = configApi.getString('proxyManager.apiBaseUrl');
 
       try {
@@ -78,20 +78,26 @@ export const ProxyList = () => {
         setProxies(
           [...proxyBackup].filter((proxy: any) => {
             if (
-              proxy?.baseUrl?.toLowerCase().includes(searchValue.toLowerCase()) ||
+              proxy?.baseUrl
+                ?.toLowerCase()
+                .includes(searchValue.toLowerCase()) ||
               proxy?.upstreamHost
                 ?.toLowerCase()
                 .includes(searchValue.toLowerCase()) ||
               proxy?.authenticationType
                 ?.toLowerCase()
                 .includes(searchValue.toLowerCase()) ||
-              proxy?.createdBy?.toLowerCase().includes(searchValue.toLowerCase()) ||
+              proxy?.createdBy
+                ?.toLowerCase()
+                .includes(searchValue.toLowerCase()) ||
               ('internal'.includes(searchValue.toLowerCase()) &&
                 proxy?.isInternal) ||
               ('external'.includes(searchValue.toLowerCase()) &&
                 !proxy?.isInternal) ||
-              ('enabled'.includes(searchValue.toLowerCase()) && proxy?.isActive) ||
-              ('disabled'.includes(searchValue.toLowerCase()) && !proxy?.isActive)
+              ('enabled'.includes(searchValue.toLowerCase()) &&
+                proxy?.isActive) ||
+              ('disabled'.includes(searchValue.toLowerCase()) &&
+                !proxy?.isActive)
             ) {
               return true;
             }

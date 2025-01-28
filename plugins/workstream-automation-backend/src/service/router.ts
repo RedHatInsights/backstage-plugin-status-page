@@ -21,7 +21,6 @@ import { ConflictError, NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import express from 'express';
-import Router from 'express-promise-router';
 import { WorkstreamBackendDatabase } from '../database';
 import { DEFAULT_WORKSTREAM_NAMESPACE } from '../modules/lib/constants';
 import { workstreamToEntityKind } from '../modules/lib/utils';
@@ -44,7 +43,7 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { logger, config, auth, discovery, permissions, httpAuth } = options;
 
-  const router = Router();
+  const router = express.Router();
   const database = await WorkstreamBackendDatabase.create({
     knex: await options.database.getClient(),
     skipMigrations: false,

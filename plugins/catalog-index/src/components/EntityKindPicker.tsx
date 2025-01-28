@@ -56,7 +56,9 @@ export const EntityKindPicker = (props: {
   useEffect(() => {
     if (selectedKind && selectedKind !== filters.kind?.value) {
       updateFilters({
-        kind: selectedKind ? new EntityKindFilter(selectedKind) : undefined,
+        kind: selectedKind
+          ? new EntityKindFilter(selectedKind, selectedKind)
+          : undefined,
       });
     }
   }, [filters, selectedKind, updateFilters]);
