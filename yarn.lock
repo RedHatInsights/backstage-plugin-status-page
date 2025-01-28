@@ -16137,13 +16137,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"app@link:../../app::locator=backend%40workspace%3Apackages%2Fbackend":
-  version: 0.0.0-use.local
-  resolution: "app@link:../../app::locator=backend%40workspace%3Apackages%2Fbackend"
-  languageName: node
-  linkType: soft
-
-"app@workspace:packages/app":
+"app@npm:*, app@workspace:packages/app":
   version: 0.0.0-use.local
   resolution: "app@workspace:packages/app"
   dependencies:
@@ -17034,7 +17028,7 @@ __metadata:
     "@backstage/plugin-techdocs-backend": "npm:^1.11.5"
     "@janus-idp/backstage-plugin-feedback-backend": "npm:^1.3.11"
     "@janus-idp/backstage-plugin-rbac-backend": "npm:^4.2.1"
-    app: "link:../../app"
+    app: "npm:*"
     better-sqlite3: "npm:^9.0.0"
     jwt-decode: "npm:^4.0.0"
     node-gyp: "npm:^10.0.0"
