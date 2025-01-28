@@ -130,8 +130,8 @@ spaship:
 matomo:
   apiToken: ${MATOMO_API_TOKEN}
   apiUrl: ${MATOMO_API_URL}
-  instance_url: ${MATOMO_INSTANCE_URL}
-  contact_us: ${MATOMO_CONTACT_URL}
+  frontendBaseUrl: ${MATOMO_INSTANCE_URL}
+  contactUsLink: ${MATOMO_CONTACT_URL}
   secure: false
 
 cmdb:
