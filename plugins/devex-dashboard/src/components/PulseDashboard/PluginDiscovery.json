@@ -1,0 +1,244 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "title": "CMDB",
+      "description": "A Plugin that displays the Service Details from the ServiceNow Configuration Management Database.",
+      "viewUrl": null,
+      "learnMore": "https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/-/tree/main/plugins/cmdb",
+      "owner": "group:redhat/one-platform-devs",
+      "tags": ["Discovery", "CMDB", "Portfolio"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 2,
+      "title": "Catalog Index",
+      "description": "Explore projects and services in backstage.",
+      "viewUrl": "/catalog",
+      "learnMore": "https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/-/tree/main/plugins/catalog-index",
+      "owner": "group:redhat/one-platform-devs",
+      "tags": ["Discovery", "Service", "Catalog"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 3,
+      "title": "Contact Details",
+      "description": "A plugin that displays contact details for your service.",
+      "viewUrl": null,
+      "learnMore": "https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/-/tree/main/plugins/contact-details",
+      "owner": "group:redhat/one-platform-devs",
+      "tags": ["Discovery", "Contact Details", "Service"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 4,
+      "title": "Workstream Automation",
+      "description": "View and Manage workstreams directly from backstage",
+      "viewUrl": "/catalog?filters[kind]=workstream",
+      "learnMore": null,
+      "lifecycle": "inProgress",
+      "tags": ["Workstreams", "Discovery", "alpha"],
+      "owner": "group:redhat/one-platform-devs"
+    },
+    {
+      "id": 1,
+      "title": "API Catalog",
+      "description": "A plugin for API Documentation with API Playground.",
+      "viewUrl": "/catalog?filters%5Bkind%5D=api",
+      "learnMore": "https://www.npmjs.com/package/@backstage/plugin-catalog",
+      "owner": "other",
+      "tags": ["API", "Metrics", "Develop"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 2,
+      "title": "Test Dashboard",
+      "description": "A dashboard plugin that shows test reports for your applications.",
+      "viewUrl": null,
+      "learnMore": null,
+      "owner": "group:redhat/one-platform-devs",
+      "tags": ["Develop", "Dashboard", "Testing", "Reports"],
+      "lifecycle": "inProgress"
+    },
+    {
+      "id": 3,
+      "title": "Gitlab",
+      "description": "A plugin to view Gitlab pipelines, merge requests, languages and contributors.",
+      "viewUrl": null,
+      "learnMore": "https://github.com/immobiliare/backstage-plugin-gitlab#readme",
+      "owner": "other",
+      "tags": ["Build", "Gitlab", "SCM", "CI/CD"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 4,
+      "title": "GitHub",
+      "description": "A plugin to view GitHub issues, pull requests, actions, etc.",
+      "viewUrl": null,
+      "learnMore": "https://roadie.io/backstage/plugins/github-actions",
+      "owner": "other",
+      "tags": ["Build", "GitHub", "SCM", "CI/CD"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 5,
+      "title": "SonarQube",
+      "description": "A Plugin displays code statistics from SonarCloud or SonarQube.",
+      "viewUrl": null,
+      "learnMore": "https://github.com/backstage/backstage/tree/master/plugins/sonarqube#readme",
+      "owner": "other",
+      "tags": ["CI", "Code Quality", "SonarQube"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 1,
+      "title": "SPAship",
+      "description": "A plugin that shows your deployment status and details for your Single Page Applications.",
+      "viewUrl": "/spaship",
+      "learnMore": "https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/-/tree/main/plugins/spaship",
+      "owner": "group:redhat/one-platform-devs",
+      "tags": ["Deploy", "SPAship", "Hosting"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 2,
+      "title": "Hydra Proxy Manager",
+      "description": "Manage your application endpoints with Hydra Proxy Manager.",
+      "viewUrl": "/proxy-manager",
+      "learnMore": "https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/-/tree/main/plugins/proxy-manager",
+      "owner": "group:redhat/one-platform-devs",
+      "tags": ["Deliver", "Hydra ", "Proxy Manager"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 3,
+      "title": "Jira",
+      "description": "A plugin that displays stats and issues for your JIRA Project.",
+      "viewUrl": null,
+      "learnMore": "https://roadie.io/backstage/plugins/jira",
+      "owner": "group:redhat/one-platform-devs",
+      "tags": ["Jira", "Deliver", "Board"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 1,
+      "title": "Matomo",
+      "description": "A dashboard plugin for Matomo analytics.",
+      "viewUrl": null,
+      "learnMore": "https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/-/tree/main/plugins/matomo",
+      "owner": "group:redhat/one-platform-devs",
+      "tags": ["Analytics", "Matomo"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 2,
+      "title": "Cortex",
+      "description": "A plugin that shows your cortex scorecards for your applications.",
+      "viewUrl": "/cortex",
+      "learnMore": "https://www.cortex.io/content/cortex-plugin-for-backstage",
+      "owner": "other",
+      "tags": ["Monitoring", "Metrics", "Scorecards", "Cortex"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 3,
+      "title": "Openshift Topology",
+      "description": "A plugin to visualize the deployment status and related resources of your applications deployed on any Kubernetes cluster.",
+      "viewUrl": null,
+      "learnMore": null,
+      "owner": "janus-idp",
+      "tags": ["Monitoring", "OpenShift", "Kubernetes"],
+      "lifecycle": "inProgress"
+    },
+    {
+      "id": 4,
+      "title": "Lighthouse",
+      "description": "Generate Lighthouse audits on websites and track them over time.",
+      "viewUrl": "/lighthouse",
+      "learnMore": "https://www.npmjs.com/package/@backstage/plugin-lighthouse",
+      "owner": "other",
+      "tags": ["Monitoring", "Audit", "Performance Metrics"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 5,
+      "title": "Sentry",
+      "description": "A plugin to track application errors using sentry.",
+      "viewUrl": null,
+      "learnMore": null,
+      "owner": "group:redhat/one-platform-devs",
+      "tags": ["Monitoring", "Crashlytics", "Sentry"],
+      "lifecycle": "inProgress"
+    },
+    {
+      "id": 6,
+      "title": "Splunk / Signal FX",
+      "description": "A plugin to view application runtime metrics and logs from Signalfx.",
+      "viewUrl": null,
+      "learnMore": null,
+      "owner": "group:redhat/one-platform-devs",
+      "tags": ["Monitoring", "Logs", "Splunk", "Metrics"],
+      "lifecycle": "inProgress"
+    },
+    {
+      "id": 7,
+      "title": "Backstage Dashboard",
+      "description": "A plugin for visualizing and monitoring backstage usage and user metrics.",
+      "viewUrl": null,
+      "learnMore": null,
+      "owner": "group:redhat/one-platform-devs",
+      "tags": ["Monitoring", "Analytics", "Metrics", "Dashboard", "Backstage"],
+      "lifecycle": "inProgress"
+    },
+    {
+      "id": 8,
+      "title": "DevTools",
+      "description": "Tools for helping with the Ops side of running a Backstage instance.",
+      "viewUrl": "/devtools",
+      "learnMore": "https://github.com/backstage/backstage/blob/master/plugins/devtools/README.md",
+      "owner": "other",
+      "tags": ["Monitoring", "Evaluate", "Troubleshooting"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 9,
+      "title": "Lighthouse CI",
+      "description": "Automate running Lighthouse for every commit, viewing the changes, and preventing regressions.",
+      "viewUrl": null,
+      "learnMore": "https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/-/tree/main/plugins/lighthouse",
+      "owner": "group:redhat/one-platform-devs",
+      "tags": ["Monitoring", "Performance Metrics"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 1,
+      "title": "Feedback",
+      "description": "A plugin for collecting and configuring user feedbacks for your application.",
+      "viewUrl": "/feedback",
+      "learnMore": "https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/-/tree/main/plugins/feedback",
+      "owner": "group:redhat/one-platform-devs",
+      "tags": ["Engage", "Feedback"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 2,
+      "title": "Notifications",
+      "description": "A plugin to help you setup and manage your application notifications and integration with the DevEx Notifications Service.",
+      "viewUrl": "/notifications",
+      "learnMore": "https://github.com/backstage/backstage/tree/master/plugins/notifications",
+      "owner": "group:redhat/one-platform-devs",
+      "tags": ["Engage", "Notifications"],
+      "lifecycle": "production"
+    },
+    {
+      "id": 3,
+      "title": "Announcements",
+      "description": "Write and share announcements within Backstage.",
+      "viewUrl": null,
+      "learnMore": null,
+      "owner": "other",
+      "tags": ["Engage", "announcements"],
+      "lifecycle": "inProgress"
+    }
+  ]
+}

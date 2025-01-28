@@ -63,6 +63,11 @@ import { HydraSupportDashboardPage } from '@appdev-platform/backstage-plugin-hyd
 import { WORKSTREAM_RELATION_PAIR } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import WebLinkIcon from '@material-ui/icons/Language';
 import { OutageTemplatePage } from '@appdev-platform/backstage-plugin-outages';
+import {
+  AppDevDashboardPage,
+  DataLayerDashboardPage,
+  PulseDashboardPage,
+} from '@appdev-platform/backstage-plugin-devex-dashboard';
 
 const app = createApp({
   apis,
@@ -99,7 +104,7 @@ const app = createApp({
     mail: EmailIcon,
     slack_contact: SlackIcon,
     jira: JiraIcon,
-    link: WebLinkIcon
+    link: WebLinkIcon,
   },
   themes: getThemes(),
 });
@@ -165,6 +170,14 @@ const routes = (
       path="/hydra-support-dashboard"
       element={<HydraSupportDashboardPage />}
     />
+    <Route
+      path="/hydra-support-dashboard"
+      element={<HydraSupportDashboardPage />}
+    />
+    <Route path="/dashboard/hydra" element={<HydraSupportDashboardPage />} />
+    <Route path="/dashboard/app-dev" element={<AppDevDashboardPage />} />
+    <Route path="/dashboard/data-layer" element={<DataLayerDashboardPage />} />
+    <Route path="/dashboard/pulse" element={<PulseDashboardPage />} />
     <Route path="/outages" element={<OutageTemplatePage />} />
   </FlatRoutes>
 );
