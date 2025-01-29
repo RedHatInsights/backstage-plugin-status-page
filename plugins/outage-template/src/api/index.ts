@@ -48,10 +48,11 @@ export class StatuspageApi {
         updatedAt: incident.updated_at,
         impactOverride: incident.impact_override ?? 'N/A',
         body: incident.body ?? '',
+        components: incident.components,
         incidentUpdates:
           incident.incident_updates?.map((update: any) => ({
-            status: update.status,
             body: update.body ?? '',
+            status: update.status ?? '',
           })) ?? [],
       }));
     } catch (error) {
@@ -59,6 +60,37 @@ export class StatuspageApi {
       console.error('Error fetching incidents:', error);
       this.alertApi.post({
         message: 'Failed to fetch incidents',
+        severity: 'error',
+      });
+      return [];
+    }
+  }
+
+  async fetchComponents() {
+    try {
+      const baseUrl = await this.getBaseUrl();
+      const response = await this.fetchApi.fetch(`${baseUrl}/components`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch components: ${response.status} ${response.statusText}`,
+        );
+      }
+      const data = await response.json();
+      return data.data.map((component: any) => ({
+        id: component.id,
+        name: component.name,
+        status: component.status,
+        createdAt: component.created_at,
+        updatedAt: component.updated_at,
+      }));
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error fetching components:', error);
+      this.alertApi.post({
+        message: 'Failed to fetch components',
         severity: 'error',
       });
       return [];

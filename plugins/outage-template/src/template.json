@@ -1,0 +1,20 @@
+{
+  "Access.redhat.com - Homepage Outage": {
+    "name": "Homepage - Access.redhat.com Outage",
+    "impactOverride": "critical",
+    "status": "investigating",
+    "body": "An outage has been detected on access.redhat.com the homepage. This outage currently impacts knowledge base and solutions on access.redhat.com. We are currently working to restore functionality."
+  },
+  "Access.redhat.com - Downloads Outage": {
+    "name": "Downloads - Access.redhat.com Outage",
+    "impactOverride": "critical",
+    "status": "investigating",
+    "body": "An outage has been detected on access.redhat.com downloads. This outage currently impacts objects on access.redhat.com that require downloads. We are currently working to restore functionality."
+  },
+  "Access.redhat.com - Jboss Network Outage": {
+    "name": "JBoss Network - Access.redhat.com Outage",
+    "impactOverride": "critical",
+    "status": "investigating",
+    "body": "An outage has been detected on access.redhat.com jboss network. This outage currently impacts /jbossnetwork. We are currently working to restore functionality."
+  }
+}

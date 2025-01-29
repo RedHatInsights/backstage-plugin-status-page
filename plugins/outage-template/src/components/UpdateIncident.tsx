@@ -10,9 +10,12 @@ import {
   Select,
   InputLabel,
   FormControl,
+  Checkbox,
+  ListItemText,
 } from '@material-ui/core';
 
 const UpdateIncident: React.FC<UpdateIncidentProps> = ({
+  component,
   open,
   incidentId,
   incidentData,
@@ -23,19 +26,35 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
   const [status, setStatus] = useState('');
   const [impactOverride, setImpactOverride] = useState('');
   const [body, setBody] = useState('');
+  const [selectedComponents, setSelectedComponents] = useState<string[]>([]);
+  const [components, setComponents] = useState<any | []>([]);
 
-  // Only update state when incidentData changes or modal opens
   useEffect(() => {
     if (incidentData) {
       setName(incidentData.name || '');
       setStatus(incidentData.status || '');
       setImpactOverride(incidentData.impactOverride || '');
       setBody(incidentData.body || '');
+      setComponents(component);
+      setSelectedComponents(
+        incidentData.components?.map((value: { id: string }) => value.id) || [],
+      );
     }
-  }, [incidentData]);
+  }, [incidentData, component]);
+
+  const handleComponentChange = (
+    event: React.ChangeEvent<{ value: unknown }>,
+  ) => {
+    setSelectedComponents(event.target.value as string[]);
+  };
 
   const handleUpdate = () => {
-    onUpdate(incidentId, { status, impact_override: impactOverride, body });
+    onUpdate(incidentId, {
+      status,
+      impact_override: impactOverride,
+      body,
+      component_ids: selectedComponents, // Send the selected component IDs
+    });
     onClose();
   };
 
@@ -57,10 +76,10 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
             onChange={e => setStatus(e.target.value as string)}
             label="Status"
           >
+            <MenuItem value="identified">Identified</MenuItem>
             <MenuItem value="investigating">Investigating</MenuItem>
             <MenuItem value="monitoring">Monitoring</MenuItem>
             <MenuItem value="resolved">Resolved</MenuItem>
-            <MenuItem value="identified">Identified</MenuItem>
           </Select>
         </FormControl>
 
@@ -75,6 +94,32 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
             <MenuItem value="minor">Minor</MenuItem>
             <MenuItem value="major">Major</MenuItem>
             <MenuItem value="critical">Critical</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl fullWidth style={{ marginBottom: 20 }}>
+          <InputLabel>Select Components</InputLabel>
+          <Select
+            multiple
+            value={selectedComponents}
+            onChange={handleComponentChange}
+            renderValue={(selected: any) => (
+              <div>
+                {selected
+                  .map((id: string) => {
+                    const data = components.find((c: any) => c.id === id);
+                    return data ? data.name : null;
+                  })
+                  .join(', ')}
+              </div>
+            )}
+          >
+            {components.map((value: any) => (
+              <MenuItem key={value.id} value={value.id}>
+                <Checkbox checked={selectedComponents.indexOf(value.id) > -1} />
+                <ListItemText primary={value.name} />
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 
