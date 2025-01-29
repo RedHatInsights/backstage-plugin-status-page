@@ -95,6 +95,13 @@ import { usePermission } from '@backstage/plugin-permission-react';
 import { EntityFeedbackPage } from '@janus-idp/backstage-plugin-feedback';
 import Delete from '@material-ui/icons/Delete';
 
+import {
+  EntitySoundcheckContent,
+  EntitySoundcheckCard,
+  GroupSoundcheckContent,
+} from '@spotify/backstage-plugin-soundcheck';
+import {FeatureFlagged} from "@backstage/core-app-api";
+
 const techdocsContent = (
   <EntityTechdocsContent>
     <TechDocsAddons>
@@ -221,6 +228,9 @@ const overviewContent = (
     <Grid item md={8} xs={12}>
       <EntityHasSubcomponentsCard variant="gridItem" />
     </Grid>
+    <Grid item xs={12}>
+      <EntitySoundcheckCard />
+    </Grid>
   </Grid>
 );
 
@@ -237,6 +247,12 @@ const serviceEntityPage = (
     <EntityLayout.Route path="/ci-cd" title="CI/CD">
       {cicdContent}
     </EntityLayout.Route>
+
+    <FeatureFlagged with="soundcheck-plugin-preview">
+      <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+        <EntitySoundcheckContent />
+      </EntityLayout.Route>
+    </FeatureFlagged>
 
     <EntityLayout.Route path="/api" title="API">
       <Grid container spacing={3} alignItems="stretch">
@@ -312,6 +328,12 @@ const websiteEntityPage = (
       {techdocsContent}
     </EntityLayout.Route>
 
+    <FeatureFlagged with="soundcheck-plugin-preview">
+      <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+        <EntitySoundcheckContent />
+      </EntityLayout.Route>
+    </FeatureFlagged>
+
     {/* Jira plugin Configuration */}
     <EntityLayout.Route path="/jira" title="Jira">
       {jiraContent}
@@ -338,6 +360,12 @@ const defaultEntityPage = (
     <EntityLayout.Route path="/docs" title="Docs">
       {techdocsContent}
     </EntityLayout.Route>
+
+    <FeatureFlagged with="soundcheck-plugin-preview">
+      <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+        <EntitySoundcheckContent />
+      </EntityLayout.Route>
+    </FeatureFlagged>
 
     <EntityLayout.Route path="/infra" title="Infra Details">
       {infraDetailsContent}
@@ -420,6 +448,11 @@ const userPage = (
         </Grid>
       </Grid>
     </EntityLayout.Route>
+    <FeatureFlagged with="soundcheck-plugin-preview">
+      <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+        <GroupSoundcheckContent />
+      </EntityLayout.Route>
+    </FeatureFlagged>
   </EntityLayout>
 );
 
@@ -439,6 +472,11 @@ const groupPage = (
         </Grid>
       </Grid>
     </EntityLayout.Route>
+    <FeatureFlagged with="soundcheck-plugin-preview">
+      <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+        <EntitySoundcheckContent />
+      </EntityLayout.Route>
+    </FeatureFlagged>
   </EntityLayout>
 );
 
@@ -486,6 +524,11 @@ const systemPage = (
         unidirectional={false}
       />
     </EntityLayout.Route>
+    <FeatureFlagged with="soundcheck-plugin-preview">
+      <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+        <EntitySoundcheckContent />
+      </EntityLayout.Route>
+    </FeatureFlagged>
   </EntityLayout>
 );
 

@@ -275,3 +275,20 @@ reportPortal:
       baseUrl: ${REPORT_PORTAL_BASE_URL}
       token: ${REPORT_PORTAL_TOKEN}
       filterType: 'INTERNAL'
+
+
+spotify:
+  licenseKey: ${SPOTIFY_LICENSE_KEY}
+## Soundcheck Config
+soundcheck:
+  collectors:
+    sonarqube:
+      $include: ./soundcheck/collectors/sonarqube.yaml
+  checks:
+    - https://gitlab.cee.redhat.com/dxp/dx-pulse/soundcheck-config/-/raw/main/poc/checks/all-checks.yaml
+  programs:
+    - https://gitlab.cee.redhat.com/dxp/dx-pulse/soundcheck-config/-/raw/main/poc/programs/example.yaml
+  remote_file_updates:
+    disabled: false
+    frequency:
+      minutes: 5

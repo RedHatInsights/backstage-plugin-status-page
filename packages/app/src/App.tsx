@@ -34,7 +34,7 @@ import {
   SignInPage,
 } from '@backstage/core-components';
 import { createApp } from '@backstage/app-defaults';
-import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
+import {AppRouter, FeatureFlagged, FlatRoutes} from '@backstage/core-app-api';
 import {
   ALL_RELATION_PAIRS,
   CatalogGraphPage,
@@ -68,6 +68,7 @@ import {
   DataLayerDashboardPage,
   PulseDashboardPage,
 } from '@appdev-platform/backstage-plugin-devex-dashboard';
+import { SoundcheckRoutingPage } from '@spotify/backstage-plugin-soundcheck';
 
 const app = createApp({
   apis,
@@ -97,6 +98,12 @@ const app = createApp({
       name: 'default-catalog-index',
       pluginId: 'catalog-index',
       description: 'Fall back to the default catalog index page.',
+    },
+    {
+      name: 'soundcheck-plugin-preview',
+      pluginId: 'soundcheck',
+      description:
+        'Enables soundcheck plugin. (BETA)',
     },
   ],
   icons: {
@@ -179,6 +186,9 @@ const routes = (
     <Route path="/dashboard/data-layer" element={<DataLayerDashboardPage />} />
     <Route path="/dashboard/pulse" element={<PulseDashboardPage />} />
     <Route path="/outages" element={<OutageTemplatePage />} />
+    <FeatureFlagged with="soundcheck-plugin-preview">
+      <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
+    </FeatureFlagged>
   </FlatRoutes>
 );
 
