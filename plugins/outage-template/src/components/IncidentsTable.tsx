@@ -86,7 +86,12 @@ const IncidentsTable = ({
                     <Button
                       variant="outlined"
                       color="primary"
-                      onClick={() => onViewUpdates(incident.incidentUpdates)}
+                      onClick={() =>
+                        onViewUpdates({
+                          updates: incident.incidentUpdates,
+                          component: incident.components,
+                        })
+                      }
                       style={{ marginTop: '10px' }}
                     >
                       View Updates
@@ -99,6 +104,7 @@ const IncidentsTable = ({
                         color="primary"
                         onClick={() => onUpdate(incident.id)}
                         style={{ margin: '5px' }}
+                        disabled={incident.status === 'resolved'}
                       >
                         Update
                       </Button>

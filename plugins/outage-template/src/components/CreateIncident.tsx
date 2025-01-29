@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogActions,
@@ -10,25 +10,13 @@ import {
   Select,
   InputLabel,
   FormControl,
+  Checkbox,
+  ListItemText,
 } from '@material-ui/core';
-
-// TODO : To be changed later after the discussion
-const incidentTemplates: Record<string, any> = {
-  'SSO Issue': {
-    name: 'SSO Issue',
-    impactOverride: 'major',
-    status: 'resolved',
-    body: 'SSO Issue in Production',
-  },
-  'Akamai Issue': {
-    name: 'Akamai Issue',
-    impactOverride: 'major',
-    status: 'resolved',
-    body: 'Akamai issue in Production',
-  },
-};
+import templateData from './../template.json';
 
 const CreateIncident: React.FC<CreateIncidentProps> = ({
+  component,
   open,
   onClose,
   onSubmit,
@@ -38,6 +26,16 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
   const [impactOverride, setImpactOverride] = useState('');
   const [body, setBody] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [incidentTemplates, setIncidentTemplates] = useState<
+    Record<string, any>
+  >({});
+  const [selectedComponents, setSelectedComponents] = useState<string[]>([]);
+  const [components, setComponents] = useState<any | []>([]);
+
+  useEffect(() => {
+    setIncidentTemplates(templateData);
+    setComponents(component);
+  }, [component]);
 
   const handleTemplateChange = (templateKey: string) => {
     setSelectedTemplate(templateKey);
@@ -55,12 +53,19 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
     }
   };
 
+  const handleComponentChange = (
+    event: React.ChangeEvent<{ value: unknown }>,
+  ) => {
+    setSelectedComponents(event.target.value as string[]);
+  };
+
   const handleSubmit = () => {
     onSubmit({
       name: incidentName,
       status,
       impact_override: impactOverride,
       body,
+      component_ids: selectedComponents, // Store the selected component IDs
     });
     onClose();
   };
@@ -118,6 +123,32 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
           </Select>
         </FormControl>
 
+        <FormControl fullWidth style={{ marginBottom: 20 }}>
+          <InputLabel>Select Components</InputLabel>
+          <Select
+            multiple
+            value={selectedComponents}
+            onChange={handleComponentChange}
+            renderValue={(selected: any) => (
+              <div>
+                {selected
+                  .map((id: string) => {
+                    const data = components.find((c: any) => c.id === id);
+                    return data ? data.name : null;
+                  })
+                  .join(', ')}
+              </div>
+            )}
+          >
+            {components.map((value: any) => (
+              <MenuItem key={value.id} value={value.id}>
+                <Checkbox checked={selectedComponents.indexOf(value.id) > -1} />
+                <ListItemText primary={value.name} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
         <TextField
           label="Description"
           fullWidth
@@ -125,6 +156,7 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
           onChange={e => setBody(e.target.value)}
           multiline
           rows={4}
+          style={{ marginBottom: 20 }}
         />
       </DialogContent>
       <DialogActions>

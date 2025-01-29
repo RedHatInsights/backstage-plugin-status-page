@@ -5,10 +5,12 @@ interface Incident {
   impactOverride: string;
   createdAt: string;
   updatedAt: string;
+  components: any[];
   incidentUpdates: { status: string; body: string }[];
 }
 
 interface CreateIncidentProps {
+  component: any;
   open: boolean;
   onClose: () => void;
   onSubmit: (incidentData: any) => void;
@@ -16,12 +18,13 @@ interface CreateIncidentProps {
 
 interface IncidentsTableProps {
   incidents: Incident[];
-  onViewUpdates: (updates: any[]) => void;
+  onViewUpdates: (data: IncidentDrawerData) => void;
   onUpdate: (incidentId: string) => void;
   onDelete: (incidentId: string) => void;
 }
 
 interface UpdateIncidentProps {
+  component: any;
   open: boolean;
   incidentId: string;
   incidentData: any;
@@ -39,5 +42,19 @@ interface DeleteIncidentProps {
 interface IncidentUpdatesDrawerProps {
   open: boolean;
   onClose: () => void;
-  updates: { status: string; body: string }[];
+  data: IncidentDrawerData;
+}
+
+interface IncidentDrawerData {
+  updates: Update[];
+  component: Component[];
+}
+interface Component {
+  status: string;
+  name: string;
+}
+
+interface Update {
+  body: string;
+  status: string;
 }

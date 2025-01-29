@@ -14,12 +14,15 @@ export const OutageComponent = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedIncidentUpdates, setSelectedIncidentUpdates] = useState<any[]>(
-    [],
-  );
+  const [selectedIncidentUpdates, setSelectedIncidentUpdates] =
+    useState<IncidentDrawerData>({
+      updates: [],
+      component: [],
+    });
   const [editingIncident, setEditingIncident] = useState<any | null>(null);
   const [deletingIncident, setDeletingIncident] = useState<any | null>(null);
   const outageApi = useApi(outageApiRef);
+  const [components, setComponents] = useState<any | []>([]);
 
   useEffect(() => {
     const loadIncidents = async () => {
@@ -31,7 +34,17 @@ export const OutageComponent = () => {
         console.error('Error fetching incidents:', error);
       }
     };
+    const loadComponents = async () => {
+      try {
+        const response = await outageApi.fetchComponents();
+        await setComponents(response);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching incidents:', error);
+      }
+    };
     loadIncidents();
+    loadComponents();
   }, [outageApi]);
 
   const handleCreateSubmit = async (incidentData: Incident) => {
@@ -114,11 +127,13 @@ export const OutageComponent = () => {
           </Grid>
         </Grid>
         <CreateIncident
+          component={components}
           open={createModalOpen}
           onClose={() => setCreateModalOpen(false)}
           onSubmit={handleCreateSubmit}
         />
         <UpdateIncident
+          component={components}
           incidentId={editingIncident?.id || ''}
           incidentData={editingIncident || {}}
           open={!!editingIncident}
@@ -134,7 +149,7 @@ export const OutageComponent = () => {
         <IncidentUpdatesDrawer
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
-          updates={selectedIncidentUpdates}
+          data={selectedIncidentUpdates}
         />
       </Content>
     </Page>
