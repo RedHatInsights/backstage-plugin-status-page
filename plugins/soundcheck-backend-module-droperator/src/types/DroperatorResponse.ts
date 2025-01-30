@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Type to define properties of the Droperator version endpoint response.
  */
