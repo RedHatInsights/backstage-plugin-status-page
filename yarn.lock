@@ -645,6 +645,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@npm:*, @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@workspace:plugins/soundcheck-backend-module-red-hat-gitlab":
+  version: 0.0.0-use.local
+  resolution: "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@workspace:plugins/soundcheck-backend-module-red-hat-gitlab"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.1.1"
+    "@backstage/backend-test-utils": "npm:^1.2.1"
+    "@backstage/catalog-model": "npm:^1.7.3"
+    "@backstage/cli": "npm:^0.29.5"
+    "@gitbeaker/core": "npm:^42.1.0"
+    "@gitbeaker/rest": "npm:^42.1.0"
+    "@spotify/backstage-plugin-soundcheck-common": "npm:^0.15.0"
+    "@spotify/backstage-plugin-soundcheck-node": "npm:^0.9.1"
+    "@types/luxon": "npm:^3"
+    luxon: "npm:^3.5.0"
+    yaml: "npm:^2.7.0"
+  languageName: unknown
+  linkType: soft
+
 "@appdev-platform/backstage-plugin-spaship@npm:*, @appdev-platform/backstage-plugin-spaship@workspace:plugins/spaship":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-spaship@workspace:plugins/spaship"
@@ -18660,6 +18678,7 @@ __metadata:
     "@appdev-platform/backstage-plugin-catalog-backend-module-enrichment": "npm:*"
     "@appdev-platform/backstage-plugin-catalog-backend-module-spaship": "npm:*"
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator": "npm:*"
+    "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab": "npm:*"
     "@appdev-platform/backstage-plugin-workstream-automation-backend": "npm:*"
     "@appdev-platform/backstage-plugin-workstream-automation-common": "npm:*"
     "@backstage-community/plugin-matomo-backend": "npm:^1.13.0"
@@ -42723,6 +42742,15 @@ __metadata:
   bin:
     yaml: bin.mjs
   checksum: 10/0eecb679db75ea6a989ad97715a9fa5d946972945aa6aa7d2175bca66c213b5564502ccb1cdd04b1bf816ee38b5c43e4e2fda3ff6f5e09da24dabb51ae92c57d
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.7.0":
+  version: 2.7.0
+  resolution: "yaml@npm:2.7.0"
+  bin:
+    yaml: bin.mjs
+  checksum: 10/c8c314c62fbd49244a6a51b06482f6d495b37ab10fa685fcafa1bbaae7841b7233ee7d12cab087bcca5a0b28adc92868b6e437322276430c28d00f1c1732eeec
   languageName: node
   linkType: hard
 
