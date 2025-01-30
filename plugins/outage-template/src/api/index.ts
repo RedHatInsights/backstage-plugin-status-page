@@ -53,6 +53,7 @@ export class StatuspageApi {
           incident.incident_updates?.map((update: any) => ({
             body: update.body ?? '',
             status: update.status ?? '',
+            createdAt: update.created_at ?? '',
           })) ?? [],
       }));
     } catch (error) {
