@@ -87,7 +87,7 @@ export const OutageComponent = () => {
         title="Outage Management"
         subtitle="Incident Tracking & Management"
       >
-        <HeaderLabel label="Owner" value="Team X" />
+        <HeaderLabel label="Owner" value="AppDev" />
         <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>
       <Content>
