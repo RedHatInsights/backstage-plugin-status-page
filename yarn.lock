@@ -628,6 +628,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator@npm:^0.1.0, @appdev-platform/backstage-plugin-soundcheck-backend-module-droperator@workspace:plugins/soundcheck-backend-module-droperator":
+  version: 0.0.0-use.local
+  resolution: "@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator@workspace:plugins/soundcheck-backend-module-droperator"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.1.1"
+    "@backstage/backend-test-utils": "npm:^1.2.1"
+    "@backstage/catalog-model": "npm:^1.7.3"
+    "@backstage/cli": "npm:^0.29.5"
+    "@gitbeaker/core": "npm:^42.1.0"
+    "@gitbeaker/rest": "npm:^42.1.0"
+    "@spotify/backstage-plugin-soundcheck-common": "npm:^0.15.0"
+    "@spotify/backstage-plugin-soundcheck-node": "npm:^0.9.1"
+    "@types/luxon": "npm:^3"
+    luxon: "npm:^3.5.0"
+  languageName: unknown
+  linkType: soft
+
 "@appdev-platform/backstage-plugin-spaship@npm:*, @appdev-platform/backstage-plugin-spaship@workspace:plugins/spaship":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-spaship@workspace:plugins/spaship"
@@ -7926,6 +7943,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gitbeaker/core@npm:^42.1.0":
+  version: 42.1.0
+  resolution: "@gitbeaker/core@npm:42.1.0"
+  dependencies:
+    "@gitbeaker/requester-utils": "npm:^42.1.0"
+    qs: "npm:^6.12.2"
+    xcase: "npm:^2.0.1"
+  checksum: 10/41a93035ccfe17047a0e11272aefc3914112bae1bd2d9347bc66a175d19580cdf6b567acc6c584ec967fe09c219f54161ac40dde32f35884e6a91827ec4caf60
+  languageName: node
+  linkType: hard
+
 "@gitbeaker/requester-utils@npm:^41.3.0":
   version: 41.3.0
   resolution: "@gitbeaker/requester-utils@npm:41.3.0"
@@ -7938,6 +7966,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gitbeaker/requester-utils@npm:^42.1.0":
+  version: 42.1.0
+  resolution: "@gitbeaker/requester-utils@npm:42.1.0"
+  dependencies:
+    picomatch-browser: "npm:^2.2.6"
+    qs: "npm:^6.12.2"
+    rate-limiter-flexible: "npm:^4.0.1"
+    xcase: "npm:^2.0.1"
+  checksum: 10/2470159a49011eee02e776ef7f1a6f8b8a4a5e60a7a6bae6b95935ee6e1f4b09dc162e311d5b3a37c435e91eb7c0fc1ea41cf95c1bf556c4597355c9f7e72bb9
+  languageName: node
+  linkType: hard
+
 "@gitbeaker/rest@npm:^41.2.0":
   version: 41.3.0
   resolution: "@gitbeaker/rest@npm:41.3.0"
@@ -7945,6 +7985,16 @@ __metadata:
     "@gitbeaker/core": "npm:^41.3.0"
     "@gitbeaker/requester-utils": "npm:^41.3.0"
   checksum: 10/8f280919303e2a57f9cf7070cc3bb74966be73c24448ab6cdd59c7ca6ad9f79f34a1454fb47138fddf91cc743ba769ead42513e5efb06e2be9d40f1f92432cc7
+  languageName: node
+  linkType: hard
+
+"@gitbeaker/rest@npm:^42.1.0":
+  version: 42.1.0
+  resolution: "@gitbeaker/rest@npm:42.1.0"
+  dependencies:
+    "@gitbeaker/core": "npm:^42.1.0"
+    "@gitbeaker/requester-utils": "npm:^42.1.0"
+  checksum: 10/8f36d3fe017afdafb7f1ae6e8239cf0a52e39fd2797664e5513e7d9f38085b7e7a9e4d70a97c38fcc1b720721c684192a6da02bc7b8acd9c7ea0190cefe77645
   languageName: node
   linkType: hard
 
@@ -15838,7 +15888,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/luxon@npm:^3.0.0, @types/luxon@npm:~3.4.0":
+"@types/luxon@npm:^3, @types/luxon@npm:^3.0.0, @types/luxon@npm:~3.4.0":
   version: 3.4.2
   resolution: "@types/luxon@npm:3.4.2"
   checksum: 10/fd89566e3026559f2bc4ddcc1e70a2c16161905ed50be9473ec0cfbbbe919165041408c4f6e06c4bcf095445535052e2c099087c76b1b38e368127e618fc968d
@@ -18609,6 +18659,7 @@ __metadata:
     "@appdev-platform/backstage-plugin-catalog-backend-module-cmdb": "npm:*"
     "@appdev-platform/backstage-plugin-catalog-backend-module-enrichment": "npm:*"
     "@appdev-platform/backstage-plugin-catalog-backend-module-spaship": "npm:*"
+    "@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator": "npm:^0.1.0"
     "@appdev-platform/backstage-plugin-workstream-automation-backend": "npm:*"
     "@appdev-platform/backstage-plugin-workstream-automation-common": "npm:*"
     "@backstage-community/plugin-matomo-backend": "npm:^1.13.0"

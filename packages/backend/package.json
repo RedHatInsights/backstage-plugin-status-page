@@ -19,6 +19,7 @@
     "@appdev-platform/backstage-plugin-catalog-backend-module-cmdb": "*",
     "@appdev-platform/backstage-plugin-catalog-backend-module-enrichment": "*",
     "@appdev-platform/backstage-plugin-catalog-backend-module-spaship": "*",
+    "@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator": "^0.1.0",
     "@appdev-platform/backstage-plugin-workstream-automation-backend": "*",
     "@appdev-platform/backstage-plugin-workstream-automation-common": "*",
     "@backstage-community/plugin-matomo-backend": "^1.13.0",

@@ -102,4 +102,5 @@ backend.add(import('@backstage-community/plugin-report-portal-backend'));
 // Spotify soundcheck plugin
 backend.add(import('@spotify/backstage-plugin-soundcheck-backend'));
 
+backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator'));
 backend.start();

@@ -1,0 +1,43 @@
+{
+  "name": "@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator",
+  "description": "The droperator backend module for the soundcheck plugin.",
+  "version": "0.1.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "license": "Apache-2.0",
+  "private": true,
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "backend-plugin-module"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "^1.1.1",
+    "@backstage/catalog-model": "^1.7.3",
+    "@gitbeaker/core": "^42.1.0",
+    "@gitbeaker/rest": "^42.1.0",
+    "@spotify/backstage-plugin-soundcheck-common": "^0.15.0",
+    "@spotify/backstage-plugin-soundcheck-node": "^0.9.1",
+    "luxon": "^3.5.0"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "^1.2.1",
+    "@backstage/cli": "^0.29.5",
+    "@types/luxon": "^3"
+  },
+  "files": [
+    "dist"
+  ]
+}
