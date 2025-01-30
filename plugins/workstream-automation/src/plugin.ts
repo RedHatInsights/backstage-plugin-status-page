@@ -82,13 +82,13 @@ export const WorkstreamPortfolioCard = workstreamAutomationPlugin.provide(
   }),
 );
 
-export const UserWorkstreamCard = workstreamAutomationPlugin.provide(
+export const EntityWorkstreamCard = workstreamAutomationPlugin.provide(
   createComponentExtension({
-    name: 'UserWorkstreamCard',
+    name: 'EntityWorkstreamCard',
     component: {
       lazy: () =>
-        import('./components/UserWorkstreamCard').then(
-          m => m.UserWorkstreamCard,
+        import('./components/EntityWorkstreamCard').then(
+          m => m.EntityWorkstreamCard,
         ),
     },
   }),

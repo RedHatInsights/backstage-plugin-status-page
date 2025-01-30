@@ -79,7 +79,7 @@ import {
   isContactDetailsAvailable,
 } from '@appdev-platform/backstage-plugin-contact-details';
 import {
-  UserWorkstreamCard,
+  EntityWorkstreamCard,
   WorkstreamAboutCard,
   WorkstreamDeleteModal,
   WorkstreamLinksCard,
@@ -192,7 +192,9 @@ const overviewContent = (
     <Grid item md={6}>
       <EntityAboutCard variant="gridItem" />
     </Grid>
-
+    <Grid item md={6}>
+      <EntityWorkstreamCard />
+    </Grid>
     <EntitySwitch>
       <EntitySwitch.Case if={isAppCodeAvailable}>
         <Grid item lg={4} md={6} xs={12}>
@@ -410,7 +412,7 @@ const userPage = (
           <EntityUserProfileCard variant="gridItem" />
         </Grid>
         <Grid item md={9} xs={12}>
-          <UserWorkstreamCard variant="gridItem" />
+          <EntityWorkstreamCard showRoleColumn />
         </Grid>
         <Grid item md={6} xs={12}>
           <EntityCatalogGraphCard variant="gridItem" height={400} />
@@ -449,6 +451,9 @@ const systemPage = (
         {entityWarningContent}
         <Grid item md={6}>
           <EntityAboutCard variant="gridItem" />
+        </Grid>
+        <Grid item md={6}>
+          <EntityWorkstreamCard />
         </Grid>
         <Grid item md={6} xs={12}>
           <EntityCatalogGraphCard variant="gridItem" height={400} />
@@ -542,10 +547,10 @@ const WorkstreamEntityPage = () => {
               <WorkstreamLinksCard variant="flex" />
             </Grid>
             <Grid item xs={12} md={6} xl={6}>
-              <WorkstreamPortfolioCard variant="gridItem" />
+              <WorkstreamPortfolioCard variant="flex" />
             </Grid>
             <Grid item xs={12} lg={6} xl={6}>
-              <WorkstreamMembersCard variant="gridItem" />
+              <WorkstreamMembersCard variant="flex" />
             </Grid>
             <Grid item xs={12} lg={6} xl={6}>
               <EntityCatalogGraphCard height={350} />
