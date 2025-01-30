@@ -628,7 +628,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator@npm:^0.1.0, @appdev-platform/backstage-plugin-soundcheck-backend-module-droperator@workspace:plugins/soundcheck-backend-module-droperator":
+"@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator@npm:*, @appdev-platform/backstage-plugin-soundcheck-backend-module-droperator@workspace:plugins/soundcheck-backend-module-droperator":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator@workspace:plugins/soundcheck-backend-module-droperator"
   dependencies:
@@ -18659,7 +18659,7 @@ __metadata:
     "@appdev-platform/backstage-plugin-catalog-backend-module-cmdb": "npm:*"
     "@appdev-platform/backstage-plugin-catalog-backend-module-enrichment": "npm:*"
     "@appdev-platform/backstage-plugin-catalog-backend-module-spaship": "npm:*"
-    "@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator": "npm:^0.1.0"
+    "@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator": "npm:*"
     "@appdev-platform/backstage-plugin-workstream-automation-backend": "npm:*"
     "@appdev-platform/backstage-plugin-workstream-automation-common": "npm:*"
     "@backstage-community/plugin-matomo-backend": "npm:^1.13.0"
