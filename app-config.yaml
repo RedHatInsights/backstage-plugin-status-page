@@ -70,6 +70,10 @@ integrations:
     # - host: ghe.example.net
     #   apiBaseUrl: https://ghe.example.net/api/v3
     #   token: ${GHE_TOKEN}
+  gitlab:
+    - host: gitlab.cee.redhat.com
+      token: ${GITLAB_CEE_TOKEN}
+      apiBaseUrl: https://gitlab.cee.redhat.com/api/v4
 
 proxy:
   ### Example for how to add a proxy endpoint for the frontend.
