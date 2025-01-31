@@ -98,7 +98,7 @@ const app = createApp({
       name: 'default-catalog-index',
       pluginId: 'catalog-index',
       description: 'Fall back to the default catalog index page.',
-    }
+    },
   ],
   icons: {
     'kind:workstream': SettingsEthernet,
