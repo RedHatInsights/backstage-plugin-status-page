@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.9.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.8.0...@appdev-platform/backstage-plugin-workstream-automation@1.9.0) (2025-01-31)
+
+
+### Features
+
+* **PULSE-280:** added option to link components in portfolio ([75e00a5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/75e00a55b7f665df6831aeddf5ca512c1d60611e))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.8.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.7.3...@appdev-platform/backstage-plugin-workstream-automation@1.8.0) (2025-01-29)
 
 
