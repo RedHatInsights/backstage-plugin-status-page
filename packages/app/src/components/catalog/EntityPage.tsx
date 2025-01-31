@@ -100,7 +100,6 @@ import {
   EntitySoundcheckCard,
   GroupSoundcheckContent,
 } from '@spotify/backstage-plugin-soundcheck';
-import {FeatureFlagged} from "@backstage/core-app-api";
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -248,11 +247,9 @@ const serviceEntityPage = (
       {cicdContent}
     </EntityLayout.Route>
 
-    <FeatureFlagged with="soundcheck-plugin-preview">
-      <EntityLayout.Route path="/soundcheck" title="Soundcheck">
-        <EntitySoundcheckContent />
-      </EntityLayout.Route>
-    </FeatureFlagged>
+    <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+      <EntitySoundcheckContent />
+    </EntityLayout.Route>
 
     <EntityLayout.Route path="/api" title="API">
       <Grid container spacing={3} alignItems="stretch">
@@ -328,11 +325,9 @@ const websiteEntityPage = (
       {techdocsContent}
     </EntityLayout.Route>
 
-    <FeatureFlagged with="soundcheck-plugin-preview">
-      <EntityLayout.Route path="/soundcheck" title="Soundcheck">
-        <EntitySoundcheckContent />
-      </EntityLayout.Route>
-    </FeatureFlagged>
+    <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+      <EntitySoundcheckContent />
+    </EntityLayout.Route>
 
     {/* Jira plugin Configuration */}
     <EntityLayout.Route path="/jira" title="Jira">
@@ -361,11 +356,9 @@ const defaultEntityPage = (
       {techdocsContent}
     </EntityLayout.Route>
 
-    <FeatureFlagged with="soundcheck-plugin-preview">
-      <EntityLayout.Route path="/soundcheck" title="Soundcheck">
-        <EntitySoundcheckContent />
-      </EntityLayout.Route>
-    </FeatureFlagged>
+    <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+      <EntitySoundcheckContent />
+    </EntityLayout.Route>
 
     <EntityLayout.Route path="/infra" title="Infra Details">
       {infraDetailsContent}
@@ -448,11 +441,9 @@ const userPage = (
         </Grid>
       </Grid>
     </EntityLayout.Route>
-    <FeatureFlagged with="soundcheck-plugin-preview">
-      <EntityLayout.Route path="/soundcheck" title="Soundcheck">
-        <GroupSoundcheckContent />
-      </EntityLayout.Route>
-    </FeatureFlagged>
+    <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+      <GroupSoundcheckContent />
+    </EntityLayout.Route>
   </EntityLayout>
 );
 
@@ -472,11 +463,9 @@ const groupPage = (
         </Grid>
       </Grid>
     </EntityLayout.Route>
-    <FeatureFlagged with="soundcheck-plugin-preview">
-      <EntityLayout.Route path="/soundcheck" title="Soundcheck">
-        <EntitySoundcheckContent />
-      </EntityLayout.Route>
-    </FeatureFlagged>
+    <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+      <EntitySoundcheckContent />
+    </EntityLayout.Route>
   </EntityLayout>
 );
 
@@ -524,11 +513,9 @@ const systemPage = (
         unidirectional={false}
       />
     </EntityLayout.Route>
-    <FeatureFlagged with="soundcheck-plugin-preview">
-      <EntityLayout.Route path="/soundcheck" title="Soundcheck">
-        <EntitySoundcheckContent />
-      </EntityLayout.Route>
-    </FeatureFlagged>
+    <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+      <EntitySoundcheckContent />
+    </EntityLayout.Route>
   </EntityLayout>
 );
 

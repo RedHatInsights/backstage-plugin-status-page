@@ -98,13 +98,7 @@ const app = createApp({
       name: 'default-catalog-index',
       pluginId: 'catalog-index',
       description: 'Fall back to the default catalog index page.',
-    },
-    {
-      name: 'soundcheck-plugin-preview',
-      pluginId: 'soundcheck',
-      description:
-        'Enables soundcheck plugin. (BETA)',
-    },
+    }
   ],
   icons: {
     'kind:workstream': SettingsEthernet,
@@ -186,9 +180,7 @@ const routes = (
     <Route path="/dashboard/data-layer" element={<DataLayerDashboardPage />} />
     <Route path="/dashboard/pulse" element={<PulseDashboardPage />} />
     <Route path="/outages" element={<OutageTemplatePage />} />
-    <FeatureFlagged with="soundcheck-plugin-preview">
-      <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
-    </FeatureFlagged>
+    <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
   </FlatRoutes>
 );
 

@@ -40,7 +40,6 @@ import {
   DocsBotIcon,
 } from '@appdev-platform/backstage-plugin-docsbot';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
-import { FeatureFlagged } from '@backstage/core-app-api';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -131,13 +130,11 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
               to="feedback"
               text="Feedback"
             />
-            <FeatureFlagged with='soundcheck-plugin-preview'>
-              <SidebarItem
-                icon={DoneAllIcon}
-                to="soundcheck"
-                text="Soundcheck"
-              />
-            </FeatureFlagged>
+            <SidebarItem
+              icon={DoneAllIcon}
+              to="soundcheck"
+              text="Soundcheck"
+            />
           </SidebarScrollWrapper>
           <Grid container>
             <Grid item xs={8}>
