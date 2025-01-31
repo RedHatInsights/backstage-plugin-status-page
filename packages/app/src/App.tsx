@@ -34,7 +34,7 @@ import {
   SignInPage,
 } from '@backstage/core-components';
 import { createApp } from '@backstage/app-defaults';
-import {AppRouter, FeatureFlagged, FlatRoutes} from '@backstage/core-app-api';
+import {AppRouter, FlatRoutes} from '@backstage/core-app-api';
 import {
   ALL_RELATION_PAIRS,
   CatalogGraphPage,
