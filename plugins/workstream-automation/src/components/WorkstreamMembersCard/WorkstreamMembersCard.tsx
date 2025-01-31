@@ -103,6 +103,7 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
     <InfoCard
       {...props}
       title={`Members (${members ? members.length : 0})`}
+      noPadding
       headerProps={{
         classes: { action: classes.action },
         action: (
@@ -129,6 +130,7 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
       {!loading ? (
         <Table
           columns={columns}
+          style={{ borderRadius: 0 , padding:0}}
           data={[
             ...(leadEntity
               ? [

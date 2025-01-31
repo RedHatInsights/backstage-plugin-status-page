@@ -1,4 +1,8 @@
-import { stringifyEntityRef, SystemEntity } from '@backstage/catalog-model';
+import {
+  stringifyEntityRef,
+  SystemEntity,
+  ComponentEntity,
+} from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
@@ -12,15 +16,21 @@ import { useDebounce } from 'react-use';
 
 export const FormInputPortfolio = () => {
   const catalogApi = useApi(catalogApiRef);
-  const [portfolioOptions, setPortfolioOptions] = useState<SystemEntity[]>([]);
+  const [portfolioOptions, setPortfolioOptions] = useState<
+    (ComponentEntity | SystemEntity)[]
+  >([]);
   const [searchText, setSearchText] = useState<string>();
 
-  const { control } = useFormContext<{ portfolio: SystemEntity[] }>();
+  const { control } = useFormContext<{
+    portfolio: (ComponentEntity | SystemEntity)[];
+  }>();
 
   useEffect(() => {
     catalogApi
-      .queryEntities({ filter: { kind: 'System' }, limit: 20 })
-      .then(res => setPortfolioOptions(res.items as SystemEntity[]));
+      .queryEntities({ filter: [{ kind: ['System', 'Component'] }], limit: 20 })
+      .then(res =>
+        setPortfolioOptions(res.items as (ComponentEntity | SystemEntity)[]),
+      );
   }, [catalogApi]);
 
   useDebounce(
@@ -29,13 +39,17 @@ export const FormInputPortfolio = () => {
         catalogApi
           .queryEntities({
             limit: 20,
-            filter: { kind: 'System' },
+            filter: [{ kind: ['System', 'Component'] }],
             fullTextFilter: {
               term: searchText,
               fields: ['metadata.name', 'metadata.title'],
             },
           })
-          .then(res => setPortfolioOptions(res.items as SystemEntity[]));
+          .then(res =>
+            setPortfolioOptions(
+              res.items as (ComponentEntity | SystemEntity)[],
+            ),
+          );
       }
     },
     400,
@@ -54,6 +68,7 @@ export const FormInputPortfolio = () => {
             getOptionSelected={(option, val) =>
               stringifyEntityRef(option) === stringifyEntityRef(val)
             }
+            groupBy={option => option.kind}
             getOptionLabel={option => {
               return stringifyEntityRef(option);
             }}

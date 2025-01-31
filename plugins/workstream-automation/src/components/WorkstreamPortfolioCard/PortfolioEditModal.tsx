@@ -1,4 +1,8 @@
-import { stringifyEntityRef, SystemEntity } from '@backstage/catalog-model';
+import {
+  stringifyEntityRef,
+  SystemEntity,
+  ComponentEntity,
+} from '@backstage/catalog-model';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
@@ -31,9 +35,13 @@ type EditDialogProps = {
 
 export const PortfolioEditModal = (props: EditDialogProps) => {
   const { portfolio, open, setEditModalOpen } = props;
-  const [allSystems, setAllSystems] = useState<SystemEntity[]>([]);
+  const [allSystems, setAllSystems] = useState<
+    (ComponentEntity | SystemEntity)[]
+  >([]);
   const [searchText, setSearchText] = useState<string>();
-  const [selectedSystems, setSelectedSystems] = useState<SystemEntity[]>([]);
+  const [selectedSystems, setSelectedSystems] = useState<
+    (ComponentEntity | SystemEntity)[]
+  >([]);
   const { entity } = useEntity();
   const [loading, setLoading] = useState(false);
   const catalogApi = useApi(catalogApiRef);
@@ -42,12 +50,13 @@ export const PortfolioEditModal = (props: EditDialogProps) => {
 
   useEffect(() => {
     catalogApi
-      .queryEntities({ filter: [{ kind: 'System' }], limit: 20 })
+      .queryEntities({ filter: [{ kind: ['System', 'Component'] }], limit: 20 })
       .then(res => {
-        setAllSystems(res.items as SystemEntity[]);
+        setAllSystems(res.items as (ComponentEntity | SystemEntity)[]);
       });
     catalogApi.getEntitiesByRefs({ entityRefs: portfolio }).then(res => {
-      if (res.items) setSelectedSystems(res.items as SystemEntity[]);
+      if (res.items)
+        setSelectedSystems(res.items as (ComponentEntity | SystemEntity)[]);
     });
   }, [catalogApi, portfolio]);
 
@@ -57,13 +66,15 @@ export const PortfolioEditModal = (props: EditDialogProps) => {
         catalogApi
           .queryEntities({
             limit: 20,
-            filter: { kind: 'System' },
+            filter: { kind: ['System', 'Component'] },
             fullTextFilter: {
               term: searchText,
               fields: ['metadata.name', 'metadata.title'],
             },
           })
-          .then(res => setAllSystems(res.items as SystemEntity[]));
+          .then(res =>
+            setAllSystems(res.items as (ComponentEntity | SystemEntity)[]),
+          );
       }
     },
     400,
@@ -110,6 +121,7 @@ export const PortfolioEditModal = (props: EditDialogProps) => {
               fullWidth
               multiple
               disableCloseOnSelect
+              groupBy={option => option.kind}
               getOptionSelected={(option, val) =>
                 option.metadata.uid === val.metadata.uid
               }
@@ -127,10 +139,7 @@ export const PortfolioEditModal = (props: EditDialogProps) => {
                 return (
                   <Box display="flex" alignItems="center">
                     <Checkbox checked={selected} />
-                    <EntityDisplayName
-                      entityRef={option}
-                      defaultKind="System"
-                    />
+                    <EntityDisplayName entityRef={option} />
                   </Box>
                 );
               }}
@@ -150,7 +159,7 @@ export const PortfolioEditModal = (props: EditDialogProps) => {
             <List>
               {selectedSystems.map(system => (
                 <ListItem key={system.metadata.uid} divider>
-                  <EntityDisplayName entityRef={system} defaultKind="system" />
+                  <EntityDisplayName entityRef={system} />
                 </ListItem>
               ))}
             </List>

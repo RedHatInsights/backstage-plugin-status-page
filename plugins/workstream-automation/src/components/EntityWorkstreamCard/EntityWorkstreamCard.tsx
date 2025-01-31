@@ -21,7 +21,10 @@ import {
 import { MembersColumn } from '../WorkstreamTable/MembersColumn';
 import { useApi } from '@backstage/core-plugin-api';
 
-export const UserWorkstreamCard = (props: { variant: InfoCardVariants }) => {
+export const EntityWorkstreamCard = (props: {
+  variant?: InfoCardVariants;
+  showRoleColumn?: boolean;
+}) => {
   const { entity } = useEntity<CustomUserEntity>();
   const catalogApi = useApi(catalogApiRef);
   const [workstreams, setWorkstreams] = useState<WorkstreamDataV1alpha1[]>([]);
@@ -50,12 +53,15 @@ export const UserWorkstreamCard = (props: { variant: InfoCardVariants }) => {
 
   const columns: TableColumn<WorkstreamDataV1alpha1>[] = [
     {
-      title: 'Workstream',
+      title: 'Name',
+      field: 'metadata.name',
+      highlight: true,
       render: data => <EntityRefLink entityRef={data} />,
     },
     {
       title: 'Role',
       tooltip: "Current user's role",
+      hidden: !props.showRoleColumn,
       render: data => {
         if (data.spec.lead === stringifyEntityRef(entity))
           return 'Workstream Lead';
@@ -66,7 +72,8 @@ export const UserWorkstreamCard = (props: { variant: InfoCardVariants }) => {
       },
     },
     {
-      title: 'Lead',
+      title: 'Workstream Lead',
+      field: 'spec.lead',
       tooltip: 'Workstream lead',
       render: data =>
         data.spec.lead ? (
@@ -77,6 +84,7 @@ export const UserWorkstreamCard = (props: { variant: InfoCardVariants }) => {
     },
     {
       title: 'Members',
+      sorting: false,
       render: data => {
         return <MembersColumn members={data.spec.members} />;
       },
@@ -84,9 +92,14 @@ export const UserWorkstreamCard = (props: { variant: InfoCardVariants }) => {
   ];
 
   return (
-    <InfoCard {...props} title={`Workstreams (${inWorkstreams?.length})`}>
+    <InfoCard
+      {...props}
+      title={`Workstreams (${inWorkstreams?.length})`}
+      noPadding
+    >
       <Table
         columns={columns}
+        style={{ borderRadius: 0, padding: 0 }}
         data={workstreams}
         isLoading={loading}
         options={{ toolbar: false, draggable: false, padding: 'dense' }}
