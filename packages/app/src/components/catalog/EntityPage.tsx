@@ -95,6 +95,12 @@ import { usePermission } from '@backstage/plugin-permission-react';
 import { EntityFeedbackPage } from '@janus-idp/backstage-plugin-feedback';
 import Delete from '@material-ui/icons/Delete';
 
+import {
+  EntitySoundcheckContent,
+  EntitySoundcheckCard,
+  GroupSoundcheckContent,
+} from '@spotify/backstage-plugin-soundcheck';
+
 const techdocsContent = (
   <EntityTechdocsContent>
     <TechDocsAddons>
@@ -223,6 +229,9 @@ const overviewContent = (
     <Grid item md={8} xs={12}>
       <EntityHasSubcomponentsCard variant="gridItem" />
     </Grid>
+    <Grid item xs={12}>
+      <EntitySoundcheckCard />
+    </Grid>
   </Grid>
 );
 
@@ -238,6 +247,10 @@ const serviceEntityPage = (
 
     <EntityLayout.Route path="/ci-cd" title="CI/CD">
       {cicdContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+      <EntitySoundcheckContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/api" title="API">
@@ -314,6 +327,10 @@ const websiteEntityPage = (
       {techdocsContent}
     </EntityLayout.Route>
 
+    <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+      <EntitySoundcheckContent />
+    </EntityLayout.Route>
+
     {/* Jira plugin Configuration */}
     <EntityLayout.Route path="/jira" title="Jira">
       {jiraContent}
@@ -339,6 +356,10 @@ const defaultEntityPage = (
 
     <EntityLayout.Route path="/docs" title="Docs">
       {techdocsContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+      <EntitySoundcheckContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/infra" title="Infra Details">
@@ -422,6 +443,9 @@ const userPage = (
         </Grid>
       </Grid>
     </EntityLayout.Route>
+    <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+      <GroupSoundcheckContent />
+    </EntityLayout.Route>
   </EntityLayout>
 );
 
@@ -440,6 +464,9 @@ const groupPage = (
           <EntityMembersListCard />
         </Grid>
       </Grid>
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+      <EntitySoundcheckContent />
     </EntityLayout.Route>
   </EntityLayout>
 );
@@ -490,6 +517,9 @@ const systemPage = (
         ]}
         unidirectional={false}
       />
+    </EntityLayout.Route>
+    <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+      <EntitySoundcheckContent />
     </EntityLayout.Route>
   </EntityLayout>
 );

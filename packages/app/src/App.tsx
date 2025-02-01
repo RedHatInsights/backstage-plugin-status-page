@@ -68,6 +68,7 @@ import {
   DataLayerDashboardPage,
   PulseDashboardPage,
 } from '@appdev-platform/backstage-plugin-devex-dashboard';
+import { SoundcheckRoutingPage } from '@spotify/backstage-plugin-soundcheck';
 
 const app = createApp({
   apis,
@@ -179,6 +180,7 @@ const routes = (
     <Route path="/dashboard/data-layer" element={<DataLayerDashboardPage />} />
     <Route path="/dashboard/pulse" element={<PulseDashboardPage />} />
     <Route path="/outages" element={<OutageTemplatePage />} />
+    <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
   </FlatRoutes>
 );
 

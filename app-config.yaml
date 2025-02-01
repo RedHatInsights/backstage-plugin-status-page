@@ -70,6 +70,10 @@ integrations:
     # - host: ghe.example.net
     #   apiBaseUrl: https://ghe.example.net/api/v3
     #   token: ${GHE_TOKEN}
+  gitlab:
+    - host: gitlab.cee.redhat.com
+      token: ${GITLAB_CEE_TOKEN}
+      apiBaseUrl: https://gitlab.cee.redhat.com/api/v4
 
 proxy:
   ### Example for how to add a proxy endpoint for the frontend.
@@ -275,3 +279,20 @@ reportPortal:
       baseUrl: ${REPORT_PORTAL_BASE_URL}
       token: ${REPORT_PORTAL_TOKEN}
       filterType: 'INTERNAL'
+
+
+spotify:
+  licenseKey: ${SPOTIFY_LICENSE_KEY}
+## Soundcheck Config
+soundcheck:
+  collectors:
+    sonarqube:
+      $include: ./soundcheck/collectors/sonarqube.yaml
+  checks:
+    - https://gitlab.cee.redhat.com/dxp/dx-pulse/soundcheck-config/-/raw/main/poc/checks/all-checks.yaml
+  programs:
+    - https://gitlab.cee.redhat.com/dxp/dx-pulse/soundcheck-config/-/raw/main/poc/programs/example.yaml
+  remote_file_updates:
+    disabled: false
+    frequency:
+      minutes: 5

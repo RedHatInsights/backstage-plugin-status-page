@@ -39,6 +39,7 @@ import {
   DocsBotButton,
   DocsBotIcon,
 } from '@appdev-platform/backstage-plugin-docsbot';
+import DoneAllIcon from '@material-ui/icons/DoneAll';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -128,6 +129,11 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
               icon={FeedbackIcon as IconComponent}
               to="feedback"
               text="Feedback"
+            />
+            <SidebarItem
+              icon={DoneAllIcon}
+              to="soundcheck"
+              text="Soundcheck"
             />
           </SidebarScrollWrapper>
           <Grid container>
