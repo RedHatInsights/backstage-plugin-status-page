@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-docsbot [1.9.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-docsbot@1.8.0...@appdev-platform/backstage-plugin-docsbot@1.9.0) (2025-02-03)
+
+
+### Features
+
+* **docsbot-plugin:** Adding Graphql source in the list of sources ([028fd88](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/028fd886ee01966edb73e0f4af1dde6d9d30c614))
+
 ## @appdev-platform/backstage-plugin-docsbot [1.8.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-docsbot@1.7.0...@appdev-platform/backstage-plugin-docsbot@1.8.0) (2025-01-28)
 
 
