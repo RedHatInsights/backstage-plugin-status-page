@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-outages [1.1.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-outages@1.1.0...@appdev-platform/backstage-plugin-outages@1.1.1) (2025-02-03)
+
+
+### Bug Fixes
+
+* **outages:** bump outages plugin manually ([c600bae](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/c600bae0fe1be9e972d66c177e1c83c963536646))
+
 ## @appdev-platform/backstage-plugin-outages [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-outages@1.0.1...@appdev-platform/backstage-plugin-outages@1.1.0) (2025-01-28)
 
 
