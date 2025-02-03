@@ -321,6 +321,7 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
       backstage: 'Backstage',
       portfolio_management_and_strategy: 'Portfolio Management and Strategy',
       spaship_docs: 'SPAship',
+      graphql:'GraphQl'
     };
 
     const title = titles[option] || 'Unknown Workspace';
@@ -433,6 +434,7 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
                   'backstage',
                   'portfolio_management_and_strategy',
                   'spaship_docs',
+                  'graphql'
                 ].map(option => (
                   <MenuItem
                     key={option}
