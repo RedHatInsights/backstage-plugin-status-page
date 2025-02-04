@@ -55,6 +55,11 @@ export class StatuspageApi {
             status: update.status ?? '',
             createdAt: update.created_at ?? '',
           })) ?? [],
+        scheduledFor: incident.scheduled_for,
+        scheduledUntil: incident.scheduled_until,
+        scheduledAutoCompleted: incident.scheduled_auto_completed,
+        startedAt: incident.started_at,
+        resolvedAt: incident.resolved_at,
       }));
     } catch (error) {
       // eslint-disable-next-line no-console

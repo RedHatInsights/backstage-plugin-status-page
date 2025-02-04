@@ -12,6 +12,7 @@ import {
   FormControl,
   Checkbox,
   ListItemText,
+  FormControlLabel,
 } from '@material-ui/core';
 
 const UpdateIncident: React.FC<UpdateIncidentProps> = ({
@@ -28,6 +29,11 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
   const [body, setBody] = useState('');
   const [selectedComponents, setSelectedComponents] = useState<string[]>([]);
   const [components, setComponents] = useState<any | []>([]);
+  const [scheduledFor, setScheduledFor] = useState(new Date().toISOString());
+  const [scheduledUntil, setScheduledUntil] = useState(
+    new Date().toISOString(),
+  );
+  const [scheduledAutoCompleted, setScheduledAutoCompleted] = useState(true);
 
   useEffect(() => {
     if (incidentData) {
@@ -35,6 +41,9 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
       setStatus(incidentData.status || '');
       setImpactOverride(incidentData.impactOverride || '');
       setBody(incidentData.body || '');
+      setScheduledFor(incidentData.scheduledFor || '');
+      setScheduledUntil(incidentData.scheduledUntil || '');
+      setScheduledAutoCompleted(incidentData.scheduledAutoCompleted || '');
       setComponents(component);
       setSelectedComponents(
         incidentData.components?.map((value: { id: string }) => value.id) || [],
@@ -53,22 +62,27 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
       status,
       impact_override: impactOverride,
       body,
-      component_ids: selectedComponents, // Send the selected component IDs
+      component_ids: selectedComponents,
+      scheduled_until: scheduledUntil,
+      scheduled_auto_completed: scheduledAutoCompleted,
     });
     onClose();
   };
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Update Incident</DialogTitle>
+      <DialogTitle>
+        {scheduledFor ? 'Update Maintenance' : 'Update Incident'}
+      </DialogTitle>
       <DialogContent>
         <TextField
-          label="Incident Name"
+          label={scheduledFor ? 'Maintenance Name' : 'Incident Name'}
           fullWidth
           value={name}
           disabled
           style={{ marginBottom: 20 }}
         />
+
         <FormControl fullWidth style={{ marginBottom: 20 }}>
           <InputLabel>Status</InputLabel>
           <Select
@@ -76,10 +90,35 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
             onChange={e => setStatus(e.target.value as string)}
             label="Status"
           >
-            <MenuItem value="identified">Identified</MenuItem>
-            <MenuItem value="investigating">Investigating</MenuItem>
-            <MenuItem value="monitoring">Monitoring</MenuItem>
-            <MenuItem value="resolved">Resolved</MenuItem>
+            {scheduledFor
+              ? [
+                  <MenuItem key="scheduled" value="scheduled">
+                    Scheduled
+                  </MenuItem>,
+                  <MenuItem key="in_progress" value="in_progress">
+                    In Progress
+                  </MenuItem>,
+                  <MenuItem key="verifying" value="verifying">
+                    Verifying
+                  </MenuItem>,
+                  <MenuItem key="completed" value="completed">
+                    Completed
+                  </MenuItem>,
+                ]
+              : [
+                  <MenuItem key="identified" value="identified">
+                    Identified
+                  </MenuItem>,
+                  <MenuItem key="investigating" value="investigating">
+                    Investigating
+                  </MenuItem>,
+                  <MenuItem key="monitoring" value="monitoring">
+                    Monitoring
+                  </MenuItem>,
+                  <MenuItem key="resolved" value="resolved">
+                    Resolved
+                  </MenuItem>,
+                ]}
           </Select>
         </FormControl>
 
@@ -88,7 +127,6 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
           <Select
             value={impactOverride}
             onChange={e => setImpactOverride(e.target.value as string)}
-            label="Impact"
           >
             <MenuItem value="none">None</MenuItem>
             <MenuItem value="minor">Minor</MenuItem>
@@ -97,26 +135,68 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
           </Select>
         </FormControl>
 
+        {scheduledFor && (
+          <>
+            <TextField
+              label="Start Time"
+              fullWidth
+              type="datetime-local"
+              value={
+                scheduledFor
+                  ? new Date(scheduledFor).toISOString().slice(0, 16)
+                  : ''
+              }
+              disabled
+              InputLabelProps={{ shrink: true }}
+              style={{ marginBottom: 20 }}
+            />
+            <TextField
+              label="End Time"
+              fullWidth
+              type="datetime-local"
+              value={
+                scheduledUntil
+                  ? new Date(scheduledUntil).toISOString().slice(0, 16)
+                  : ''
+              }
+              onChange={e => setScheduledUntil(e.target.value)}
+              InputLabelProps={{ shrink: true }}
+              style={{ marginBottom: 20 }}
+            />
+          </>
+        )}
+
+        {scheduledFor && (
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={scheduledAutoCompleted}
+                onChange={e => setScheduledAutoCompleted(e.target.checked)}
+              />
+            }
+            label="Auto complete the maintenance"
+            style={{ marginBottom: 20, maxWidth: '100%' }}
+          />
+        )}
+
         <FormControl fullWidth style={{ marginBottom: 20 }}>
           <InputLabel>Select Components</InputLabel>
           <Select
             multiple
             value={selectedComponents}
             onChange={handleComponentChange}
-            renderValue={(selected: any) => (
-              <div>
-                {selected
-                  .map((id: string) => {
-                    const data = components.find((c: any) => c.id === id);
-                    return data ? data.name : null;
-                  })
-                  .join(', ')}
-              </div>
-            )}
+            renderValue={(selected: any) =>
+              selected
+                .map((id: number) => {
+                  const data = components.find((c: any) => c.id === id);
+                  return data ? data.name : null;
+                })
+                .join(', ')
+            }
           >
             {components.map((value: any) => (
               <MenuItem key={value.id} value={value.id}>
-                <Checkbox checked={selectedComponents.indexOf(value.id) > -1} />
+                <Checkbox checked={selectedComponents.includes(value.id)} />
                 <ListItemText primary={value.name} />
               </MenuItem>
             ))}

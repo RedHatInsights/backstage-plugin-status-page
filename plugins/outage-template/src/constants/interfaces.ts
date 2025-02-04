@@ -7,6 +7,11 @@ interface Incident {
   updatedAt: string;
   components: any[];
   incidentUpdates: { status: string; body: string }[];
+  scheduledFor: string;
+  scheduledUntil: string;
+  scheduledAutoCompleted: boolean;
+  startedAt: string;
+  resolvedAt: string;
 }
 
 interface CreateIncidentProps {

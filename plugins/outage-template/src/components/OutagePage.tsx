@@ -105,7 +105,7 @@ export const OutageComponent = () => {
 
           <Grid item>
             <TextField
-              label="Search Incidents"
+              label="Search Incidents and Maintenance"
               variant="outlined"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
