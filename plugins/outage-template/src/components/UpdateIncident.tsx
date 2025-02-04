@@ -64,7 +64,7 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
       body,
       component_ids: selectedComponents,
       scheduled_until: scheduledUntil,
-      scheduled_auto_completed: scheduledAutoCompleted,
+      scheduled_auto_completed: scheduledAutoCompleted || false,
     });
     onClose();
   };
