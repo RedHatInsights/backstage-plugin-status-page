@@ -11,6 +11,8 @@ import {
   Chip,
   TablePagination,
   Box,
+  Tabs,
+  Tab,
 } from '@material-ui/core';
 
 const getStatusColor = (status: string) => {
@@ -23,7 +25,6 @@ const getStatusColor = (status: string) => {
       return 'secondary';
   }
 };
-
 const IncidentsTable = ({
   incidents,
   onViewUpdates,
@@ -32,6 +33,7 @@ const IncidentsTable = ({
 }: IncidentsTableProps) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [tabIndex, setTabIndex] = useState(0);
 
   const handleChangePage = (
     _event: React.MouseEvent<HTMLButtonElement> | null,
@@ -47,8 +49,17 @@ const IncidentsTable = ({
     setPage(0); // Reset to first page
   };
 
+  const filteredIncidents = incidents.filter(incident =>
+    tabIndex === 0 ? !incident.scheduledFor : incident.scheduledFor,
+  );
+
   return (
     <>
+      <Tabs value={tabIndex} onChange={(_, newValue) => setTabIndex(newValue)}>
+        <Tab label="Incidents" />
+        <Tab label="Scheduled Maintenance" />
+      </Tabs>
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -57,13 +68,20 @@ const IncidentsTable = ({
               <TableCell>Status</TableCell>
               <TableCell>Impact</TableCell>
               <TableCell>Created At</TableCell>
-              <TableCell>Updated At</TableCell>
+              {tabIndex === 1 && (
+                <>
+                  <TableCell>Scheduled For</TableCell>
+                  <TableCell>Scheduled Until</TableCell>
+                  <TableCell>Started At</TableCell>
+                  <TableCell>Resolved At</TableCell>
+                </>
+              )}
               <TableCell>Incident Updates</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {incidents
+            {filteredIncidents
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map(incident => (
                 <TableRow key={incident.id}>
@@ -79,9 +97,26 @@ const IncidentsTable = ({
                   <TableCell>
                     {new Date(incident.createdAt).toLocaleString()}
                   </TableCell>
-                  <TableCell>
-                    {new Date(incident.updatedAt).toLocaleString()}
-                  </TableCell>
+                  {tabIndex === 1 && (
+                    <>
+                      <TableCell>
+                        {new Date(incident.scheduledFor).toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(incident.scheduledUntil).toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        {incident.startedAt
+                          ? new Date(incident.startedAt).toLocaleString()
+                          : 'N/A'}
+                      </TableCell>
+                      <TableCell>
+                        {incident.resolvedAt
+                          ? new Date(incident.resolvedAt).toLocaleString()
+                          : 'N/A'}
+                      </TableCell>
+                    </>
+                  )}
                   <TableCell>
                     <Button
                       variant="outlined"
@@ -104,7 +139,10 @@ const IncidentsTable = ({
                         color="primary"
                         onClick={() => onUpdate(incident.id)}
                         style={{ margin: '5px' }}
-                        disabled={incident.status === 'resolved'}
+                        disabled={
+                          incident.status === 'resolved' ||
+                          incident.status === 'completed'
+                        }
                       >
                         Update
                       </Button>
@@ -127,7 +165,7 @@ const IncidentsTable = ({
       <TablePagination
         rowsPerPageOptions={[5, 10, 25]}
         component="div"
-        count={incidents.length}
+        count={filteredIncidents.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
