@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-outages [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-outages@1.1.1...@appdev-platform/backstage-plugin-outages@1.2.0) (2025-02-04)
+
+
+### Features
+
+* **outage:** schedule maintenance feature added ([c2b22b4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/c2b22b4953bbf0577ed15e8edcaee6fed0dc99ab))
+
 ## @appdev-platform/backstage-plugin-outages [1.1.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-outages@1.1.0...@appdev-platform/backstage-plugin-outages@1.1.1) (2025-02-03)
 
 
