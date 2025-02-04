@@ -41,8 +41,9 @@ RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz && \
 RUN yarn workspaces focus --all --production
 
 # Copy backstage app-config files
-COPY --chown=1001:0 ./app-config*.yaml $HOME/
 COPY --chown=1001:0 examples $HOME/examples/
+COPY --chown=1001:0 ./soundcheck $HOME/soundcheck/
+COPY --chown=1001:0 ./app-config*.yaml ./backstage.json ./
 
 # The fix-permissions script is important when operating in environments that dynamically use a random UID at runtime, such as OpenShift.
 # The upstream backstage image does not account for this and it causes the container to fail at runtime.
