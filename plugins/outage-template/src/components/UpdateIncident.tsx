@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import { useAnalytics } from '@backstage/core-plugin-api';
 import {
+  Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
-  Button,
+  FormControl,
+  FormControlLabel,
+  InputLabel,
+  ListItemText,
   MenuItem,
   Select,
-  InputLabel,
-  FormControl,
-  Checkbox,
-  ListItemText,
-  FormControlLabel,
+  TextField,
 } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
 
 const UpdateIncident: React.FC<UpdateIncidentProps> = ({
   component,
@@ -57,6 +58,8 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
     setSelectedComponents(event.target.value as string[]);
   };
 
+  const analytics = useAnalytics();
+
   const handleUpdate = () => {
     onUpdate(incidentId, {
       status,
@@ -66,6 +69,13 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
       scheduled_until: scheduledUntil,
       scheduled_auto_completed: scheduledAutoCompleted || false,
     });
+
+    if (scheduledUntil) {
+      analytics.captureEvent('update', `Maintenance Updated }`);
+    } else {
+      analytics.captureEvent('update', `Incident Updated`);
+    }
+
     onClose();
   };
 
