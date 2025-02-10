@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import { useAnalytics } from '@backstage/core-plugin-api';
 import {
+  Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
-  Button,
+  FormControl,
+  FormControlLabel,
+  InputLabel,
+  ListItemText,
   MenuItem,
   Select,
-  InputLabel,
-  FormControl,
   Switch,
-  Checkbox,
-  ListItemText,
-  FormControlLabel,
+  TextField,
 } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
 import templateData from './../template.json';
 
 const CreateIncident: React.FC<CreateIncidentProps> = ({
@@ -42,6 +43,7 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
   const [selectedComponents, setSelectedComponents] = useState<string[]>([]);
   const [components, setComponents] = useState<any | []>([]);
   const [scheduledAutoCompleted, setScheduledAutoCompleted] = useState(true);
+  const analytics = useAnalytics();
 
   useEffect(() => {
     setIncidentTemplates(templateData);
@@ -96,6 +98,7 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
         component_ids: selectedComponents,
         notify: true,
       });
+      analytics.captureEvent('create', `Maintenance created`);
     } else {
       if (
         !incidentName ||
@@ -116,6 +119,7 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
         component_ids: selectedComponents,
         notify: true,
       });
+      analytics.captureEvent('create', `Incident Created`);
     }
     onClose();
   };

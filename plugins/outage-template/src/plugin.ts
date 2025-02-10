@@ -8,7 +8,7 @@ import {
   FetchApi,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
-import { StatuspageApi, outageApiRef } from './api';
+import { outageApiRef, StatuspageApi } from './api';
 import { rootRouteRef } from './routes';
 
 export const outageTemplatePlugin = createPlugin({

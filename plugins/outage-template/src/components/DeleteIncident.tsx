@@ -1,4 +1,4 @@
-import React from 'react';
+import { useAnalytics } from '@backstage/core-plugin-api';
 import {
   Button,
   Dialog,
@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTitle,
 } from '@material-ui/core';
+import React from 'react';
 
 const DeleteIncident = ({
   incidentId,
@@ -13,8 +14,11 @@ const DeleteIncident = ({
   onClose,
   onDelete,
 }: DeleteIncidentProps) => {
+  const analytics = useAnalytics();
+
   const handleDelete = () => {
     onDelete(incidentId);
+    analytics.captureEvent('delete', `Deletion Requested`);
   };
 
   return (
