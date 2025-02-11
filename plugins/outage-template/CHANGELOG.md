@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-outages [1.2.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-outages@1.2.0...@appdev-platform/backstage-plugin-outages@1.2.1) (2025-02-11)
+
+
+### Other changes
+
+* **outage:** modifications in date-picker and improvements in layout ([29ffce1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/29ffce197c7292138a3968c93e973462a0699797))
+
 ## @appdev-platform/backstage-plugin-outages [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-outages@1.1.1...@appdev-platform/backstage-plugin-outages@1.2.0) (2025-02-04)
 
 
