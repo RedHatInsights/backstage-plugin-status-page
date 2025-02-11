@@ -46,7 +46,7 @@ const IncidentsTable = ({
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reset to first page
+    setPage(0);
   };
 
   const filteredIncidents = incidents.filter(incident =>
@@ -72,7 +72,6 @@ const IncidentsTable = ({
                 <>
                   <TableCell>Scheduled For</TableCell>
                   <TableCell>Scheduled Until</TableCell>
-                  <TableCell>Started At</TableCell>
                   <TableCell>Resolved At</TableCell>
                 </>
               )}
@@ -95,24 +94,19 @@ const IncidentsTable = ({
                   </TableCell>
                   <TableCell>{incident.impactOverride}</TableCell>
                   <TableCell>
-                    {new Date(incident.createdAt).toLocaleString()}
+                    {new Date(incident.createdAt).toISOString()}
                   </TableCell>
                   {tabIndex === 1 && (
                     <>
                       <TableCell>
-                        {new Date(incident.scheduledFor).toLocaleString()}
+                        {new Date(incident.scheduledFor).toISOString()}
                       </TableCell>
                       <TableCell>
-                        {new Date(incident.scheduledUntil).toLocaleString()}
-                      </TableCell>
-                      <TableCell>
-                        {incident.startedAt
-                          ? new Date(incident.startedAt).toLocaleString()
-                          : 'N/A'}
+                        {new Date(incident.scheduledUntil).toISOString()}
                       </TableCell>
                       <TableCell>
                         {incident.resolvedAt
-                          ? new Date(incident.resolvedAt).toLocaleString()
+                          ? new Date(incident.resolvedAt).toISOString()
                           : 'N/A'}
                       </TableCell>
                     </>

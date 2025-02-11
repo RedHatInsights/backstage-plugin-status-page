@@ -1,4 +1,4 @@
-import { useAnalytics } from '@backstage/core-plugin-api';
+import { alertApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import {
   Button,
   Checkbox,
@@ -38,12 +38,37 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
   const [endDate, setEndDate] = useState('');
   const [maintenanceDescription, setMaintenanceDescription] = useState('');
   const [maintenanceStatus, setMaintenanceStatus] = useState('');
-  const [error, setError] = useState('');
 
   const [selectedComponents, setSelectedComponents] = useState<string[]>([]);
   const [components, setComponents] = useState<any | []>([]);
   const [scheduledAutoCompleted, setScheduledAutoCompleted] = useState(true);
   const analytics = useAnalytics();
+  const alertApi = useApi(alertApiRef);
+
+  const getCurrentUTCDateTime = () => {
+    const now = new Date();
+    return now.toISOString().slice(0, 16);
+  };
+
+  const handleStartTimeChange = (e: any) => {
+    const newStartTime = e.target.value;
+    setStartDate(newStartTime);
+    if (endDate && newStartTime >= endDate) {
+      setEndDate('');
+    }
+  };
+
+  const handleEndTimeChange = (e: any) => {
+    const newEndTime = e.target.value;
+    if (newEndTime > startDate) {
+      setEndDate(newEndTime);
+    } else {
+      alertApi.post({
+        message: 'End time must be greater than Start time',
+        severity: 'error',
+      });
+    }
+  };
 
   useEffect(() => {
     setIncidentTemplates(templateData);
@@ -73,7 +98,6 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
   };
 
   const handleSubmit = () => {
-    setError('');
     if (isMaintenanceForm) {
       if (
         !topic ||
@@ -84,7 +108,10 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
         !impactOverride ||
         selectedComponents.length === 0
       ) {
-        setError('All fields are required for maintenance.');
+        alertApi.post({
+          message: 'All fields are required for maintenance.',
+          severity: 'error',
+        });
         return;
       }
       onSubmit({
@@ -100,15 +127,12 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
       });
       analytics.captureEvent('create', `Maintenance created`);
     } else {
-      if (
-        !incidentName ||
-        !status ||
-        !impactOverride ||
-        selectedComponents.length === 0
-      ) {
-        setError(
-          'Incident name, status, impact level, and components are required.',
-        );
+      if (!incidentName || !status || !impactOverride) {
+        alertApi.post({
+          message:
+            'Incident name, status, impact level, and components are required.',
+          severity: 'error',
+        });
         return;
       }
       onSubmit({
@@ -119,6 +143,21 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
         component_ids: selectedComponents,
         notify: true,
       });
+
+      setIncidentName('');
+      setStatus('');
+      setImpactOverride('');
+      setBody('');
+      setSelectedTemplate('');
+      setIsMaintenanceForm(false);
+      setTopic('');
+      setStartDate('');
+      setEndDate('');
+      setMaintenanceDescription('');
+      setMaintenanceStatus('');
+      setSelectedComponents([]);
+      setComponents([]);
+      setScheduledAutoCompleted(true);
       analytics.captureEvent('create', `Incident Created`);
     }
     onClose();
@@ -192,8 +231,9 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
               type="datetime-local"
               fullWidth
               value={startDate}
-              onChange={e => setStartDate(e.target.value)}
+              onChange={handleStartTimeChange}
               InputLabelProps={{ shrink: true }}
+              inputProps={{ min: getCurrentUTCDateTime() }}
               style={{ marginBottom: 20 }}
             />
             <TextField
@@ -201,8 +241,11 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
               type="datetime-local"
               fullWidth
               value={endDate}
-              onChange={e => setEndDate(e.target.value)}
+              onChange={handleEndTimeChange}
               InputLabelProps={{ shrink: true }}
+              inputProps={{
+                min: startDate || getCurrentUTCDateTime(),
+              }}
               style={{ marginBottom: 20 }}
             />
 
@@ -335,7 +378,6 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
           Submit
         </Button>
       </DialogActions>
-      {error && <div style={{ color: 'red' }}>{error}</div>}
     </Dialog>
   );
 };
