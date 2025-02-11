@@ -1,4 +1,4 @@
-import { useAnalytics } from '@backstage/core-plugin-api';
+import { useAnalytics, alertApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   Button,
   Checkbox,
@@ -30,11 +30,22 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
   const [body, setBody] = useState('');
   const [selectedComponents, setSelectedComponents] = useState<string[]>([]);
   const [components, setComponents] = useState<any | []>([]);
-  const [scheduledFor, setScheduledFor] = useState(new Date().toISOString());
-  const [scheduledUntil, setScheduledUntil] = useState(
-    new Date().toISOString(),
-  );
+  const [scheduledFor, setScheduledFor] = useState('');
+  const [scheduledUntil, setScheduledUntil] = useState('');
   const [scheduledAutoCompleted, setScheduledAutoCompleted] = useState(true);
+  const alertApi = useApi(alertApiRef);
+
+  const handleEndTimeChange = (e: any) => {
+    const newEndTime = e.target.value;
+    if (newEndTime > scheduledFor) {
+      setScheduledUntil(newEndTime);
+    } else {
+      alertApi.post({
+        message: 'End time must be greater than Start time',
+        severity: 'error',
+      });
+    }
+  };
 
   useEffect(() => {
     if (incidentData) {
@@ -151,11 +162,7 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
               label="Start Time"
               fullWidth
               type="datetime-local"
-              value={
-                scheduledFor
-                  ? new Date(scheduledFor).toISOString().slice(0, 16)
-                  : ''
-              }
+              value={scheduledFor ? `${scheduledFor}`.slice(0, 16) : ''}
               disabled
               InputLabelProps={{ shrink: true }}
               style={{ marginBottom: 20 }}
@@ -164,13 +171,12 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
               label="End Time"
               fullWidth
               type="datetime-local"
-              value={
-                scheduledUntil
-                  ? new Date(scheduledUntil).toISOString().slice(0, 16)
-                  : ''
-              }
-              onChange={e => setScheduledUntil(e.target.value)}
+              value={scheduledUntil ? `${scheduledUntil}`.slice(0, 16) : ''}
+              onChange={handleEndTimeChange}
               InputLabelProps={{ shrink: true }}
+              inputProps={{
+                min: `${scheduledFor}`.slice(0, 16), // Ensures End Time is after Start Time
+              }}
               style={{ marginBottom: 20 }}
             />
           </>

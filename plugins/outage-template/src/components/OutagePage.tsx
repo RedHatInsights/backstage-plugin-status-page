@@ -1,6 +1,6 @@
 import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { Button, Grid, TextField } from '@material-ui/core';
+import { Button, Grid, InputAdornment, TextField } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { outageApiRef } from '../api';
 import CreateIncident from './CreateIncident';
@@ -8,6 +8,7 @@ import DeleteIncident from './DeleteIncident';
 import IncidentsTable from './IncidentsTable';
 import IncidentUpdatesDrawer from './IncidentUpdatesDrawer';
 import UpdateIncident from './UpdateIncident';
+import SearchIcon from '@material-ui/icons/Search';
 
 export const OutageComponent = () => {
   const [incidents, setIncidents] = useState<any[]>([]);
@@ -23,6 +24,7 @@ export const OutageComponent = () => {
   const [deletingIncident, setDeletingIncident] = useState<any | null>(null);
   const outageApi = useApi(outageApiRef);
   const [components, setComponents] = useState<any | []>([]);
+  const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
     const loadIncidents = async () => {
@@ -105,15 +107,26 @@ export const OutageComponent = () => {
 
           <Grid item>
             <TextField
-              label="Search Incidents and Maintenance"
+              label="Search Incidents & Maintenance"
               variant="outlined"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
               fullWidth
-              style={{ marginBottom: '20px' }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+              InputLabelProps={{
+                shrink: Boolean(searchTerm) || isFocused,
+                style: { paddingLeft: '30px' },
+              }}
             />
           </Grid>
-
           <Grid item>
             <IncidentsTable
               incidents={filteredIncidents}
