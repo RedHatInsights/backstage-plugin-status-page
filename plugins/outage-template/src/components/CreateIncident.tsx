@@ -105,8 +105,7 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
         !endDate ||
         !maintenanceDescription ||
         !maintenanceStatus ||
-        !impactOverride ||
-        selectedComponents.length === 0
+        !impactOverride
       ) {
         alertApi.post({
           message: 'All fields are required for maintenance.',
@@ -123,6 +122,7 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
         scheduled_until: endDate,
         description: maintenanceDescription,
         component_ids: selectedComponents,
+        scheduled_auto_completed: scheduledAutoCompleted,
         notify: true,
       });
       analytics.captureEvent('create', `Maintenance created`);
@@ -143,23 +143,22 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
         component_ids: selectedComponents,
         notify: true,
       });
-
-      setIncidentName('');
-      setStatus('');
-      setImpactOverride('');
-      setBody('');
-      setSelectedTemplate('');
-      setIsMaintenanceForm(false);
-      setTopic('');
-      setStartDate('');
-      setEndDate('');
-      setMaintenanceDescription('');
-      setMaintenanceStatus('');
-      setSelectedComponents([]);
-      setComponents([]);
-      setScheduledAutoCompleted(true);
-      analytics.captureEvent('create', `Incident Created`);
     }
+    setIncidentName('');
+    setStatus('');
+    setImpactOverride('');
+    setBody('');
+    setSelectedTemplate('');
+    setIsMaintenanceForm(false);
+    setTopic('');
+    setStartDate('');
+    setEndDate('');
+    setMaintenanceDescription('');
+    setMaintenanceStatus('');
+    setSelectedComponents([]);
+    setComponents([]);
+    setScheduledAutoCompleted(true);
+    analytics.captureEvent('create', `Incident Created`);
     onClose();
   };
 
