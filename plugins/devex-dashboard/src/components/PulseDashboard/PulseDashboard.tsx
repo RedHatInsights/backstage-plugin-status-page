@@ -3,6 +3,7 @@ import {
   Content,
   Header,
   HeaderLabel,
+  InfoCard,
   Page,
   Table,
   TableColumn,
@@ -16,23 +17,38 @@ import {
   Select,
   MenuItem,
   LinearProgress,
+  Grid,
+  Typography,
+  Divider,
+  useTheme,
 } from '@material-ui/core';
 import { StatsCard } from '../Generic/StatsCard';
 import { useApi } from '@backstage/core-plugin-api';
 import { spashipApiRef } from '../../api';
 import pluginDiscoveryData from './PluginDiscovery.json';
-import { DataStream, PluginAnalytics, PluginStats } from '../../Interfaces';
-import { MatomoPeriod, MatomoRange } from '../Generic/Constants';
+import {
+  DataStream,
+  PieChartData,
+  PluginAnalytics,
+  PluginStats,
+} from '../../Interfaces';
+import { MatomoPeriods, RedHatStandardColors } from '../Generic/Constants';
+import { getPluginInterpolationChart } from './PrepareVisualData';
+import { LineChart, PieChart } from '@mui/x-charts';
+import useStyles from './Pulse.styles';
 
 export const PulseDashboard = () => {
   const matomo = useApi(spashipApiRef);
   const [pluginsVisitData, setPluginsVisitData] = useState<PluginStats[]>();
   const [loadingPluginStats, setLoadingPluginStats] = useState(false);
   const [pulseDataStreams, setPulseDataStreams] = useState<DataStream[]>();
-  const [periodOrRange, setPeriodOrRange] = useState({
-    period: 'day',
-    range: 'last10',
-  });
+  const [lineChartData, setLineChartData] = useState<any>();
+  const [lineChartXLabels, setLineChartXLabels] = useState<any>();
+  const [pieChartData, setPieChartData] = useState<any>();
+  const [periodOrRange, setPeriodOrRange] = useState(MatomoPeriods[0]);
+  const theme: any = useTheme();
+  const classes = useStyles(theme);
+
   const columns: TableColumn[] = [
     {
       title: 'Name',
@@ -52,7 +68,7 @@ export const PulseDashboard = () => {
         periodOrRange.period,
         periodOrRange.range,
       );
-      let statsByPlugin: any = {};
+      let statsByPlugin: { [key: string]: number } = {};
       pluginDiscoveryData.data.forEach(plugin => {
         if (plugin.lifecycle === 'production' && plugin.viewUrl) {
           Object.keys(statsByPageLabels?.reportData).forEach(
@@ -75,7 +91,9 @@ export const PulseDashboard = () => {
         }
       });
 
-      const formattedStatsByPlugin = Object.keys(statsByPlugin).map(key => {
+      const formattedStatsByPlugin: PluginStats[] = Object.keys(
+        statsByPlugin,
+      ).map(key => {
         return { name: key, visits: statsByPlugin[key] };
       });
 
@@ -89,7 +107,9 @@ export const PulseDashboard = () => {
             },
             {
               name: 'Unique User visits',
-              value: statsByPageLabels.reportTotal.nb_uniq_visitors || 'N/A',
+              value:
+                statsByPageLabels.reportTotal?.sum_daily_nb_uniq_visitors ||
+                'N/A',
             },
           ],
         },
@@ -121,8 +141,29 @@ export const PulseDashboard = () => {
           ],
         },
       ]);
-
+      if (formattedStatsByPlugin.length > 1) {
+        formattedStatsByPlugin.sort(
+          (dataA: PluginStats, dataB: PluginStats) =>
+            dataB.visits - dataA.visits,
+        );
+      }
       setPluginsVisitData(formattedStatsByPlugin);
+
+      const pieChartFormattedData: PieChartData[] = [];
+      formattedStatsByPlugin.forEach((plugin: any) => {
+        pieChartFormattedData.push({
+          id: plugin.name,
+          value: plugin.visits,
+          label: plugin.name,
+        });
+      });
+
+      setPieChartData(pieChartFormattedData);
+      const chartData = getPluginInterpolationChart(
+        statsByPageLabels?.reportData,
+      );
+      setLineChartData(chartData?.data || []);
+      setLineChartXLabels(chartData?.xLabels || []);
       setLoadingPluginStats(false);
     } catch (_err) {
       setLoadingPluginStats(false);
@@ -154,48 +195,39 @@ export const PulseDashboard = () => {
               <Select
                 labelId="period"
                 label="period"
-                value={periodOrRange.period}
+                value={periodOrRange.title}
                 onChange={evt => {
-                  const period: any = evt.target.value;
-                  setPeriodOrRange({ ...periodOrRange, period: period });
+                  const selectedPeriod: any = evt.target.value;
+                  const selectedItem = MatomoPeriods.find(
+                    item => item.title === selectedPeriod,
+                  );
+
+                  setPeriodOrRange({
+                    ...periodOrRange,
+                    period: selectedItem?.period || '',
+                    range: selectedItem?.range || '',
+                    title: selectedPeriod,
+                  });
                 }}
               >
-                {MatomoPeriod.map(period => (
-                  <MenuItem value={period.value}>{period.title}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </div>
-          <div>
-            <FormControl variant="outlined" size="small">
-              <InputLabel id="range">Range</InputLabel>
-              <Select
-                label="range"
-                labelId="range"
-                value={periodOrRange.range}
-                onChange={evt => {
-                  const range: any = evt.target.value;
-                  setPeriodOrRange({ ...periodOrRange, range: range });
-                }}
-              >
-                {MatomoRange.map(range => (
-                  <MenuItem
-                    value={range.value}
-                  >{`${range.title} ${periodOrRange.period}s`}</MenuItem>
+                {MatomoPeriods.map(matomoPeriodAndRange => (
+                  <MenuItem value={matomoPeriodAndRange.title}>
+                    {matomoPeriodAndRange.title}
+                  </MenuItem>
                 ))}
               </Select>
             </FormControl>
           </div>
         </div>
         {loadingPluginStats && <LinearProgress />}
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <div style={{ width: '50%' }}>
-            {pulseDataStreams &&
-              pulseDataStreams.map(dataStream => {
-                return <StatsCard width="100%" dataStream={dataStream} />;
-              })}
-          </div>
-          <div style={{ width: '50%' }}>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            {!loadingPluginStats && pulseDataStreams && (
+              <StatsCard width="100%" dataStream={pulseDataStreams[0]} />
+            )}
+            {!loadingPluginStats && pulseDataStreams && (
+              <StatsCard width="100%" dataStream={pulseDataStreams[1]} />
+            )}
             {!loadingPluginStats && pluginsVisitData ? (
               <Card>
                 <TableContainer component={Paper}>
@@ -216,8 +248,66 @@ export const PulseDashboard = () => {
             ) : (
               ''
             )}
-          </div>
-        </div>
+          </Grid>
+          <Grid item xs={6}>
+            {!loadingPluginStats && pluginsVisitData ? (
+              <div style={{ marginBottom: '1rem' }}>
+                <InfoCard className={classes.chart}>
+                  <Typography variant="h5">'Plugins visits Trend</Typography>
+                  <Divider style={{ margin: '0.5rem' }} />
+                  <Grid container>
+                    <LineChart
+                      width={900}
+                      height={350}
+                      series={lineChartData}
+                      xAxis={[
+                        {
+                          scaleType: 'point',
+                          data: lineChartXLabels,
+                          tickSize: 0.5,
+                        },
+                      ]}
+                      slotProps={{
+                        legend: {
+                          position: { horizontal: 'right', vertical: 'top' },
+                        },
+                      }}
+                      colors={RedHatStandardColors}
+                    />
+                  </Grid>
+                </InfoCard>
+                <InfoCard className={classes.chart}>
+                  <Typography variant="h5">
+                    Contributions on visits per plugin
+                  </Typography>
+                  <Divider style={{ margin: '0.5rem' }} />
+                  <Grid container>
+                    <PieChart
+                      series={[
+                        {
+                          data: pieChartData,
+                          innerRadius: 3,
+                          paddingAngle: 0.5,
+                          cornerRadius: 1,
+                          sortingValues: 'desc',
+                          arcLabel: item => `${item.value}`,
+                        },
+                      ]}
+                      onItemClick={() => {}}
+                      width={900}
+                      height={350}
+                      margin={{ right: 150, top: 30 }}
+                      colors={RedHatStandardColors}
+                      sx={{ fontWeight: 'bold' }}
+                    />
+                  </Grid>
+                </InfoCard>
+              </div>
+            ) : (
+              ''
+            )}
+          </Grid>
+        </Grid>
       </Content>
     </Page>
   );

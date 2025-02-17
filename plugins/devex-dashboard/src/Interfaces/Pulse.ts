@@ -11,3 +11,9 @@ export interface PluginStats {
   name: string;
   visits: number;
 }
+
+export interface PieChartData {
+  id: string;
+  value: number;
+  label: string;
+}

@@ -32,26 +32,6 @@
     },
     {
       "id": 4,
-      "title": "Workstream Automation",
-      "description": "View and Manage workstreams directly from backstage",
-      "viewUrl": "/catalog?filters[kind]=workstream",
-      "learnMore": null,
-      "lifecycle": "inProgress",
-      "tags": ["Workstreams", "Discovery", "alpha"],
-      "owner": "group:redhat/one-platform-devs"
-    },
-    {
-      "id": 1,
-      "title": "API Catalog",
-      "description": "A plugin for API Documentation with API Playground.",
-      "viewUrl": "/catalog?filters%5Bkind%5D=api",
-      "learnMore": "https://www.npmjs.com/package/@backstage/plugin-catalog",
-      "owner": "other",
-      "tags": ["API", "Metrics", "Develop"],
-      "lifecycle": "production"
-    },
-    {
-      "id": 2,
       "title": "Test Dashboard",
       "description": "A dashboard plugin that shows test reports for your applications.",
       "viewUrl": null,
@@ -61,7 +41,7 @@
       "lifecycle": "inProgress"
     },
     {
-      "id": 3,
+      "id": 5,
       "title": "Gitlab",
       "description": "A plugin to view Gitlab pipelines, merge requests, languages and contributors.",
       "viewUrl": null,
@@ -71,7 +51,7 @@
       "lifecycle": "production"
     },
     {
-      "id": 4,
+      "id": 6,
       "title": "GitHub",
       "description": "A plugin to view GitHub issues, pull requests, actions, etc.",
       "viewUrl": null,
@@ -81,7 +61,7 @@
       "lifecycle": "production"
     },
     {
-      "id": 5,
+      "id": 7,
       "title": "SonarQube",
       "description": "A Plugin displays code statistics from SonarCloud or SonarQube.",
       "viewUrl": null,
@@ -91,7 +71,7 @@
       "lifecycle": "production"
     },
     {
-      "id": 1,
+      "id": 8,
       "title": "SPAship",
       "description": "A plugin that shows your deployment status and details for your Single Page Applications.",
       "viewUrl": "/spaship",
@@ -101,7 +81,7 @@
       "lifecycle": "production"
     },
     {
-      "id": 2,
+      "id": 9,
       "title": "Hydra Proxy Manager",
       "description": "Manage your application endpoints with Hydra Proxy Manager.",
       "viewUrl": "/proxy-manager",
@@ -111,7 +91,7 @@
       "lifecycle": "production"
     },
     {
-      "id": 3,
+      "id": 10,
       "title": "Jira",
       "description": "A plugin that displays stats and issues for your JIRA Project.",
       "viewUrl": null,
@@ -121,7 +101,7 @@
       "lifecycle": "production"
     },
     {
-      "id": 1,
+      "id": 11,
       "title": "Matomo",
       "description": "A dashboard plugin for Matomo analytics.",
       "viewUrl": null,
@@ -131,7 +111,7 @@
       "lifecycle": "production"
     },
     {
-      "id": 2,
+      "id": 12,
       "title": "Cortex",
       "description": "A plugin that shows your cortex scorecards for your applications.",
       "viewUrl": "/cortex",
@@ -141,7 +121,7 @@
       "lifecycle": "production"
     },
     {
-      "id": 3,
+      "id": 13,
       "title": "Openshift Topology",
       "description": "A plugin to visualize the deployment status and related resources of your applications deployed on any Kubernetes cluster.",
       "viewUrl": null,
@@ -151,7 +131,7 @@
       "lifecycle": "inProgress"
     },
     {
-      "id": 4,
+      "id": 14,
       "title": "Lighthouse",
       "description": "Generate Lighthouse audits on websites and track them over time.",
       "viewUrl": "/lighthouse",
@@ -161,7 +141,7 @@
       "lifecycle": "production"
     },
     {
-      "id": 5,
+      "id": 15,
       "title": "Sentry",
       "description": "A plugin to track application errors using sentry.",
       "viewUrl": null,
@@ -171,7 +151,7 @@
       "lifecycle": "inProgress"
     },
     {
-      "id": 6,
+      "id": 16,
       "title": "Splunk / Signal FX",
       "description": "A plugin to view application runtime metrics and logs from Signalfx.",
       "viewUrl": null,
@@ -181,7 +161,7 @@
       "lifecycle": "inProgress"
     },
     {
-      "id": 7,
+      "id": 17,
       "title": "Backstage Dashboard",
       "description": "A plugin for visualizing and monitoring backstage usage and user metrics.",
       "viewUrl": null,
@@ -191,7 +171,7 @@
       "lifecycle": "inProgress"
     },
     {
-      "id": 8,
+      "id": 18,
       "title": "DevTools",
       "description": "Tools for helping with the Ops side of running a Backstage instance.",
       "viewUrl": "/devtools",
@@ -201,7 +181,7 @@
       "lifecycle": "production"
     },
     {
-      "id": 9,
+      "id": 19,
       "title": "Lighthouse CI",
       "description": "Automate running Lighthouse for every commit, viewing the changes, and preventing regressions.",
       "viewUrl": null,
@@ -211,7 +191,7 @@
       "lifecycle": "production"
     },
     {
-      "id": 1,
+      "id": 20,
       "title": "Feedback",
       "description": "A plugin for collecting and configuring user feedbacks for your application.",
       "viewUrl": "/feedback",
@@ -221,7 +201,7 @@
       "lifecycle": "production"
     },
     {
-      "id": 2,
+      "id": 21,
       "title": "Notifications",
       "description": "A plugin to help you setup and manage your application notifications and integration with the DevEx Notifications Service.",
       "viewUrl": "/notifications",
@@ -231,7 +211,7 @@
       "lifecycle": "production"
     },
     {
-      "id": 3,
+      "id": 22,
       "title": "Announcements",
       "description": "Write and share announcements within Backstage.",
       "viewUrl": null,
@@ -239,6 +219,16 @@
       "owner": "other",
       "tags": ["Engage", "announcements"],
       "lifecycle": "inProgress"
+    },
+    {
+      "id": 23,
+      "title": "Outages",
+      "description": "Incident Tracking & Management",
+      "viewUrl": "/outages",
+      "learnMore": null,
+      "owner": "other",
+      "tags": ["Monitoring", "Metrics"],
+      "lifecycle": "production"
     }
   ]
 }

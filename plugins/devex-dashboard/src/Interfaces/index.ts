@@ -1,2 +1,2 @@
-export type { DataStream } from './AppDev';
-export type { PluginAnalytics, PluginStats } from './Pulse';
+export type { DataStream, DataPoint } from './AppDev';
+export type { PluginAnalytics, PluginStats, PieChartData } from './Pulse';

@@ -1,41 +1,41 @@
-export const MatomoPeriod = [
-    {
-        title: "Day",
-        value: "day",
-    },
-    {
-        title: "Week",
-        value: "week"
-    },
-    {
-        title: "Month",
-        value: "month",
-    },
-    {
-        title: "Year",
-        value: "year"
-    }
+export const MatomoPeriods = [
+  {
+    title: 'Past 30 Days',
+    period: 'week',
+    range: 'last4',
+  },
+  {
+    title: 'Past 3 Months',
+    period: 'month',
+    range: 'last3',
+  },
+  {
+    title: 'Past 6 Months',
+    period: 'month',
+    range: 'last6',
+  },
+  {
+    title: 'Past Year',
+    period: 'month',
+    range: 'last12',
+  },
 ];
 
-export const MatomoRange = [
-    {
-        title: "Last 10",
-        value: "last10",
-    },
-    {
-        title: "Last 30",
-        value: "last30"
-    },
-    {
-        title: "Last 60",
-        value: "last60"
-    },
-    {
-        title: "Last 100",
-        value: "last100"
-    },
-    {
-        title: "Last 365",
-        value: "last365"
-    }
-]
+export const RedHatStandardColors = [
+  '#f5921b', // orange
+  '#ee0000', // redhat-red
+  '#37a3a3', // teal
+  '#5e40be', // purple
+  '#ffcc17', // yellow
+  '#0066cc', // blue
+  '#f0561d', // danger-red
+  '#63993d', // green
+  '#ce8873', // cool-tone-brown
+];
+
+export const RedHatBlueOrangeShades = [
+  '#ca6c0f', // orange-50
+  '#92c5f9', // blue-30
+  '#f8ae54', // orange-30
+  '#0066cc', // blue-50
+];

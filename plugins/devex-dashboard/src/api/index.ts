@@ -21,7 +21,47 @@ export class SPAshipApi {
     return await this.discoveryApi.getBaseUrl('proxy');
   }
 
-  async getDeploymentCount() {
+  async getDeploymentCountByEnv() {
+    const baseUrl = await this.getBaseUrl();
+
+    const response = await this.fetchApi
+      .fetch(`${baseUrl}/spaship/v1/analytics/deployment/env`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(data => {
+        return data.json();
+      })
+      .catch(_err => {
+        return null;
+      });
+
+    return response;
+  }
+
+  async getAverageDeploymentTimeByDays(days = 30) {
+    const baseUrl = await this.getBaseUrl();
+
+    const response = await this.fetchApi
+      .fetch(`${baseUrl}/spaship/v1/analytics/deployment/time?days=${days}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(data => {
+        return data.json();
+      })
+      .catch(_err => {
+        return null;
+      });
+
+    return response;
+  }
+
+  async deployedPropertyCount() {
     const baseUrl = await this.getBaseUrl();
 
     const response = await this.fetchApi
