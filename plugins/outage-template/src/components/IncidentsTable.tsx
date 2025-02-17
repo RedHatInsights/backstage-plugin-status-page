@@ -21,10 +21,23 @@ const getStatusColor = (status: string) => {
       return 'primary';
     case 'investigating':
       return 'default';
-    default:
+    case 'monitoring':
       return 'secondary';
+    case 'identified':
+      return 'secondary';
+    case 'in_progress':
+      return 'primary';
+    case 'completed':
+      return 'primary';
+    case 'scheduled':
+      return 'secondary';
+    case 'verifying':
+      return 'secondary';
+    default:
+      return 'default';
   }
 };
+
 const IncidentsTable = ({
   incidents,
   onViewUpdates,
