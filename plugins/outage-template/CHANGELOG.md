@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-outages [1.2.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-outages@1.2.1...@appdev-platform/backstage-plugin-outages@1.2.2) (2025-02-17)
+
+
+### Bug Fixes
+
+* **outage:** checkbox, status color code and validation issues resolved ([fc81c4e](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/fc81c4e02a8beb169e6ffe854329b9d0502ec7c5))
+
 ## @appdev-platform/backstage-plugin-outages [1.2.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-outages@1.2.0...@appdev-platform/backstage-plugin-outages@1.2.1) (2025-02-11)
 
 
