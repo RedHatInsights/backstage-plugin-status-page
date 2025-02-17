@@ -1,7 +1,14 @@
-import { LinkButton } from '@backstage/core-components';
-import { Card, LinearProgress, useTheme } from '@material-ui/core';
+import { InfoCard, LinkButton } from '@backstage/core-components';
+import {
+  Divider,
+  Grid,
+  LinearProgress,
+  Typography,
+  useTheme,
+} from '@material-ui/core';
 import React from 'react';
 import useStyles from '../DashboardComponent/Dashboard.styles';
+import { DataPoint } from '../../Interfaces/AppDev';
 
 interface IProps {
   loadingInProgress?: boolean;
@@ -14,49 +21,50 @@ export const StatsCard = (props: IProps) => {
   const classes = useStyles(theme);
 
   return (
-    <Card
-      className={classes.content}
-      style={{ marginBottom: '1rem', width: props.width }}
-    >
+    <InfoCard className={classes.infoCard}>
       {props.loadingInProgress && !props.dataStream ? (
         <LinearProgress />
       ) : (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            paddingBottom: '1rem',
-          }}
-        >
-          <div className={classes.pluginTitle}>
+        <>
+          <Typography
+            variant="h5"
+            className={classes.typoGraphy}
+          >
             {props.dataStream?.workStream}
-          </div>
-          <div style={{ display: 'flex' }}>
-            {props.dataStream?.sourceUrl ? (
-              <div>
-                <LinkButton
-                  variant="contained"
-                  color="primary"
-                  to={props.dataStream.sourceUrl}
-                  target="_blank"
-                >
-                  Visit {props.dataStream.workStream}
-                </LinkButton>
-              </div>
-            ) : (
-              ''
+            {props.dataStream?.sourceUrl && (
+              <LinkButton
+                variant="contained"
+                color="primary"
+                to={props.dataStream.sourceUrl}
+                target="_blank"
+              >
+                Visit {props.dataStream.workStream}
+              </LinkButton>
             )}
-          </div>
-        </div>
+          </Typography>
+          <Divider style={{ marginBottom: '0.5rem' }} />
+        </>
       )}
       <div style={{ display: 'flex', gap: '1rem' }}>
-        {props?.dataStream?.dataPoints.map((dataPoint: any) => (
-          <Card className={classes.content}>
-            <div className={classes.value}>{dataPoint.value}</div>
-            <div className={classes.dataPointName}>{dataPoint.name}</div>
-          </Card>
+        {props?.dataStream?.dataPoints.map((dataPoint: DataPoint, index: number) => (
+          <Grid container spacing={2}>
+            <Grid item key={`deployment-times-${index}`}>
+              <Typography
+                style={{
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {dataPoint.name}
+              </Typography>
+              <Typography style={{ fontSize: '24px' }}>
+                {dataPoint.value}
+              </Typography>
+            </Grid>
+          </Grid>
         ))}
       </div>
-    </Card>
+    </InfoCard>
   );
 };

@@ -21,6 +21,13 @@ const useStyles = makeStyles(_theme => ({
     color: '#0066cc',
     textAlign: 'center',
   },
+  typoGraphy: {
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  infoCard: {
+    marginBottom: '1rem'
+  }
 }));
 
 export default useStyles;
