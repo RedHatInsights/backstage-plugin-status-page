@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-outages [1.2.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-outages@1.2.2...@appdev-platform/backstage-plugin-outages@1.2.3) (2025-02-19)
+
+
+### Other changes
+
+* **outage:**  tooltip added, changes in labels and headers ([724a958](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/724a95873782b6b2931c0585b2b70a5fe4a4a2e9))
+
 ## @appdev-platform/backstage-plugin-outages [1.2.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-outages@1.2.1...@appdev-platform/backstage-plugin-outages@1.2.2) (2025-02-17)
 
 
