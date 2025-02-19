@@ -70,7 +70,7 @@ const IncidentsTable = ({
     <>
       <Tabs value={tabIndex} onChange={(_, newValue) => setTabIndex(newValue)}>
         <Tab label="Incidents" />
-        <Tab label="Scheduled Maintenance" />
+        <Tab label="Maintenance" />
       </Tabs>
 
       <TableContainer component={Paper}>

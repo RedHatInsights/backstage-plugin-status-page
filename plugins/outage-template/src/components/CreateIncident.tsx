@@ -14,9 +14,11 @@ import {
   Select,
   Switch,
   TextField,
+  Tooltip,
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import templateData from './../template.json';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 
 const CreateIncident: React.FC<CreateIncidentProps> = ({
   component,
@@ -120,7 +122,7 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
         scheduled_for: startDate,
         started_at: startDate,
         scheduled_until: endDate,
-        description: maintenanceDescription,
+        body: maintenanceDescription,
         component_ids: selectedComponents,
         scheduled_auto_completed: scheduledAutoCompleted,
         notify: true,
@@ -176,7 +178,18 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
         {!isMaintenanceForm ? 'Create Incident' : 'Schedule Maintenance'}
         {!isMaintenanceForm && (
           <FormControl fullWidth style={{ marginBottom: 20 }}>
-            <InputLabel>Select Template</InputLabel>
+            <InputLabel
+              shrink
+              style={{ display: 'flex', alignItems: 'center' }}
+            >
+              Select Template
+              <Tooltip title="Choose a predefined template for the incident details.">
+                <HelpOutlineIcon
+                  fontSize="small"
+                  style={{ cursor: 'pointer', marginLeft: 4 }}
+                />
+              </Tooltip>
+            </InputLabel>
             <Select
               value={selectedTemplate}
               onChange={e => handleTemplateChange(e.target.value as string)}
@@ -225,8 +238,19 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
               </Select>
             </FormControl>
 
+            <InputLabel
+              shrink
+              style={{ display: 'flex', alignItems: 'center' }}
+            >
+              Start Time (UTC)
+              <Tooltip title="This is the scheduled start time in UTC and cannot be modified.">
+                <HelpOutlineIcon
+                  fontSize="small"
+                  style={{ cursor: 'pointer', marginLeft: 4 }}
+                />
+              </Tooltip>
+            </InputLabel>
             <TextField
-              label="Start Date"
               type="datetime-local"
               fullWidth
               value={startDate}
@@ -235,8 +259,20 @@ const CreateIncident: React.FC<CreateIncidentProps> = ({
               inputProps={{ min: getCurrentUTCDateTime() }}
               style={{ marginBottom: 20 }}
             />
+
+            <InputLabel
+              shrink
+              style={{ display: 'flex', alignItems: 'center', marginTop: 16 }}
+            >
+              End Time (UTC)
+              <Tooltip title="End Time in UTC when the maintenance is expected to finish.">
+                <HelpOutlineIcon
+                  fontSize="small"
+                  style={{ cursor: 'pointer', marginLeft: 4 }}
+                />
+              </Tooltip>
+            </InputLabel>
             <TextField
-              label="End Date"
               type="datetime-local"
               fullWidth
               value={endDate}
