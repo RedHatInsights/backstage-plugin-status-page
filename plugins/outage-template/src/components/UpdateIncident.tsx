@@ -13,8 +13,10 @@ import {
   MenuItem,
   Select,
   TextField,
+  Tooltip,
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 
 const UpdateIncident: React.FC<UpdateIncidentProps> = ({
   component,
@@ -96,8 +98,16 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
         {scheduledFor ? 'Update Maintenance' : 'Update Incident'}
       </DialogTitle>
       <DialogContent>
+        <InputLabel shrink style={{ display: 'flex', alignItems: 'center' }}>
+          {scheduledFor ? 'Maintenance Name' : 'Incident Name'}
+          <Tooltip title="This name identifies the maintenance or incident and cannot be modified.">
+            <HelpOutlineIcon
+              fontSize="small"
+              style={{ cursor: 'pointer', marginLeft: 4 }}
+            />
+          </Tooltip>
+        </InputLabel>
         <TextField
-          label={scheduledFor ? 'Maintenance Name' : 'Incident Name'}
           fullWidth
           value={name}
           disabled
@@ -105,7 +115,15 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
         />
 
         <FormControl fullWidth style={{ marginBottom: 20 }}>
-          <InputLabel>Status</InputLabel>
+          <InputLabel shrink style={{ display: 'flex', alignItems: 'center' }}>
+            Status
+            <Tooltip title="Select the current status of the maintenance or incident.">
+              <HelpOutlineIcon
+                fontSize="small"
+                style={{ cursor: 'pointer', marginLeft: 4 }}
+              />
+            </Tooltip>
+          </InputLabel>
           <Select
             value={status}
             onChange={e => setStatus(e.target.value as string)}
@@ -144,7 +162,15 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
         </FormControl>
 
         <FormControl fullWidth style={{ marginBottom: 20 }}>
-          <InputLabel>Impact</InputLabel>
+          <InputLabel shrink style={{ display: 'flex', alignItems: 'center' }}>
+            Impact
+            <Tooltip title="Select the level of impact caused by this maintenance or incident.">
+              <HelpOutlineIcon
+                fontSize="small"
+                style={{ cursor: 'pointer', marginLeft: 4 }}
+              />
+            </Tooltip>
+          </InputLabel>
           <Select
             value={impactOverride}
             onChange={e => setImpactOverride(e.target.value as string)}
@@ -158,24 +184,45 @@ const UpdateIncident: React.FC<UpdateIncidentProps> = ({
 
         {scheduledFor && (
           <>
+            <InputLabel
+              shrink
+              style={{ display: 'flex', alignItems: 'center' }}
+            >
+              Start Time (UTC)
+              <Tooltip title="This is the scheduled start time in UTC and cannot be modified.">
+                <HelpOutlineIcon
+                  fontSize="small"
+                  style={{ cursor: 'pointer', marginLeft: 4 }}
+                />
+              </Tooltip>
+            </InputLabel>
             <TextField
-              label="Start Time"
               fullWidth
               type="datetime-local"
               value={scheduledFor ? `${scheduledFor}`.slice(0, 16) : ''}
               disabled
               InputLabelProps={{ shrink: true }}
-              style={{ marginBottom: 20 }}
             />
+            <InputLabel
+              shrink
+              style={{ display: 'flex', alignItems: 'center', marginTop: 16 }}
+            >
+              End Time (UTC)
+              <Tooltip title="End Time in UTC when the maintenance is expected to finish.">
+                <HelpOutlineIcon
+                  fontSize="small"
+                  style={{ cursor: 'pointer', marginLeft: 4 }}
+                />
+              </Tooltip>
+            </InputLabel>
             <TextField
-              label="End Time"
               fullWidth
               type="datetime-local"
               value={scheduledUntil ? `${scheduledUntil}`.slice(0, 16) : ''}
               onChange={handleEndTimeChange}
               InputLabelProps={{ shrink: true }}
               inputProps={{
-                min: `${scheduledFor}`.slice(0, 16), // Ensures End Time is after Start Time
+                min: `${scheduledFor}`.slice(0, 16),
               }}
               style={{ marginBottom: 20 }}
             />

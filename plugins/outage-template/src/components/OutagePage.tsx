@@ -85,10 +85,7 @@ export const OutageComponent = () => {
 
   return (
     <Page themeId="tool">
-      <Header
-        title="Outage Management"
-        subtitle="Incident Tracking & Management"
-      >
+      <Header title="Status Page" subtitle="Incident & Maintenance Tracking">
         <HeaderLabel label="Owner" value="AppDev" />
         <HeaderLabel label="Lifecycle" value="Alpha" />
       </Header>
@@ -101,7 +98,7 @@ export const OutageComponent = () => {
               onClick={() => setCreateModalOpen(true)}
               style={{ marginBottom: '20px' }}
             >
-              Create Incident
+              Create Status Update
             </Button>
           </Grid>
 
