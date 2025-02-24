@@ -253,11 +253,11 @@ export const PulseDashboard = () => {
             {!loadingPluginStats && pluginsVisitData ? (
               <div style={{ marginBottom: '1rem' }}>
                 <InfoCard className={classes.chart}>
-                  <Typography variant="h5">'Plugins visits Trend</Typography>
+                  <Typography variant="h5">Plugins visits Trend</Typography>
                   <Divider style={{ margin: '0.5rem' }} />
                   <Grid container>
                     <LineChart
-                      width={900}
+                      width={700}
                       height={350}
                       series={lineChartData}
                       xAxis={[
@@ -265,6 +265,7 @@ export const PulseDashboard = () => {
                           scaleType: 'point',
                           data: lineChartXLabels,
                           tickSize: 0.5,
+                          tickLabelStyle: { fontSize: 10 },
                         },
                       ]}
                       slotProps={{
@@ -272,6 +273,7 @@ export const PulseDashboard = () => {
                           position: { horizontal: 'right', vertical: 'top' },
                         },
                       }}
+                      margin={{ left: 60, right: 40 }}
                       colors={RedHatStandardColors}
                     />
                   </Grid>
@@ -298,7 +300,14 @@ export const PulseDashboard = () => {
                       height={350}
                       margin={{ right: 150, top: 30 }}
                       colors={RedHatStandardColors}
-                      sx={{ fontWeight: 'bold' }}
+                      sx={{ fontSize: 20 }}
+                      slotProps={{
+                        legend: {
+                          labelStyle: {
+                            fontSize: 20,
+                          },
+                        },
+                      }}
                     />
                   </Grid>
                 </InfoCard>
