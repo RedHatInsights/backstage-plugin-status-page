@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-devex-dashboard [1.1.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.1.0...@appdev-platform/backstage-plugin-devex-dashboard@1.1.1) (2025-02-24)
+
+
+### Bug Fixes
+
+* **APD-198:** fix lineChart labels cropping and increase pieChart numbers ([4c9e676](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/4c9e676958116e71348d18abc9aa632f91f22d69))
+
 ## @appdev-platform/backstage-plugin-devex-dashboard [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.0.0...@appdev-platform/backstage-plugin-devex-dashboard@1.1.0) (2025-02-17)
 
 
