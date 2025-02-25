@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-devex-dashboard [1.1.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.1.1...@appdev-platform/backstage-plugin-devex-dashboard@1.1.2) (2025-02-25)
+
+
+### Other changes
+
+* **outage:** Outage label and URL changed to Status Page ([615c96b](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/615c96b75951509952ef40088dab4ba2d217dbbc))
+
 ## @appdev-platform/backstage-plugin-devex-dashboard [1.1.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.1.0...@appdev-platform/backstage-plugin-devex-dashboard@1.1.1) (2025-02-24)
 
 
