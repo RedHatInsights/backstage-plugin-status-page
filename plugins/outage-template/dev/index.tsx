@@ -7,6 +7,6 @@ createDevApp()
   .addPage({
     element: <OutageTemplatePage />,
     title: 'Root Page',
-    path: '/outages',
+    path: '/status-page',
   })
   .render();

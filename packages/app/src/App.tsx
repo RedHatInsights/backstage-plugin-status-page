@@ -179,7 +179,7 @@ const routes = (
     <Route path="/dashboard/app-dev" element={<AppDevDashboardPage />} />
     <Route path="/dashboard/data-layer" element={<DataLayerDashboardPage />} />
     <Route path="/dashboard/pulse" element={<PulseDashboardPage />} />
-    <Route path="/outages" element={<OutageTemplatePage />} />
+    <Route path="/status-page" element={<OutageTemplatePage />} />
     <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
   </FlatRoutes>
 );

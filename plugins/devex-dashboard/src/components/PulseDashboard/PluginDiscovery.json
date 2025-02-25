@@ -222,9 +222,9 @@
     },
     {
       "id": 23,
-      "title": "Outages",
+      "title": "Status Page",
       "description": "Incident Tracking & Management",
-      "viewUrl": "/outages",
+      "viewUrl": "/status-page",
       "learnMore": null,
       "owner": "other",
       "tags": ["Monitoring", "Metrics"],

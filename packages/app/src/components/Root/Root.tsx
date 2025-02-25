@@ -183,8 +183,8 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
             <Grid item xs={8}>
               <SidebarItem
                 icon={Report as IconComponent}
-                to="outages"
-                text="Outages"
+                to="status-page"
+                text="Status Page"
               />
             </Grid>
           </Grid>
