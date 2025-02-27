@@ -24,7 +24,7 @@ import {
 } from '@material-ui/core';
 import { StatsCard } from '../Generic/StatsCard';
 import { useApi } from '@backstage/core-plugin-api';
-import { spashipApiRef } from '../../api';
+import { devexApiRef } from '../../api';
 import pluginDiscoveryData from './PluginDiscovery.json';
 import {
   DataStream,
@@ -34,11 +34,11 @@ import {
 } from '../../Interfaces';
 import { MatomoPeriods, RedHatStandardColors } from '../Generic/Constants';
 import { getPluginInterpolationChart } from './PrepareVisualData';
-import { LineChart, PieChart } from '@mui/x-charts';
+import { BarChart, LineChart } from '@mui/x-charts';
 import useStyles from './Pulse.styles';
 
 export const PulseDashboard = () => {
-  const matomo = useApi(spashipApiRef);
+  const matomo = useApi(devexApiRef);
   const [pluginsVisitData, setPluginsVisitData] = useState<PluginStats[]>();
   const [loadingPluginStats, setLoadingPluginStats] = useState(false);
   const [pulseDataStreams, setPulseDataStreams] = useState<DataStream[]>();
@@ -242,6 +242,7 @@ export const PulseDashboard = () => {
                     title="All Plugins"
                     data={pluginsVisitData}
                     columns={columns}
+                    style={{ minHeight: '32rem' }}
                   />
                 </TableContainer>
               </Card>
@@ -263,7 +264,9 @@ export const PulseDashboard = () => {
                       xAxis={[
                         {
                           scaleType: 'point',
-                          data: lineChartXLabels,
+                          data: lineChartXLabels?.map(
+                            (label: string) => label.split(',')[0],
+                          ),
                           tickSize: 0.5,
                           tickLabelStyle: { fontSize: 10 },
                         },
@@ -273,7 +276,7 @@ export const PulseDashboard = () => {
                           position: { horizontal: 'right', vertical: 'top' },
                         },
                       }}
-                      margin={{ left: 60, right: 40 }}
+                      margin={{ left: 60, right: 80 }}
                       colors={RedHatStandardColors}
                     />
                   </Grid>
@@ -284,30 +287,19 @@ export const PulseDashboard = () => {
                   </Typography>
                   <Divider style={{ margin: '0.5rem' }} />
                   <Grid container>
-                    <PieChart
+                    <BarChart
+                      dataset={pieChartData}
+                      yAxis={[{ scaleType: 'band', dataKey: 'label' }]}
+                      xAxis={[{ label: 'Total Visits' }]}
                       series={[
                         {
-                          data: pieChartData,
-                          innerRadius: 3,
-                          paddingAngle: 0.5,
-                          cornerRadius: 1,
-                          sortingValues: 'desc',
-                          arcLabel: item => `${item.value}`,
+                          dataKey: 'value',
+                          color: '#0066cc',
                         },
                       ]}
-                      onItemClick={() => {}}
-                      width={900}
+                      layout="horizontal"
+                      width={500}
                       height={350}
-                      margin={{ right: 150, top: 30 }}
-                      colors={RedHatStandardColors}
-                      sx={{ fontSize: 20 }}
-                      slotProps={{
-                        legend: {
-                          labelStyle: {
-                            fontSize: 20,
-                          },
-                        },
-                      }}
                     />
                   </Grid>
                 </InfoCard>

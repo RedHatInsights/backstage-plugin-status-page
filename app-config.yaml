@@ -111,6 +111,10 @@ proxy:
       credentials: dangerously-allow-unauthenticated
       changeOrigin: true
       allowedMethods: ['GET', 'POST']
+    '/docsbotstats':
+      target: ${DOCSBOT_STATS_URL}
+      changeOrigin: true
+      allowedMethods: ['GET']
     '/statuspage':
       target: ${STATUSPAGE_URL}
       headers:
@@ -140,6 +144,9 @@ matomo:
 
 cmdb:
   host: ${SERVICE_NOW_BASE_API_URL}
+
+docsbot:
+  statsUrl: ${DOCSBOT_STATS_URL}
 
 proxyManager:
   apiBaseUrl: ${PROXY_MANAGER_API_BASE_URL}

@@ -6,9 +6,10 @@ import {
   LinearProgress,
   Chip,
   Avatar,
+  Tooltip,
 } from '@material-ui/core';
 import { InfoCard } from '@backstage/core-components';
-import { spashipApiRef } from '../../api';
+import { devexApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { RedHatBlueOrangeShades } from '../Generic/Constants';
 
@@ -17,7 +18,7 @@ type Props = {};
 export default function SpaShip({}: Props) {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const spaship = useApi(spashipApiRef);
+  const spaship = useApi(devexApiRef);
   const [deploymentCountStats, setDeploymentCountStats] = useState<{
     [key: string]: number;
   }>({
@@ -117,24 +118,26 @@ export default function SpaShip({}: Props) {
               <Typography variant="h1">{totalDeploymentCount}</Typography>
               <Divider style={{ marginBottom: '0.5rem' }} />
               <Grid container spacing={2}>
-                {Object.keys(deploymentCountStats).map((env: string) => {
-                  return (
-                    <Grid item key={`deployment-times-${1}`}>
-                      <Typography
-                        style={{
-                          fontSize: '14px',
-                          fontWeight: 'bold',
-                          textTransform: 'uppercase',
-                        }}
-                      >
-                        {env.toUpperCase()}
-                      </Typography>
-                      <Typography style={{ fontSize: '24px' }}>
-                        {deploymentCountStats[env]}
-                      </Typography>
-                    </Grid>
-                  );
-                })}
+                {Object.keys(deploymentCountStats).map(
+                  (env: string, index: number) => {
+                    return (
+                      <Grid item key={`deployment-times-${index}`}>
+                        <Typography
+                          style={{
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                          }}
+                        >
+                          {env.toUpperCase()}
+                        </Typography>
+                        <Typography style={{ fontSize: '24px' }}>
+                          {deploymentCountStats[env]}
+                        </Typography>
+                      </Grid>
+                    );
+                  },
+                )}
               </Grid>
             </InfoCard>
           </div>
@@ -152,11 +155,14 @@ export default function SpaShip({}: Props) {
                 <Grid container spacing={2}>
                   {averageDeploymentTimes &&
                     averageDeploymentTimes.map(
-                      (data: {
-                        data: { days: string; averageTime: number };
-                      }) => {
+                      (
+                        data: {
+                          data: { days: string; averageTime: number };
+                        },
+                        index: number,
+                      ) => {
                         return (
-                          <Grid item key={`deployment-times-${1}`}>
+                          <Grid item key={`avg-deployment-time-${index}`}>
                             <Typography
                               style={{
                                 fontSize: '14px',
@@ -179,14 +185,24 @@ export default function SpaShip({}: Props) {
           </div>
           <div style={{ marginBottom: '1rem' }}>
             <InfoCard>
-              <Typography variant="h5">Total Properties</Typography>
-              <Typography variant="h1">{webPropertiesCount}</Typography>
-            </InfoCard>
-          </div>
-          <div style={{ marginBottom: '1rem' }}>
-            <InfoCard>
-              <Typography variant="h5">Total Ephemeral Deployment</Typography>
-              <Typography variant="h1">{totalEphemeralDeployments}</Typography>
+              <Grid container spacing={2} style={{padding:0}}>
+                <Grid item>
+                  <InfoCard>
+                    <Typography variant="h5">Total Properties</Typography>
+                    <Typography variant="h3">{webPropertiesCount}</Typography>
+                  </InfoCard>
+                </Grid>
+                <Grid item>
+                  <InfoCard>
+                    <Typography variant="h5">
+                      Total Ephemeral Deployment
+                    </Typography>
+                    <Typography variant="h3">
+                      {totalEphemeralDeployments}
+                    </Typography>
+                  </InfoCard>
+                </Grid>
+              </Grid>
             </InfoCard>
           </div>
           <div style={{ marginBottom: '1rem' }}>
@@ -200,20 +216,27 @@ export default function SpaShip({}: Props) {
                     property: { propertyIdentifier: string; count: number },
                     index: number,
                   ) => (
-                    <Chip
-                      avatar={<Avatar>{property.count}</Avatar>}
-                      label={property.propertyIdentifier}
-                      variant="outlined"
-                      style={{
-                        color: 'white',
-                        backgroundColor: `${
-                          RedHatBlueOrangeShades[
-                            index % RedHatBlueOrangeShades.length
-                          ]
-                        }`,
-                      }}
-                      size="medium"
-                    />
+                    <Tooltip
+                      title={property.count}
+                      placement="top"
+                      key={`spaship-deployment-contributors-tooltip-${index}`}
+                    >
+                      <Chip
+                        avatar={<Avatar>{property.count}</Avatar>}
+                        label={property.propertyIdentifier}
+                        variant="outlined"
+                        style={{
+                          color: 'white',
+                          backgroundColor: `${
+                            RedHatBlueOrangeShades[
+                              index % RedHatBlueOrangeShades.length
+                            ]
+                          }`,
+                        }}
+                        size="small"
+                        key={`spaship-deployment-contributors-chip-${index}`}
+                      />
+                    </Tooltip>
                   ),
                 )}
               </Typography>

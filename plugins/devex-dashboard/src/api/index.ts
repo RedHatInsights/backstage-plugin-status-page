@@ -4,11 +4,11 @@ import {
   createApiRef,
 } from '@backstage/core-plugin-api';
 
-export const spashipApiRef = createApiRef<SPAshipApi>({
-  id: 'spaship',
+export const devexApiRef = createApiRef<DevexDashboardApi>({
+  id: 'devex-dasboard',
 });
 
-export class SPAshipApi {
+export class DevexDashboardApi {
   private discoveryApi: DiscoveryApi;
   private fetchApi: FetchApi;
 
@@ -78,6 +78,22 @@ export class SPAshipApi {
         return null;
       });
 
+    return response;
+  }
+
+  async getDocsbotStats() {
+    const baseUrl = await this.getBaseUrl();
+
+    const response = await this.fetchApi
+      .fetch(`${baseUrl}/docsbotstats/feedback/stats`, {
+        method: 'GET',
+      })
+      .then(data => {
+        return data.json();
+      })
+      .catch(_err => {
+        return null;
+      });
     return response;
   }
 

@@ -5,4 +5,4 @@ export {
   PulseDashboardPage,
   DataLayerDashboardPage,
 } from './plugin';
-export { spashipApiRef, SPAshipApi } from './api';
+export { devexApiRef, DevexDashboardApi } from './api';
