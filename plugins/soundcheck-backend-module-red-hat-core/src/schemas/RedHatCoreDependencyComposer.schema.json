@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "RedHatCoreDependencyComposerSchema",
+  "title": "Red Hat Core - Composer dependencies",
+  "description": "Composer dependencies used by a Drupal platform.",
+  "type": "object",
+  "properties": {
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "description": "Name of the Composer package",
+            "type": "string",
+            "pattern": "^[a-z0-9]([_.-]?[a-z0-9]+)*\/[a-z0-9](([_.]|-{1,2})?[a-z0-9]+)*$",
+            "examples": [
+              "drupal/core"
+            ]
+          },
+          "description": {
+            "title": "Description",
+            "description": "Composer package description",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "description": "Installed version of the Composer package",
+            "type": "string"
+          },
+          "latest": {
+            "title": "Latest",
+            "description": "Latest available version of the Composer package",
+            "type": "string"
+          },
+          "latest-status": {
+            "title": "Status",
+            "description": "Update status of the Composer package",
+            "type": "string",
+            "enum": [
+              "up-to-date",
+              "semver-safe-update",
+              "update-possible"
+            ]
+          },
+          "dev-requirement": {
+            "title": "Dev requirement",
+            "description": "Whether the Composer package is a development requirement",
+            "type": "boolean"
+          },
+          "type": {
+            "title": "Type",
+            "description": "Composer package type",
+            "type": "string",
+            "examples": [
+              "drupal-module",
+              "library",
+              "metapackage"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

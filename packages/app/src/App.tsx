@@ -69,6 +69,7 @@ import {
   PulseDashboardPage,
 } from '@appdev-platform/backstage-plugin-devex-dashboard';
 import { SoundcheckRoutingPage } from '@spotify/backstage-plugin-soundcheck';
+import { DevToolsPage } from '@backstage/plugin-devtools';
 
 const app = createApp({
   apis,
@@ -181,6 +182,7 @@ const routes = (
     <Route path="/dashboard/pulse" element={<PulseDashboardPage />} />
     <Route path="/status-page" element={<OutageTemplatePage />} />
     <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
+    <Route path="/devtools" element={<DevToolsPage />} />
   </FlatRoutes>
 );
 

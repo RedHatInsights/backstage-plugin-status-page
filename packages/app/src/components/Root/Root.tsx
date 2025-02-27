@@ -40,6 +40,7 @@ import {
   DocsBotIcon,
 } from '@appdev-platform/backstage-plugin-docsbot';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
+import BuildIcon from '@material-ui/icons/Build';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -202,6 +203,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
           to="/settings"
         >
           <SidebarSettings />
+          <SidebarItem icon={BuildIcon} to="devtools" text="DevTools" />
         </SidebarGroup>
       </Sidebar>
       <div
