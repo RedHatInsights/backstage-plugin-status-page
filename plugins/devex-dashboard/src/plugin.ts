@@ -8,7 +8,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 import { appDevRouteRef, rootRouteRef } from './routes';
-import { SPAshipApi, spashipApiRef } from './api';
+import { DevexDashboardApi, devexApiRef } from './api';
 
 export const devexDashboardPlugin = createPlugin({
   id: 'devex-dashboard',
@@ -18,13 +18,13 @@ export const devexDashboardPlugin = createPlugin({
   },
   apis: [
     {
-      api: spashipApiRef,
+      api: devexApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
         fetchApi: fetchApiRef,
       },
       factory(deps: { discoveryApi: DiscoveryApi; fetchApi: FetchApi }) {
-        return new SPAshipApi(deps);
+        return new DevexDashboardApi(deps);
       },
     },
   ],
