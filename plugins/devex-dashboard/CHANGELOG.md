@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-devex-dashboard [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.1.2...@appdev-platform/backstage-plugin-devex-dashboard@1.2.0) (2025-02-27)
+
+
+### Features
+
+* **ADP-224:** Updated Docsbot insights on AppDev dashboard ([3c2141b](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/3c2141bd8080b36332c3603804f0fe2f83a8d37a))
+
 ## @appdev-platform/backstage-plugin-devex-dashboard [1.1.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.1.1...@appdev-platform/backstage-plugin-devex-dashboard@1.1.2) (2025-02-25)
 
 
