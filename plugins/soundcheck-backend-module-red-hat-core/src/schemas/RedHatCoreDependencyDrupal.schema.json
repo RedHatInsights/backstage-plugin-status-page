@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "RedHatCoreDependencyDrupalSchema",
+  "title": "Red Hat Core - Drupal dependencies",
+  "description": "Drupal-specific dependencies used by a platform.",
+  "type": "object",
+  "properties": {
+    "dependencies": {
+      "type": "object",
+      "properties": {
+        "module": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dependency"
+          },
+          "examples": [
+            {
+              "id": "node",
+              "name": "Node",
+              "description": "Manages the creation, configuration, and display of the main site content.",
+              "version": "11.1.1",
+              "installed": true,
+              "development": false
+            },
+            {
+              "id": "stage_file_proxy",
+              "name": "Stage File Proxy",
+              "description": "Proxies files from production server so you do not have to transfer them manually",
+              "version": "3.1.4",
+              "installed": false,
+              "development": true
+            }
+          ]
+        },
+        "theme": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dependency"
+          },
+          "examples": [
+            {
+              "id": "claro",
+              "name": "Claro",
+              "description": "A clean, accessible, and powerful Drupal administration theme.",
+              "version": "11.1.1",
+              "installed": true
+            }
+          ]
+        },
+        "profile": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dependency"
+          },
+          "examples": [
+            {
+              "id": "standard",
+              "name": "Standard",
+              "description": "Install with commonly used features pre-configured.",
+              "version": "11.1.1",
+              "installed": true
+            }
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "dependency": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "installed": {
+          "type": "boolean"
+        },
+        "development": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

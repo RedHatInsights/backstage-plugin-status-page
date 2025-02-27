@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core configuration",
+  "type": "object",
+  "properties": {
+    "soundcheck": {
+      "type": "object",
+      "properties": {
+        "collectors": {
+          "type": "object",
+          "properties": {
+            "redHatCore": {
+              "type": "object",
+              "properties": {
+                "platforms": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "appCode": {
+                        "type": "string",
+                        "minLength": 1,
+                        "visibility": "frontend"
+                      },
+                      "token": {
+                        "type": "string",
+                        "minLength": 1,
+                        "visibility": "secret"
+                      }
+                    },
+                    "required": [
+                      "appCode",
+                      "token"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

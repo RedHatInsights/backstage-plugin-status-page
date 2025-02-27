@@ -288,6 +288,10 @@ soundcheck:
   collectors:
     sonarqube:
       $include: ./soundcheck/collectors/sonarqube.yaml
+    redHatCore:
+      platforms:
+        - appCode: ADDS-001
+          token: ${RED_HAT_CORE_TOKEN_ADDS_001}
   checks:
     - https://gitlab.cee.redhat.com/dxp/dx-pulse/soundcheck-config/-/raw/main/poc/checks/all-checks.yaml
   programs:

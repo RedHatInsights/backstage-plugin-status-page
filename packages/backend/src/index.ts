@@ -103,5 +103,10 @@ backend.add(import('@backstage-community/plugin-report-portal-backend'));
 backend.add(import('@spotify/backstage-plugin-soundcheck-backend'));
 
 backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator'));
+backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core'));
 backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab'));
+
+// DevTools backend
+backend.add(import('@backstage/plugin-devtools-backend'));
+
 backend.start();
