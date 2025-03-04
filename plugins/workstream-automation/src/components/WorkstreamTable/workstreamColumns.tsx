@@ -112,7 +112,7 @@ export const columnFactories = Object.freeze({
       title: 'Pillar',
       field: 'entity.spec.pillar',
       width: '18%',
-      render: ({ entity }) => <>{entity.spec?.pillar}</>,
+      render: ({ entity }) => entity.spec?.pillar,
     };
   },
   createJiraProjectKeyColumn(): TableColumn<CatalogTableRow> {
@@ -190,9 +190,7 @@ export const columnFactories = Object.freeze({
       customExport: ({ entity }) =>
         (entity.spec?.members as Member[])
           .filter(member => member.role === 'Software Engineer')
-          .map(
-            member => `${parseEntityRef(member.userRef).name} ${member.role}`,
-          )
+          .map(member => parseEntityRef(member.userRef).name)
           .join(',\n') ?? '-',
       hidden: true,
       hiddenByColumnsButton: true,

@@ -79,6 +79,9 @@ export const workstreamColumns = [
   columnFactories.createLeadColumn(),
   columnFactories.createPillarColumn(),
   columnFactories.createJiraProjectKeyColumn(),
+  columnFactories.createTechLeadColumn(),
+  columnFactories.createSEColumn(),
+  columnFactories.createQEColumn(),
   columnFactories.createMembersColumn(),
   columnFactories.createActionsColumn(),
 ];
