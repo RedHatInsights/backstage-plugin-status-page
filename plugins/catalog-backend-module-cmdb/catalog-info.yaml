@@ -18,7 +18,9 @@ metadata:
     backstage.io/techdocs-ref: dir:.
 
 spec:
-  type: library
-  lifecycle: preproduction
+  type: backstage-backend-plugin-module
+  lifecycle: production
   owner: group:redhat/one-platform-devs
   system: devex/redhat-experience-platform
+  dependsOn:
+    - component:devex/backstage-console-backend
