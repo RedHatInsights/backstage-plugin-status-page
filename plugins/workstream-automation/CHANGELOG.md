@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.9.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.9.0...@appdev-platform/backstage-plugin-workstream-automation@1.9.1) (2025-03-04)
+
+
+### Bug Fixes
+
+* **PULSE-416:** add role columns to export button ([eaf2e31](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/eaf2e3168ca59c43372347774caa15d3486bd1d6))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.9.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.8.0...@appdev-platform/backstage-plugin-workstream-automation@1.9.0) (2025-01-31)
 
 
