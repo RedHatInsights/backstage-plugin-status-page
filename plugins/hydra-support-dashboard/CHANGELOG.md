@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-hydra-support-dashboard [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-hydra-support-dashboard@1.1.0...@appdev-platform/backstage-plugin-hydra-support-dashboard@1.2.0) (2025-03-05)
+
+
+### Features
+
+* **APD-395:** Dynamic data update through config from gitlab snippet and removed hard-coded epic numbers and texts ([158b1af](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/158b1af0a22ced32ea3e27d933c417e7370132b0))
+
 ## @appdev-platform/backstage-plugin-hydra-support-dashboard [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-hydra-support-dashboard@1.0.0...@appdev-platform/backstage-plugin-hydra-support-dashboard@1.1.0) (2025-01-28)
 
 
