@@ -44,16 +44,27 @@ export class JiraApi {
     );
     return await resp.json();
   }
+
+  async getConfig() {
+    const baseUrl = await this.getBaseUrl();
+    const resp = await this.fetchApi.fetch(
+      `${baseUrl}/hydrasupport`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    return await resp.json();
+  }
 }
 
 export class CMDBApi {
   private discoveryApi: DiscoveryApi;
   private fetchApi: FetchApi;
 
-  constructor(options: {
-    discoveryApi: DiscoveryApi;
-    fetchApi: FetchApi;
-  }) {
+  constructor(options: { discoveryApi: DiscoveryApi; fetchApi: FetchApi }) {
     this.discoveryApi = options.discoveryApi;
     this.fetchApi = options.fetchApi;
   }
@@ -64,9 +75,7 @@ export class CMDBApi {
 
   async getCMDBData() {
     const baseUrl = await this.getBaseUrl();
-    const cmdbQuery = encodeURIComponent(
-      `nameLIKEHydra`
-    );
+    const cmdbQuery = encodeURIComponent(`nameLIKEHydra`);
     const resp = await this.fetchApi.fetch(
       `${baseUrl}/cmdb/api/now/table/cmdb_ci_business_app?sysparm_query=${cmdbQuery}&sysparm_fields=name,business_criticality,u_application_id`,
       {

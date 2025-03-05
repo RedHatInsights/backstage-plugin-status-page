@@ -13,7 +13,7 @@ import {
   TablePagination,
 } from '@material-ui/core';
 import { Link } from '@backstage/core-components';
-import { JiraCustomFields } from '../constants';
+import { IEpicConfig } from '../constants';
 
 interface IData {
   id: number;
@@ -25,6 +25,7 @@ interface IData {
 }
 
 interface IProps {
+  epicConfig: IEpicConfig;
   tableData: IData[];
 }
 
@@ -224,7 +225,7 @@ export const SortableTable = (props: IProps) => {
                       padding="none"
                     >
                       <Link
-                        to={`${JiraCustomFields.browserLink}${row.key}`}
+                        to={`${props?.epicConfig.JiraCustomFields.browserLink}${row.key}`}
                         target="_blank"
                       >
                         {row.key}

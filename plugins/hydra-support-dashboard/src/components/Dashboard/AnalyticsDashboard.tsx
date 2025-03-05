@@ -9,10 +9,10 @@ import { SankeyChart } from './SankeyChart/SankryChart';
 import { SortableTable } from './IssuesTable/SortableTable';
 import { HighLevelGoals } from './HighLevelGoals/HighLevelGoals';
 import {
+  IEpicConfig,
   IProgressData,
   ISankeyData,
   ITableData,
-  SUPPORT_JIRAS,
 } from './constants';
 import {
   Loader,
@@ -24,7 +24,6 @@ import {
 import { NewAndSupportWorkChart } from './NewWorkAndSupportWork/NewAndSupportWork';
 
 interface IPageVars {
-  selectedEpic: string;
   loadingVisualData: boolean;
   sankeyData: ISankeyData[];
   progressData: IProgressData[];
@@ -41,7 +40,6 @@ export const AnalyticsDashboard = () => {
   const cmdbApi = useApi(cmdbApiRef);
 
   const [pageVars, setPageVars] = useState<IPageVars>({
-    selectedEpic: SUPPORT_JIRAS[0],
     loadingVisualData: false,
     sankeyData: [],
     progressData: [],
@@ -53,8 +51,9 @@ export const AnalyticsDashboard = () => {
 
   const [fetchedEpicData, setFetchedData] = useState<any>();
   const [fetchedCMDBData, setFetchedCMDBData] = useState<any>();
+  const [epicConfig, setEpicConfig] = useState<IEpicConfig>();
 
-  const fetchEpicData = async () => {
+  const fetchConfigData = async () => {
     setPageVars({
       ...pageVars,
       loadingVisualData: true,
@@ -70,27 +69,47 @@ export const AnalyticsDashboard = () => {
       });
 
     jiraApi
-      .getCombinedEpicData(SUPPORT_JIRAS)
-      .then(_data => {
-        if (_data && _data.issues) setFetchedData(_data.issues);
+      .getConfig()
+      .then(configData => {
+        if (configData) {
+          setEpicConfig(configData);
+        }
       })
       .catch(_err => {
         return null;
       });
   };
 
+  const fetchEpicData = async () => {
+    if (epicConfig)
+      jiraApi
+        .getCombinedEpicData(Object.keys(epicConfig.Epics))
+        .then(_data => {
+          if (_data && _data.issues) setFetchedData(_data.issues);
+        })
+        .catch(_err => {
+          return null;
+        });
+  };
+
   const prepareAnalyticsData = async () => {
+    if (!epicConfig) return;
     const sankeyData = await prepareSankeyData(
       fetchedEpicData,
       fetchedCMDBData,
+      epicConfig.Epics,
+      epicConfig.JiraCustomFields,
     );
     const progressData = await prepareProgressData(fetchedEpicData);
     const statsIssueCountData = await prepareStatsIssueCountData(
       fetchedEpicData,
+      epicConfig.JiraCustomFields,
     );
     const issuesTableData = await prepareTableData(
       fetchedEpicData,
       fetchedCMDBData,
+      epicConfig.Epics,
+      epicConfig.JiraCustomFields,
     );
 
     setPageVars({
@@ -104,18 +123,19 @@ export const AnalyticsDashboard = () => {
   };
 
   useEffect(() => {
-    fetchEpicData();
-
+    fetchConfigData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (fetchedEpicData) {
-      prepareAnalyticsData();
-    }
-
+    if (fetchedEpicData) prepareAnalyticsData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchedEpicData]);
+
+  useEffect(() => {
+    if (epicConfig) fetchEpicData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [epicConfig]);
 
   return (
     <Page themeId="tool">
@@ -160,8 +180,11 @@ export const AnalyticsDashboard = () => {
               <Grid>
                 <div className={classes.contentTitle}>JIRA Details</div>
                 <div className={classes.jiraContent}>
-                  {!pageVars.loadingVisualData && (
-                    <SortableTable tableData={pageVars.tableData} />
+                  {!pageVars.loadingVisualData && epicConfig && (
+                    <SortableTable
+                      epicConfig={epicConfig}
+                      tableData={pageVars.tableData}
+                    />
                   )}
                 </div>
               </Grid>
@@ -172,18 +195,21 @@ export const AnalyticsDashboard = () => {
                     className={classes.jiraContent}
                     style={{ height: 'auto' }}
                   >
-                    <HighLevelGoals
-                      totalSupportStoryPoint={
-                        pageVars.statsIssueCountData.totalStoryPoints
-                      }
-                      onLoad={(load, data) =>
-                        setPageVars({
-                          ...pageVars,
-                          loadingWorkData: load,
-                          workData: data,
-                        })
-                      }
-                    />
+                    {epicConfig && (
+                      <HighLevelGoals
+                        epicConfig={epicConfig}
+                        totalSupportStoryPoint={
+                          pageVars.statsIssueCountData.totalStoryPoints
+                        }
+                        onLoad={(load, data) =>
+                          setPageVars({
+                            ...pageVars,
+                            loadingWorkData: load,
+                            workData: data,
+                          })
+                        }
+                      />
+                    )}
                   </div>
                 </Grid>
                 <Grid item xs={3}>

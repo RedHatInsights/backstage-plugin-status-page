@@ -5,7 +5,7 @@ export interface ISankeyData {
 }
 
 export interface IProgressData {
-  ['string']: string;
+  [key: string]: string;
 }
 
 export interface ITableData {
@@ -21,4 +21,25 @@ export interface ICMDBResult {
   business_criticality: string;
   name: string;
   u_application_id: string;
+}
+
+export interface IEpics {
+  [key: string]: string;
+}
+
+export interface IJiraCustomFields {
+  [key: string]: string;
+}
+
+export interface IHlgDetail {
+  [key: string]: string;
+}
+
+export interface IEpicConfig {
+  Epics: IEpics;
+  JiraCustomFields: IJiraCustomFields;
+  HLG_EPICS: string[];
+  HLG_DETAILS: IHlgDetail[];
+  SUPPORT_JIRAS: string[];
+  NEW_WORK_JIRAS: string[];
 }

@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Gauge } from '@mui/x-charts/Gauge';
 import { jiraApiRef } from '../../../api';
 import { useApi } from '@backstage/core-plugin-api';
-import { HLG_EPICS, JiraCustomFields } from '../constants/AnalyticsDashboard';
 import { Loader } from '../utils';
+import { IEpicConfig } from '../constants';
 
 interface IProps {
+  epicConfig: IEpicConfig;
   totalSupportStoryPoint: number;
   onLoad: (
     loading: boolean,
@@ -13,40 +14,8 @@ interface IProps {
   ) => void;
 }
 
-export const HighLevelGoals = (_props: IProps) => {
-  const GaugeData = [
-    {
-      title: 'Support Model',
-      desc: 'Captures maintenance, compliance, enhancements & other support work done for all Hydra Modules',
-      epic: 'HYDRA-11575',
-      value: _props.totalSupportStoryPoint,
-    },
-    {
-      title: 'Hydra Case Bot',
-      desc: ' XE Support Bot that provides instant case, escalation, shift and other such information to GSS associates',
-      epic: 'HYDRA-11773',
-    },
-    {
-      title: 'Broker Migration',
-      desc: 'Add common utility in Automation framework for date field validation',
-      epic: 'HYDRA-11589',
-    },
-    {
-      title: 'Notifications UI',
-      desc: 'New and revamped notification UI that allows XE Support associates to customize what notifications they get and when',
-      epic: 'HYDRA-11590',
-    },
-    {
-      title: 'Notification Templates',
-      desc: 'Completed transition of Notification email templates from One platform to Hydra with roadmap to scale the service in future',
-      epic: 'HYDRA-11541',
-    },
-    {
-      title: 'JAVA 17 Migration',
-      desc: 'Migrating and updating all existing Hydra Modules to Java 17',
-      epic: 'HYDRA-11015',
-    },
-  ];
+export const HighLevelGoals = (props: IProps) => {
+  const [gaugeData, setGaugeData] = useState<any>();
 
   const jiraApi = useApi(jiraApiRef);
   const [fetchedEpicData, setFetchedData] = useState<any>();
@@ -56,17 +25,20 @@ export const HighLevelGoals = (_props: IProps) => {
     loadingVisualData: false,
   });
 
-  const countStoryPointsPerEpic = () => {
+  const countStoryPointsPerEpic = async () => {
     const storyPointsPerEpic: any = {};
     let totalStoryPoints = 0;
 
     fetchedEpicData.forEach((issue: any) => {
-      const epic = issue.fields[JiraCustomFields.epicNumber];
-      totalStoryPoints += issue.fields[JiraCustomFields.storyPoints];
+      const epic = issue.fields[props?.epicConfig.JiraCustomFields.epicNumber];
+      totalStoryPoints +=
+        issue.fields[props?.epicConfig.JiraCustomFields.storyPoints];
       if (storyPointsPerEpic[epic])
-        storyPointsPerEpic[epic] += issue.fields[JiraCustomFields.storyPoints];
+        storyPointsPerEpic[epic] +=
+          issue.fields[props?.epicConfig.JiraCustomFields.storyPoints];
       else
-        storyPointsPerEpic[epic] = issue.fields[JiraCustomFields.storyPoints];
+        storyPointsPerEpic[epic] =
+          issue.fields[props?.epicConfig.JiraCustomFields.storyPoints];
     });
 
     setPageVars({
@@ -75,16 +47,24 @@ export const HighLevelGoals = (_props: IProps) => {
       totalStoryPoints: totalStoryPoints,
       loadingVisualData: false,
     });
+    let totalSupportWork = props.totalSupportStoryPoint;
 
-    const totalSupportWork =
-      _props.totalSupportStoryPoint +
-      storyPointsPerEpic['HYDRA-11589'] +
-      storyPointsPerEpic['HYDRA-11015'];
-    const totalNewWork =
-      storyPointsPerEpic['HYDRA-11773'] +
-      storyPointsPerEpic['HYDRA-11590'] +
-      storyPointsPerEpic['HYDRA-11590'];
-    _props.onLoad(false, {
+    props?.epicConfig.SUPPORT_JIRAS.forEach(
+      (jira: string) =>
+        (totalSupportWork += storyPointsPerEpic[jira]
+          ? storyPointsPerEpic[jira]
+          : 0),
+    );
+
+    let totalNewWork = 0;
+    props?.epicConfig.NEW_WORK_JIRAS.forEach(
+      (jira: string) =>
+        (totalNewWork += storyPointsPerEpic[jira]
+          ? storyPointsPerEpic[jira]
+          : 0),
+    );
+
+    props.onLoad(false, {
       supportWorkStoryPoints: totalSupportWork,
       newWorkStoryPoints: totalNewWork,
     });
@@ -95,10 +75,10 @@ export const HighLevelGoals = (_props: IProps) => {
       ...pageVars,
       loadingVisualData: true,
     });
-    _props.onLoad(true, { supportWorkStoryPoints: 0, newWorkStoryPoints: 0 });
+    props.onLoad(true, { supportWorkStoryPoints: 0, newWorkStoryPoints: 0 });
 
     jiraApi
-      .getCombinedEpicData(HLG_EPICS)
+      .getCombinedEpicData(props?.epicConfig.HLG_EPICS)
       .then(_data => {
         if (_data && _data.issues) {
           setFetchedData(_data.issues);
@@ -110,8 +90,10 @@ export const HighLevelGoals = (_props: IProps) => {
   };
 
   useEffect(() => {
-    fetchEpicData();
-
+    if (props?.epicConfig) {
+      setGaugeData(props.epicConfig.HLG_DETAILS);
+      fetchEpicData();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -132,14 +114,18 @@ export const HighLevelGoals = (_props: IProps) => {
       {pageVars.loadingVisualData ? (
         <Loader message="Fetching data from JIRA" />
       ) : (
-        GaugeData.map(data => {
+        gaugeData &&
+        gaugeData.map((data: any) => {
           return (
             <div style={{ display: 'flex', width: '33%', padding: '0.5rem' }}>
               <div>
                 <Gauge
                   width={100}
                   height={100}
-                  value={data.value || pageVars.storyPointsPerEpic[data.epic]}
+                  value={
+                    pageVars.storyPointsPerEpic?.[data.epic] ||
+                    props?.totalSupportStoryPoint
+                  }
                   startAngle={-90}
                   endAngle={90}
                   valueMax={pageVars.totalStoryPoints}
