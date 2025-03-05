@@ -120,6 +120,11 @@ proxy:
       headers:
         Authorization: ${STATUSPAGE_AUTH}
         Content-Type: 'application/json'
+    '/hydrasupport':
+      target: ${HYDRA_SUPPORT_DASHBOARD_CONFIG_URL}
+      credentials: dangerously-allow-unauthenticated
+      changeOrigin: true
+      allowedMethods: ['GET']
 
 jira:
   proxyPath: /jira
