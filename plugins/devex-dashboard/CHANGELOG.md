@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-devex-dashboard [1.2.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.2.0...@appdev-platform/backstage-plugin-devex-dashboard@1.2.1) (2025-03-11)
+
+
+### Other changes
+
+* Devex dashboard to use siteId from app-config ([b554763](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/b554763f4ef4c9105ea2e9e2d0c6b9a39891c976))
+
 ## @appdev-platform/backstage-plugin-devex-dashboard [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.1.2...@appdev-platform/backstage-plugin-devex-dashboard@1.2.0) (2025-02-27)
 
 
