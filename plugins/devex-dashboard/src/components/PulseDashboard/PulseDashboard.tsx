@@ -23,7 +23,7 @@ import {
   useTheme,
 } from '@material-ui/core';
 import { StatsCard } from '../Generic/StatsCard';
-import { useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { devexApiRef } from '../../api';
 import pluginDiscoveryData from './PluginDiscovery.json';
 import {
@@ -39,6 +39,8 @@ import useStyles from './Pulse.styles';
 
 export const PulseDashboard = () => {
   const matomo = useApi(devexApiRef);
+  const config = useApi(configApiRef);
+
   const [pluginsVisitData, setPluginsVisitData] = useState<PluginStats[]>();
   const [loadingPluginStats, setLoadingPluginStats] = useState(false);
   const [pulseDataStreams, setPulseDataStreams] = useState<DataStream[]>();
@@ -64,9 +66,12 @@ export const PulseDashboard = () => {
     try {
       setPulseDataStreams([]);
       setLoadingPluginStats(true);
+      const siteId = config.getString('app.analytics.matomo.siteId');
+
       const statsByPageLabels = await matomo.getMatomoPageUrls(
         periodOrRange.period,
         periodOrRange.range,
+        siteId
       );
       let statsByPlugin: { [key: string]: number } = {};
       pluginDiscoveryData.data.forEach(plugin => {

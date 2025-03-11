@@ -1,4 +1,4 @@
-import { useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import React, { useEffect, useState } from 'react';
 import { devexApiRef } from '../../api';
 import { InfoCard, LinkButton } from '@backstage/core-components';
@@ -17,8 +17,10 @@ import {
 } from '@material-ui/core';
 
 function Docsbot() {
-  const [periodOrRange, setPeriodOrRange] = useState(MatomoPeriods[0]);
+  const config = useApi(configApiRef);
   const devExApi = useApi(devexApiRef);
+
+  const [periodOrRange, setPeriodOrRange] = useState(MatomoPeriods[0]);
   const [loading, setLoading] = useState(false);
   const [loadingInsights, setLoadingInsights] = useState(false);
   const [docsbotStats, setDocsbotStats] = useState<{
@@ -66,9 +68,11 @@ function Docsbot() {
 
   const fetchDocsbotMatomoInsights = async () => {
     try {
+      const siteId = config.getString('app.analytics.matomo.siteId');
       const matomoStats = await devExApi.getMatomoPageUrls(
         periodOrRange.period,
         periodOrRange.range,
+        siteId
       );
       const { xLabels, yLabels } = getPluginInterpolationChart(
         matomoStats.reportData,
