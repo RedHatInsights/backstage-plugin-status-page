@@ -97,13 +97,13 @@ export class DevexDashboardApi {
     return response;
   }
 
-  async getMatomoPageUrls(period: string, range: string) {
+  async getMatomoPageUrls(period: string, range: string, siteId: string) {
     const baseUrl = await this.discoveryApi.getBaseUrl('matomo');
     const response = await this.fetchApi
       .fetch(`${baseUrl}?module=API&format=JSON`, {
         method: 'POST',
         body: new URLSearchParams({
-          idSite: '3',
+          idSite: siteId,
           method: 'API.getProcessedReport',
           period: period,
           date: range,
