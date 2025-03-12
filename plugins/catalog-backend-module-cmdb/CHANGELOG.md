@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.5.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.5.1...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.5.2) (2025-03-12)
+
+
+### Bug Fixes
+
+* **cmdb:** add dynamic type conversion for template values for custom cmdb mappings ([6f1f4f7](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/6f1f4f7a324f5bc586de4091f536c1f6b84941db))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.5.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.5.0...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.5.1) (2025-02-17)
 
 
