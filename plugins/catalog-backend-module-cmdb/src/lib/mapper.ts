@@ -30,7 +30,15 @@ export function mapper(
       /(\{\{\s*) (\w+)\.(\w+)\s*(\}\})/g,
       '$1 $2_$3 $4',
     );
-    const value = renderString(template, { ...flattenedData });
+    let value = renderString(template, { ...flattenedData });
+    
+    /* Check if the value is a primitive JSON value type */
+    try {
+      value = JSON.parse(value);
+    } catch (err) {
+      /* Treat the value as a string */
+    }
+
     if (value) {
       set(acc, key, value);
     }
