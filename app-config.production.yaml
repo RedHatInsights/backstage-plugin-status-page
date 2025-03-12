@@ -95,6 +95,7 @@ catalog:
           'metadata.cmdb.urls.piaRemediations': '{{ u_pia_remediations_url }}'
           'metadata.cmdb.urls.risk': '{{ u_risk_url }}'
           'metadata.cmdb.urls.sia': '{{ u_sia_url }}'
+          'metadata.cmdb.aliasName': '{{ u_alias_name }}'
         additionalQueryFields:
           - u_application_id
           - owned_by.active
@@ -113,7 +114,7 @@ catalog:
           - u_pia_remediations_url
           - u_risk_url
           - u_sia_url
-
+          - u_alias_name
     spaship:
       example:
         host: ${SPASHIP_HOST}
