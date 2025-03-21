@@ -786,6 +786,7 @@ __metadata:
     "@testing-library/user-event": "npm:^14.0.0"
     lodash: "npm:^4.17.21"
     material-table: "npm:^2.0.5"
+    material-ui-popup-state: "npm:^5.3.3"
     msw: "npm:^1.0.0"
     pluralize: "npm:^8.0.0"
     react: "npm:^18.0.2"
@@ -30801,6 +30802,25 @@ __metadata:
     "@material-ui/core": ^4.0.0 || ^5.0.0-beta
     react: ^15.0.0 || ^16.0.0 || ^17.0.0
   checksum: 10/9b0bb7bdcf257e1bf868cb2e74e2d80208fb870ab8e29229c49a0b64f1c1cb5c8b7ba78e89fb81019c2109729d25473188d79bf99f889c8ee698020f2013d578
+  languageName: node
+  linkType: hard
+
+"material-ui-popup-state@npm:^5.3.3":
+  version: 5.3.3
+  resolution: "material-ui-popup-state@npm:5.3.3"
+  dependencies:
+    "@babel/runtime": "npm:^7.20.6"
+    "@types/prop-types": "npm:^15.7.3"
+    classnames: "npm:^2.2.6"
+    prop-types: "npm:^15.7.2"
+  peerDependencies:
+    "@mui/material": ^5.0.0 || ^6.0.0
+    "@types/react": ^16.8.0 || ^17 || ^18 || ^19
+    react: ^16.8.0 || ^17 || ^18 || ^19
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 10/aabf91d31b613cae87e99049e6eb541c9004557d620b47e586e887904771e66631989a8083faf8d49ca879f42d0dad23f1241e0f354cf5700a309a6be40eca34
   languageName: node
   linkType: hard
 

@@ -1,6 +1,7 @@
 import { GroupEntity, RELATION_HAS_MEMBER } from '@backstage/catalog-model';
 import { Table, TableColumn } from '@backstage/core-components';
 import {
+  Box,
   FormHelperText,
   Grid,
   IconButton,
@@ -31,6 +32,8 @@ import { CustomUserEntity, TableRowDataType } from '../../../types';
 import RemoveCircleOutlineOutlinedIcon from '@material-ui/icons/RemoveCircleOutlineOutlined';
 
 import { Form1 } from '../Inputs/types';
+import { rolesMap } from '../../../utlis/roleMapper';
+import { MemberWarningChip } from '../../MemberWarningChip/MemberWarningChip';
 
 export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
   const { form1 } = props;
@@ -84,12 +87,7 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
     { label: 'Rover Group', value: 'group' },
   ];
 
-  const roleOptions = [
-    'Workstream Lead',
-    'Technical Lead',
-    'Software Engineer',
-    'Quality Engineer',
-  ];
+  const roleOptions = ['Workstream Lead', ...Object.values(rolesMap)];
 
   function handleRoleChange(
     evt: React.ChangeEvent<{ name?: string; value: unknown }>,
@@ -182,18 +180,31 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
       title: 'Actions',
       sorting: false,
       width: '5%',
-      render: data =>
-        data.role !== 'Workstream Lead' && (
-          <Tooltip title="Remove member">
+      render: data => (
+        <Box display="flex" alignItems="center">
+          <Tooltip
+            title={
+              data.role !== 'Workstream Lead'
+                ? 'Remove member'
+                : 'Please go to previous page to remove lead'
+            }
+            arrow
+          >
             <IconButton
               color="secondary"
               size="small"
-              onClick={() => remove(fields.findIndex(p => p.id === data.id))}
+              onClick={() =>
+                data.role !== 'Workstream Lead' &&
+                remove(fields.findIndex(p => p.id === data.id))
+              }
             >
               <RemoveCircleOutlineOutlinedIcon />
             </IconButton>
           </Tooltip>
-        ),
+
+          <MemberWarningChip user={data.user} />
+        </Box>
+      ),
     },
   ];
   const [loading, setLoading] = useState(false);
