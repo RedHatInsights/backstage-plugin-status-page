@@ -23,6 +23,7 @@ import { CustomUserEntity, TableRowDataType } from '../../types';
 import { MembersEditModal } from './MembersEditModal';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { MemberWarningChip } from '../MemberWarningChip/MemberWarningChip';
 
 const useStyles = makeStyles(theme => ({
   action: {
@@ -78,7 +79,8 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
     {
       title: 'Name',
       field: 'user.spec.profile.displayName',
-      render: data => <EntityRefLink entityRef={data.user} />,
+      highlight: true,
+      render: data => <EntityRefLink target="_blank" entityRef={data.user} />,
     },
     {
       title: 'Role',
@@ -95,6 +97,11 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
           '-'
         );
       },
+    },
+    {
+      sorting: false,
+      width: '5%',
+      render: data => <MemberWarningChip user={data.user} />,
     },
   ];
   const [openEditModal, setOpenEditModal] = useState(false);
@@ -130,7 +137,7 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
       {!loading ? (
         <Table
           columns={columns}
-          style={{ borderRadius: 0 , padding:0}}
+          style={{ borderRadius: 0, padding: 0 }}
           data={[
             ...(leadEntity
               ? [

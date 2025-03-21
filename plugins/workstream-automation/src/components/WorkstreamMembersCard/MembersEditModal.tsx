@@ -12,6 +12,7 @@ import {
   useEntity,
 } from '@backstage/plugin-catalog-react';
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -32,6 +33,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDebounce } from 'react-use';
 import { workstreamApiRef } from '../../api';
 import { CustomUserEntity, Member, TableRowDataType } from '../../types';
+import { MemberWarningChip } from '../MemberWarningChip/MemberWarningChip';
+import { rolesMap } from '../../utlis/roleMapper';
 
 interface EditDialogProps {
   columns: TableColumn<TableRowDataType>[];
@@ -76,12 +79,7 @@ export const MembersEditModal = (props: EditDialogProps) => {
     },
   });
 
-  const roleOptions = [
-    'Workstream Lead',
-    'Technical Lead',
-    'Software Engineer',
-    'Quality Engineer',
-  ];
+  const roleOptions = ['Workstream Lead', ...Object.values(rolesMap)];
 
   function handleRoleChange(
     evt: React.ChangeEvent<{ name?: string; value: unknown }>,
@@ -161,25 +159,28 @@ export const MembersEditModal = (props: EditDialogProps) => {
       align: 'right',
       width: '5%',
       render: data => (
-        <Tooltip
-          title={
-            data.role === 'Workstream Lead'
-              ? 'You can remove workstream lead from about card'
-              : 'Remove member'
-          }
-        >
-          <IconButton
-            size="small"
-            color="secondary"
-            onClick={() => {
-              setTableData(t =>
-                t.filter(v => v.user.metadata.uid !== data.user.metadata.uid),
-              );
-            }}
+        <Box display="flex" alignItems="center">
+          <Tooltip
+            title={
+              data.role === 'Workstream Lead'
+                ? 'You can remove workstream lead from about card'
+                : 'Remove member'
+            }
           >
-            <RemoveCircleOutlineOutlinedIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
+            <IconButton
+              size="small"
+              color="secondary"
+              onClick={() => {
+                setTableData(t =>
+                  t.filter(v => v.user.metadata.uid !== data.user.metadata.uid),
+                );
+              }}
+            >
+              <RemoveCircleOutlineOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <MemberWarningChip user={data.user} />
+        </Box>
       ),
     },
   ];
