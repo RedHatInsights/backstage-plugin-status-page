@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.10.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.9.1...@appdev-platform/backstage-plugin-workstream-automation@1.10.0) (2025-03-21)
+
+
+### Features
+
+* **PUSLE-393:** Add `icon` to show workstreams on members card ([d096e11](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/d096e11dce1e92d575696f93bf2df0a2c493edfd))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.9.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.9.0...@appdev-platform/backstage-plugin-workstream-automation@1.9.1) (2025-03-04)
 
 
