@@ -45,6 +45,7 @@ export const columnFactories = Object.freeze({
       field: 'entity.metadata.title',
       hidden: options?.hidden,
       searchable: true,
+      hiddenByColumnsButton: true,
     };
   },
 
