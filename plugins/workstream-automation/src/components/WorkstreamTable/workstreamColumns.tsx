@@ -142,6 +142,12 @@ export const columnFactories = Object.freeze({
       render: ({ entity }) => (
         <MembersColumn members={entity.spec?.members as Member[]} />
       ),
+      searchable: true,
+      customFilterAndSearch: (filter, rowData, col) => {
+        return (rowData.entity.spec?.members as Member[]).some(p =>
+          parseEntityRef(p.userRef).name.includes(filter),
+        );
+      },
       customExport: ({ entity }) => {
         return (
           (entity.spec?.members as Member[])
@@ -180,6 +186,20 @@ export const columnFactories = Object.freeze({
       hidden: true,
       hiddenByColumnsButton: true,
       export: true,
+    };
+  },
+  createPLColumn(): TableColumn<CatalogTableRow> {
+    return {
+      field: 'entity.spec.members',
+      title: 'Program Lead',
+      customExport: ({ entity }) =>
+        (entity.spec?.members as Member[])
+          .filter(member => member.role === 'Program Lead')
+          .map(member => parseEntityRef(member.userRef).name)
+          .join(',\n') ?? '-',
+      hidden: true,
+      export: true,
+      hiddenByColumnsButton: true,
     };
   },
   createSEColumn(): TableColumn<CatalogTableRow> {

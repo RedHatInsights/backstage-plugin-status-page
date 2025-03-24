@@ -41,6 +41,11 @@ backend:
   #     $file: <file-path>/ca/server.crt
 workstream:
   enabled: ${WORKSTREAM_PLUGIN_ENABLED}
+  workstreamRoles:
+    technical-lead: Technical Lead
+    software-engineer: Software Engineer
+    quality-engineer: Quality Engineer
+    program-lead: Program Lead
 
 integrations:
   servicenow:

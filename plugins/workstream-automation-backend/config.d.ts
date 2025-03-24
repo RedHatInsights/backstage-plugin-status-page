@@ -1,16 +1,9 @@
 export interface Config {
-  workstream: {
-    /**
-     * A flag to enable/disable plugin and module directly.
-     * @visibility frontend
-     */
-    enabled: boolean;
-  };
-  integrations: {
+  integrations?: {
     /**
      * Integration config for workstream automation plugin
      */
-    workstreams: Array<{
+    workstreams?: Array<{
       /**
        * Host name of the endpoint
        */

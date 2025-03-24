@@ -12,7 +12,7 @@ import {
   Typography,
 } from '@material-ui/core';
 
-import { useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   EntityDisplayName,
@@ -87,7 +87,14 @@ export const MemberDetailsForm = (props: { form1: UseFormReturn<Form1> }) => {
     { label: 'Rover Group', value: 'group' },
   ];
 
-  const roleOptions = ['Workstream Lead', ...Object.values(rolesMap)];
+  const configApi = useApi(configApiRef);
+  const customRoles = configApi.getOptional<{
+    [key: string]: string;
+  }>('workstream.workstreamRoles');
+  const roleOptions = [
+    'Workstream Lead',
+    ...Object.values({ ...rolesMap, ...customRoles }),
+  ];
 
   function handleRoleChange(
     evt: React.ChangeEvent<{ name?: string; value: unknown }>,
