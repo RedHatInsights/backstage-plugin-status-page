@@ -19,6 +19,7 @@ import { CustomUserEntity } from '../../types';
 import { getWorkstreamsRelations } from '../../utlis/getWorkstreamMembers';
 import { getRoleFromRelation } from '../../utlis/roleMapper';
 import { AppIcon } from '@backstage/core-components';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 export const MemberWarningChip = (props: { user: CustomUserEntity }) => {
   const relations = getWorkstreamsRelations(props.user);
@@ -26,6 +27,11 @@ export const MemberWarningChip = (props: { user: CustomUserEntity }) => {
     variant: 'popover',
     popupId: 'workstream-popover',
   });
+
+  const configApi = useApi(configApiRef);
+  const customRoles = configApi.getOptional<{
+    [key: string]: string;
+  }>('workstream.workstreamRoles');
 
   if (relations.length < 2) return null;
 
@@ -63,7 +69,10 @@ export const MemberWarningChip = (props: { user: CustomUserEntity }) => {
                   entityRef={v.targetRef}
                 />
                 <ListItemSecondaryAction>
-                  {getRoleFromRelation(v.type, { leadOf: 'Workstream Lead' })}
+                  {getRoleFromRelation(v.type, {
+                    leadOf: 'Workstream Lead',
+                    ...customRoles,
+                  })}
                 </ListItemSecondaryAction>
               </ListItem>
             ))}

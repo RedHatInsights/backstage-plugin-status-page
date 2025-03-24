@@ -75,11 +75,13 @@ export function createColumnsFunc() {
 }
 
 export const workstreamColumns = [
+  columnFactories.createTitleColumn({ hidden: true }),
   columnFactories.createNameColumn({ defaultKind: 'workstream' }),
   columnFactories.createLeadColumn(),
   columnFactories.createPillarColumn(),
   columnFactories.createJiraProjectKeyColumn(),
   columnFactories.createTechLeadColumn(),
+  columnFactories.createPLColumn(),
   columnFactories.createSEColumn(),
   columnFactories.createQEColumn(),
   columnFactories.createMembersColumn(),

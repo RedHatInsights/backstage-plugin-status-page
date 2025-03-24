@@ -33,14 +33,6 @@ export const workstreamAutomationPlugin = createBackendPlugin({
         permissions,
         httpAuth,
       }) {
-        const isEnabled =
-          config.getOptionalBoolean('workstream.enabled') ?? false;
-        if (!isEnabled) {
-          logger.warn(
-            'Workstream backend plugin is disabled. Enable it by setting workstreams.enabled=true.',
-          );
-          return;
-        }
         httpRouter.addAuthPolicy({
           path: '/health',
           allow: 'unauthenticated',

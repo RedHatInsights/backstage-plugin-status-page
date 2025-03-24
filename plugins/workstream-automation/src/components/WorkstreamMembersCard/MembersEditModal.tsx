@@ -5,7 +5,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Table, TableColumn } from '@backstage/core-components';
-import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import { alertApiRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   humanizeEntityRef,
@@ -78,8 +78,15 @@ export const MembersEditModal = (props: EditDialogProps) => {
       members: [],
     },
   });
+  const configApi = useApi(configApiRef);
+  const customRoles = configApi.getOptional<{
+    [key: string]: string;
+  }>('workstream.workstreamRoles');
 
-  const roleOptions = ['Workstream Lead', ...Object.values(rolesMap)];
+  const roleOptions = [
+    'Workstream Lead',
+    ...Object.values({ ...rolesMap, ...customRoles }),
+  ];
 
   function handleRoleChange(
     evt: React.ChangeEvent<{ name?: string; value: unknown }>,
