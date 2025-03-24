@@ -143,7 +143,7 @@ export const columnFactories = Object.freeze({
         <MembersColumn members={entity.spec?.members as Member[]} />
       ),
       searchable: true,
-      customFilterAndSearch: (filter, rowData, col) => {
+      customFilterAndSearch: (filter, rowData) => {
         return (rowData.entity.spec?.members as Member[]).some(p =>
           parseEntityRef(p.userRef).name.includes(filter),
         );
@@ -171,7 +171,6 @@ export const columnFactories = Object.freeze({
     };
   },
 
-  // Kept if required in future
   createTechLeadColumn(): TableColumn<CatalogTableRow> {
     return {
       field: 'enitity.spec.members',
@@ -184,7 +183,14 @@ export const columnFactories = Object.freeze({
           .map(member => parseEntityRef(member.userRef).name)
           .join(',\n') ?? '-',
       hidden: true,
-      hiddenByColumnsButton: true,
+      searchable: false,
+      hiddenByColumnsButton: false,
+      render: ({ entity }) => {
+        const techLead = (entity.spec?.members as Member[]).find(
+          member => member.role === 'Technical Lead',
+        )?.userRef;
+        return techLead && <EntityRefLink entityRef={techLead} />;
+      },
       export: true,
     };
   },
