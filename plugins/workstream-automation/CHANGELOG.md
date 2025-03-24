@@ -1,5 +1,23 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.11.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.10.0...@appdev-platform/backstage-plugin-workstream-automation@1.11.0) (2025-03-24)
+
+
+### Features
+
+* **PULSE-463:** add program lead role ([5fd2109](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/5fd210919951501134d2df70972e91d59ae08319))
+
+
+### Bug Fixes
+
+* **PULSE-378:** fix search by title in workstreams ([7a798f7](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/7a798f7c4a52eaacc200d1113475b7916f9e037e))
+
+
+### Other changes
+
+* **PULSE-465:** option to show technical lead column ([1c8984c](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/1c8984cbd6930bb1afab7c05bd2c0ad581613161))
+* remove workstream enable flag ([04dcfa1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/04dcfa18491e06dee48b56d5daee2bee80787c8e))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.10.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.9.1...@appdev-platform/backstage-plugin-workstream-automation@1.10.0) (2025-03-21)
 
 
