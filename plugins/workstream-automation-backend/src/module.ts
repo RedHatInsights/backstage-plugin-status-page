@@ -14,21 +14,11 @@ const workstreamCatalogModule = createBackendModule({
       deps: {
         auth: coreServices.auth,
         catalog: catalogProcessingExtensionPoint,
-        config: coreServices.rootConfig,
         discovery: coreServices.discovery,
         logger: coreServices.logger,
       },
-      async init({ catalog, auth, logger, discovery, config }) {
-        const isEnabled =
-          config.getOptionalBoolean('workstream.enabled') ?? false;
-        if (!isEnabled) {
-          logger.warn(
-            'Workstream backend module is disabled. Enable it by setting workstreams.enabled=true.',
-          );
-          return;
-        }
+      async init({ catalog, auth, logger, discovery }) {
         logger.info('Workstream backend module loaded');
-
         const workstreamClient = new WorkstreamBackendClient(discovery, auth);
         const catalogProcessor = new WorkstreamEntityProcessor({
           logger,
