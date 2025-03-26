@@ -1,17 +1,18 @@
 import React from 'react';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import {
-  bindHover,
   bindPopover,
+  bindHover,
   usePopupState,
 } from 'material-ui-popup-state/hooks';
 import HoverPopover from 'material-ui-popup-state/HoverPopover';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import {
+  Box,
   Chip,
+  Divider,
   List,
   ListItem,
-  ListItemSecondaryAction,
   Paper,
   Typography,
 } from '@material-ui/core';
@@ -57,23 +58,34 @@ export const MemberWarningChip = (props: { user: CustomUserEntity }) => {
           horizontal: 'center',
         }}
       >
-        <Paper style={{ padding: '10px' }}>
-          <Typography>This associate is in more than one workstream</Typography>
+        <Paper elevation={0}>
+          <Typography style={{ padding: '10px' }}>
+            This associate is in more than one workstream
+          </Typography>
+          <Divider />
           <List disablePadding>
             {relations.map(v => (
               <ListItem key={v.targetRef}>
-                <EntityRefLink
-                  target="_blank"
-                  component={Typography}
-                  variant="subtitle2"
-                  entityRef={v.targetRef}
-                />
-                <ListItemSecondaryAction>
-                  {getRoleFromRelation(v.type, {
-                    leadOf: 'Workstream Lead',
-                    ...customRoles,
-                  })}
-                </ListItemSecondaryAction>
+                <Box display="flex" justifyContent="space-between" width="100%">
+                  <EntityRefLink
+                    target="_blank"
+                    component={Typography}
+                    variant="subtitle2"
+                    entityRef={v.targetRef}
+                    style={{
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      marginRight: '8px',
+                    }}
+                  />
+                  <Typography variant="body2" style={{ marginLeft: 2 }}>
+                    {getRoleFromRelation(v.type, {
+                      leadOf: 'Workstream Lead',
+                      ...customRoles,
+                    })}
+                  </Typography>
+                </Box>
               </ListItem>
             ))}
           </List>

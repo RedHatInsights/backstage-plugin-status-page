@@ -57,7 +57,7 @@ import {
   JiraIcon,
   SlackIcon,
 } from '@appdev-platform/backstage-plugin-workstream-automation';
-import { getThemes } from '@redhat-developer/red-hat-developer-hub-theme';
+import { getThemes } from '@red-hat-developer-hub/backstage-plugin-theme';
 import SettingsEthernet from '@material-ui/icons/SettingsEthernet';
 import { HydraSupportDashboardPage } from '@appdev-platform/backstage-plugin-hydra-support-dashboard';
 import { WORKSTREAM_RELATION_PAIR } from '@appdev-platform/backstage-plugin-workstream-automation-common';
