@@ -220,3 +220,10 @@ docsbot:
 
 permission:
   enabled: true
+
+devTools:
+  info:
+    packagePrefixes:
+      - '@appdev-platform/'
+      - '@janus-idp/'
+      - '@redhat-developer/'
