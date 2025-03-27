@@ -61,3 +61,5 @@ site
 /playwright-report/
 /playwright/.cache/
 
+# Local sqlite db files
+*.sqlite
