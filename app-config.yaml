@@ -312,3 +312,14 @@ soundcheck:
     disabled: false
     frequency:
       minutes: 5
+
+dataLayer:
+  splunkToken: ${SPLUNK_TOKEN}
+  splunkApiHost: ${SPLUNK_API_HOST}
+  splunkSubgraphsSnippet: ${SPLUNK_SUBGRAPHS_SNIPPET}
+  schedule:
+    frequency:
+      hour: 6
+    timeout:
+      hours: 6
+

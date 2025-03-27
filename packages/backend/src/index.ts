@@ -109,4 +109,5 @@ backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-
 // DevTools backend
 backend.add(import('@backstage/plugin-devtools-backend'));
 
+backend.add(import('@appdev-platform/backstage-plugin-devex-data-layer-backend'));
 backend.start();
