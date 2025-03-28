@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-devex-data-layer-backend [1.0.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-data-layer-backend@1.0.0...@appdev-platform/backstage-plugin-devex-data-layer-backend@1.0.1) (2025-03-28)
+
+
+### Bug Fixes
+
+* **ADP-401:** Erroneous splunk query buildup fixed ([06ae3f9](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/06ae3f928e83fda453c1159c1192adbc1315fcb1))
+
 ## @appdev-platform/backstage-plugin-devex-data-layer-backend 1.0.0 (2025-03-27)
 
 
