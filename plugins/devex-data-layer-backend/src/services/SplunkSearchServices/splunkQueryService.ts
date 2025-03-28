@@ -30,11 +30,12 @@ export async function CreateSplunkQueryService({
 
   return {
     async fetchHistoricalData() {
-      const subgraphs = await getSubgraphs(subgraphsSnippetUrl);
+      try {
+        const subgraphs = await getSubgraphs(subgraphsSnippetUrl);
+        if (subgraphs) {
+          const subgraphIndexes = Object.keys(subgraphs);
 
-      if (subgraphs)
-        for (const subgraph in Object.keys(subgraphs)) {
-          if (Object.keys(subgraphs).includes(subgraph)) {
+          for (const subgraph of subgraphIndexes) {
             const query = getQueryForNumberOfQueriesClient(subgraph);
             const triggeredSearch = await getSearchId(
               splunkApiHost,
@@ -52,6 +53,9 @@ export async function CreateSplunkQueryService({
             }
           }
         }
+      } catch (err) {
+        logger.error(String(err));
+      }
     },
   };
 }
