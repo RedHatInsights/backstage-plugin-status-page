@@ -23,6 +23,7 @@
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator": "*",
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core": "*",
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab": "*",
+    "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet": "*",
     "@appdev-platform/backstage-plugin-workstream-automation-backend": "*",
     "@appdev-platform/backstage-plugin-workstream-automation-common": "*",
     "@backstage-community/plugin-matomo-backend": "^1.13.0",
