@@ -25,3 +25,8 @@ If you need to modify the secrets, make sure to re-encrypt the file using the fo
 ```sh
 paas-secret-encryption-cli --env=preprod --tenant=one-platform < ./plain-secrets.yaml > ./encrypted-secrets.yaml
 ```
+
+## Adding a single secret to encrypted-secrets.yaml
+```
+echo "foo" | paas-secret-encryption-cli --env=preprod --tenant=one-platform --from-file /dev/stdin --raw --raw-base64
+```
