@@ -704,7 +704,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet@npm:^0.1.0, @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet@workspace:plugins/soundcheck-backend-module-red-hat-smartsheet":
+"@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet@npm:*, @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet@workspace:plugins/soundcheck-backend-module-red-hat-smartsheet":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet@workspace:plugins/soundcheck-backend-module-red-hat-smartsheet"
   dependencies:
@@ -18847,7 +18847,7 @@ __metadata:
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator": "npm:*"
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core": "npm:*"
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab": "npm:*"
-    "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet": "npm:^0.1.0"
+    "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet": "npm:*"
     "@appdev-platform/backstage-plugin-workstream-automation-backend": "npm:*"
     "@appdev-platform/backstage-plugin-workstream-automation-common": "npm:*"
     "@backstage-community/plugin-matomo-backend": "npm:^1.13.0"
