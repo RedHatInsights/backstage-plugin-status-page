@@ -18,10 +18,15 @@ oc process -f template.yaml | oc apply -f -
 
 ## Important node for secrets
 
-Openshift Secrets have been encypted using the [`paas-secret-encryption-cli`](https://gitlab.corp.redhat.com/paas/paas-encryption-cli).
+Openshift Secrets have been encypted using the [`paas-secret-encryption-cli`](https://gitlab.cee.redhat.com/paas/paas-encryption-cli).
 
 If you need to modify the secrets, make sure to re-encrypt the file using the following command.
 
 ```sh
 paas-secret-encryption-cli --env=preprod --tenant=one-platform < ./plain-secrets.yaml > ./encrypted-secrets.yaml
+```
+
+## Adding a single secret to encrypted-secrets.yaml
+```
+echo "foo" | paas-secret-encryption-cli --env=preprod --tenant=one-platform --from-file /dev/stdin --raw --raw-base64
 ```
