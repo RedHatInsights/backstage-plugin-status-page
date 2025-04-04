@@ -1,3 +1,3 @@
 export { CreateSplunkQueryService } from './splunkQueryService';
-export { getQueryForNumberOfQueriesClient } from './constants';
+export { getQueryForNumberOfQueriesClient, queryForNumberOfSubgraphsDeveloped } from './constants';
 export { continuesFetchDataUntilDone } from './schedulingMethods';

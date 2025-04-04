@@ -1,3 +1,15 @@
+export type Subgraph = {
+  searchId?: string;
+  searchData: any;
+  lastUpdatedOn?: string;
+}
+
+export type SubgraphModel = {
+  search_id?: string;
+  search_data: any;
+  last_updated_on?: string;
+}
+
 export type SubgraphData = {
   subgraph: string;
   searchData: any;

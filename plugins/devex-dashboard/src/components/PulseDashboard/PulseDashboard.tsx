@@ -67,11 +67,10 @@ export const PulseDashboard = () => {
       setPulseDataStreams([]);
       setLoadingPluginStats(true);
       const siteId = config.getString('app.analytics.matomo.siteId');
-
       const statsByPageLabels = await matomo.getMatomoPageUrls(
         periodOrRange.period,
         periodOrRange.range,
-        siteId
+        siteId,
       );
       let statsByPlugin: { [key: string]: number } = {};
       pluginDiscoveryData.data.forEach(plugin => {

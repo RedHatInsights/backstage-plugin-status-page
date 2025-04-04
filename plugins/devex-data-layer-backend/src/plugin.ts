@@ -24,6 +24,7 @@ export const devexDataLayerPlugin = createBackendPlugin({
         scheduler: coreServices.scheduler,
       },
       async init({ logger, auth, httpRouter, config, database, scheduler }) {
+        try {
         const token = config.getOptionalString('dataLayer.splunkToken') || '';
         const subgraphsSnippetUrl =
           config.getOptionalString('dataLayer.splunkSubgraphsSnippet') || '';
@@ -39,12 +40,11 @@ export const devexDataLayerPlugin = createBackendPlugin({
           subgraphsSnippetUrl,
         });
 
-        const schedulerConfig: SchedulerServiceTaskScheduleDefinition = config.getOptional(
-          'dataLayer.schedule',
-        ) || {
-          timeout: { hours: 6 },
-          frequency: { hours: 12 },
-        };
+        const schedulerConfig: SchedulerServiceTaskScheduleDefinition =
+          config.getOptional('dataLayer.schedule') || {
+            timeout: { hours: 6 },
+            frequency: { hours: 12 },
+          };
 
         // scheduled to sync the splunk data
         const runner = scheduler.createScheduledTaskRunner(schedulerConfig);
@@ -55,8 +55,12 @@ export const devexDataLayerPlugin = createBackendPlugin({
           id: 'splunk-query-service-runner__id',
         });
 
-        httpRouter.use(await createRouter(splunkQueryService, database));
-      },
-    });
+        httpRouter.use(await createRouter(database));
+      }
+
+    catch(err) {
+      logger.error(String(err));
+    }
+    }});
   },
 });

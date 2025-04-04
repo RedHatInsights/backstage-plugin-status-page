@@ -2,10 +2,8 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { DataLayerBackendDatabase } from './database/DataLayerBackendDatabase';
 import { DatabaseService } from '@backstage/backend-plugin-api';
-import { SplunkSearchServices } from './types';
 
 export async function createRouter(
-  splunkSearchService: SplunkSearchServices,
   databaseServer: DatabaseService,
 ): Promise<express.Router> {
   const router = Router();
@@ -24,9 +22,13 @@ export async function createRouter(
       );
       res.json({ data: cachedData });
     } else {
-      splunkSearchService.fetchHistoricalData();
       res.json({ data: [], info: 'search triggered' });
     }
+  });
+
+  router.get('/subgraphs', async (_req, res) => {
+    const cachedData = await database.getSubgraphsData();
+    res.json({ data: cachedData });
   });
 
   return router;
