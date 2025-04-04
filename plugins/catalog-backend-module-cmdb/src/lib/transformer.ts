@@ -84,6 +84,7 @@ export function transformer(
 function cmdbRecordToCMDBMeta(record: CMDBRecord): CMDBMeta {
   return {
     title: record.name?.toString()!,
+    sysId: record.sys_id,
     ownedBy: record['owned_by.user_name']?.toString()!,
     ownedByActive: record['owned_by.active']?.toString() === 'true',
     installStatus: record.install_status?.toString()!,
