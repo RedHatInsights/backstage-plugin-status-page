@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.5.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.5.2...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.5.3) (2025-04-04)
+
+
+### Other changes
+
+* **PULSE-560:** add sysId to cmdb metadata ([869eb25](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/869eb251df569b4281b552f6890e6275d66e05a8))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.5.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.5.1...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.5.2) (2025-03-12)
 
 
