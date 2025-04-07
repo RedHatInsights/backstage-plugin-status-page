@@ -91,6 +91,7 @@ type CMDBFields = (typeof DEFAULT_CMDB_RECORD_FIELDS)[number];
 export type CMDBRecord = JsonObject & Record<CMDBFields, JsonValue>;
 
 export type CMDBMeta = {
+  sysId: string;
   title: string;
   ownedBy: string;
   ownedByActive: boolean;

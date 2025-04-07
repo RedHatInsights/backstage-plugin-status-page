@@ -10,9 +10,10 @@ import { kebabCase, merge } from 'lodash';
 import {
   ANNOTATION_CMDB_APPCODE,
   ANNOTATION_CMDB_ID,
+  BusinessApplicationApiVersion,
   CMDB_IMPORT_TAG,
 } from './constants';
-import { getViewUrl, toValidUrl } from './utils';
+import { getInstallStatus, getViewUrl, sanitizeUrl } from './utils';
 import {
   BusinessApplicationEntity,
   CMDBDiscoveryEntityProviderConfig,
@@ -27,17 +28,18 @@ export function transformer(
   const sysId = application.sys_id?.toString()!;
   const location = `url://${provider.host}/api/now/table/cmdb_ci_business_app/${sysId}`;
 
-  const links = application.url
+  const url = sanitizeUrl(application.url);
+  const links = url
     ? [
         {
           title: 'Application URL',
-          url: toValidUrl(application.url.toString()),
+          url,
         },
       ]
     : undefined;
 
   const businessApplicationEntity: BusinessApplicationEntity = {
-    apiVersion: 'servicenow.com/v1beta1',
+    apiVersion: BusinessApplicationApiVersion,
     kind: 'BusinessApplication',
     metadata: {
       name: kebabCase(application.name!.toString()),
@@ -68,8 +70,7 @@ export function transformer(
       },
     },
     spec: {
-      lifecycle:
-        application.install_status !== '1' ? 'preproduction' : 'production',
+      lifecycle: getInstallStatus(application.install_status),
       owner: `user:redhat/${application['owned_by.user_name']}`,
     },
   };
@@ -83,8 +84,8 @@ export function transformer(
 
 function cmdbRecordToCMDBMeta(record: CMDBRecord): CMDBMeta {
   return {
+    sysId: record.sys_id?.toString()!,
     title: record.name?.toString()!,
-    sysId: record.sys_id,
     ownedBy: record['owned_by.user_name']?.toString()!,
     ownedByActive: record['owned_by.active']?.toString() === 'true',
     installStatus: record.install_status?.toString()!,

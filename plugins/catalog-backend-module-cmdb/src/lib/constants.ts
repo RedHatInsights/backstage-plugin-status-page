@@ -27,4 +27,15 @@ export const DEFAULT_CMDB_RECORD_FIELDS = [
   'sys_updated_on',
 ] as const;
 
+export const installStatuses: Record<string, string> = {
+  '0': 'Implementing',
+  '1': 'In Production',
+  '2': 'Pilot',
+  '4': 'Limited Service',
+  '7': 'Retired',
+  '21': 'Archived',
+  '22': 'Cancelled/Invalid Record',
+};
+export const BusinessApplicationApiVersion = 'servicenow.com/v1beta1' as const;
+
 export const PROCESSOR_CACHE_INVALIDATION_PERIOD = 15 * 60 * 1000;    // 15 minutes
