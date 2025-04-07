@@ -10,9 +10,10 @@ import { kebabCase, merge } from 'lodash';
 import {
   ANNOTATION_CMDB_APPCODE,
   ANNOTATION_CMDB_ID,
+  BusinessApplicationApiVersion,
   CMDB_IMPORT_TAG,
 } from './constants';
-import { getViewUrl, sanitizeUrl } from './utils';
+import { getInstallStatus, getViewUrl, sanitizeUrl } from './utils';
 import {
   BusinessApplicationEntity,
   CMDBDiscoveryEntityProviderConfig,
@@ -38,7 +39,7 @@ export function transformer(
     : undefined;
 
   const businessApplicationEntity: BusinessApplicationEntity = {
-    apiVersion: 'servicenow.com/v1beta1',
+    apiVersion: BusinessApplicationApiVersion,
     kind: 'BusinessApplication',
     metadata: {
       name: kebabCase(application.name!.toString()),
@@ -69,8 +70,7 @@ export function transformer(
       },
     },
     spec: {
-      lifecycle:
-        application.install_status !== '1' ? 'preproduction' : 'production',
+      lifecycle: getInstallStatus(application.install_status),
       owner: `user:redhat/${application['owned_by.user_name']}`,
     },
   };
