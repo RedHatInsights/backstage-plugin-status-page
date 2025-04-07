@@ -122,4 +122,58 @@ export class DevexDashboardApi {
       });
     return response;
   }
+
+  async getSplunkSubgraphs() {
+    const baseUrl = await this.discoveryApi.getBaseUrl('devex-data-layer');
+    const response = await this.fetchApi
+      .fetch(`${baseUrl}/subgraphs`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(data => {
+        return data.json();
+      })
+      .catch(_err => {
+        return null;
+      });
+    return response;
+  }
+
+  async getSplunkDataBySubgraph(subgraph: string) {
+    const baseUrl = await this.discoveryApi.getBaseUrl('devex-data-layer');
+    const response = await this.fetchApi
+      .fetch(`${baseUrl}/search?subgraph=${subgraph}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(data => {
+        return data.json();
+      })
+      .catch(_err => {
+        return null;
+      });
+    return response;
+  }
+
+  async getSubgraphNames() {
+    const baseUrl =  await this.getBaseUrl();
+    const response = await this.fetchApi
+      .fetch(`${baseUrl}/subgraphs`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(data => {
+        return data.json();
+      })
+      .catch(_err => {
+        return null;
+      });
+    return response;
+  }
 }

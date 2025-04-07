@@ -3,9 +3,15 @@ import {
   LoggerService,
   DatabaseService,
 } from '@backstage/backend-plugin-api';
-import { getQueryForNumberOfQueriesClient } from './constants';
-import { getSearchId, getSubgraphs } from '../../api';
-import { continuesFetchDataUntilDone } from './schedulingMethods';
+import {
+  getQueryForNumberOfQueriesClient,
+  queryForNumberOfSubgraphsDeveloped,
+} from './constants';
+import { getSearchId } from '../../api';
+import {
+  continuesFetchDataUntilDone,
+  subgraphsPolling,
+} from './schedulingMethods';
 import { DataLayerBackendDatabase } from '../../database/DataLayerBackendDatabase';
 
 export async function CreateSplunkQueryService({
@@ -13,7 +19,6 @@ export async function CreateSplunkQueryService({
   splunkApiHost,
   token,
   database,
-  subgraphsSnippetUrl,
 }: {
   auth: AuthService;
   logger: LoggerService;
@@ -31,11 +36,32 @@ export async function CreateSplunkQueryService({
   return {
     async fetchHistoricalData() {
       try {
-        const subgraphs = await getSubgraphs(subgraphsSnippetUrl);
-        if (subgraphs) {
-          const subgraphIndexes = Object.keys(subgraphs);
+        const triggeredSubgraphSearch = await getSearchId(
+          splunkApiHost,
+          token,
+          queryForNumberOfSubgraphsDeveloped,
+          true,
+        );
+        if (triggeredSubgraphSearch && triggeredSubgraphSearch.sid) {
+          await subgraphsPolling(
+            splunkApiHost,
+            token,
+            triggeredSubgraphSearch.sid,
+            databaseServer,
+          );
+        }
+        let subgraphNames: string[] = [];
+        const cachedSubgraphs = await databaseServer.getSubgraphsData();
+        if (cachedSubgraphs?.searchData) {
+          subgraphNames = JSON.parse(cachedSubgraphs?.searchData).data.map(
+            (data: { [key: string]: string }) => {
+              return Object.values(data)[0];
+            },
+          );
+        }
 
-          for (const subgraph of subgraphIndexes) {
+        if (subgraphNames.length) {
+          for (const subgraph of subgraphNames) {
             const query = getQueryForNumberOfQueriesClient(subgraph);
             const triggeredSearch = await getSearchId(
               splunkApiHost,

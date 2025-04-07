@@ -2,21 +2,25 @@ export const getSearchId = async (
   splunkApiHost: string,
   token: string,
   query: string,
+  forSubgraphName: boolean = false,
 ) => {
+  let searchParams: any = {
+    search: query,
+    latest_time: 'now',
+    preview: 'true',
+    output_mode: 'json',
+    count: '0',
+  };
+  if (!forSubgraphName) {
+    searchParams = { ...searchParams, earliest_time: '-6mon' };
+  }
   return await fetch(`${splunkApiHost}/services/search/jobs`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: new URLSearchParams({
-      search: query,
-      earliest_time: '-6mon',
-      latest_time: 'now',
-      preview: 'true',
-      output_mode: 'json',
-      count: '0',
-    }).toString(),
+    body: new URLSearchParams(searchParams).toString(),
   })
     .then(response => response.json())
     .then(response => {
@@ -79,15 +83,12 @@ export const getResultsWithSearchId = async (
 };
 
 export const getSubgraphs = async (snippetUrl: string) => {
-  return await fetch(
-    `${snippetUrl}`,
-    {
-      method: 'GET',
-      headers: {
-        'Content-type': 'application/json',
-      },
+  return await fetch(`${snippetUrl}`, {
+    method: 'GET',
+    headers: {
+      'Content-type': 'application/json',
     },
-  )
+  })
     .then(response => response.json())
     .then(response => {
       if (response) return response;

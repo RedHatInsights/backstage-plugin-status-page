@@ -321,7 +321,7 @@ dataLayer:
   splunkSubgraphsSnippet: ${SPLUNK_SUBGRAPHS_SNIPPET}
   schedule:
     frequency:
-      hour: 6
+      hours: 12
     timeout:
       hours: 6
 
