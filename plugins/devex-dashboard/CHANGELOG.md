@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-devex-dashboard [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.2.1...@appdev-platform/backstage-plugin-devex-dashboard@1.3.0) (2025-04-07)
+
+
+### Features
+
+* **ADP-645:** Client Queries trend lineChart and number of subgraphs developed stats ([7aad343](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/7aad3432049c78f419abbc0578558dddf1f805de))
+
 ## @appdev-platform/backstage-plugin-devex-dashboard [1.2.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.2.0...@appdev-platform/backstage-plugin-devex-dashboard@1.2.1) (2025-03-11)
 
 
