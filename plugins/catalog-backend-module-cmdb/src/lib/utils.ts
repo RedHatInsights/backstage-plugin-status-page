@@ -1,3 +1,4 @@
+import { JsonValue } from '@backstage/types/index';
 import { CMDB_TABLE_NAME } from './constants';
 
 export function getViewUrl(host: string, sysId: string) {
@@ -8,6 +9,12 @@ export function getViewUrl(host: string, sysId: string) {
   ).toString();
 }
 
-export function toValidUrl(url: string) {
-  return url.toString().startsWith('http') ? url.toString() : `https://${url}`;
+export function sanitizeUrl(str: JsonValue) {
+  const url = str?.toString().startsWith('http') ? str.toString() : `https://${str}`
+  try {
+    const validUrl = new URL(url);
+    return validUrl.toString();
+  } catch(err) {
+    return false;
+  }
 }

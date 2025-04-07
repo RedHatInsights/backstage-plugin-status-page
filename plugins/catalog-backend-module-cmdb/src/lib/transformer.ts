@@ -12,7 +12,7 @@ import {
   ANNOTATION_CMDB_ID,
   CMDB_IMPORT_TAG,
 } from './constants';
-import { getViewUrl, toValidUrl } from './utils';
+import { getViewUrl, sanitizeUrl } from './utils';
 import {
   BusinessApplicationEntity,
   CMDBDiscoveryEntityProviderConfig,
@@ -27,11 +27,12 @@ export function transformer(
   const sysId = application.sys_id?.toString()!;
   const location = `url://${provider.host}/api/now/table/cmdb_ci_business_app/${sysId}`;
 
-  const links = application.url
+  const url = sanitizeUrl(application.url);
+  const links = url
     ? [
         {
           title: 'Application URL',
-          url: toValidUrl(application.url.toString()),
+          url,
         },
       ]
     : undefined;
@@ -83,8 +84,8 @@ export function transformer(
 
 function cmdbRecordToCMDBMeta(record: CMDBRecord): CMDBMeta {
   return {
+    sysId: record.sys_id?.toString()!,
     title: record.name?.toString()!,
-    sysId: record.sys_id,
     ownedBy: record['owned_by.user_name']?.toString()!,
     ownedByActive: record['owned_by.active']?.toString() === 'true',
     installStatus: record.install_status?.toString()!,
