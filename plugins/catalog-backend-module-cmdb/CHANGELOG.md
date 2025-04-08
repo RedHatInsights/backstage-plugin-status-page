@@ -1,5 +1,18 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.5.3...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.6.0) (2025-04-08)
+
+
+### Features
+
+* **cmdb:** add mapping for cmdb install status ([5e09594](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/5e09594750b97993530ca6bd68dd1224d471bc0b))
+
+
+### Bug Fixes
+
+* **cmdb:** add sysId to CMDBMeta types ([02e31c5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/02e31c58b15a0ff1460d6a2d8a2d6e5d447fad74))
+* **cmdb:** add url sanitization to application urls ([01515a2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/01515a2446c995f6cab41018bb88d38a944a9dbb))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.5.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.5.2...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.5.3) (2025-04-04)
 
 
