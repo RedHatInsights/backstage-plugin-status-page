@@ -159,10 +159,10 @@ export class DevexDashboardApi {
     return response;
   }
 
-  async getSubgraphNames() {
-    const baseUrl =  await this.getBaseUrl();
+  async getGatewayRequestData() {
+    const baseUrl = await this.discoveryApi.getBaseUrl('devex-data-layer');
     const response = await this.fetchApi
-      .fetch(`${baseUrl}/subgraphs`, {
+      .fetch(`${baseUrl}/gateway/requests`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

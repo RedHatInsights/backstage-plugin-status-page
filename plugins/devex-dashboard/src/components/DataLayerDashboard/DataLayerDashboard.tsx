@@ -6,6 +6,7 @@ import { devexApiRef } from '../../api';
 import { RequestPerClientLineChart } from './RequestsPerClientLineChart';
 import { SubgraphsDeveloped } from './SubgraphsDeveloped';
 import { KeyValue } from '../../Interfaces';
+import { AkamaiRequestTrendLineChart } from './AkamaiRequestTrendLineChart';
 
 export const DataLayerDashboard = () => {
   const splunk = useApi(devexApiRef);
@@ -110,6 +111,7 @@ export const DataLayerDashboard = () => {
               }
               loading={!(clientRequestData && !loadingData && subgraphs)}
             />
+            <AkamaiRequestTrendLineChart/>
           </>
         ) : (
           <LinearProgress />

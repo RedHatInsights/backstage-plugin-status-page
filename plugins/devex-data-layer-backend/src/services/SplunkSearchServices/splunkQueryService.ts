@@ -4,15 +4,15 @@ import {
   DatabaseService,
 } from '@backstage/backend-plugin-api';
 import {
-  getQueryForNumberOfQueriesClient,
+  queryForAkamaiApiGatewayRequestsRecord,
   queryForNumberOfSubgraphsDeveloped,
 } from './constants';
-import { getSearchId } from '../../api';
-import {
-  continuesFetchDataUntilDone,
-  subgraphsPolling,
-} from './schedulingMethods';
 import { DataLayerBackendDatabase } from '../../database/DataLayerBackendDatabase';
+import {
+  fetchApiGatewayRequestsRecord,
+  fetchClientQueriesRecord,
+  fetchSubgraphs,
+} from './HistoricalSearches';
 
 export async function CreateSplunkQueryService({
   logger,
@@ -36,20 +36,13 @@ export async function CreateSplunkQueryService({
   return {
     async fetchHistoricalData() {
       try {
-        const triggeredSubgraphSearch = await getSearchId(
+        await fetchSubgraphs(
           splunkApiHost,
           token,
           queryForNumberOfSubgraphsDeveloped,
-          true,
+          databaseServer,
         );
-        if (triggeredSubgraphSearch && triggeredSubgraphSearch.sid) {
-          await subgraphsPolling(
-            splunkApiHost,
-            token,
-            triggeredSubgraphSearch.sid,
-            databaseServer,
-          );
-        }
+
         let subgraphNames: string[] = [];
         const cachedSubgraphs = await databaseServer.getSubgraphsData();
         if (cachedSubgraphs?.searchData) {
@@ -62,23 +55,21 @@ export async function CreateSplunkQueryService({
 
         if (subgraphNames.length) {
           for (const subgraph of subgraphNames) {
-            const query = getQueryForNumberOfQueriesClient(subgraph);
-            const triggeredSearch = await getSearchId(
+            await fetchClientQueriesRecord(
+              subgraph,
               splunkApiHost,
               token,
-              query,
+              databaseServer,
             );
-            if (triggeredSearch && triggeredSearch.sid) {
-              await continuesFetchDataUntilDone(
-                splunkApiHost,
-                token,
-                triggeredSearch.sid,
-                subgraph,
-                databaseServer,
-              );
-            }
           }
         }
+
+        await fetchApiGatewayRequestsRecord(
+          splunkApiHost,
+          token,
+          databaseServer,
+          queryForAkamaiApiGatewayRequestsRecord,
+        );
       } catch (err) {
         logger.error(String(err));
       }

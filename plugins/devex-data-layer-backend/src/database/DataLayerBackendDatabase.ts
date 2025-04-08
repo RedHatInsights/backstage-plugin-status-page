@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { Subgraph, SubgraphData, SubgraphDataModel } from '../types';
-import { SubgraphModel } from '../types/database';
+import { GatewayRequest, GatewayRequestModel, SubgraphModel } from '../types/database';
 
 const migrationsDir = resolvePackagePath(
   '@appdev-platform/backstage-plugin-devex-data-layer-backend',
@@ -15,12 +15,17 @@ export interface DataLayerBackendStore {
   insertSubgraphs(data: Subgraph): Promise<Subgraph | null>;
   getSubgraphsData(): Promise<Subgraph | null>;
   updateSubgraphsData(data: Subgraph): Promise<Subgraph | null>;
+  insertGateWayRequests(data: GatewayRequest): Promise<GatewayRequest | null>;
+  getGateWayRequests(): Promise<GatewayRequest | null>;
+  updateGateWayRequests(data: GatewayRequest): Promise<GatewayRequest | null>;
 }
 
 export class DataLayerBackendDatabase implements DataLayerBackendDatabase {
   private readonly DATA_LAYER_TABLE = 'datalayer';
   private readonly SUBGRAPH_TABLE = 'subgraphs';
+  private readonly AKAMAI_ACCESS = 'akamai_access';
   private readonly SINGLE_SEARCH_ID = 'subgraph_search__id';
+  private readonly AKAMAI_ACCESS_REQUESTS_SEARCH_ID = 'akamai_access_requests_search__id';
 
   static async create(options: {
     knex: Knex;
@@ -78,7 +83,7 @@ export class DataLayerBackendDatabase implements DataLayerBackendDatabase {
   async insertSubgraphs(data: Subgraph): Promise<Subgraph | null> {
     const [dbResult] = await this.db<SubgraphModel>(this.SUBGRAPH_TABLE).insert(
       {
-        search_id: 'subgraph_search__id',
+        search_id: this.SINGLE_SEARCH_ID,
         ...this.mapSubgraphToModel(data),
         last_updated_on: this.db.fn.now(),
       },
@@ -108,6 +113,39 @@ export class DataLayerBackendDatabase implements DataLayerBackendDatabase {
     return this.mapModelToSubgraph(dbResult) || null;
   }
 
+  async insertGateWayRequests(data: GatewayRequest): Promise<GatewayRequest | null> {
+    const [dbResult] = await this.db<GatewayRequestModel>(this.AKAMAI_ACCESS).insert(
+      {
+        log_id: this.AKAMAI_ACCESS_REQUESTS_SEARCH_ID,
+        ...this.mapGatewayRequestToModel(data),
+        last_updated_on: this.db.fn.now(),
+      },
+      '*',
+    );
+    return dbResult ? this.mapModelToGatewayRequest(dbResult) : null;
+  }
+
+  async getGateWayRequests(): Promise<GatewayRequest | null> {
+    const dbResult = await this.db<GatewayRequestModel>(this.AKAMAI_ACCESS)
+      .where('log_id', this.AKAMAI_ACCESS_REQUESTS_SEARCH_ID)
+      .first();
+    return dbResult ? this.mapModelToGatewayRequest(dbResult) : null;
+  }
+
+  async updateGateWayRequests(data: GatewayRequest): Promise<GatewayRequest | null> {
+    const [dbResult] = await this.db<GatewayRequestModel>(this.AKAMAI_ACCESS)
+      .select('*')
+      .where('log_id', this.AKAMAI_ACCESS_REQUESTS_SEARCH_ID)
+      .update(
+        {
+          ...this.mapGatewayRequestToModel(data),
+          last_updated_on: this.db.fn.now(),
+        },
+        '*',
+      );
+    return this.mapModelToGatewayRequest(dbResult) || null;
+  }
+
   private mapSubgraphDataToDatabaseModel(
     data: SubgraphData,
   ): SubgraphDataModel {
@@ -134,6 +172,19 @@ export class DataLayerBackendDatabase implements DataLayerBackendDatabase {
   }
 
   private mapModelToSubgraph(data: SubgraphModel): Subgraph {
+    return {
+      searchData: data.search_data,
+      lastUpdatedOn: data.last_updated_on,
+    };
+  }
+
+  private mapGatewayRequestToModel(data: GatewayRequest): GatewayRequestModel {
+    return {
+      search_data: data.searchData,
+    };
+  }
+
+  private mapModelToGatewayRequest(data: GatewayRequestModel): GatewayRequest {
     return {
       searchData: data.search_data,
       lastUpdatedOn: data.last_updated_on,
