@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-devex-dashboard [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.3.0...@appdev-platform/backstage-plugin-devex-dashboard@1.4.0) (2025-04-08)
+
+
+### Features
+
+* **ADP-646:** API-gateway request trend, backend and frontend changes ([9afc743](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/9afc7435febbcf7f10caa09a41bc06b526be8647))
+
 ## @appdev-platform/backstage-plugin-devex-dashboard [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.2.1...@appdev-platform/backstage-plugin-devex-dashboard@1.3.0) (2025-04-07)
 
 
