@@ -31,5 +31,10 @@ export async function createRouter(
     res.json({ data: cachedData });
   });
 
+  router.get('/gateway/requests', async (_req, res) => {
+    const cachedData = await database.getGateWayRequests();
+    res.json({ data: cachedData });
+  });
+
   return router;
 }

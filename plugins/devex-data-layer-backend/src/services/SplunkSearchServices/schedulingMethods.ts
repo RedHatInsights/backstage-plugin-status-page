@@ -1,4 +1,6 @@
 import { getResultsWithSearchId, getSearchStatus } from '../../api';
+import { DataLayerBackendStore } from '../../database/DataLayerBackendDatabase';
+import { PollingTypes } from './constants';
 
 export function continuesFetchDataUntilDone(
   splunkApiHost: string,
@@ -58,11 +60,76 @@ export function continuesFetchDataUntilDone(
   });
 }
 
-export function subgraphsPolling(
+async function getData(
+  pollingType: PollingTypes,
+  databaseServer: DataLayerBackendStore,
+) {
+  switch (pollingType) {
+    case PollingTypes.Subgraph:
+      return await databaseServer.getSubgraphsData();
+    case PollingTypes.GatewayRequest:
+      return await databaseServer.getGateWayRequests();;
+    default:
+      return null;
+  }
+}
+
+async function insertData(
+  pollingType: PollingTypes,
+  databaseServer: DataLayerBackendStore,
+  results: any,
+) {
+  switch (pollingType) {
+    case PollingTypes.Subgraph:
+      await databaseServer.insertSubgraphs({
+        searchData: JSON.stringify({
+          data: results,
+        }),
+      });
+      break;
+    case PollingTypes.GatewayRequest:
+      await databaseServer.insertGateWayRequests({
+        searchData: JSON.stringify({
+          data: results,
+        }),
+      });
+      break;
+    default:
+      break;
+  }
+}
+
+async function updateData(
+  pollingType: PollingTypes,
+  databaseServer: DataLayerBackendStore,
+  results: any,
+) {
+  switch (pollingType) {
+    case PollingTypes.Subgraph:
+      await databaseServer.updateSubgraphsData({
+        searchData: JSON.stringify({
+          data: results,
+        }),
+      });
+      break;
+    case PollingTypes.GatewayRequest:
+      await databaseServer.updateGateWayRequests({
+        searchData: JSON.stringify({
+          data: results,
+        }),
+      });
+      break;
+    default:
+      break;
+  }
+}
+
+export function commonPolling(
   splunkApiHost: string,
   token: string,
   searchId: string,
-  databaseServer: any,
+  databaseServer: DataLayerBackendStore,
+  pollingType: PollingTypes,
 ) {
   return new Promise((resolve, reject) => {
     const interval = setInterval(async () => {
@@ -80,24 +147,25 @@ export function subgraphsPolling(
 
         // Store the new data here
         if (searchResultResponse && searchResultResponse.results) {
-          const dbResult = await databaseServer.getSubgraphsData();
+          const dbResult = await getData(pollingType, databaseServer);
 
           if (dbResult) {
             if (
-              JSON.parse(dbResult.searchData).data.length <
+              JSON.parse(dbResult.searchData).data.length <=
               searchResultResponse.results.length
             )
-              await databaseServer.updateSubgraphsData({
-                searchData: JSON.stringify({
-                  data: searchResultResponse.results,
-                }),
-              });
-          } else
-            await databaseServer.insertSubgraphs({
-              searchData: JSON.stringify({
-                data: searchResultResponse.results,
-              }),
-            });
+              await updateData(
+                pollingType,
+                databaseServer,
+                searchResultResponse.results,
+              );
+          } else {
+            await insertData(
+              pollingType,
+              databaseServer,
+              searchResultResponse.results,
+            );
+          }
         }
         if (
           searchStatusResponse &&
