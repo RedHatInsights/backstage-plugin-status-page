@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-devex-data-layer-backend [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-data-layer-backend@1.2.0...@appdev-platform/backstage-plugin-devex-data-layer-backend@1.3.0) (2025-04-09)
+
+
+### Features
+
+* **APD-647:** Query failure rates trend for each subgraph with client specific view ([a885098](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/a88509870eac134432b38320e6b2ddb9ef120dd9))
+
 ## @appdev-platform/backstage-plugin-devex-data-layer-backend [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-data-layer-backend@1.1.0...@appdev-platform/backstage-plugin-devex-data-layer-backend@1.2.0) (2025-04-08)
 
 
