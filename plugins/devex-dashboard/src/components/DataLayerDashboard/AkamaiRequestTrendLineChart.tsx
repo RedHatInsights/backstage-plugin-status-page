@@ -129,12 +129,14 @@ export const AkamaiRequestTrendLineChart = () => {
         setStatistics(JSON.parse(response?.data?.searchData).data);
         setLoadingStats(false);
       }
-    } catch (err) {setLoadingStats(false);}
+    } catch (err) {
+      setLoadingStats(false);
+    }
   };
 
   useEffect(() => {
     fetchGateWayRequestData();
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -162,7 +164,6 @@ export const AkamaiRequestTrendLineChart = () => {
                 <LinearProgress />
               ) : (
                 <LineChart
-                  width={1050}
                   height={400}
                   margin={{ left: 100, bottom: 130 }}
                   slotProps={{

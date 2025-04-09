@@ -1,7 +1,11 @@
 import { Knex } from 'knex';
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { Subgraph, SubgraphData, SubgraphDataModel } from '../types';
-import { GatewayRequest, GatewayRequestModel, SubgraphModel } from '../types/database';
+import {
+  GatewayRequest,
+  GatewayRequestModel,
+  SubgraphModel,
+} from '../types/database';
 
 const migrationsDir = resolvePackagePath(
   '@appdev-platform/backstage-plugin-devex-data-layer-backend',
@@ -18,14 +22,20 @@ export interface DataLayerBackendStore {
   insertGateWayRequests(data: GatewayRequest): Promise<GatewayRequest | null>;
   getGateWayRequests(): Promise<GatewayRequest | null>;
   updateGateWayRequests(data: GatewayRequest): Promise<GatewayRequest | null>;
+  insertErrorData(data: SubgraphData): Promise<SubgraphData>;
+  getErrorDataBySubgraph(subgraph: string): Promise<SubgraphData | null>;
+  updateErrorDataBySubgraph(data: SubgraphData): Promise<SubgraphData | null>;
 }
 
 export class DataLayerBackendDatabase implements DataLayerBackendDatabase {
   private readonly DATA_LAYER_TABLE = 'datalayer';
   private readonly SUBGRAPH_TABLE = 'subgraphs';
+  private readonly QUERY_ERROR_TABLE = 'query_errors';
+
   private readonly AKAMAI_ACCESS = 'akamai_access';
   private readonly SINGLE_SEARCH_ID = 'subgraph_search__id';
-  private readonly AKAMAI_ACCESS_REQUESTS_SEARCH_ID = 'akamai_access_requests_search__id';
+  private readonly AKAMAI_ACCESS_REQUESTS_SEARCH_ID =
+    'akamai_access_requests_search__id';
 
   static async create(options: {
     knex: Knex;
@@ -113,8 +123,12 @@ export class DataLayerBackendDatabase implements DataLayerBackendDatabase {
     return this.mapModelToSubgraph(dbResult) || null;
   }
 
-  async insertGateWayRequests(data: GatewayRequest): Promise<GatewayRequest | null> {
-    const [dbResult] = await this.db<GatewayRequestModel>(this.AKAMAI_ACCESS).insert(
+  async insertGateWayRequests(
+    data: GatewayRequest,
+  ): Promise<GatewayRequest | null> {
+    const [dbResult] = await this.db<GatewayRequestModel>(
+      this.AKAMAI_ACCESS,
+    ).insert(
       {
         log_id: this.AKAMAI_ACCESS_REQUESTS_SEARCH_ID,
         ...this.mapGatewayRequestToModel(data),
@@ -132,7 +146,9 @@ export class DataLayerBackendDatabase implements DataLayerBackendDatabase {
     return dbResult ? this.mapModelToGatewayRequest(dbResult) : null;
   }
 
-  async updateGateWayRequests(data: GatewayRequest): Promise<GatewayRequest | null> {
+  async updateGateWayRequests(
+    data: GatewayRequest,
+  ): Promise<GatewayRequest | null> {
     const [dbResult] = await this.db<GatewayRequestModel>(this.AKAMAI_ACCESS)
       .select('*')
       .where('log_id', this.AKAMAI_ACCESS_REQUESTS_SEARCH_ID)
@@ -144,6 +160,41 @@ export class DataLayerBackendDatabase implements DataLayerBackendDatabase {
         '*',
       );
     return this.mapModelToGatewayRequest(dbResult) || null;
+  }
+
+  async insertErrorData(data: SubgraphData): Promise<SubgraphData> {
+    const [dbResult] = await this.db<SubgraphDataModel>(
+      this.QUERY_ERROR_TABLE,
+    ).insert(
+      {
+        ...this.mapSubgraphDataToDatabaseModel({ ...data }),
+        last_updated_on: this.db.fn.now(),
+      },
+      '*',
+    );
+    return this.mapDatabaseModelToSubgraphData(dbResult);
+  }
+  async getErrorDataBySubgraph(subgraph: string): Promise<SubgraphData | null> {
+    const dbResult = await this.db<SubgraphDataModel>(this.QUERY_ERROR_TABLE)
+      .where('subgraph', subgraph)
+      .first();
+    return dbResult ? this.mapDatabaseModelToSubgraphData(dbResult) : null;
+  }
+
+  async updateErrorDataBySubgraph(
+    data: SubgraphData,
+  ): Promise<SubgraphData | null> {
+    const [dbResult] = await this.db<SubgraphDataModel>(this.QUERY_ERROR_TABLE)
+      .select('*')
+      .where('subgraph', data.subgraph)
+      .update(
+        {
+          ...this.mapSubgraphDataToDatabaseModel(data),
+          last_updated_on: this.db.fn.now(),
+        },
+        '*',
+      );
+    return this.mapDatabaseModelToSubgraphData(dbResult) || null;
   }
 
   private mapSubgraphDataToDatabaseModel(

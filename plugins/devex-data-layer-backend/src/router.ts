@@ -31,6 +31,18 @@ export async function createRouter(
     res.json({ data: cachedData });
   });
 
+  router.get('/subgraphs/errors', async (req, res) => {
+    const subgraph = req.query.subgraph || '';
+    if (subgraph) {
+      const cachedData = await database.getErrorDataBySubgraph(
+        subgraph.toString(),
+      );
+      res.json({ data: cachedData });
+    } else {
+      res.json({ data: [] });
+    }
+  });
+
   router.get('/gateway/requests', async (_req, res) => {
     const cachedData = await database.getGateWayRequests();
     res.json({ data: cachedData });

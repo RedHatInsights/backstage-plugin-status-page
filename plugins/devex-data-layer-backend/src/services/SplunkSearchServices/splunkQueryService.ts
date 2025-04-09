@@ -11,6 +11,7 @@ import { DataLayerBackendDatabase } from '../../database/DataLayerBackendDatabas
 import {
   fetchApiGatewayRequestsRecord,
   fetchClientQueriesRecord,
+  fetchErrorRatesPerSubgraph,
   fetchSubgraphs,
 } from './HistoricalSearches';
 
@@ -54,8 +55,19 @@ export async function CreateSplunkQueryService({
         }
 
         if (subgraphNames.length) {
+          subgraphNames.sort((stringValueOne, stringValueTwo) =>
+            stringValueOne.localeCompare(stringValueTwo),
+          );
+
           for (const subgraph of subgraphNames) {
             await fetchClientQueriesRecord(
+              subgraph,
+              splunkApiHost,
+              token,
+              databaseServer,
+            );
+
+            await fetchErrorRatesPerSubgraph(
               subgraph,
               splunkApiHost,
               token,

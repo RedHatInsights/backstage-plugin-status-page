@@ -3,6 +3,7 @@ export const getSearchId = async (
   token: string,
   query: string,
   forSubgraphName: boolean = false,
+  errorRate: boolean = false,
 ) => {
   let searchParams: any = {
     search: query,
@@ -13,6 +14,8 @@ export const getSearchId = async (
   };
   if (!forSubgraphName) {
     searchParams = { ...searchParams, earliest_time: '-6mon' };
+  } else if (errorRate) {
+    searchParams = { ...searchParams, earliest_time: '-30d' };
   }
   return await fetch(`${splunkApiHost}/services/search/jobs`, {
     method: 'POST',
