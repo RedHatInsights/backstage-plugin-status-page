@@ -6,7 +6,7 @@ metadata:
   title: Contact Details Plugin Backstage
   description: Backstage Plugin for Contact Details
   namespace: devex
-  tags: 
+  tags:
     - backstage
     - idp
     - developers
@@ -18,9 +18,11 @@ metadata:
 
   annotations:
     backstage.io/techdocs-ref: dir:.
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-contact-details
 
 spec:
-  type: library
+  type: backstage-frontend-plugin
   lifecycle: production
   owner: group:redhat/one-platform-devs
   system: devex/redhat-experience-platform

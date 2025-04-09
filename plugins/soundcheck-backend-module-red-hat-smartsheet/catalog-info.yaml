@@ -1,0 +1,24 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: soundcheck-backend-module-red-hat-smartsheet
+  title: Red Hat Smartsheet Module Soundcheck Backstage
+  description: Red Hat Smartsheet module for Soundcheck backned plugin
+  namespace: devex
+  tags:
+    - backstage
+    - idp
+    - soundcheck
+    - smartsheet
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-soundcheck-backend-module-red-hat-smartsheet
+      title: Backstage Red Hat Smartsheet Backend Module NPM Package
+  annotations:
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-soundcheck-backend-module-red-hat-smartsheet
+spec:
+  type: backstage-backend-plugin-module
+  lifecycle: production
+  owner: group:redhat/one-platform-devs
+  system: devex/redhat-experience-platform

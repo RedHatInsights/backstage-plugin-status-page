@@ -6,7 +6,7 @@ metadata:
   title: Matomo Plugin Backstage
   description: Backstage Plugin for Matomo
   namespace: devex
-  tags: 
+  tags:
     - backstage
     - idp
     - developers
@@ -15,8 +15,12 @@ metadata:
   links:
     - url: https://www.npmjs.com/package/@backstage-community/plugin-matomo
       title: Backstage Matomo Plugin NPM Package
+
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+
 spec:
-  type: library
+  type: backstage-frontend-plugin
   lifecycle: production
   owner: group:redhat/one-platform-devs
   system: devex/redhat-experience-platform

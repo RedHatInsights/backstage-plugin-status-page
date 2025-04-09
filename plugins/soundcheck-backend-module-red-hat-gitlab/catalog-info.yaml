@@ -1,0 +1,24 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: soundcheck-backend-module-red-hat-gitlab
+  title: Red Hat GitLab Module Soundcheck Backstage
+  description: Red Hat GitLab module for Soundcheck backned plugin
+  namespace: devex
+  tags:
+    - backstage
+    - idp
+    - soundcheck
+    - gitlab
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-soundcheck-backend-module-red-hat-gitlab
+      title: Backstage Red Hat Gitlab Backend Module NPM Package
+  annotations:
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-soundcheck-backend-module-red-hat-gitlab
+spec:
+  type: backstage-backend-plugin-module
+  lifecycle: production
+  owner: group:redhat/one-platform-devs
+  system: devex/redhat-experience-platform

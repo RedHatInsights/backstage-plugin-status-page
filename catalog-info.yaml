@@ -11,11 +11,20 @@ spec:
     - ./plugins/catalog-backend-module-spaship/catalog-info.yaml
     - ./plugins/cmdb/catalog-info.yaml
     - ./plugins/contact-details/catalog-info.yaml
+    - ./plugins/devex-dashboard/catalog-info.yaml
+    - ./plugins/devex-data-layer-backend/catalog-info.yaml
+    - ./plugins/docsbot/catalog-info.yaml
+    - ./plugins/hydra-support-dashboard/catalog-info.yaml
     - ./plugins/lighthouse/catalog-info.yaml
     - ./plugins/matomo/catalog-info.yaml
     - ./plugins/matomo-backend/catalog-info.yaml
+    - ./plugins/outage-template/catalog-info.yaml
+    - ./plugins/proxy-manager/catalog-info.yaml
+    - ./plugins/soundcheck-backend-module-droperator/catalog-info.yaml
+    - ./plugins/soundcheck-backend-module-red-hat-core/catalog-info.yaml
+    - ./plugins/soundcheck-backend-module-red-hat-gitlab/catalog-info.yaml
+    - ./plugins/soundcheck-backend-module-red-hat-smartsheet/catalog-info.yaml
     - ./plugins/spaship/catalog-info.yaml
     - ./plugins/workstream-automation/catalog-info.yaml
     - ./plugins/workstream-automation-backend/catalog-info.yaml
-    - ./plugins/docsbot/catalog-info.yaml
-    - ./plugins/outage-template/catalog-info.yaml
+    - ./plugins/workstream-automation-common/catalog-info.yaml

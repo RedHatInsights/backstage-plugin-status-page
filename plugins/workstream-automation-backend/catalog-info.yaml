@@ -13,14 +13,17 @@ metadata:
     - idp
   links:
     - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-workstream-backend
-      title: Backstage Workstream Automation Plugin Package
+      title: Backstage Workstream Automation Backend Plugin Package
   annotations:
     backstage.io/techdocs-ref: dir:.
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-workstream-automation-backend
 spec:
-  type: library
+  type: backstage-backend-plugin
   lifecycle: production
   owner: group:redhat/one-platform-devs
   system: devex/redhat-experience-platform
+  subcomponentOf: devex/workstream-automation-plugin
   providesApis:
     - devex/workstream-plugin-api
 ---

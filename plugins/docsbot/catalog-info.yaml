@@ -14,11 +14,17 @@ metadata:
     - chatbot
   links:
     - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-docsbot
-      title: Backstage DocsBot Plugin NPM Package
+      title: Backstage DocsBot Plugin NPM
+    - url: https://console.one.redhat.com/docsbot
+      title: Try Docsbot
+      icon: externallink
+
   annotations:
     backstage.io/techdocs-ref: dir:.
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-docsbot
 spec:
-  type: library
+  type: backstage-frontend-plugin
   lifecycle: production
   owner: group:redhat/chaturdocs
   system: devex/redhat-experience-platform

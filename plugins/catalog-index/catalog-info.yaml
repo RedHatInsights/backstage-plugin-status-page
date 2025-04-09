@@ -3,7 +3,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: catalog-index-plugin
-  title: Catalog Index Plugin Backstage
+  title: Catalog Index Plugin Backstage (Internal)
   description: Backstage Plugin for Catalog Index Page
   namespace: devex
   tags:
@@ -19,9 +19,11 @@ metadata:
 
   annotations:
     backstage.io/techdocs-ref: dir:.
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-catalog-index
 
 spec:
-  type: library
-  lifecycle: production
+  type: backstage-frontend-plugin
+  lifecycle: deprecated
   owner: group:redhat/one-platform-devs
   system: devex/appdev-platform

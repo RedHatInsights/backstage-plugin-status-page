@@ -1,0 +1,9 @@
+site_name: Matomo Plugin for Backstage
+repo_url: https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/
+site_description: A Plugin that displays your website stats collected by matomo
+
+nav:
+  - Guide: user-guide.md
+
+plugins:
+  - techdocs-core
