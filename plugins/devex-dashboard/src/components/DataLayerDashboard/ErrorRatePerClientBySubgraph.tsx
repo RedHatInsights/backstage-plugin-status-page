@@ -16,48 +16,44 @@ import {
   markElementClasses,
 } from '@mui/x-charts';
 import React, { useEffect, useState } from 'react';
-import { RedHatStandardColors, SplunkTimePeriods } from '../Generic';
+import { RedHatErrorRedShades, SplunkTimePeriods } from '../Generic';
+import { devexApiRef } from '../../api';
+import { useApi } from '@backstage/core-plugin-api';
 import { KeyValue } from '../../Interfaces';
 
 interface IProps {
   subgraphs: KeyValue;
-  statistics: KeyValue[];
-  fetchStatsForSubgraph(subgraph: string): void;
-  loading: boolean;
 }
 
-export const RequestPerClientLineChart = (props: IProps) => {
+export const ErrorRateTrendLineChart = (props: IProps) => {
+  const splunk = useApi(devexApiRef);
   const [selectedSubgraph, setSelectedSubgraph] = useState<string>('');
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<string>(
-    SplunkTimePeriods[0].id,
+    SplunkTimePeriods[3].id,
   );
-
+  const [statistics, setStatistics] = useState<[]>([]);
+  const [loadingStats, setLoadingStats] = useState(false);
   const [series, setSeries] = useState([]);
   const [xLabels, setXLabels] = useState<string[]>([]);
 
-  const getLocaleNumberString = (totalRequests: number) => {
-    const averageRequestPerDay = Math.ceil(
-      totalRequests / parseInt(selectedTimePeriod, 10),
-    );
-    let averageRequestPerDayStringValue = `${averageRequestPerDay.toLocaleString(
-      'en-US',
-    )}`;
+  const getLocaleNumberString = (totalFailures: number) => {
+    if (!totalFailures) return 'N/A';
+
+    let stringValue = `${totalFailures.toLocaleString('en-US')}`;
     const million = 1000000;
-    if (averageRequestPerDay > million) {
-      averageRequestPerDayStringValue = `${(
-        averageRequestPerDay / million
-      ).toFixed(1)} Million`;
+    if (totalFailures > million) {
+      stringValue = `${(totalFailures / million).toFixed(1)} Million`;
     }
-    return averageRequestPerDayStringValue;
+    return stringValue;
   };
 
   const getTimedStats = () => {
     let timedStats: { [key: string]: string }[] = [];
     if (selectedTimePeriod && selectedTimePeriod !== '6') {
-      timedStats = [...props.statistics].splice(
-        props.statistics.length - parseInt(selectedTimePeriod, 10),
+      timedStats = [...statistics].splice(
+        statistics.length - parseInt(selectedTimePeriod, 10),
       );
-    } else timedStats = props.statistics;
+    } else timedStats = statistics;
 
     return timedStats;
   };
@@ -104,27 +100,33 @@ export const RequestPerClientLineChart = (props: IProps) => {
 
   const getNumberStats = () => {
     const timedStats = getTimedStats();
-    let totalRequests = 0;
-    let totalRequestsPerClient: { [key: string]: number } = {};
+    let totalFailures = 0;
+    let totalFailuresPerClient: { [key: string]: number } = {};
     timedStats.forEach(stat => {
-      let currentStatTotalRequests = 0;
+      let currentStatTotalFailures = 0;
       Object.keys(stat).forEach(name => {
         if (!['_span', '_spandays', '_time', 'NULL'].includes(name)) {
-          currentStatTotalRequests += parseInt(stat[name], 10);
-          totalRequestsPerClient = {
-            ...totalRequestsPerClient,
-            [name]: totalRequestsPerClient[name]
-              ? totalRequestsPerClient[name] + parseInt(stat[name], 10)
+          currentStatTotalFailures += parseInt(stat[name], 10);
+          totalFailuresPerClient = {
+            ...totalFailuresPerClient,
+            [name]: totalFailuresPerClient[name]
+              ? totalFailuresPerClient[name] + parseInt(stat[name], 10)
               : parseInt(stat[name], 10),
           };
         }
       });
-      totalRequests += currentStatTotalRequests;
+      totalFailures += currentStatTotalFailures;
     });
-    const averageRequestPerDayStringValue =
-      getLocaleNumberString(totalRequests);
+    const totalQueryFailuresStringValue = getLocaleNumberString(totalFailures);
 
-    const sortedEntries = Object.entries(totalRequestsPerClient).sort(
+    const averageQueryFailuresPerDay = Math.ceil(
+      totalFailures / parseInt(selectedTimePeriod, 10),
+    );
+    const averageQueryFailuresPerDayStringValue = getLocaleNumberString(
+      averageQueryFailuresPerDay,
+    );
+
+    const sortedEntries = Object.entries(totalFailuresPerClient).sort(
       (valueA, valueB) => valueB[1] - valueA[1],
     );
     const sortedObject = Object.fromEntries(sortedEntries);
@@ -133,11 +135,15 @@ export const RequestPerClientLineChart = (props: IProps) => {
     Object.keys(sortedObject).forEach(client => {
       averageRequestsPerClient = {
         ...averageRequestsPerClient,
-        [client]: getLocaleNumberString(totalRequestsPerClient[client]),
+        [client]: getLocaleNumberString(totalFailuresPerClient[client]),
       };
     });
 
-    return { averageRequestPerDayStringValue, averageRequestsPerClient };
+    return {
+      totalQueryFailuresStringValue,
+      averageQueryFailuresPerDayStringValue,
+      averageRequestsPerClient,
+    };
   };
 
   const getFilters = () => {
@@ -155,7 +161,6 @@ export const RequestPerClientLineChart = (props: IProps) => {
             }
             onChange={evt => {
               setSelectedSubgraph(`${evt.target.value}`);
-              props.fetchStatsForSubgraph(`${evt.target.value}`);
             }}
           >
             {Object.keys(props.subgraphs).map((subgraph: string) => (
@@ -173,7 +178,7 @@ export const RequestPerClientLineChart = (props: IProps) => {
               setSelectedTimePeriod(`${evt.target.value}`);
             }}
           >
-            {SplunkTimePeriods.map(period => (
+            {SplunkTimePeriods.slice(3).map(period => (
               <MenuItem value={period.id}>{period.title}</MenuItem>
             ))}
           </Select>
@@ -182,11 +187,40 @@ export const RequestPerClientLineChart = (props: IProps) => {
     );
   };
 
+  const fetchErrorRatesData = async () => {
+    try {
+      setLoadingStats(true);
+      const response = await splunk.getErrorRatesBySubgraph(
+        selectedSubgraph || Object.keys(props.subgraphs)[0],
+      );
+      if (
+        response?.data?.searchData &&
+        JSON.parse(response?.data?.searchData).data?.length
+      ) {
+        setStatistics(JSON.parse(response?.data?.searchData).data);
+        setLoadingStats(false);
+      } else {
+        setStatistics([]);
+        setSeries([]);
+        setXLabels([]);
+        setLoadingStats(false);
+      }
+    } catch (err) {
+      setLoadingStats(false);
+    }
+  };
+
   useEffect(() => {
-    if (props.statistics) formatLineChartData();
+    if (selectedSubgraph || props.subgraphs) fetchErrorRatesData();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.statistics, selectedTimePeriod]);
+  }, [props.subgraphs, selectedSubgraph]);
+
+  useEffect(() => {
+    if (statistics.length) formatLineChartData();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statistics, selectedTimePeriod]);
 
   return (
     <>
@@ -199,13 +233,13 @@ export const RequestPerClientLineChart = (props: IProps) => {
                 style={{ display: 'flex', justifyContent: 'space-between' }}
               >
                 <div>
-                  Number of Queries Per Client on{' '}
-                  {props.subgraphs[selectedSubgraph]} Subgraph
+                  <span style={{ color: 'red' }}>[Error Rates]</span> Per Client
+                  For {props.subgraphs[selectedSubgraph]} Subgraph
                 </div>
                 <div>{getFilters()}</div>
               </Typography>
               <Divider style={{ margin: '0.5rem' }} />
-              {props.loading ? (
+              {loadingStats ? (
                 <LinearProgress />
               ) : (
                 <LineChart
@@ -237,7 +271,7 @@ export const RequestPerClientLineChart = (props: IProps) => {
                       stroke: 'none',
                     },
                   }}
-                  colors={RedHatStandardColors}
+                  colors={RedHatErrorRedShades}
                 />
               )}
             </div>
@@ -246,17 +280,24 @@ export const RequestPerClientLineChart = (props: IProps) => {
         <Grid item xs={3}>
           <InfoCard>
             <div style={{ minHeight: '32rem' }}>
-              <Typography variant="h6">Average Queries Per Day</Typography>
-              {props.loading ? (
+              <Typography variant="h6">Total Query failures</Typography>
+              {loadingStats ? (
                 <LinearProgress />
               ) : (
                 <>
                   <Typography variant="h2">
-                    {getNumberStats().averageRequestPerDayStringValue || 'N/A'}
+                    {getNumberStats().totalQueryFailuresStringValue || 'N/A'}
                   </Typography>
                   <Divider style={{ margin: '0.5rem' }} />
                   <Typography variant="h6" style={{ marginBottom: '1rem' }}>
-                    Daily Average Queries per Client
+                    Average Query failures Per Day
+                  </Typography>
+                  <Typography variant="h2">
+                    {getNumberStats().averageQueryFailuresPerDayStringValue ||
+                      'N/A'}
+                  </Typography>
+                  <Typography variant="h6" style={{ marginBottom: '1rem' }}>
+                    Total Query Failures per Client
                   </Typography>
 
                   {Object.keys(getNumberStats().averageRequestsPerClient).length
@@ -264,7 +305,7 @@ export const RequestPerClientLineChart = (props: IProps) => {
                         getNumberStats().averageRequestsPerClient,
                       ).map(
                         (client, index) =>
-                          index < 10 && (
+                          index < 7 && (
                             <Grid container spacing={2}>
                               <Grid item xs={9}>
                                 <Chip

@@ -176,4 +176,22 @@ export class DevexDashboardApi {
       });
     return response;
   }
+
+  async getErrorRatesBySubgraph(subgraph: string) {
+    const baseUrl = await this.discoveryApi.getBaseUrl('devex-data-layer');
+    const response = await this.fetchApi
+      .fetch(`${baseUrl}/subgraphs/errors?subgraph=${subgraph}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(data => {
+        return data.json();
+      })
+      .catch(_err => {
+        return null;
+      });
+    return response;
+  }
 }

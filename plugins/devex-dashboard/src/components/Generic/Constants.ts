@@ -62,3 +62,12 @@ export const RedHatBlueOrangeShades = [
   '#f8ae54', // orange-30
   '#0066cc', // blue-50
 ];
+
+export const RedHatErrorRedShades = [
+  '#a60000', // red-60
+  '#ee0000', // red-50
+  '#f56e6e', // red-40
+  '#f9a8a8', // red-30
+  '#fbc5c5', // red-20
+  '#fce3e3', // red-10
+];
