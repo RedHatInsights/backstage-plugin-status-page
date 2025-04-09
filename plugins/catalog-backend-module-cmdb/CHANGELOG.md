@@ -1,5 +1,13 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.6.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.6.0...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.6.1) (2025-04-09)
+
+
+### Other changes
+
+* add relations with frontend/backend ([823bf71](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/823bf716e1c58e6550db8ef823518821cda938d3))
+* added nexus annotations ([9b62d14](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/9b62d146f10aea790a356ffbffd99621cd86a96f))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.5.3...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.6.0) (2025-04-08)
 
 
