@@ -28,3 +28,4 @@ spec:
   lifecycle: production
   owner: group:redhat/chaturdocs
   system: devex/redhat-experience-platform
+  subcomponentOf: devex/backstage-console-frontend

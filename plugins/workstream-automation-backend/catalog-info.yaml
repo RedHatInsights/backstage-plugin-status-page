@@ -23,7 +23,9 @@ spec:
   lifecycle: production
   owner: group:redhat/one-platform-devs
   system: devex/redhat-experience-platform
-  subcomponentOf: devex/workstream-automation-plugin
+  subcomponentOf: devex/backstage-console-backend
+  dependsOn:
+    - devex/workstream-automation-common-plugin
   providesApis:
     - devex/workstream-plugin-api
 ---

@@ -27,3 +27,4 @@ spec:
   lifecycle: deprecated
   owner: group:redhat/one-platform-devs
   system: devex/appdev-platform
+  subcomponentOf: devex/backstage-console-frontend

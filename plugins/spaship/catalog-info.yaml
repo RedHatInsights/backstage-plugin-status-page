@@ -6,7 +6,7 @@ metadata:
   title: SPAship Plugin Backstage
   description: Backstage Plugin for SPAship
   namespace: devex
-  tags: 
+  tags:
     - backstage
     - idp
     - developers
@@ -24,3 +24,4 @@ spec:
   lifecycle: production
   owner: group:redhat/one-platform-devs
   system: devex/redhat-experience-platform
+  subcomponentOf: devex/backstage-console-frontend

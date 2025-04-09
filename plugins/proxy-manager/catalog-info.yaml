@@ -25,3 +25,4 @@ spec:
   lifecycle: production
   owner: group:redhat/one-platform-devs
   system: devex/redhat-experience-platform
+  subcomponentOf: devex/backstage-console-frontend

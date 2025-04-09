@@ -2,11 +2,11 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backend-https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/-/merge_requests/271#note_15249342
+  name: matomo-backend-plugin
   title: Backend Matomo Plugin Backstage
   description: Backstage Plugin for Backend Matomo
   namespace: devex
-  tags: 
+  tags:
     - backstage
     - idp
     - developers
@@ -21,4 +21,4 @@ spec:
   lifecycle: production
   owner: group:redhat/one-platform-devs
   system: devex/redhat-experience-platform
-  subcomponentOf: devex/matomo-plugin
+  subcomponentOf: devex/backstage-console-backend
