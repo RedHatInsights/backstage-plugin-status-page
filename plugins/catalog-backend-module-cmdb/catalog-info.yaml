@@ -13,14 +13,18 @@ metadata:
     - servicenow
     - catalog
     - discovery
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-catalog-backend-module-cmdb
+      title: Backstage CMDB Provider Module NPM Package
 
   annotations:
     backstage.io/techdocs-ref: dir:.
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-catalog-backend-module-cmdb
 
 spec:
   type: backstage-backend-plugin-module
   lifecycle: production
   owner: group:redhat/one-platform-devs
   system: devex/redhat-experience-platform
-  dependsOn:
-    - component:devex/backstage-console-backend
+  subcomponentOf: devex/backstage-console-backend

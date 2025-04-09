@@ -1,0 +1,31 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: devex-data-layer-backend-plugin
+  title: Devex Data Layer Backend Plugin Backstage
+  description: |
+    Data layer backend plugin provides api to run subgraph searches
+  namespace: devex
+  tags:
+    - backstage
+    - idp
+    - datalayer
+    - dashboard
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-devex-data-layer-backend
+      title: Backstage Devex Dashboard Plugin NPM Package
+    - url: https://console.one.redhat.com/dashboard/data-layer
+      title: Data Layer Dashboard
+
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-devex-data-layer-backend
+
+spec:
+  type: backstage-backend-plugin
+  lifecycle: production
+  owner: group:redhat/one-platform-devs
+  system: devex/redhat-experience-platform
+  subcomponentOf: devex/backstage-console-backend

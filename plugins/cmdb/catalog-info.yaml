@@ -6,7 +6,7 @@ metadata:
   title: Configuration Management Database Plugin Backstage
   description: Backstage Plugin for Configuration Management Database
   namespace: devex
-  tags: 
+  tags:
     - backstage
     - idp
     - developers
@@ -19,8 +19,11 @@ metadata:
 
   annotations:
     backstage.io/techdocs-ref: dir:.
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-cmdb
 spec:
-  type: library
+  type: backstage-frontend-plugin
   lifecycle: production
   owner: group:redhat/one-platform-devs
   system: devex/redhat-experience-platform
+  subcomponentOf: devex/backstage-console-frontend

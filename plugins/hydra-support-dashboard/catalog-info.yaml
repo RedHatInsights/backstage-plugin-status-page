@@ -1,0 +1,28 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: hydra-support-dashboard-plugin
+  title: Hydra Support Dashboard Plugin Backstage
+  description: Backstage Plugin for Hydra Support Dashboard
+  namespace: devex
+  tags:
+    - backstage
+    - idp
+    - developers
+    - hydra
+    - dashboard
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-hydra-support-dashboard
+      title: Backstage Hydra Support Dashboard Plugin NPM
+    - url: https://console.one.redhat.com/dashboard/hydra
+      title: Hydra Dashboard
+
+  annotations:
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-hydra-support-dashboard
+spec:
+  type: backstage-frontend-plugin
+  lifecycle: production
+  owner: group:redhat/chaturdocs
+  system: devex/redhat-experience-platform
+  subcomponentOf: devex/backstage-console-frontend

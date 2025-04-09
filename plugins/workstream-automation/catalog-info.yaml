@@ -5,6 +5,7 @@ metadata:
   name: workstream-automation-plugin
   title: Workstream Automation Plugin
   description: Create, Manage and View workstreams within backstage using this plugin
+  namespace: devex
   tags:
     - workstream
     - automation
@@ -15,13 +16,16 @@ metadata:
       title: Backstage Workstream Automation Plugin Package
   annotations:
     backstage.io/techdocs-ref: dir:.
-  namespace: devex
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-workstream-automation
 spec:
-  type: library
+  type: backstage-frontend-plugin
   lifecycle: production
   owner: group:redhat/one-platform-devs
   system: devex/redhat-experience-platform
   providesApis:
     - api:devex/workstream-plugin-api
-  consumesApis:
-    - other-api-name
+  dependsOn:
+    - devex/workstream-automation-common-plugin
+    - devex/workstream-automation-backend-plugin
+  subcomponentOf: devex/backstage-console-frontend

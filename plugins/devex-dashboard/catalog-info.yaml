@@ -1,0 +1,39 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: devex-dashboard-plugin
+  title: Devex Dashboard Plugin Backstage
+  description: |
+    Devex Dashboard is an overview page that displays the overall statistics of DevEx and all it's projects.
+  namespace: devex
+  tags:
+    - backstage
+    - idp
+    - developers
+    - dashboard
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-devex-dashboard
+      title: Backstage Devex Dashboard Plugin NPM Package
+    - url: https://console.one.redhat.com/dashboard/app-dev
+      title: App Dev Dashboard
+    - url: https://console.one.redhat.com/dashboard/pulse
+      title: Pulse Dashboard
+    - url: https://console.one.redhat.com/dashboard/hydra
+      title: Hydra Dashboard
+    - url: https://console.one.redhat.com/dashboard/data-layer
+      title: Data Layer Dashboard
+
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-devex-dashboard
+
+spec:
+  type: backstage-frontend-plugin
+  lifecycle: production
+  owner: group:redhat/one-platform-devs
+  system: devex/redhat-experience-platform
+  dependsOn:
+    - devex/devex-data-layer-backend-plugin
+  subcomponentOf: devex/backstage-console-frontend

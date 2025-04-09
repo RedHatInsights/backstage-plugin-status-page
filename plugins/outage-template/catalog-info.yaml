@@ -1,7 +1,7 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: outage-template-plugin
+  name: outages-plugin
   title: Outage Template Plugin Backstage
   description: Backstage Plugin for Outage Template
   namespace: devex
@@ -13,10 +13,15 @@ metadata:
     - documentation
     - statuspage
   links:
-    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-outage-template
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-outages
       title: Backstage outage Plugin NPM Package
+
+  annotations:
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-outages
 spec:
-  type: library
+  type: backstage-frontend-plugin
   lifecycle: production
   owner: group:redhat/one-platform-devs
   system: devex/redhat-experience-platform
+  subcomponentOf: devex/backstage-console-frontend

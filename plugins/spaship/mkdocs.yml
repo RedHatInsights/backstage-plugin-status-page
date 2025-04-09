@@ -1,0 +1,6 @@
+site_name: SPAship Plugin
+repo_url: https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/
+site_description: SPAship plugin for backstage
+
+plugins:
+  - techdocs-core
