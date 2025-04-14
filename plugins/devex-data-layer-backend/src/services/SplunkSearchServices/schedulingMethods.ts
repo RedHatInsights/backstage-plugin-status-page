@@ -12,6 +12,12 @@ async function getData(
       return await databaseServer.getSubgraphsData();
     case PollingTypes.GatewayRequest:
       return await databaseServer.getGateWayRequests();
+    case PollingTypes.GatewayResponseTime:
+      return await databaseServer.getResponseTimeData();
+    case PollingTypes.GatewayInternal:
+      return await databaseServer.getQueryTypeData(false);
+    case PollingTypes.GatewayPublic:
+      return await databaseServer.getQueryTypeData(true);
     case PollingTypes.ClientQueries:
       return subgraph
         ? await databaseServer.getSearchDataBySubgraph(subgraph)
@@ -45,6 +51,33 @@ async function insertData(
           data: results,
         }),
       });
+      break;
+    case PollingTypes.GatewayResponseTime:
+      await databaseServer.insertResponseTimeData({
+        searchData: JSON.stringify({
+          data: results,
+        }),
+      });
+      break;
+    case PollingTypes.GatewayInternal:
+      await databaseServer.insertQueryTypeData(
+        {
+          searchData: JSON.stringify({
+            data: results,
+          }),
+        },
+        false,
+      );
+      break;
+    case PollingTypes.GatewayPublic:
+      await databaseServer.insertQueryTypeData(
+        {
+          searchData: JSON.stringify({
+            data: results,
+          }),
+        },
+        true,
+      );
       break;
     case PollingTypes.ClientQueries:
       if (subgraph)
@@ -89,6 +122,33 @@ async function updateData(
           data: results,
         }),
       });
+      break;
+    case PollingTypes.GatewayResponseTime:
+      await databaseServer.updateResponseTimeData({
+        searchData: JSON.stringify({
+          data: results,
+        }),
+      });
+      break;
+    case PollingTypes.GatewayInternal:
+      await databaseServer.updateQueryTypeData(
+        {
+          searchData: JSON.stringify({
+            data: results,
+          }),
+        },
+        false,
+      );
+      break;
+    case PollingTypes.GatewayPublic:
+      await databaseServer.updateQueryTypeData(
+        {
+          searchData: JSON.stringify({
+            data: results,
+          }),
+        },
+        true,
+      );
       break;
     case PollingTypes.ClientQueries:
       if (subgraph)

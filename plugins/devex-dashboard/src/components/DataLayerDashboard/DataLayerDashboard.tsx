@@ -8,11 +8,14 @@ import { SubgraphsDeveloped } from './SubgraphsDeveloped';
 import { KeyValue } from '../../Interfaces';
 import { AkamaiRequestTrendLineChart } from './AkamaiRequestTrendLineChart';
 import { ErrorRateTrendLineChart } from './ErrorRatePerClientBySubgraph';
+import { AkamaiResponseTimeLineChart } from './AkamaiResponseTimeLineChart';
+import { QuerySourceCharts } from './QuerySourceCharts';
 
 export const DataLayerDashboard = () => {
   const splunk = useApi(devexApiRef);
   const [selectedSubgraph, setSelectedSubgraph] = useState<string>('');
   const [subgraphs, setSubgraphs] = useState<KeyValue>();
+  const [lastUpdatedOn, setLastUpdatedOn] = useState<string>('');
   const [clientRequestData, setClientRequestData] = useState<KeyValue[]>();
   const [loadingData, setLoading] = useState(false);
 
@@ -51,6 +54,9 @@ export const DataLayerDashboard = () => {
       setLoading(true);
       const storedSubgraphData = await splunk.getSplunkSubgraphs();
       if (storedSubgraphData && storedSubgraphData?.data?.searchData) {
+        setLastUpdatedOn(
+          new Date(storedSubgraphData?.data?.lastUpdatedOn).toDateString(),
+        );
         const subgraphIndexes = JSON.parse(
           storedSubgraphData?.data?.searchData,
         ).data.map((data: KeyValue) => {
@@ -103,7 +109,10 @@ export const DataLayerDashboard = () => {
       <Content>
         {subgraphs && clientRequestData ? (
           <>
-            <SubgraphsDeveloped subgraphsRawData={subgraphs} />
+            <SubgraphsDeveloped
+              subgraphsRawData={subgraphs}
+              lastUpdatedOn={lastUpdatedOn}
+            />
             <RequestPerClientLineChart
               subgraphs={subgraphs}
               statistics={clientRequestData}
@@ -114,6 +123,8 @@ export const DataLayerDashboard = () => {
             />
             <ErrorRateTrendLineChart subgraphs={subgraphs} />
             <AkamaiRequestTrendLineChart />
+            <AkamaiResponseTimeLineChart />
+            <QuerySourceCharts />
           </>
         ) : (
           <LinearProgress />

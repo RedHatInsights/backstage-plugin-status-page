@@ -24,25 +24,30 @@ export const MatomoPeriods = [
 export const SplunkTimePeriods = [
   {
     title: 'Past 6 Months',
-    id: '180'
+    id: '180',
   },
   {
     title: 'Past 3 Months',
-    id: '90'
+    id: '90',
   },
   {
     title: 'Past 60 days',
-    id: '60'
+    id: '60',
   },
   {
     title: 'Past 30 days',
-    id: '30'
+    id: '30',
   },
   {
     title: 'Past 7 days',
-    id: '7'
+    id: '7',
   },
-]
+];
+
+export enum AccessTypes {
+  Internal = 'Internal',
+  Public = 'Public',
+}
 
 export const RedHatStandardColors = [
   '#f5921b', // orange

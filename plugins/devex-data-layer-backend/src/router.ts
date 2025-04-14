@@ -48,5 +48,17 @@ export async function createRouter(
     res.json({ data: cachedData });
   });
 
+  router.get('/gateway/response-time', async (_req, res) => {
+    const cachedData = await database.getResponseTimeData();
+    res.json({ data: cachedData });
+  });
+
+  router.get('/gateway/query-source', async (_req, res) => {
+    const isPublic = true;
+    const publicData = await database.getQueryTypeData(isPublic);
+    const internalData = await database.getQueryTypeData(!isPublic);
+    res.json({ data: { internal: internalData, external: publicData } });
+  });
+
   return router;
 }

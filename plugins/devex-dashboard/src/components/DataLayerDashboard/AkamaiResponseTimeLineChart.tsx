@@ -15,18 +15,18 @@ import {
   markElementClasses,
 } from '@mui/x-charts';
 import React, { useEffect, useState } from 'react';
-import { RedHatStandardColors, SplunkTimePeriods } from '../Generic';
+import { SplunkTimePeriods } from '../Generic';
 import { devexApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 
-export const AkamaiRequestTrendLineChart = () => {
+export const AkamaiResponseTimeLineChart = () => {
   const splunk = useApi(devexApiRef);
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<string>(
     SplunkTimePeriods[0].id,
   );
   const [statistics, setStatistics] = useState<[]>([]);
   const [loadingStats, setLoadingStats] = useState(false);
-  const [series, setSeries] = useState<number[]>([]);
+  const [series, setSeries] = useState<any[]>([]);
   const [xLabels, setXLabels] = useState<string[]>([]);
 
   const getLocaleNumberString = (totalRequests: number) => {
@@ -53,12 +53,32 @@ export const AkamaiRequestTrendLineChart = () => {
     try {
       const timedStats = getTimedStats();
       const requestDates: string[] = [];
-      const chartSeries: number[] = [];
-
+      const clientRequestByName: { [key: string]: number[] } = {};
       timedStats?.forEach((stats: { [key: string]: string }) => {
+        const clientNames = Object.keys(stats);
         requestDates.push(new Date(stats._time).toDateString());
+        clientNames.forEach(name => {
+          if (!['_span', '_spandays', '_time', 'NULL'].includes(name)) {
+            if (clientRequestByName[name]) {
+              clientRequestByName[name] = [
+                ...clientRequestByName[name],
+                parseInt(stats[name], 10),
+              ];
+            } else {
+              clientRequestByName[name] = [parseInt(stats[name], 10)];
+            }
+          }
+        });
+      });
 
-        chartSeries.push(parseInt(stats.count, 10));
+      const chartSeries: any = [];
+
+      Object.keys(clientRequestByName).forEach(name => {
+        chartSeries.push({
+          data: clientRequestByName[name],
+          label: name,
+          id: `${name}__Id`,
+        });
       });
 
       setSeries(chartSeries);
@@ -71,28 +91,43 @@ export const AkamaiRequestTrendLineChart = () => {
 
   const getNumberStats = () => {
     const timedStats = getTimedStats();
-    let maximumRequestInADay = 0;
-    let totalRequests = 0;
-
+    let averageResponseTime = 0;
+    let averageMedianResponseTime = 0;
+    let average95thResponseTime = 0;
     timedStats.forEach(stat => {
-      const count = parseInt(stat.count, 10);
-      totalRequests += count;
-      if (count > maximumRequestInADay) maximumRequestInADay = count;
+      averageResponseTime += stat.Average
+        ? parseInt(stat.Average, 10)
+        : 0;
+      averageMedianResponseTime += stat.Median
+        ? parseInt(stat.Median, 10)
+        : 0;
+      average95thResponseTime += stat['95th'] ? parseInt(stat['95th'], 10) : 0;
     });
 
-    const totalRequestsStringValue = getLocaleNumberString(totalRequests);
-    const maximumRequestInADayStringValue =
-      getLocaleNumberString(maximumRequestInADay);
-    const averageRequestPerDay = Math.ceil(
-      totalRequests / parseInt(selectedTimePeriod, 10),
+    averageResponseTime = Math.floor(
+      averageResponseTime / parseInt(selectedTimePeriod, 10),
     );
-    const averageRequestPerDayStringValue =
-      getLocaleNumberString(averageRequestPerDay);
+    averageMedianResponseTime = Math.floor(
+      averageMedianResponseTime / parseInt(selectedTimePeriod, 10),
+    );
+
+    average95thResponseTime = Math.floor(
+      average95thResponseTime / parseInt(selectedTimePeriod, 10),
+    );
+
+    const averageResponseTimeStringValue =
+      getLocaleNumberString(averageResponseTime);
+    const averageMedianResponseTimeStringValue = getLocaleNumberString(
+      averageMedianResponseTime,
+    );
+    const average95thResponseTimeStringValue = getLocaleNumberString(
+      average95thResponseTime,
+    );
 
     return {
-      totalRequestsStringValue,
-      averageRequestPerDayStringValue,
-      maximumRequestInADayStringValue,
+      averageResponseTimeStringValue,
+      averageMedianResponseTimeStringValue,
+      average95thResponseTimeStringValue,
     };
   };
 
@@ -121,14 +156,16 @@ export const AkamaiRequestTrendLineChart = () => {
   const fetchGateWayRequestData = async () => {
     try {
       setLoadingStats(true);
-      const response = await splunk.getGatewayRequestResponseData('requests');
+      const response = await splunk.getGatewayRequestResponseData(
+        'response-time',
+      );
       if (
         response?.data?.searchData &&
         JSON.parse(response?.data?.searchData).data?.length
       ) {
         setStatistics(JSON.parse(response?.data?.searchData).data);
+        setLoadingStats(false);
       }
-      setLoadingStats(false);
     } catch (err) {
       setLoadingStats(false);
     }
@@ -151,12 +188,12 @@ export const AkamaiRequestTrendLineChart = () => {
       <Grid container spacing={2}>
         <Grid item xs={9}>
           <InfoCard>
-            <div style={{ maxHeight: '22rem' }}>
+            <div style={{ maxHeight: '32rem' }}>
               <Typography
                 variant="h5"
                 style={{ display: 'flex', justifyContent: 'space-between' }}
               >
-                <div>API - Gateway Request Trend</div>
+                <div>API - Gateway Request Response Time [in milliseconds]</div>
                 <div>{getFilters()}</div>
               </Typography>
               <Divider style={{ margin: '0.5rem' }} />
@@ -164,20 +201,15 @@ export const AkamaiRequestTrendLineChart = () => {
                 <LinearProgress />
               ) : (
                 <LineChart
-                  height={400}
+                  height={450}
                   margin={{ left: 100, bottom: 130 }}
                   slotProps={{
                     legend: {
                       position: { vertical: 'bottom', horizontal: 'middle' },
                     },
                   }}
-                  series={[{ data: series }]}
-                  xAxis={[
-                    {
-                      scaleType: 'point',
-                      data: xLabels,
-                    },
-                  ]}
+                  series={series}
+                  xAxis={[{ scaleType: 'point', data: xLabels }]}
                   sx={{
                     [`.${lineElementClasses.root}, .${markElementClasses.root}`]:
                       {
@@ -189,15 +221,8 @@ export const AkamaiRequestTrendLineChart = () => {
                     '.MuiLineElement-series-uvId': {
                       strokeDasharray: '3 4 5 2',
                     },
-                    [`.${markElementClasses.root}:not(.${markElementClasses.highlighted})`]:
-                      {
-                        fill: '#fff',
-                      },
-                    [`& .${markElementClasses.highlighted}`]: {
-                      stroke: 'none',
-                    },
                   }}
-                  colors={RedHatStandardColors}
+                  colors={['#63993d', '#ffcc17', '#ee0000']}
                 />
               )}
             </div>
@@ -205,28 +230,33 @@ export const AkamaiRequestTrendLineChart = () => {
         </Grid>
         <Grid item xs={3}>
           <InfoCard>
-            <div style={{ minHeight: '22rem' }}>
-              <Typography variant="h6">Total Requests</Typography>
+            <div style={{ minHeight: '32rem' }}>
+              <Typography variant="h6">Average Response Time</Typography>
               {loadingStats ? (
                 <LinearProgress />
               ) : (
                 <>
                   <Typography variant="h2">
-                    {getNumberStats().totalRequestsStringValue || 'N/A'}
+                    {`${getNumberStats().averageResponseTimeStringValue} ms` ||
+                      'N/A'}
                   </Typography>
                   <Divider style={{ margin: '0.5rem' }} />
                   <Typography variant="h6" style={{ marginBottom: '1rem' }}>
-                    Average Requests Per Day
+                    Average Median Response Time
                   </Typography>
                   <Typography variant="h2">
-                    {getNumberStats().averageRequestPerDayStringValue || 'N/A'}
+                    {`${
+                      getNumberStats().averageMedianResponseTimeStringValue
+                    } ms` || 'N/A'}
                   </Typography>
                   <Divider style={{ margin: '0.5rem' }} />
                   <Typography variant="h6" style={{ marginBottom: '1rem' }}>
-                    Maximum Requests In A Day
+                    Average 95th Response Time
                   </Typography>
                   <Typography variant="h2">
-                    {getNumberStats().maximumRequestInADayStringValue || 'N/A'}
+                    {`${
+                      getNumberStats().average95thResponseTimeStringValue
+                    } ms` || 'N/A'}
                   </Typography>
                 </>
               )}

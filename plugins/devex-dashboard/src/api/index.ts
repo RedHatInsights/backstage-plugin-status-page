@@ -159,10 +159,10 @@ export class DevexDashboardApi {
     return response;
   }
 
-  async getGatewayRequestData() {
+  async getGatewayRequestResponseData(endpoint: string) {
     const baseUrl = await this.discoveryApi.getBaseUrl('devex-data-layer');
     const response = await this.fetchApi
-      .fetch(`${baseUrl}/gateway/requests`, {
+      .fetch(`${baseUrl}/gateway/${endpoint}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

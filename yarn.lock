@@ -650,7 +650,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-service-now-common@npm:0.1.0, @appdev-platform/backstage-plugin-service-now-common@workspace:plugins/service-now-common":
+"@appdev-platform/backstage-plugin-service-now-common@npm:1.0.0, @appdev-platform/backstage-plugin-service-now-common@workspace:plugins/service-now-common":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-service-now-common@workspace:plugins/service-now-common"
   dependencies:
@@ -721,7 +721,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@workspace:plugins/soundcheck-backend-module-red-hat-servicenow"
   dependencies:
-    "@appdev-platform/backstage-plugin-service-now-common": "npm:0.1.0"
+    "@appdev-platform/backstage-plugin-service-now-common": "npm:1.0.0"
     "@backstage/backend-plugin-api": "npm:^1.1.1"
     "@backstage/backend-test-utils": "npm:^1.2.1"
     "@backstage/catalog-model": "npm:^1.7.3"

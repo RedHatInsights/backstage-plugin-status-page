@@ -3,6 +3,9 @@ export {
   getQueryForNumberOfQueriesClient,
   queryForNumberOfSubgraphsDeveloped,
   queryForAkamaiApiGatewayRequestsRecord,
+  queryForAkamaiApiGatewayResponseTimeRecord,
+  queryForTotalRequestOnInternalServer,
+  queryForTotalRequestOnPublicServer,
   PollingTypes,
   getQueryForErrorRatesPerSubgraph,
 } from './constants';
