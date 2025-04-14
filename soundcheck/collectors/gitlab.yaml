@@ -1,0 +1,5 @@
+---
+collects:
+  - type: branch_protections
+  - type: project_details
+  - type: project_languages

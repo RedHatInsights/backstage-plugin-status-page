@@ -1,0 +1,22 @@
+---
+platforms:
+  - appCode: ADDS-001
+    token: ${RED_HAT_CORE_TOKEN_ADDS_001}
+  - appCode: CLRH-001
+    token: ${RED_HAT_CORE_TOKEN_CLRH_001}
+  - appCode: DCP-001
+    token: ${RED_HAT_CORE_TOKEN_DCP_001}
+  - appCode: DMCH-001
+    token: ${RED_HAT_CORE_TOKEN_DMCH_001}
+  - appCode: DPP-002
+    token: ${RED_HAT_CORE_TOKEN_DPP_002}
+  - appCode: DRHC-001
+    token: ${RED_HAT_CORE_TOKEN_DRHC_001}
+  - appCode: DSPM-001
+    token: ${RED_HAT_CORE_TOKEN_DSPM_001}
+  - appCode: DXSP-001
+    token: ${RED_HAT_CORE_TOKEN_DXSP_001}
+  - appCode: KBE-001
+    token: ${RED_HAT_CORE_TOKEN_KBE_001}
+  - appCode: RHPC-001
+    token: ${RED_HAT_CORE_TOKEN_RHPC_001}

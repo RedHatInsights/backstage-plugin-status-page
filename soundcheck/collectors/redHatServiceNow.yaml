@@ -1,0 +1,11 @@
+---
+initialDelay:
+  minutes: 10
+collects:
+  - type: compliance_controls
+    filter:
+      - kind: component
+      - kind: businessapplication
+    cache: true
+    frequency:
+      minutes: 30

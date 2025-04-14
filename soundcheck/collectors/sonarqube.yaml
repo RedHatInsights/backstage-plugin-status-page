@@ -1,65 +1,34 @@
 ---
-- id: requires_to_have_no_issues
-  name: Requires Sonarqube no issues
-  description: Requires to have no issues
-  rule:
-    factRef: sonarqube:default/issues
-    path: $.paging.total
-    operator: equal
-    value: 0
-  ownerEntityRef: group:redhat/one-platform-devs
-  filter:
-    catalog:
-      kind:
-        - component
-      spec.type:
-        - website
-  passedMessage: >-
-    The Sonarqube issue queue is cleared.
-  failedMessage: >-
-    The Sonarqube project has unresolved issues.
-  schedule:
-    frequency:
-      minutes: 30
+baseUrl: ${SONARQUBE_BASE_URL}
+token: ${SONARQUBE_API_KEY}
+collects:
+  - type: issues
     filter:
-      kind:
-        - component
-      spec.type:
-        - website
-- id: requires_sonarqube_project_set
-  name: Requires Sonarqube project key annotation to be set
-  description:  >-
-    Requires the service Component definition to have an annotation defined,
-    and for permissions on the Sonarqube project to be available to the correct
-    Rover group.
-  rule:
-    all:
-      - factRef: catalog:default/entity_descriptor
-        path: $.metadata.annotations['sonarqube.org/project-key']
-        operator: exists
-        value: true
-  ownerEntityRef: group:redhat/one-platform-devs
-  filter:
-    catalog:
-      kind:
-        - component
-      spec.type:
-        - website
-  passedMessage: >-
-    This project has a [SonarQube](https://sonarqube.corp.redhat.com/) project defined.
-  failedMessage: >-
-    The [SonarQube
-    Annotation](https://console.one.redhat.com/docs/devex/system/redhat-experience-platform/get-started/#component)
-    in the Component definition is not set. If it is set, the Sonarqube
-    integration token user does not have access to it. Verify the Rover group
-    `one-platform-devs` has access to your project.
-  schedule:
+      - kind: component
+    cache: true
     frequency:
-      minutes: 30
+      hours: 2
+  - type: measures
     filter:
-      kind:
-        - component
-      spec.type:
-        - website
+      - kind: component
+    cache: true
+    frequency:
+      hours: 2
+  - factName: extendedMeasures
+    type: measures
+    filter:
+      - kind: component
+    cache: true
+    frequency:
+      hours: 2
+    metrics:
+      - ncloc
+      - complexity
+      - violations
+      - open_issues
+      - bugs
+      - code_smells
+      - security_rating
+      - reliability_rating
+      - sqale_rating
 
-# sonarqube.metric("sqale_rating") == 1.0

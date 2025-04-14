@@ -1,0 +1,4 @@
+- https://gitlab.cee.redhat.com/dxp/dx-pulse/soundcheck-config/-/raw/main/preprod/checks/business-risk.yaml
+- https://gitlab.cee.redhat.com/dxp/dx-pulse/soundcheck-config/-/raw/main/preprod/checks/sonarqube.yaml
+- https://gitlab.cee.redhat.com/dxp/dx-pulse/soundcheck-config/-/raw/main/preprod/checks/drupal-platform.yaml
+
