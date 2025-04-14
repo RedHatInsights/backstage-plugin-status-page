@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-devex-dashboard [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.5.1...@appdev-platform/backstage-plugin-devex-dashboard@1.6.0) (2025-04-14)
+
+
+### Features
+
+* **APD-648, APD-649:** Implementaion of lincharts for response time and access types ([5a56528](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/5a5652837042bd979a34da7d3eb69bdf2ecf161a))
+
 ## @appdev-platform/backstage-plugin-devex-dashboard [1.5.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.5.0...@appdev-platform/backstage-plugin-devex-dashboard@1.5.1) (2025-04-14)
 
 
