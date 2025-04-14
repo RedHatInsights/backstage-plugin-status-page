@@ -11,3 +11,47 @@ spec:
   lifecycle: experimental
   owner: user:redhat/mdeshmuk
   system: examples
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: dx-adds
+  title: Accelerated Drupal Demo Site
+  namespace: uxe
+  description: A Drupal demo site to demo integrations and test POCs.
+  tags:
+    - drupal
+    - drupal-platform
+  annotations:
+    servicenow.com/appcode: ADDS-001
+    gitlab.com/project-slug: 'dxp/dat/dxp-adds'
+    sonarqube.org/project-key: dxp-adds
+  links:
+    - title: 'Origin Production URL'
+      url: 'https://dxp-adds-prod.apps.int.drop.prod.us-west-2.aws.paas.redhat.com'
+    - title: 'Production URL'
+      url: 'https://dxp-adds-prod.apps.int.drop.prod.us-west-2.aws.paas.redhat.com'
+    - title: 'Rollback process'
+      url: 'https://dxp.pages.redhat.com/dat/droperator-platform/droperator-pipeline/rollback/'
+spec:
+  type: website
+  lifecycle: production
+  owner: group:redhat/dxp-dat
+  contacts:
+    - label: Developers
+      users:
+        - user:redhat/amccabe
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: sndc-001
+  title: Soundcheck
+  namespace: uxe
+  description: Soundcheck app example entity
+  annotations:
+    servicenow.com/appcode: SNDC-001
+spec:
+  type: website
+  lifecycle: production
+  owner: group:redhat/dxp-dat

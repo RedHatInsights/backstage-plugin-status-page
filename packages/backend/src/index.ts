@@ -104,6 +104,7 @@ backend.add(import('@spotify/backstage-plugin-soundcheck-backend'));
 backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator'));
 backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core'));
 backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab'));
+backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow'));
 backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet'));
 
 // DevTools backend

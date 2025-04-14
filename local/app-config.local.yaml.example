@@ -1,0 +1,78 @@
+---
+catalog:
+  providers:
+    cmdb:
+      appdevPlatform:
+        host: ${SERVICE_NOW_HOST}
+        querySize: 1
+        sysparmQuery: 'u_alias_nameLIKEXE/DX^install_status!=7^install_status!=21^install_status!=22'
+        schedule:
+          frequency:
+            hours: 3
+          timeout:
+            minutes: 5
+        overrides:
+          metadata:
+            namespace: redhat
+        customMappings:
+          'metadata.name': '{{ u_application_id }}'
+          'metadata.cmdb.appcode': '{{ u_application_id }}'
+          'metadata.cmdb.delegate': '{{ u_delegate.user_name }}'
+          'metadata.cmdb.delegateActive': '{{ u_delegate.active }}'
+          'metadata.cmdb.actualItRpo': '{{ u_actual_it_rpo }}'
+          'metadata.cmdb.actualRto': '{{ u_actual_rto }}'
+          'metadata.cmdb.applicationRetirementDate': '{{ u_application_retirement_date }}'
+          'metadata.cmdb.businessMtd': '{{ u_business_mtd }}'
+          'metadata.cmdb.investmentObjective': '{{ u_investment_objective }}'
+          'metadata.cmdb.onCallNotificationProcess': '{{ u_oncall_notification_process }}'
+          'metadata.cmdb.supportContactEmail': '{{ u_support_contact_email }}'
+          'metadata.cmdb.rwi': '{{ u_rwi }}'
+          'metadata.cmdb.urls.ess': '{{ u_ess_url }}'
+          'metadata.cmdb.urls.pia': '{{ u_pia_url }}'
+          'metadata.cmdb.urls.piaRemediations': '{{ u_pia_remediations_url }}'
+          'metadata.cmdb.urls.risk': '{{ u_risk_url }}'
+          'metadata.cmdb.urls.sia': '{{ u_sia_url }}'
+          'metadata.cmdb.aliasName': '{{ u_alias_name }}'
+        additionalQueryFields:
+          - u_application_id
+          - owned_by.active
+          - u_delegate.user_name
+          - u_delegate.active
+          - u_actual_it_rpo
+          - u_actual_rto
+          - u_application_retirement_date
+          - u_business_mtd
+          - u_investment_objective
+          - u_oncall_notification_process
+          - u_support_contact_email
+          - u_rwi
+          - u_ess_url
+          - u_pia_url
+          - u_pia_remediations_url
+          - u_risk_url
+          - u_sia_url
+          - u_alias_name
+
+integrations:
+  servicenow:
+    - host: ${SERVICE_NOW_HOST}
+      apiBaseUrl: ${SERVICE_NOW_BASE_API_URL}
+      credentials:
+        username: ${SERVICE_NOW_USERNAME}
+        password: ${SERVICE_NOW_PASSWORD}
+
+reportPortal:
+  supportEmailTemplate: ${REPORT_PORTAL_SUPPORT_EMAIL_TEMPLATE}
+  integrations:
+    # - host: ${HYDRA_REPORT_PORTAL_HOST}
+    #   baseUrl: https://${HYDRA_REPORT_PORTAL_HOST}/api/
+    #   token: Bearer ${HYDRA_REPORT_PORTAL_TOKEN}
+    #   filterType: INTERNAL
+    - host: ${DRUPAL_REPORT_PORTAL_HOST}
+      baseUrl: https://${DRUPAL_REPORT_PORTAL_HOST}/api/
+      token: ${DRUPAL_REPORT_PORTAL_TOKEN}
+      filterType: 'INTERNAL'
+    - host: ${CASE_WORKFLOW_TOOLING_REPORT_PORTAL_HOST}
+      baseUrl: https://${CASE_WORKFLOW_TOOLING_REPORT_PORTAL_HOST}/api/
+      token: ${CASE_WORKFLOW_TOOLING_REPORT_PORTAL_TOKEN}
+      filterType: 'INTERNAL'
