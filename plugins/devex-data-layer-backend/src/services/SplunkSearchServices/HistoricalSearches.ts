@@ -81,6 +81,7 @@ export const fetchApiGatewayRequestsRecord = async (
   token: string,
   databaseServer: DataLayerBackendStore,
   query: string,
+  pollingType: PollingTypes
 ): Promise<void> => {
   const triggeredSearch = await getSearchId(splunkApiHost, token, query);
   if (triggeredSearch && triggeredSearch.sid) {
@@ -89,7 +90,7 @@ export const fetchApiGatewayRequestsRecord = async (
       token,
       triggeredSearch.sid,
       databaseServer,
-      PollingTypes.GatewayRequest,
+      pollingType,
     );
   }
 };

@@ -1,13 +1,15 @@
 import { InfoCard } from '@backstage/core-components';
-import { Chip, Divider, Grid, Typography } from '@material-ui/core';
+import { Button, Chip, Divider, Grid, Typography } from '@material-ui/core';
 import React from 'react';
 import { KeyValue } from '../../Interfaces';
 
 type Props = {
   subgraphsRawData: KeyValue;
+  lastUpdatedOn: string;
 };
 
 export function SubgraphsDeveloped(props: Props) {
+  const isButtonDisabled = true;
   return (
     <div style={{ gap: '0.5rem', display: 'flex', marginBottom: '1rem' }}>
       <Grid
@@ -39,11 +41,11 @@ export function SubgraphsDeveloped(props: Props) {
         <Grid item xs={10}>
           <InfoCard>
             <div style={{ minHeight: '7rem' }}>
-              <Typography
-                variant="h5"
-                style={{ display: 'flex', justifyContent: 'space-between' }}
-              >
-                Subgraph Names
+              <Typography variant="h5" style={{ display: 'flex', gap: '1rem' }}>
+                Subgraph Names{' '}
+                <Button size="small" disabled={isButtonDisabled}>
+                  {`Last updated on: ${props.lastUpdatedOn}`}
+                </Button>
               </Typography>
               <Divider style={{ marginBottom: '1rem' }} />
               {Object.values(props.subgraphsRawData).map(

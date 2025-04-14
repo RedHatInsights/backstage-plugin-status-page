@@ -4,8 +4,12 @@ import {
   DatabaseService,
 } from '@backstage/backend-plugin-api';
 import {
+  PollingTypes,
   queryForAkamaiApiGatewayRequestsRecord,
+  queryForAkamaiApiGatewayResponseTimeRecord,
   queryForNumberOfSubgraphsDeveloped,
+  queryForTotalRequestOnInternalServer,
+  queryForTotalRequestOnPublicServer,
 } from './constants';
 import { DataLayerBackendDatabase } from '../../database/DataLayerBackendDatabase';
 import {
@@ -81,6 +85,31 @@ export async function CreateSplunkQueryService({
           token,
           databaseServer,
           queryForAkamaiApiGatewayRequestsRecord,
+          PollingTypes.GatewayRequest,
+        );
+
+        await fetchApiGatewayRequestsRecord(
+          splunkApiHost,
+          token,
+          databaseServer,
+          queryForAkamaiApiGatewayResponseTimeRecord,
+          PollingTypes.GatewayResponseTime,
+        );
+
+        await fetchApiGatewayRequestsRecord(
+          splunkApiHost,
+          token,
+          databaseServer,
+          queryForTotalRequestOnInternalServer,
+          PollingTypes.GatewayInternal,
+        );
+
+        await fetchApiGatewayRequestsRecord(
+          splunkApiHost,
+          token,
+          databaseServer,
+          queryForTotalRequestOnPublicServer,
+          PollingTypes.GatewayPublic,
         );
       } catch (err) {
         logger.error(String(err));

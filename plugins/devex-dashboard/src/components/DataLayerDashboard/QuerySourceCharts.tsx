@@ -18,15 +18,22 @@ import React, { useEffect, useState } from 'react';
 import { RedHatStandardColors, SplunkTimePeriods } from '../Generic';
 import { devexApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
+import { AccessTypes } from '../Generic/Constants';
 
-export const AkamaiRequestTrendLineChart = () => {
+export const QuerySourceCharts = () => {
   const splunk = useApi(devexApiRef);
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<string>(
     SplunkTimePeriods[0].id,
   );
-  const [statistics, setStatistics] = useState<[]>([]);
+
+  const [selectedAccessType, setSelectedAccessType] = useState<string>(
+    AccessTypes.Public,
+  );
+  const [publicData, setPublicData] = useState([]);
+  const [internalData, setInternalData] = useState([]);
+
   const [loadingStats, setLoadingStats] = useState(false);
-  const [series, setSeries] = useState<number[]>([]);
+  const [series, setSeries] = useState<any[]>([]);
   const [xLabels, setXLabels] = useState<string[]>([]);
 
   const getLocaleNumberString = (totalRequests: number) => {
@@ -40,6 +47,8 @@ export const AkamaiRequestTrendLineChart = () => {
 
   const getTimedStats = () => {
     let timedStats: { [key: string]: string }[] = [];
+    const statistics =
+      selectedAccessType === 'Internal' ? internalData : publicData;
     if (selectedTimePeriod && selectedTimePeriod !== '6') {
       timedStats = [...statistics].splice(
         statistics.length - parseInt(selectedTimePeriod, 10),
@@ -53,12 +62,18 @@ export const AkamaiRequestTrendLineChart = () => {
     try {
       const timedStats = getTimedStats();
       const requestDates: string[] = [];
-      const chartSeries: number[] = [];
+      const chartSeries: any = [];
 
       timedStats?.forEach((stats: { [key: string]: string }) => {
+        const clientNames = Object.keys(stats);
         requestDates.push(new Date(stats._time).toDateString());
-
-        chartSeries.push(parseInt(stats.count, 10));
+        let currentTotalQueries = 0;
+        clientNames.forEach(name => {
+          if (!['_span', '_spandays', '_time', 'NULL'].includes(name)) {
+            currentTotalQueries += parseInt(stats[name], 10);
+          }
+        });
+        chartSeries.push(currentTotalQueries);
       });
 
       setSeries(chartSeries);
@@ -71,34 +86,56 @@ export const AkamaiRequestTrendLineChart = () => {
 
   const getNumberStats = () => {
     const timedStats = getTimedStats();
-    let maximumRequestInADay = 0;
-    let totalRequests = 0;
+    let maximumQueriesInADay = 0;
+    let totalQueries = 0;
 
-    timedStats.forEach(stat => {
-      const count = parseInt(stat.count, 10);
-      totalRequests += count;
-      if (count > maximumRequestInADay) maximumRequestInADay = count;
+    timedStats.forEach(stats => {
+      const clientNames = Object.keys(stats);
+      let currentTotalQueries = 0;
+      clientNames.forEach(name => {
+        if (!['_span', '_spandays', '_time', 'NULL'].includes(name)) {
+          currentTotalQueries += parseInt(stats[name], 10);
+        }
+      });
+      totalQueries += currentTotalQueries;
+      if (currentTotalQueries > maximumQueriesInADay)
+        maximumQueriesInADay = currentTotalQueries;
     });
 
-    const totalRequestsStringValue = getLocaleNumberString(totalRequests);
-    const maximumRequestInADayStringValue =
-      getLocaleNumberString(maximumRequestInADay);
-    const averageRequestPerDay = Math.ceil(
-      totalRequests / parseInt(selectedTimePeriod, 10),
+    const totalQueriesStringValue = getLocaleNumberString(totalQueries);
+    const maximumQueriesInADayStringValue =
+      getLocaleNumberString(maximumQueriesInADay);
+    const averageQueriesPerDay = Math.ceil(
+      totalQueries / parseInt(selectedTimePeriod, 10),
     );
-    const averageRequestPerDayStringValue =
-      getLocaleNumberString(averageRequestPerDay);
+    const averageQueriesPerDayStringValue =
+      getLocaleNumberString(averageQueriesPerDay);
 
     return {
-      totalRequestsStringValue,
-      averageRequestPerDayStringValue,
-      maximumRequestInADayStringValue,
+      totalQueriesStringValue,
+      averageQueriesPerDayStringValue,
+      maximumQueriesInADayStringValue,
     };
   };
 
   const getFilters = () => {
     return (
       <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <FormControl variant="outlined" size="small">
+          <InputLabel id="Period">Access Type</InputLabel>
+          <Select
+            labelId="AccessType"
+            label="Access Type"
+            value={selectedAccessType}
+            onChange={evt => {
+              setSelectedAccessType(`${evt.target.value}`);
+            }}
+          >
+            {Object.keys(AccessTypes).map(type => (
+              <MenuItem value={type}>{type}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <FormControl variant="outlined" size="small">
           <InputLabel id="Period">Period</InputLabel>
           <Select
@@ -121,14 +158,20 @@ export const AkamaiRequestTrendLineChart = () => {
   const fetchGateWayRequestData = async () => {
     try {
       setLoadingStats(true);
-      const response = await splunk.getGatewayRequestResponseData('requests');
-      if (
-        response?.data?.searchData &&
-        JSON.parse(response?.data?.searchData).data?.length
-      ) {
-        setStatistics(JSON.parse(response?.data?.searchData).data);
+      const response = await splunk.getGatewayRequestResponseData(
+        'query-source',
+      );
+
+      if (response?.data) {
+        const data = response?.data;
+        if (data?.external && data?.external.searchData) {
+          setPublicData(JSON.parse(data?.external.searchData)?.data);
+        }
+        if (data?.internal && data?.internal.searchData) {
+          setInternalData(JSON.parse(data?.internal.searchData)?.data);
+        }
+        setLoadingStats(false);
       }
-      setLoadingStats(false);
     } catch (err) {
       setLoadingStats(false);
     }
@@ -141,22 +184,29 @@ export const AkamaiRequestTrendLineChart = () => {
   }, []);
 
   useEffect(() => {
-    if (statistics.length) formatLineChartData();
+    if (
+      (selectedAccessType === AccessTypes.Internal && internalData.length) ||
+      (selectedAccessType === AccessTypes.Public && publicData.length)
+    )
+      formatLineChartData();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [statistics, selectedTimePeriod]);
+  }, [publicData, internalData, selectedAccessType, selectedTimePeriod]);
 
   return (
     <>
       <Grid container spacing={2}>
         <Grid item xs={9}>
           <InfoCard>
-            <div style={{ maxHeight: '22rem' }}>
+            <div style={{ maxHeight: '25rem' }}>
               <Typography
                 variant="h5"
                 style={{ display: 'flex', justifyContent: 'space-between' }}
               >
-                <div>API - Gateway Request Trend</div>
+                <div>
+                  [Gateway] Number of Queries By Access Type (
+                  {selectedAccessType})
+                </div>
                 <div>{getFilters()}</div>
               </Typography>
               <Divider style={{ margin: '0.5rem' }} />
@@ -205,28 +255,30 @@ export const AkamaiRequestTrendLineChart = () => {
         </Grid>
         <Grid item xs={3}>
           <InfoCard>
-            <div style={{ minHeight: '22rem' }}>
-              <Typography variant="h6">Total Requests</Typography>
+            <div style={{ minHeight: '25rem' }}>
+              <Typography variant="h6">Total Queries</Typography>
               {loadingStats ? (
                 <LinearProgress />
               ) : (
                 <>
                   <Typography variant="h2">
-                    {getNumberStats().totalRequestsStringValue || 'N/A'}
+                    {`${getNumberStats().totalQueriesStringValue}` || 'N/A'}
                   </Typography>
                   <Divider style={{ margin: '0.5rem' }} />
                   <Typography variant="h6" style={{ marginBottom: '1rem' }}>
-                    Average Requests Per Day
+                    Average Queries Per Day
                   </Typography>
                   <Typography variant="h2">
-                    {getNumberStats().averageRequestPerDayStringValue || 'N/A'}
+                    {`${getNumberStats().averageQueriesPerDayStringValue}` ||
+                      'N/A'}
                   </Typography>
                   <Divider style={{ margin: '0.5rem' }} />
                   <Typography variant="h6" style={{ marginBottom: '1rem' }}>
-                    Maximum Requests In A Day
+                    Maximum Query In A Day
                   </Typography>
                   <Typography variant="h2">
-                    {getNumberStats().maximumRequestInADayStringValue || 'N/A'}
+                    {`${getNumberStats().maximumQueriesInADayStringValue}` ||
+                      'N/A'}
                   </Typography>
                 </>
               )}

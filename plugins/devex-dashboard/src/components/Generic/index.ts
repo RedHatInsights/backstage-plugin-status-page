@@ -3,5 +3,6 @@ export {
   RedHatBlueOrangeShades,
   RedHatStandardColors,
   SplunkTimePeriods,
-  RedHatErrorRedShades
+  RedHatErrorRedShades,
+  AccessTypes
 } from './Constants';

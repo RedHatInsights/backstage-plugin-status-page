@@ -16,15 +16,32 @@ export interface DataLayerBackendStore {
   insertSearchData(data: SubgraphData): Promise<SubgraphData>;
   getSearchDataBySubgraph(subgraph: string): Promise<SubgraphData | null>;
   updateSearchDataBySubgraph(data: SubgraphData): Promise<SubgraphData | null>;
+
   insertSubgraphs(data: Subgraph): Promise<Subgraph | null>;
   getSubgraphsData(): Promise<Subgraph | null>;
   updateSubgraphsData(data: Subgraph): Promise<Subgraph | null>;
+
   insertGateWayRequests(data: GatewayRequest): Promise<GatewayRequest | null>;
   getGateWayRequests(): Promise<GatewayRequest | null>;
   updateGateWayRequests(data: GatewayRequest): Promise<GatewayRequest | null>;
+
   insertErrorData(data: SubgraphData): Promise<SubgraphData>;
   getErrorDataBySubgraph(subgraph: string): Promise<SubgraphData | null>;
   updateErrorDataBySubgraph(data: SubgraphData): Promise<SubgraphData | null>;
+
+  insertResponseTimeData(data: GatewayRequest): Promise<GatewayRequest | null>;
+  getResponseTimeData(): Promise<GatewayRequest | null>;
+  updateResponseTimeData(data: GatewayRequest): Promise<GatewayRequest | null>;
+
+  insertQueryTypeData(
+    data: GatewayRequest,
+    isPublic: boolean,
+  ): Promise<GatewayRequest | null>;
+  getQueryTypeData(isPublic: boolean): Promise<GatewayRequest | null>;
+  updateQueryTypeData(
+    data: GatewayRequest,
+    isPublic: boolean,
+  ): Promise<GatewayRequest | null>;
 }
 
 export class DataLayerBackendDatabase implements DataLayerBackendDatabase {
@@ -36,6 +53,13 @@ export class DataLayerBackendDatabase implements DataLayerBackendDatabase {
   private readonly SINGLE_SEARCH_ID = 'subgraph_search__id';
   private readonly AKAMAI_ACCESS_REQUESTS_SEARCH_ID =
     'akamai_access_requests_search__id';
+  private readonly AKAMAI_ACCESS_RESPONSE_TIME_SEARCH_ID =
+    'akamai_access_response_time_search__id';
+
+  private readonly AKAMAI_ACCESS_INTERNAL_QUERIES_SEARCH_ID =
+    'akamai_access_internal_query_search__id';
+  private readonly AKAMAI_ACCESS_EXTERNAL_QUERIES_SEARCH_ID =
+    'akamai_access_external_query_search__id';
 
   static async create(options: {
     knex: Knex;
@@ -195,6 +219,95 @@ export class DataLayerBackendDatabase implements DataLayerBackendDatabase {
         '*',
       );
     return this.mapDatabaseModelToSubgraphData(dbResult) || null;
+  }
+
+  async insertResponseTimeData(
+    data: GatewayRequest,
+  ): Promise<GatewayRequest | null> {
+    const [dbResult] = await this.db<GatewayRequestModel>(
+      this.AKAMAI_ACCESS,
+    ).insert(
+      {
+        log_id: this.AKAMAI_ACCESS_RESPONSE_TIME_SEARCH_ID,
+        ...this.mapGatewayRequestToModel(data),
+        last_updated_on: this.db.fn.now(),
+      },
+      '*',
+    );
+    return dbResult ? this.mapModelToGatewayRequest(dbResult) : null;
+  }
+  async getResponseTimeData(): Promise<GatewayRequest | null> {
+    const dbResult = await this.db<GatewayRequestModel>(this.AKAMAI_ACCESS)
+      .where('log_id', this.AKAMAI_ACCESS_RESPONSE_TIME_SEARCH_ID)
+      .first();
+    return dbResult ? this.mapModelToGatewayRequest(dbResult) : null;
+  }
+
+  async updateResponseTimeData(
+    data: GatewayRequest,
+  ): Promise<GatewayRequest | null> {
+    const [dbResult] = await this.db<GatewayRequestModel>(this.AKAMAI_ACCESS)
+      .select('*')
+      .where('log_id', this.AKAMAI_ACCESS_RESPONSE_TIME_SEARCH_ID)
+      .update(
+        {
+          ...this.mapGatewayRequestToModel(data),
+          last_updated_on: this.db.fn.now(),
+        },
+        '*',
+      );
+    return this.mapModelToGatewayRequest(dbResult) || null;
+  }
+
+  async insertQueryTypeData(
+    data: GatewayRequest,
+    isPublic: boolean,
+  ): Promise<GatewayRequest | null> {
+    const [dbResult] = await this.db<GatewayRequestModel>(
+      this.AKAMAI_ACCESS,
+    ).insert(
+      {
+        log_id: isPublic
+          ? this.AKAMAI_ACCESS_EXTERNAL_QUERIES_SEARCH_ID
+          : this.AKAMAI_ACCESS_INTERNAL_QUERIES_SEARCH_ID,
+        ...this.mapGatewayRequestToModel(data),
+        last_updated_on: this.db.fn.now(),
+      },
+      '*',
+    );
+    return dbResult ? this.mapModelToGatewayRequest(dbResult) : null;
+  }
+  async getQueryTypeData(isPublic: boolean): Promise<GatewayRequest | null> {
+    const dbResult = await this.db<GatewayRequestModel>(this.AKAMAI_ACCESS)
+      .where(
+        'log_id',
+        isPublic
+          ? this.AKAMAI_ACCESS_EXTERNAL_QUERIES_SEARCH_ID
+          : this.AKAMAI_ACCESS_INTERNAL_QUERIES_SEARCH_ID,
+      )
+      .first();
+    return dbResult ? this.mapModelToGatewayRequest(dbResult) : null;
+  }
+  async updateQueryTypeData(
+    data: GatewayRequest,
+    isPublic: boolean,
+  ): Promise<GatewayRequest | null> {
+    const [dbResult] = await this.db<GatewayRequestModel>(this.AKAMAI_ACCESS)
+      .select('*')
+      .where(
+        'log_id',
+        isPublic
+          ? this.AKAMAI_ACCESS_EXTERNAL_QUERIES_SEARCH_ID
+          : this.AKAMAI_ACCESS_INTERNAL_QUERIES_SEARCH_ID,
+      )
+      .update(
+        {
+          ...this.mapGatewayRequestToModel(data),
+          last_updated_on: this.db.fn.now(),
+        },
+        '*',
+      );
+    return this.mapModelToGatewayRequest(dbResult) || null;
   }
 
   private mapSubgraphDataToDatabaseModel(
