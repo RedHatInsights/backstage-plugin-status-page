@@ -131,6 +131,11 @@ proxy:
       credentials: dangerously-allow-unauthenticated
       changeOrigin: true
       allowedMethods: ['GET']
+    '/mcp':
+      target: ${MCP_SERVER_BASE_URL}
+      credentials: dangerously-allow-unauthenticated
+      changeOrigin: true
+      allowedMethods: ['GET', 'OPTIONS']
 
 jira:
   proxyPath: /jira
@@ -210,7 +215,7 @@ catalog:
     entityFilename: catalog-info.yaml
     pullRequestBranchName: backstage-integration
   rules:
-    - allow: [Component, System, API, Resource, Location, Workstream]
+    - allow: [Component, System, API, Resource, Location, Workstream, Template]
   locations:
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
     - type: file
