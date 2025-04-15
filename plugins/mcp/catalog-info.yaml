@@ -1,0 +1,27 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-mcp
+  title: MCP Server Registry Plugin Backstage
+  description: Backstage Plugin for MCP Server Registry Plugin
+  namespace: devex
+  tags:
+    - backstage
+    - idp
+    - developers
+    - documentation
+    - mcp
+    - ai
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-mcp
+      title: Backstage MCP Plugin NPM Package
+
+  annotations:
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: '@appdev-platform/backstage-plugin-mcp'
+spec:
+  type: backstage-frontend-plugin
+  lifecycle: production
+  owner: group:redhat/one-platform-devs
+  system: devex/redhat-experience-platform
+  subcomponentOf: devex/backstage-console-frontend

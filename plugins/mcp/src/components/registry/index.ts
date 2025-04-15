@@ -1,0 +1,1 @@
+export { RegistryComponent  } from './RegistryComponent';

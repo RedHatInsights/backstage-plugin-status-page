@@ -189,6 +189,15 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
               />
             </Grid>
           </Grid>
+          <Grid container>
+            <Grid item xs={8}>
+              <SidebarItem
+                icon={ExtensionIcon as IconComponent}
+                to="mcp"
+                text="MCP Server"
+              />
+            </Grid>
+          </Grid>
         </SidebarGroup>
         <SidebarSpace />
         <SidebarDivider />
