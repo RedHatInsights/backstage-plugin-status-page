@@ -302,7 +302,25 @@ spotify:
   licenseKey: ${SPOTIFY_LICENSE_KEY}
 
 soundcheck:
-  $include: ./soundcheck-config.yaml
+  collectors:
+    gitlab:
+      $include: ./soundcheck/collectors/gitlab.yaml
+    sonarqube:
+      $include: ./soundcheck/collectors/sonarqube.yaml
+    redHatCore:
+      $include: ./soundcheck/collectors/redHatCore.yaml
+    redHatServiceNow:
+      $include: ./soundcheck/collectors/redHatServiceNow.yaml
+    redHatSmartSheet:
+      $include: ./soundcheck/collectors/redHatSmartSheet.yaml
+  checks:
+    $include: ./soundcheck/checks/preprod.yaml # preprod/prod here
+  programs:
+    $include: ./soundcheck/programs/preprod.yaml
+  remote_file_updates:
+    disabled: false
+    frequency:
+      minutes: 5
 
 dataLayer:
   splunkToken: ${SPLUNK_TOKEN}
@@ -313,4 +331,3 @@ dataLayer:
       hours: 12
     timeout:
       hours: 6
-
