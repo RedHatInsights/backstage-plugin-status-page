@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.0.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.0.1...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.0.2) (2025-04-16)
+
+
+### Bug Fixes
+
+* **PULSE-552:** smartsheet fact collector updates ([1b49603](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/1b49603a651d67d1586fae7e144877ee4de0cbde))
+
 ## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.0.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.0.0...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.0.1) (2025-04-16)
 
 
