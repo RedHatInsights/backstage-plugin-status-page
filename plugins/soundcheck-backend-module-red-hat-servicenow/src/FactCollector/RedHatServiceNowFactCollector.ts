@@ -135,10 +135,8 @@ export class RedHatServiceNowFactCollector implements FactCollector {
 
       const resp = await serviceNowClient.getComplianceControls("", options );
 
-      // Validate we are not sending more than 32 controls.
-      // This could be affected by future compliance controls changes in ServiceNow.
-      if (!resp || !resp.items || !Array.isArray(resp.items) || resp.items.length !== 32) {
-        this.logger.error(`Invalid response from ServiceNow. Expected an array with 32 items, but got ${Array.isArray(resp.items) ? resp.items.length : 'none'}`);
+      if (!resp || !resp.items || !Array.isArray(resp.items) ) {
+        this.logger.error(`Invalid response from ServiceNow for entity ${entity.metadata.namespace}/${entity.metadata.name}`);
         continue;
       }
 
