@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.0.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.0.0...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.0.1) (2025-04-16)
+
+
+### Bug Fixes
+
+* servicenow Fact Collector ([1c222c8](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/1c222c89ef51af8ff923ba48a40b7d5cf5641940))
+
 ## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow 1.0.0 (2025-04-14)
 
 
