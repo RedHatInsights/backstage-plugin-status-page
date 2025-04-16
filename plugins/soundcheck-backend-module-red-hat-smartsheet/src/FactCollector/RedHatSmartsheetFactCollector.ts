@@ -1,58 +1,29 @@
 'use strict';
 
-import {
-  Entity,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
-import {
-  FactCollector,
-} from '@spotify/backstage-plugin-soundcheck-node';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { FactCollector } from '@spotify/backstage-plugin-soundcheck-node';
 import {
   CacheService,
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import {
-  Config,
-} from '@backstage/config';
+import { Config } from '@backstage/config';
 import {
   CollectionConfig,
   CollectionError,
   Fact,
   FactRef,
-  stringifyFactRef
+  stringifyFactRef,
 } from '@spotify/backstage-plugin-soundcheck-common';
-import {
-  JsonValue
-} from '@backstage/types'
-import {
-  createClient
-} from 'smartsheet';
-
-// Compiles fact reference.
-const COLLECTOR_ID = 'red-hat-smartsheet';
-const SCOPE = 'default';
-const SERVICE_FACT_REFERENCE = `${COLLECTOR_ID}:${SCOPE}/pia_data`;
-
-// Provides typescript support to Smartsheet json response.
-interface SmartSheetData {
-  columns: {
-    id: number
-    title: string
-  }[]
-  rows: {
-    cells: {
-      columnId: number
-      displayValue: string
-    }[]
-  }[]
-}
+import { JsonValue } from '@backstage/types';
+import { createClient } from 'smartsheet';
+import { COLLECTOR_ID, SERVICE_FACT_REFERENCE } from '../lib/constants';
+import { SmartsheetData } from '../lib/types';
 
 /**
  * Fact collector for facts fetched from Smartsheet API.
  */
 export class RedHatSmartsheetFactCollector implements FactCollector {
-
   /** @inheritdoc */
   id: string = COLLECTOR_ID;
 
@@ -89,7 +60,7 @@ export class RedHatSmartsheetFactCollector implements FactCollector {
    *
    * @private
    */
-  #config?: RootConfigService;
+  config?: RootConfigService;
 
   /**
    * Logger service.
@@ -107,7 +78,7 @@ export class RedHatSmartsheetFactCollector implements FactCollector {
    *
    * @protected
    */
-  protected smartsheetConfig: Config[];
+  protected collectorConfig: Config;
 
   /**
    * Constructor.
@@ -127,12 +98,20 @@ export class RedHatSmartsheetFactCollector implements FactCollector {
     logger: LoggerService,
   ) {
     this.cache = cache;
-    this.#config = config;
+    this.config = config;
     this.logger = logger.child({
       target: 'Red Hat Smartsheet FactCollector',
     });
 
-    this.smartsheetConfig = this.#config.getConfigArray('soundcheck.collectors.redHatSmartSheet');
+    const collectorConfig = this.config.getOptionalConfig(
+      'soundcheck.collectors.redHatSmartsheet',
+    );
+    if (!collectorConfig) {
+      throw new Error(
+        'Missing config at soundcheck.collectors.redHatSmartsheet',
+      );
+    }
+    this.collectorConfig = collectorConfig;
   }
 
   /**
@@ -153,11 +132,7 @@ export class RedHatSmartsheetFactCollector implements FactCollector {
     config: RootConfigService,
     logger: LoggerService,
   ): RedHatSmartsheetFactCollector {
-    return new this(
-      cache,
-      config,
-      logger,
-    );
+    return new this(cache, config, logger);
   }
 
   /** @inheritdoc */
@@ -171,8 +146,16 @@ export class RedHatSmartsheetFactCollector implements FactCollector {
     const facts: Fact[] = [];
 
     if (params?.factRefs) {
-      if (!params.factRefs.find(value => stringifyFactRef(value) === SERVICE_FACT_REFERENCE)) {
-        this.logger.warn(`Unsupported factRefs requested in RedHatSmartsheetFactCollector: ${JSON.stringify(params.factRefs)}`);
+      if (
+        !params.factRefs.find(
+          value => stringifyFactRef(value) === SERVICE_FACT_REFERENCE,
+        )
+      ) {
+        this.logger.warn(
+          `Unsupported factRefs requested in RedHatSmartsheetFactCollector: ${JSON.stringify(
+            params.factRefs,
+          )}`,
+        );
         return [];
       }
     }
@@ -183,39 +166,62 @@ export class RedHatSmartsheetFactCollector implements FactCollector {
     }
 
     const cacheKey = 'smartsheet-data';
-    let smartsheetData = await this.cache.get(cacheKey) as SmartSheetData | null;
+    let smartsheetData = (await this.cache.get(
+      cacheKey,
+    )) as SmartsheetData | null;
 
     // TODO: Fix cast as unknown.
     if (!smartsheetData) {
-      smartsheetData = await this.fetchSmartSheetData() || {columns: [], rows: []};
-      await this.cache.set(cacheKey, smartsheetData as unknown as JsonValue, { ttl: { minutes: 15 } });
+      smartsheetData = (await this.fetchSmartsheetData()) || {
+        columns: [],
+        rows: [],
+      };
+      await this.cache.set(cacheKey, smartsheetData as unknown as JsonValue, {
+        ttl: { minutes: 15 },
+      });
     }
 
     // Find the CMDB Record & PIA status column IDs once.
-    const cmdbRecordColumnId = smartsheetData?.columns.find(column => column.title === "CMDB Record ID")?.id;
+    const cmdbRecordColumnId = smartsheetData?.columns.find(
+      column => column.title === 'CMDB Record ID',
+    )?.id;
     if (!cmdbRecordColumnId) {
-      throw new Error('Cannot find CMDB Record ID column in the spreadsheet; Check Smartsheet.');
+      throw new Error(
+        'Cannot find CMDB Record ID column in the spreadsheet; Check Smartsheet.',
+      );
     }
-    const piaStatusColumnId = smartsheetData?.columns.find(column => column.title === "PIA Status")?.id;
+    const piaStatusColumnId = smartsheetData?.columns.find(
+      column => column.title === 'PIA Status',
+    )?.id;
     if (!piaStatusColumnId) {
-      throw new Error('Cannot find PIA Status column in the spreadsheet; Check Smartsheet.');
+      throw new Error(
+        'Cannot find PIA Status column in the spreadsheet; Check Smartsheet.',
+      );
     }
 
     for (const entity of entities) {
-      const cmdbRecordId = entity.metadata?.annotations?.['servicenow.com/appcode'];
+      const cmdbRecordId =
+        entity.metadata?.annotations?.['servicenow.com/appcode'];
       if (!cmdbRecordId) {
-        this.logger.warn(`Entity ${entity.metadata.name} is missing a servicenow.com/appcode annotation`);
+        this.logger.warn(
+          `Entity ${entity.metadata.name} is missing a servicenow.com/appcode annotation`,
+        );
         continue;
       }
 
-      const matchedStatus = this.findPIAStatus(cmdbRecordId, cmdbRecordColumnId, piaStatusColumnId, smartsheetData);
+      const matchedStatus = this.findPIAStatus(
+        cmdbRecordId,
+        cmdbRecordColumnId,
+        piaStatusColumnId,
+        smartsheetData,
+      );
       if (matchedStatus) {
-          facts.push({
-            factRef: SERVICE_FACT_REFERENCE,
-            entityRef: stringifyEntityRef(entity),
-            data: { status: matchedStatus},
-            timestamp: new Date().toISOString(),
-          });
+        facts.push({
+          factRef: SERVICE_FACT_REFERENCE,
+          entityRef: stringifyEntityRef(entity),
+          data: { status: matchedStatus },
+          timestamp: new Date().toISOString(),
+        });
       }
     }
 
@@ -225,16 +231,19 @@ export class RedHatSmartsheetFactCollector implements FactCollector {
   /**
    * Fetches entire smartsheet for the provided sheet id in collector config.
    */
-  async fetchSmartSheetData(): Promise<SmartSheetData | null> {
-    const token = this.smartsheetConfig[0].getString('api_token');
-    const sheetId = this.smartsheetConfig[0].getString('sheetId');
+  async fetchSmartsheetData(): Promise<SmartsheetData | null> {
+    const token = this.collectorConfig?.getString('api_token');
+    const sheetId = this.collectorConfig?.getString('sheetId');
 
-    const smartsheetClient = createClient({ accessToken: token, logLevel: 'debug' });
+    const smartsheetClient = createClient({
+      accessToken: token,
+      logLevel: 'debug',
+    });
 
     try {
       return await smartsheetClient.sheets.getSheet({ id: sheetId });
-    } catch (error) {
-      console.error('Error fetching Smartsheet data:', error);
+    } catch (error: any) {
+      this.logger.error('Error fetching Smartsheet data.', error);
       return null;
     }
   }
@@ -242,14 +251,24 @@ export class RedHatSmartsheetFactCollector implements FactCollector {
   /**
    * Returns the PIA status for the CMDB record id matching the servicenow annotation.
    */
-  private findPIAStatus(cmdbRecordId: string, cmdbRecordColumnId: number, statusColumnId: number, smartsheetData: SmartSheetData): string {
+  private findPIAStatus(
+    cmdbRecordId: string,
+    cmdbRecordColumnId: number,
+    statusColumnId: number,
+    smartsheetData: SmartsheetData,
+  ): string {
     const matchingRow = smartsheetData.rows.find(row => {
-      return row.cells.find(cell => cell.columnId === cmdbRecordColumnId)?.displayValue === cmdbRecordId
+      return (
+        row.cells.find(cell => cell.columnId === cmdbRecordColumnId)
+          ?.displayValue === cmdbRecordId
+      );
     });
 
-    const statusCell = matchingRow?.cells.find(cell => cell.columnId === statusColumnId);
+    const statusCell = matchingRow?.cells.find(
+      cell => cell.columnId === statusColumnId,
+    );
 
-    return statusCell?.displayValue || 'Empty'
+    return statusCell?.displayValue || 'Empty';
   }
 
   /** @inheritdoc */
@@ -259,17 +278,16 @@ export class RedHatSmartsheetFactCollector implements FactCollector {
 
   /** @inheritdoc */
   async getDataSchema(factName: FactRef): Promise<string | undefined> {
-
-    if(factName === SERVICE_FACT_REFERENCE.split('/')[1]) {
+    if (factName === SERVICE_FACT_REFERENCE.split('/')[1]) {
       return JSON.stringify({
-        "title": "PIA Status",
-        "description": "Privacy Impact Analysis status sourced from Smartsheet.",
-        "type": "object",
-        "properties": {
-          "status": {
-            type: "string"
-          }
-        }
+        title: 'PIA Status',
+        description: 'Privacy Impact Analysis status sourced from Smartsheet.',
+        type: 'object',
+        properties: {
+          status: {
+            type: 'string',
+          },
+        },
       });
     }
     return undefined;
@@ -277,7 +295,45 @@ export class RedHatSmartsheetFactCollector implements FactCollector {
 
   /** @inheritdoc */
   async getCollectionConfigs(): Promise<CollectionConfig[]> {
-    return [];
-  }
+    // Nothing to collect if we don't have a config or if there are no collects configured.
+    // const collects = this.#config?.getConfigArray('collects');
+    const collects = this.collectorConfig?.getConfigArray('collects');
 
+    if (!collects || collects?.length === 0) {
+      return [];
+    }
+
+    // Use any defaults in the configuration for this collector to apply to all Collect configurations:
+    return collects.map((collect: Config) => {
+      const collectionConfig = collect;
+      return {
+        // Update this if we support more than 1 collection of facts.
+        factRefs: [SERVICE_FACT_REFERENCE],
+        filter:
+          collectionConfig.getOptional('filter') ??
+          this.config?.getOptional('filter') ??
+          undefined,
+        exclude:
+          collectionConfig.getOptional('exclude') ??
+          this.config?.getOptional('exclude') ??
+          undefined,
+        frequency:
+          collectionConfig.getOptional('frequency') ??
+          this.config?.getOptional('frequency') ??
+          undefined,
+        initialDelay:
+          collectionConfig.getOptional('initialDelay') ??
+          this.config?.getOptional('initialDelay') ??
+          undefined,
+        batchSize:
+          collectionConfig.getOptional('batchSize') ??
+          this.config?.getOptional('batchSize') ??
+          undefined,
+        cache:
+          collectionConfig.getOptional('cache') ??
+          this.config?.getOptional('cache') ??
+          undefined,
+      };
+    });
+  }
 }

@@ -15,7 +15,7 @@ Add to app-config.yaml
 ```yaml
 soundcheck:
   collectors:
-    redHatSmartSheet:
+    redHatSmartsheet:
       - api_token: ${SMARTSHEET_API_TOKEN}
         sheetId: ${SMARTSHEET_SHEET_ID}
 ```

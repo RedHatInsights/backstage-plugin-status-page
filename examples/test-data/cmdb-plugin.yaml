@@ -55,3 +55,32 @@ spec:
   type: website
   lifecycle: production
   owner: group:redhat/dxp-dat
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  annotations:
+    servicenow.com/appcode: SST-001
+  description: Site System Taxonomy API for Marketing
+  name: taxonomy-api
+  namespace: uxe
+  title: Taxonomy API
+spec:
+  lifecycle: production
+  owner: group:redhat/depp-platform-services
+  type: website
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  annotations:
+    servicenow.com/appcode: DYFO-001
+  description: Form builder application including a submission and processing queue
+    for sending forms to different downstream systems.
+  name: dynamic-form
+  namespace: uxe
+  title: Dynamic Form
+spec:
+  lifecycle: production
+  owner: group:redhat/depp-platform-services
+  type: website
