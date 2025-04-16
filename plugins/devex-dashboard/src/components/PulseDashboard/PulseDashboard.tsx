@@ -113,6 +113,7 @@ export const PulseDashboard = () => {
               name: 'Unique User visits',
               value:
                 statsByPageLabels.reportTotal?.sum_daily_nb_uniq_visitors ||
+                statsByPageLabels.reportTotal?.nb_uniq_visitors ||
                 'N/A',
             },
           ],
@@ -181,7 +182,7 @@ export const PulseDashboard = () => {
   }, [periodOrRange]);
   return (
     <Page themeId="tool">
-      <Header title="Pulse Dashboard" subtitle="Pulse Analytics Dashboard">
+      <Header title="Compass Dashboard" subtitle="Compass Analytics Dashboard">
         <HeaderLabel label="Owner" value="Team DevEx" />
       </Header>
       <Content>
@@ -262,7 +263,6 @@ export const PulseDashboard = () => {
                   <Divider style={{ margin: '0.5rem' }} />
                   <Grid container>
                     <LineChart
-                      width={700}
                       height={350}
                       series={lineChartData}
                       xAxis={[
@@ -277,10 +277,10 @@ export const PulseDashboard = () => {
                       ]}
                       slotProps={{
                         legend: {
-                          position: { horizontal: 'right', vertical: 'top' },
+                          position: { vertical: 'bottom', horizontal: 'middle' },
                         },
                       }}
-                      margin={{ left: 60, right: 80 }}
+                      margin={{ left: 60, bottom: 120 }}
                       colors={RedHatStandardColors}
                     />
                   </Grid>
@@ -302,8 +302,8 @@ export const PulseDashboard = () => {
                         },
                       ]}
                       layout="horizontal"
-                      width={500}
                       height={350}
+                      margin={{ left: 150 }}
                     />
                   </Grid>
                 </InfoCard>

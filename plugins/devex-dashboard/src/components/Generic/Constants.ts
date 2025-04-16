@@ -1,5 +1,15 @@
 export const MatomoPeriods = [
   {
+    title: 'Past 24 Hours',
+    period: 'day',
+    range: 'last1',
+  },
+  {
+    title: 'Past 7 Days',
+    period: 'day',
+    range: 'last7',
+  },
+  {
     title: 'Past 30 Days',
     period: 'week',
     range: 'last4',

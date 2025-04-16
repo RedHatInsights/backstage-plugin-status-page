@@ -161,8 +161,8 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
           <SidebarScrollWrapper>
             <SidebarItem
               icon={DataUsageIcon as IconComponent}
-              to="dashboard/pulse"
-              text="Pulse Dashboard"
+              to="dashboard/compass"
+              text="Compass Dashboard"
             />
             <SidebarItem
               icon={DataUsageIcon as IconComponent}
