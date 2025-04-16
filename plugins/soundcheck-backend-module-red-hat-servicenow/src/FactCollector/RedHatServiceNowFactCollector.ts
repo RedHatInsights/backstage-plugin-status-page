@@ -1,35 +1,26 @@
 'use strict';
 
-import {
-  Entity,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
-import {
-  FactCollector,
-} from '@spotify/backstage-plugin-soundcheck-node';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import { FactCollector } from '@spotify/backstage-plugin-soundcheck-node';
 import {
   CacheService,
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import {
-  Config,
-} from '@backstage/config';
+import { Config } from '@backstage/config';
 import {
   CollectionConfig,
   CollectionError,
   Fact,
   FactRef,
-  stringifyFactRef
+  stringifyFactRef,
 } from '@spotify/backstage-plugin-soundcheck-common';
-import {
-  COLLECTOR_ID,
-  SERVICE_FACT_REFERENCE} from '../lib/constants';
+import { COLLECTOR_ID, SERVICE_FACT_REFERENCE } from '../lib/constants';
 import {
   ServiceNowClient,
   CMDBMeta,
   readServiceNowIntegrationConfigs,
-  ServiceNowComplianceControlItem
+  ServiceNowComplianceControlItem,
 } from '@appdev-platform/backstage-plugin-service-now-common';
 import { JsonObject } from '@backstage/types/index';
 
@@ -37,7 +28,6 @@ import { JsonObject } from '@backstage/types/index';
  * Fact collector for facts fetched from ServiceNow API.
  */
 export class RedHatServiceNowFactCollector implements FactCollector {
-
   /** @inheritdoc */
   id: string = COLLECTOR_ID;
 
@@ -64,12 +54,15 @@ export class RedHatServiceNowFactCollector implements FactCollector {
       target: COLLECTOR_ID,
     });
 
-    const collectorConfig = this.config.getOptionalConfig('soundcheck.collectors.redHatServiceNow');
+    const collectorConfig = this.config.getOptionalConfig(
+      'soundcheck.collectors.redHatServiceNow',
+    );
     if (!collectorConfig) {
-      throw new Error('Missing config at soundcheck.collectors.redHatServiceNow.');
+      throw new Error(
+        'Missing config at soundcheck.collectors.redHatServiceNow',
+      );
     }
     this.collectorConfig = collectorConfig;
-
   }
 
   public static create(
@@ -77,11 +70,7 @@ export class RedHatServiceNowFactCollector implements FactCollector {
     config: RootConfigService,
     logger: LoggerService,
   ): RedHatServiceNowFactCollector {
-    return new this(
-      cache,
-      config,
-      logger,
-    );
+    return new this(cache, config, logger);
   }
 
   /** @inheritdoc */
@@ -95,8 +84,16 @@ export class RedHatServiceNowFactCollector implements FactCollector {
     const facts: Fact[] = [];
 
     if (params?.factRefs) {
-      if (!params.factRefs.find(value => stringifyFactRef(value) === SERVICE_FACT_REFERENCE)) {
-        this.logger.warn(`Unsupported factRefs requested in RedHatServiceNowFactCollector: ${JSON.stringify(params.factRefs)}`);
+      if (
+        !params.factRefs.find(
+          value => stringifyFactRef(value) === SERVICE_FACT_REFERENCE,
+        )
+      ) {
+        this.logger.warn(
+          `Unsupported factRefs requested in RedHatServiceNowFactCollector: ${JSON.stringify(
+            params.factRefs,
+          )}`,
+        );
         return [];
       }
     }
@@ -114,35 +111,46 @@ export class RedHatServiceNowFactCollector implements FactCollector {
     });
 
     for (const entity of entities) {
-      const cmdbRecordId = entity.metadata?.annotations?.['servicenow.com/appcode'];
+      const cmdbRecordId =
+        entity.metadata?.annotations?.['servicenow.com/appcode'];
       if (!cmdbRecordId) {
-        this.logger.warn(`Entity ${entity.metadata.name} is missing a servicenow.com/appcode annotation`);
+        this.logger.warn(
+          `Entity ${entity.metadata.name} is missing a servicenow.com/appcode annotation`,
+        );
         continue;
       }
 
       const cmdb = entity.metadata?.cmdb as CMDBMeta | undefined;
       const cmdbSysId = cmdb?.sysId;
-      if(!cmdbSysId) {
-        this.logger.warn(`Entity ${entity.metadata.name} is missing the servicenow sysId.`);
+      if (!cmdbSysId) {
+        this.logger.warn(
+          `Entity ${entity.metadata.name} is missing the servicenow sysId.`,
+        );
         continue;
       }
 
       const options = {
         'profile.cmdb_ci': cmdbSysId,
         '^state!': 'retired',
-        'ORDERBYnumber': true
+        ORDERBYnumber: true,
       };
 
-      const resp = await serviceNowClient.getComplianceControls("", options );
+      const resp = await serviceNowClient.getComplianceControls('', options);
 
-      if (!resp || !resp.items || !Array.isArray(resp.items) ) {
-        this.logger.error(`Invalid response from ServiceNow for entity ${entity.metadata.namespace}/${entity.metadata.name}`);
+      if (!resp || !resp.items || !Array.isArray(resp.items)) {
+        this.logger.error(
+          `Invalid response from ServiceNow for entity ${entity.metadata.namespace}/${entity.metadata.name}`,
+        );
         continue;
       }
 
-      const invalidItems = resp.items.filter(item => !this.isValidComplianceControlItem(item));
+      const invalidItems = resp.items.filter(
+        item => !this.isValidComplianceControlItem(item),
+      );
       if (invalidItems.length > 0) {
-        this.logger.error(`Invalid structure for ${invalidItems.length} items in the ServiceNow response.`);
+        this.logger.error(
+          `Invalid structure for ${invalidItems.length} items in the ServiceNow response.`,
+        );
         continue;
       }
 
@@ -166,39 +174,38 @@ export class RedHatServiceNowFactCollector implements FactCollector {
 
   /** @inheritdoc */
   async getDataSchema(factName: FactRef): Promise<string | undefined> {
-
-    if(factName === SERVICE_FACT_REFERENCE.split('/')[1]) {
+    if (factName === SERVICE_FACT_REFERENCE.split('/')[1]) {
       return JSON.stringify({
         title: 'ESS Compliance Controls',
         description: 'Enterprise Security Standards (ESS) compliance controls.',
         type: 'object',
         properties: {
           controls: {
-            type: "array",
+            type: 'array',
             items: {
               name: {
-                type: "string"
+                type: 'string',
               },
               state: {
-                type: "string"
+                type: 'string',
               },
               status: {
-                type: "string"
+                type: 'string',
               },
               frequency: {
-                type: "string"
+                type: 'string',
               },
               sys_created_on: {
                 type: 'string',
-                format: 'date-time'
+                format: 'date-time',
               },
               sys_updated_on: {
                 type: 'string',
-                format: 'date-time'
-              }
-            }
-          }
-        }
+                format: 'date-time',
+              },
+            },
+          },
+        },
       });
     }
     return undefined;
@@ -206,12 +213,11 @@ export class RedHatServiceNowFactCollector implements FactCollector {
 
   /** @inheritdoc */
   async getCollectionConfigs(): Promise<CollectionConfig[]> {
-
     // Nothing to collect if we don't have a config or if there are no collects configured.
     // const collects = this.#config?.getConfigArray('collects');
     const collects = this.collectorConfig?.getConfigArray('collects');
 
-    if(!collects || collects?.length === 0) {
+    if (!collects || collects?.length === 0) {
       return [];
     }
 
@@ -219,21 +225,40 @@ export class RedHatServiceNowFactCollector implements FactCollector {
     return collects.map((collect: Config) => {
       const collectionConfig = collect;
       return {
-          // Update this if we support more than 1 collection of facts.
-          factRefs: [SERVICE_FACT_REFERENCE],
-          filter: collectionConfig.getOptional('filter') ?? this.config?.getOptional('filter') ??  undefined,
-          exclude: collectionConfig.getOptional('exclude') ?? this.config?.getOptional('exclude') ?? undefined,
-          frequency: collectionConfig.getOptional('frequency') ?? this.config?.getOptional('frequency') ?? undefined,
-          initialDelay: collectionConfig.getOptional('initialDelay') ?? this.config?.getOptional('initialDelay') ?? undefined,
-          batchSize: collectionConfig.getOptional('batchSize') ?? this.config?.getOptional('batchSize') ?? undefined,
-          cache: collectionConfig.getOptional('cache') ?? this.config?.getOptional('cache') ?? undefined
-        }
-      }
-    );
+        // Update this if we support more than 1 collection of facts.
+        factRefs: [SERVICE_FACT_REFERENCE],
+        filter:
+          collectionConfig.getOptional('filter') ??
+          this.config?.getOptional('filter') ??
+          undefined,
+        exclude:
+          collectionConfig.getOptional('exclude') ??
+          this.config?.getOptional('exclude') ??
+          undefined,
+        frequency:
+          collectionConfig.getOptional('frequency') ??
+          this.config?.getOptional('frequency') ??
+          undefined,
+        initialDelay:
+          collectionConfig.getOptional('initialDelay') ??
+          this.config?.getOptional('initialDelay') ??
+          undefined,
+        batchSize:
+          collectionConfig.getOptional('batchSize') ??
+          this.config?.getOptional('batchSize') ??
+          undefined,
+        cache:
+          collectionConfig.getOptional('cache') ??
+          this.config?.getOptional('cache') ??
+          undefined,
+      };
+    });
   }
 
   // Type guard to validate each item.
-  private isValidComplianceControlItem(item: any): item is ServiceNowComplianceControlItem {
+  private isValidComplianceControlItem(
+    item: any,
+  ): item is ServiceNowComplianceControlItem {
     return (
       typeof item.sys_created_on === 'string' &&
       typeof item.name === 'string' &&

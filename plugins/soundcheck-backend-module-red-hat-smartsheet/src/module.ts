@@ -1,15 +1,11 @@
 'use strict';
 
-import {
-  factCollectionExtensionPoint,
-} from '@spotify/backstage-plugin-soundcheck-node';
+import { factCollectionExtensionPoint } from '@spotify/backstage-plugin-soundcheck-node';
 import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import {
-  RedHatSmartsheetFactCollector
-} from "./FactCollector/RedHatSmartsheetFactCollector";
+import { RedHatSmartsheetFactCollector } from './FactCollector/RedHatSmartsheetFactCollector';
 
 export const soundcheckModuleRedHatSmartsheet = createBackendModule({
   pluginId: 'soundcheck',
@@ -23,11 +19,13 @@ export const soundcheckModuleRedHatSmartsheet = createBackendModule({
         logger: coreServices.logger,
       },
       async init({ factCollection, cache, config, logger }) {
-        factCollection.addFactCollector(RedHatSmartsheetFactCollector.create(
-          cache,
-          config,
-          logger,
-        ));
+        try {
+          factCollection.addFactCollector(
+            RedHatSmartsheetFactCollector.create(cache, config, logger),
+          );
+        } catch (error: any) {
+          logger.warn(error);
+        }
       },
     });
   },

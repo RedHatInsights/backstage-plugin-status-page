@@ -1,0 +1,13 @@
+---
+initialDelay:
+  minutes: 10
+api_token: ${SMARTSHEET_API_TOKEN}
+sheetId: ${SMARTSHEET_SHEET_ID}
+collects:
+  - type: pia_status
+    filter:
+      - kind: component
+      - kind: businessapplication
+    cache: true
+    frequency:
+      hours: 2

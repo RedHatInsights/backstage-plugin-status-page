@@ -320,10 +320,10 @@ soundcheck:
       $include: ./soundcheck/collectors/redHatCore.yaml
     redHatServiceNow:
       $include: ./soundcheck/collectors/redHatServiceNow.yaml
-    redHatSmartSheet:
-      $include: ./soundcheck/collectors/redHatSmartSheet.yaml
+    redHatSmartsheet:
+      $include: ./soundcheck/collectors/redHatSmartsheet.yaml
   checks:
-    $include: ./soundcheck/checks/preprod.yaml # preprod/prod here
+    $include: ./soundcheck/checks/preprod.yaml
   programs:
     $include: ./soundcheck/programs/preprod.yaml
   remote_file_updates:
