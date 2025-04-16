@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-devex-dashboard [1.7.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.6.0...@appdev-platform/backstage-plugin-devex-dashboard@1.7.0) (2025-04-16)
+
+
+### Features
+
+* **ADP-737:** Renamed Pulse Dashboard to Compass in all occurances ([660ffc3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/660ffc3d4fd271da290e104139590ffd4ff6ad92))
+
 ## @appdev-platform/backstage-plugin-devex-dashboard [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.5.1...@appdev-platform/backstage-plugin-devex-dashboard@1.6.0) (2025-04-14)
 
 
