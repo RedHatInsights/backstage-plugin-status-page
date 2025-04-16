@@ -17,8 +17,8 @@ metadata:
       title: Backstage Devex Dashboard Plugin NPM Package
     - url: https://console.one.redhat.com/dashboard/app-dev
       title: App Dev Dashboard
-    - url: https://console.one.redhat.com/dashboard/pulse
-      title: Pulse Dashboard
+    - url: https://console.one.redhat.com/dashboard/compass
+      title: Compass Dashboard
     - url: https://console.one.redhat.com/dashboard/hydra
       title: Hydra Dashboard
     - url: https://console.one.redhat.com/dashboard/data-layer

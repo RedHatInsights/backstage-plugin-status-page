@@ -181,7 +181,7 @@ const routes = (
     <Route path="/dashboard/hydra" element={<HydraSupportDashboardPage />} />
     <Route path="/dashboard/app-dev" element={<AppDevDashboardPage />} />
     <Route path="/dashboard/data-layer" element={<DataLayerDashboardPage />} />
-    <Route path="/dashboard/pulse" element={<PulseDashboardPage />} />
+    <Route path="/dashboard/compass" element={<PulseDashboardPage />} />
     <Route path="/status-page" element={<OutageTemplatePage />} />
     <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
     <Route path="/devtools" element={<DevToolsPage />} />
