@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "RedHatGitLabCommitSchema",
+  "title": "Latest commit",
+  "description": "Information about the most recent commit on the default branch.",
+  "type": "object",
+  "properties": {
+    "commit": {
+      "$ref": "https://gitlab.com/gitlab-org/gitlab/-/raw/master/doc/api/openapi/openapi.yaml#/components/schemas/API_Entities_Commit"
+    }
+  }
+}

@@ -8,8 +8,11 @@ the [GitLab fact collector built-in to Soundcheck][soundcheck-gitlab-fact-collec
 
 * Code coverage (from the [GitLab Pipelines API][gitlab-pipelines-api])
 * [Composer][php-composer] lock file modification time
+* [Drupal extension info file][drupal-extension-info-file]
 * [Environments][gitlab-environments]
+* Latest [commit][gitlab-commits]
 * Latest [pipeline][gitlab-pipelines]
+* [Merge request approval rules][gitlab-merge-request-approval-rules]
 * [Shared stages][red-hat-gitlab-shared] usage
 
 ## Prerequisites
@@ -55,7 +58,13 @@ backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-
 
 [backstage-gitlab-integration]: https://backstage.io/docs/integrations/gitlab/locations/
 
+[drupal-extension-info-file]: https://www.drupal.org/docs/develop/creating-modules/let-drupal-know-about-your-module-with-an-infoyml-file
+
+[gitlab-commits]: https://docs.gitlab.com/api/commits/#get-a-single-commit
+
 [gitlab-environments]: https://docs.gitlab.com/ee/ci/environments/
+
+[gitlab-merge-request-approval-rules]: https://docs.gitlab.com/user/project/merge_requests/approvals/rules/
 
 [gitlab-pipelines]: https://docs.gitlab.com/ee/ci/pipelines/index.html
 

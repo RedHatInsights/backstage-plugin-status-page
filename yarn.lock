@@ -734,11 +734,13 @@ __metadata:
     "@backstage/backend-test-utils": "npm:^1.2.1"
     "@backstage/catalog-model": "npm:^1.7.3"
     "@backstage/cli": "npm:^0.29.5"
+    "@backstage/config": "npm:^1.3.2"
     "@gitbeaker/core": "npm:^42.1.0"
     "@gitbeaker/rest": "npm:^42.1.0"
     "@spotify/backstage-plugin-soundcheck-common": "npm:^0.15.0"
     "@spotify/backstage-plugin-soundcheck-node": "npm:^0.9.1"
     "@types/luxon": "npm:^3"
+    fast-xml-parser: "npm:^4.4.1"
     luxon: "npm:^3.5.0"
     yaml: "npm:^2.7.0"
   languageName: unknown

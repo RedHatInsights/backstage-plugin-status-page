@@ -1,0 +1,62 @@
+---
+initialDelay:
+  minutes: 10
+collects:
+  - type: code_coverage
+    filter:
+      - kind: component
+    cache: true
+    frequency:
+      hours: 1
+  - type: composer_lock_modified
+    filter:
+      - kind: component
+        metadata.tags:
+          - drupal
+          - drupal-extension
+          - drupal-module
+          - drupal-platform
+          - drupal-theme
+    cache: true
+    frequency:
+      hours: 1
+  - type: drupal_extension_info_file
+    filter:
+      - kind: component
+        metadata.tags:
+          - drupal-extension
+          - drupal-module
+          - drupal-theme
+    cache: true
+    frequency:
+      hours: 1
+  - type: environments
+    filter:
+      - kind: component
+    cache: true
+    frequency:
+      hours: 1
+  - type: latest_commit
+    filter:
+      - kind: component
+    cache: true
+    frequency:
+      hours: 1
+  - type: latest_pipeline
+    filter:
+      - kind: component
+    cache: true
+    frequency:
+      hours: 1
+  - type: merge_request_approval_rules
+    filter:
+      - kind: component
+    cache: true
+    frequency:
+      hours: 1
+  - type: shared_stages
+    filter:
+      - kind: component
+    cache: true
+    frequency:
+      hours: 1

@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "RedHatGitLabMergeRequestApprovalRules",
+  "title": "Merge request approval rules",
+  "description": "Project-level rules for who must approve a merge request before it can be merged.",
+  "type": "object",
+  "properties": {
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "rule_type": {
+            "type": "string"
+          },
+          "eligible_approvers": {
+            "type": "array"
+          },
+          "approvals_required": {
+            "type": "integer"
+          },
+          "users": {
+            "type": "array"
+          },
+          "groups": {
+            "type": "array"
+          },
+          "contains_hidden_groups": {
+            "type": "boolean"
+          },
+          "protected_branches": {
+            "type": "array"
+          },
+          "applies_to_all_protected_branches": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}
