@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.0.1...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.1.0) (2025-04-24)
+
+
+### Features
+
+* **PULSE-577:** Add new facts to Red Hat GitLab plugin ([a25b0ec](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/a25b0eceaca388e2bfa91e84690dd9b1c80bcf85))
+
 ## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab [1.0.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.0.0...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.0.1) (2025-04-14)
 
 
