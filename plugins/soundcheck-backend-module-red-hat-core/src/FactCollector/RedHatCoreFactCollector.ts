@@ -75,6 +75,15 @@ export class RedHatCoreFactCollector implements FactCollector {
   protected cache: CacheService;
 
   /**
+   * Collector configuration.
+   *
+   * @type {Config | undefined}
+   *
+   * @protected
+   */
+  protected collectorConfig: Config | undefined;
+
+  /**
    * Config service.
    *
    * @type {RootConfigService}
@@ -150,6 +159,10 @@ export class RedHatCoreFactCollector implements FactCollector {
     });
 
     this.platforms = this.config.getConfigArray('soundcheck.collectors.redHatCore.platforms');
+
+    this.collectorConfig = this.config.getOptionalConfig(
+      'soundcheck.collectors.redHatCore',
+    );
   }
 
   /** @inheritdoc */
@@ -212,7 +225,27 @@ export class RedHatCoreFactCollector implements FactCollector {
 
   /** @inheritdoc */
   async getCollectionConfigs(): Promise<CollectionConfig[]> {
-    return [];
+    const collects: Config[] | undefined = this.collectorConfig?.getConfigArray('collects');
+
+    if (collects === undefined || collects.length === 0) {
+      return [];
+    }
+
+    const factNames: string[] = (await this.getFactNames()).map((factName: string) => {
+      return `${this.id}:default/${factName}`;
+    });
+
+    return collects.map((collect: Config) => {
+      return {
+        factRefs: factNames,
+        filter: collect.getOptional('filter') ?? this.config?.getOptional('filter') ?? undefined,
+        exclude: collect.getOptional('exclude') ?? this.config?.getOptional('exclude') ?? undefined,
+        frequency: collect.getOptional('frequency') ?? this.config?.getOptional('frequency') ?? undefined,
+        initialDelay: collect.getOptional('initialDelay') ?? this.config?.getOptional('initialDelay') ?? undefined,
+        batchSize: collect.getOptional('batchSize') ?? this.config?.getOptional('batchSize') ?? undefined,
+        cache: collect.getOptional('cache') ?? this.config?.getOptional('cache') ?? undefined
+      }
+    });
   }
 
   /** @inheritdoc */
