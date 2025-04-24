@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "RedHatGitLabDrupalExtensionInfoFile",
+  "title": "Drupal extension info file",
+  "description": "Drupal extensions must have a .info.yml. This fetches them in a parseable JSON format.",
+  "type": "object",
+  "properties": {
+    "contents": {
+      "type": "object",
+      "description": "Parsed file contents."
+    },
+    "drupalCoreHighestBranch": {
+      "type": "string",
+      "description": "The highest supported branch of Drupal core."
+    },
+    "drupalCoreSupportedBranches": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "The supported_branches value from the Drupal release history API."
+    },
+    "raw": {
+      "type": "string",
+      "description": "Raw file contents."
+    }
+  }
+}

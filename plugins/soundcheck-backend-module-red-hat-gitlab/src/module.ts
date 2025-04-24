@@ -18,14 +18,21 @@ export const soundcheckModuleRedHatGitlab = createBackendModule({
     reg.registerInit({
       deps: {
         factCollection: factCollectionExtensionPoint,
+        cache: coreServices.cache,
         config: coreServices.rootConfig,
         logger: coreServices.logger,
       },
-      async init({ factCollection, config, logger }) {
-        factCollection.addFactCollector(RedHatGitLabFactCollector.create(
-          config,
-          logger,
-        ));
+      async init({ factCollection, cache, config, logger }) {
+        try {
+          factCollection.addFactCollector(RedHatGitLabFactCollector.create(
+            cache,
+            config,
+            logger,
+          ));
+        }
+        catch (error: any) {
+          logger.warn(error);
+        }
       },
     });
   },

@@ -318,6 +318,8 @@ soundcheck:
       $include: ./soundcheck/collectors/sonarqube.yaml
     redHatCore:
       $include: ./soundcheck/collectors/redHatCore.yaml
+    redHatGitLab:
+      $include: ./soundcheck/collectors/redHatGitLab.yaml
     redHatServiceNow:
       $include: ./soundcheck/collectors/redHatServiceNow.yaml
     redHatSmartsheet:
