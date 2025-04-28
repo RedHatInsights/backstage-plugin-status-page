@@ -12,6 +12,7 @@ export enum FactNames {
   LatestCommit = 'latest_commit',
   LatestPipeline = 'latest_pipeline',
   MergeRequestApprovalRules = 'merge_request_approval_rules',
+  RepositoryTree = 'repository_tree',
   SharedStages = 'shared_stages',
 
 }

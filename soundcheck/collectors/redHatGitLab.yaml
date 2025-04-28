@@ -54,6 +54,12 @@ collects:
     cache: true
     frequency:
       hours: 1
+  - type: repository_tree
+    filter:
+      - kind: component
+    cache: true
+    frequency:
+      hours: 1
   - type: shared_stages
     filter:
       - kind: component

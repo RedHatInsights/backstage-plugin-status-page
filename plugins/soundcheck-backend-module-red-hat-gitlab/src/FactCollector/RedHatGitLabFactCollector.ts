@@ -54,6 +54,7 @@ import {
 import RedHatGitLabCommitSchema from '../schemas/RedHatGitLabCommit.schema.json';
 import RedHatGitLabDrupalExtensionInfoFileSchema from '../schemas/RedHatGitLabDrupalExtensionInfoFile.schema.json';
 import RedHatGitLabMergeRequestApprovalRules from '../schemas/RedHatGitLabMergeRequestApprovalRules.schema.json';
+import RedHatGitLabRepositoryTreeSchema from '../schemas/RedHatGitLabRepositoryTree.schema.json';
 
 /**
  * Fact collector for facts not covered by the Spotify GitLab fact collector.
@@ -223,73 +224,86 @@ export class RedHatGitLabFactCollector implements FactCollector {
 
         fact = undefined;
 
-        switch (parsedFactRef.name) {
-          case FactNames.CodeCoverage:
-            fact = await this.collectCodeCoverage(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+        try {
+          switch (parsedFactRef.name) {
+            case FactNames.CodeCoverage:
+              fact = await this.collectCodeCoverage(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          case FactNames.ComposerLockModified:
-            fact = await this.collectComposerLockModified(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+            case FactNames.ComposerLockModified:
+              fact = await this.collectComposerLockModified(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          case FactNames.DrupalExtensionInfoFile:
-            fact = await this.collectDrupalExtensionInfoFile(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+            case FactNames.DrupalExtensionInfoFile:
+              fact = await this.collectDrupalExtensionInfoFile(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          case FactNames.Environments:
-            fact = await this.collectEnvironments(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+            case FactNames.Environments:
+              fact = await this.collectEnvironments(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          case FactNames.LatestCommit:
-            fact = await this.collectLatestCommit(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+            case FactNames.LatestCommit:
+              fact = await this.collectLatestCommit(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          case FactNames.LatestPipeline:
-            fact = await this.collectLatestPipeline(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+            case FactNames.LatestPipeline:
+              fact = await this.collectLatestPipeline(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          case FactNames.MergeRequestApprovalRules:
-            fact = await this.collectMergeRequestApprovalRules(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+            case FactNames.MergeRequestApprovalRules:
+              fact = await this.collectMergeRequestApprovalRules(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          case FactNames.SharedStages:
-            fact = await this.collectSharedStages(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+            case FactNames.RepositoryTree:
+              fact = await this.collectRepositoryTree(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          default:
-          // Do nothing.
+            case FactNames.SharedStages:
+              fact = await this.collectSharedStages(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
+
+            default:
+            // Do nothing.
+          }
+        }
+        catch {
+          continue;
         }
 
         if (fact !== undefined) {
@@ -427,6 +441,9 @@ export class RedHatGitLabFactCollector implements FactCollector {
       case FactNames.MergeRequestApprovalRules:
         return JSON.stringify(RedHatGitLabMergeRequestApprovalRules);
 
+      case FactNames.RepositoryTree:
+        return JSON.stringify(RedHatGitLabRepositoryTreeSchema);
+
       case FactNames.SharedStages:
         return JSON.stringify({
           title: 'Shared stages and includes status',
@@ -469,6 +486,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
       FactNames.LatestCommit,
       FactNames.LatestPipeline,
       FactNames.MergeRequestApprovalRules,
+      FactNames.RepositoryTree,
       FactNames.SharedStages,
     ];
   }
@@ -844,6 +862,55 @@ export class RedHatGitLabFactCollector implements FactCollector {
         // If no jobs were found, this callback will produce an empty array.
         jobs: jobs.map((job) => job.name),
         pipeline_id: pipeline?.id ?? null,
+      },
+      timestamp: DateTime.utc().toISO(),
+    };
+  }
+
+  /**
+   * Collect a repository's tree.
+   *
+   * @param {Entity} entity
+   *   Entity.
+   * @param {FactRef} factRef
+   *   Fact ref.
+   * @param {string | number} gitlabProjectId
+   *   GitLab project ID.
+   *
+   * @return {Promise<Fact | undefined>}
+   *   New fact, or undefined on failure.
+   *
+   * @protected
+   */
+  protected async collectRepositoryTree(
+    entity: Entity,
+    factRef: FactRef,
+    gitlabProjectId: string | number,
+  ) {
+    const tree = await this.gitlab.Repositories.allRepositoryTrees(
+      gitlabProjectId,
+      {
+        perPage: 100,
+      }
+    );
+
+    if (tree === undefined) {
+      this.logger.error(`Unable to get repository tree for GitLab project ${gitlabProjectId}`);
+
+      throw new Error(`Unable to get repository tree for GitLab project ${gitlabProjectId}`);
+    }
+
+    return {
+      factRef: factRef,
+      entityRef: stringifyEntityRef(entity),
+      data: {
+        tree: tree.map((leaf) => ({
+          id: leaf.id,
+          name: leaf.name,
+          type: leaf.type,
+          path: leaf.path,
+          mode: leaf.mode,
+        })),
       },
       timestamp: DateTime.utc().toISO(),
     };
