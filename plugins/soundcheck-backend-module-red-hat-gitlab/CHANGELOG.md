@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.1.0...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.2.0) (2025-04-28)
+
+
+### Features
+
+* **PULSE-561:** Add repository_tree fact to Red Hat GitLab module ([50a7031](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/50a70312ee2069f6fc76151f4dc015683251cccd))
+
 ## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.0.1...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.1.0) (2025-04-24)
 
 
