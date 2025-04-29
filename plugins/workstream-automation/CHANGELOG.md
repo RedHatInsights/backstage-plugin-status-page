@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.11.4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.11.3...@appdev-platform/backstage-plugin-workstream-automation@1.11.4) (2025-04-29)
+
+
+### Bug Fixes
+
+* **PULSE-601:** hide card if there are no workstreams ([67b3c89](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/67b3c8937c539aef4398a9652007b4fb0440451b))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.11.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.11.2...@appdev-platform/backstage-plugin-workstream-automation@1.11.3) (2025-04-29)
 
 
