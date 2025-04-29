@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-devex-data-layer-backend [1.5.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-data-layer-backend@1.4.0...@appdev-platform/backstage-plugin-devex-data-layer-backend@1.5.0) (2025-04-29)
+
+
+### Features
+
+* **ADP-729:** Hydra Notifications analytics on Devex Dashboard ([f054b2b](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/f054b2b21dd97f47b642c42f17d2610d1f5ec062))
+
 ## @appdev-platform/backstage-plugin-devex-data-layer-backend [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-data-layer-backend@1.3.1...@appdev-platform/backstage-plugin-devex-data-layer-backend@1.4.0) (2025-04-14)
 
 
