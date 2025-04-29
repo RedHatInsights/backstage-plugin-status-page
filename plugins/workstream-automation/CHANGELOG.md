@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.11.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.11.2...@appdev-platform/backstage-plugin-workstream-automation@1.11.3) (2025-04-29)
+
+
+### Bug Fixes
+
+* **PULSE-601:** fix infinite loading bug ([e91b21c](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/e91b21cdaaa5b6611f19a70d9872529cbec03939))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.11.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.11.1...@appdev-platform/backstage-plugin-workstream-automation@1.11.2) (2025-04-15)
 
 
