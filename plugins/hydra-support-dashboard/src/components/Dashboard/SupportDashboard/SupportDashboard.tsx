@@ -1,27 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { Header, Page, Content, HeaderLabel } from '@backstage/core-components';
 import { Card, Grid, useTheme } from '@material-ui/core';
 
 import { useApi } from '@backstage/core-plugin-api';
-import { cmdbApiRef, jiraApiRef } from '../../api';
-import useStyles from './AnalyticsDashboard.styles';
-import { SankeyChart } from './SankeyChart/SankryChart';
-import { SortableTable } from './IssuesTable/SortableTable';
-import { HighLevelGoals } from './HighLevelGoals/HighLevelGoals';
+import { cmdbApiRef, jiraApiRef } from '../../../api';
+import useStyles from './SupportDashboard.styles';
+import { SankeyChart } from '../SankeyChart/SankryChart';
+import { SortableTable } from '../IssuesTable/SortableTable';
+import { HighLevelGoals } from '../HighLevelGoals/HighLevelGoals';
 import {
   IEpicConfig,
   IProgressData,
   ISankeyData,
   ITableData,
-} from './constants';
+} from '../constants';
 import {
   Loader,
   prepareSankeyData,
   prepareTableData,
   prepareProgressData,
   prepareStatsIssueCountData,
-} from './utils';
-import { NewAndSupportWorkChart } from './NewWorkAndSupportWork/NewAndSupportWork';
+} from '../utils';
+import { NewAndSupportWorkChart } from '../NewWorkAndSupportWork/NewAndSupportWork';
 
 interface IPageVars {
   loadingVisualData: boolean;
@@ -33,7 +32,7 @@ interface IPageVars {
   workData: { supportWorkStoryPoints: number; newWorkStoryPoints: number };
 }
 
-export const AnalyticsDashboard = () => {
+export const SupportDashboard = () => {
   const theme: any = useTheme();
   const classes = useStyles(theme);
   const jiraApi = useApi(jiraApiRef);
@@ -138,14 +137,6 @@ export const AnalyticsDashboard = () => {
   }, [epicConfig]);
 
   return (
-    <Page themeId="tool">
-      <Header
-        title="Hydra Support Analytics Dashboard"
-        subtitle="Analytics based on JIRA tickets"
-      >
-        <HeaderLabel label="Owner" value="Team Hydra" />
-      </Header>
-      <Content>
         <Card className={classes.content}>
           {pageVars.loadingVisualData ? (
             <Loader message="Fetching data from JIRA " />
@@ -230,7 +221,5 @@ export const AnalyticsDashboard = () => {
             </>
           )}
         </Card>
-      </Content>
-    </Page>
   );
 };

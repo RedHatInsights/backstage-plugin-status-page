@@ -18,6 +18,12 @@ import {
   fetchErrorRatesPerSubgraph,
   fetchSubgraphs,
 } from './HistoricalSearches';
+import { HydraSplunkDatabase } from '../../database/HydraSplunkDatabase';
+import {
+  fetchNotificationActiveUsers,
+  fetchNotificationsPerChannel,
+  fetchNotificationsServed,
+} from './HydraSearches';
 
 export async function CreateSplunkQueryService({
   logger,
@@ -38,8 +44,13 @@ export async function CreateSplunkQueryService({
     skipMigrations: true,
   });
 
+  const hydraDatabaseServer = await HydraSplunkDatabase.create({
+    knex: await database.getClient(),
+    skipMigrations: true,
+  });
+
   return {
-    async fetchHistoricalData() {
+    async fetchDTLHistoricalData() {
       try {
         await fetchSubgraphs(
           splunkApiHost,
@@ -110,6 +121,29 @@ export async function CreateSplunkQueryService({
           databaseServer,
           queryForTotalRequestOnPublicServer,
           PollingTypes.GatewayPublic,
+        );
+      } catch (err) {
+        logger.error(String(err));
+      }
+    },
+    async fetchHydraHistoricalData() {
+      try {
+        await fetchNotificationActiveUsers(
+          splunkApiHost,
+          token,
+          hydraDatabaseServer,
+        );
+
+        await fetchNotificationsServed(
+          splunkApiHost,
+          token,
+          hydraDatabaseServer,
+        );
+
+        await fetchNotificationsPerChannel(
+          splunkApiHost,
+          token,
+          hydraDatabaseServer,
         );
       } catch (err) {
         logger.error(String(err));
