@@ -47,7 +47,7 @@ export const EntityWorkstreamCard = (props: {
             );
           });
         setLoading(false);
-      }
+      } else setLoading(false);
     }
   }, [inWorkstreams, catalogApi, loading]);
 
@@ -91,10 +91,12 @@ export const EntityWorkstreamCard = (props: {
     },
   ];
 
+  if (!inWorkstreams) return null;
+
   return (
     <InfoCard
       {...props}
-      title={`Workstreams (${inWorkstreams?.length})`}
+      title={`Workstreams (${inWorkstreams.length})`}
       noPadding
     >
       <Table
