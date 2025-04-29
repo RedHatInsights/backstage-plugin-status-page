@@ -8,6 +8,9 @@ export {
   queryForTotalRequestOnPublicServer,
   PollingTypes,
   getQueryForErrorRatesPerSubgraph,
+  queryForNotificationsActiveUsers,
+  queryForNotificationsPerChannel,
+  HydraNotificationsLogIds,
 } from './constants';
 export { pollingBySubgraph, commonPolling } from './schedulingMethods';
 export {
@@ -16,3 +19,8 @@ export {
   fetchApiGatewayRequestsRecord,
   fetchErrorRatesPerSubgraph,
 } from './HistoricalSearches';
+
+export {
+  fetchNotificationsServed,
+  fetchNotificationActiveUsers,
+} from './HydraSearches';
