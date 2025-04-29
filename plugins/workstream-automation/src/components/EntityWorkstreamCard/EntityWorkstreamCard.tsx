@@ -91,12 +91,12 @@ export const EntityWorkstreamCard = (props: {
     },
   ];
 
-  if (!inWorkstreams) return null;
+  if (inWorkstreams?.length === 0) return null;
 
   return (
     <InfoCard
       {...props}
-      title={`Workstreams (${inWorkstreams.length})`}
+      title={`Workstreams (${inWorkstreams?.length})`}
       noPadding
     >
       <Table
