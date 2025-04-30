@@ -37,17 +37,14 @@ export const EntityWorkstreamCard = (props: {
 
   useEffect(() => {
     if (loading) {
-      const workstreamRefs = inWorkstreams?.map(w => w.targetRef);
-      if (workstreamRefs) {
+      inWorkstreams?.forEach(rel =>
         catalogApi
-          .getEntitiesByRefs({ entityRefs: workstreamRefs })
-          .then(resp => {
-            setWorkstreams(t =>
-              t.concat(resp.items as WorkstreamDataV1alpha1[]),
-            );
-          });
-        setLoading(false);
-      } else setLoading(false);
+          .getEntityByRef(rel.targetRef)
+          .then(res =>
+            setWorkstreams(ws => ws.concat(res as WorkstreamDataV1alpha1)),
+          ),
+      );
+      setLoading(false);
     }
   }, [inWorkstreams, catalogApi, loading]);
 
