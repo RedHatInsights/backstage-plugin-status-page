@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.11.5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.11.4...@appdev-platform/backstage-plugin-workstream-automation@1.11.5) (2025-04-30)
+
+
+### Bug Fixes
+
+* **PULSE-601:** fix workstream card on entity tab ([6bed52d](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/6bed52d042407883ce1d8f44c6574ec2296c696b))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.11.4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.11.3...@appdev-platform/backstage-plugin-workstream-automation@1.11.4) (2025-04-29)
 
 
