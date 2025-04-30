@@ -26,6 +26,6 @@ spec:
   providesApis:
     - api:devex/workstream-plugin-api
   dependsOn:
-    - devex/workstream-automation-common-plugin
-    - devex/workstream-automation-backend-plugin
-  subcomponentOf: devex/backstage-console-frontend
+    - component:devex/workstream-automation-common-plugin
+    - component:devex/workstream-automation-backend-plugin
+  subcomponentOf: component:devex/backstage-console-frontend

@@ -25,7 +25,7 @@ spec:
   system: devex/redhat-experience-platform
   subcomponentOf: devex/backstage-console-backend
   dependsOn:
-    - devex/workstream-automation-common-plugin
+    - component:devex/workstream-automation-common-plugin
   providesApis:
     - devex/workstream-plugin-api
 ---
