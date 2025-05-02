@@ -224,86 +224,81 @@ export class RedHatGitLabFactCollector implements FactCollector {
 
         fact = undefined;
 
-        try {
-          switch (parsedFactRef.name) {
-            case FactNames.CodeCoverage:
-              fact = await this.collectCodeCoverage(
-                entity,
-                factRef,
-                gitlabProjectId,
-              );
-              break;
+        switch (parsedFactRef.name) {
+          case FactNames.CodeCoverage:
+            fact = await this.collectCodeCoverage(
+              entity,
+              factRef,
+              gitlabProjectId,
+            );
+            break;
 
-            case FactNames.ComposerLockModified:
-              fact = await this.collectComposerLockModified(
-                entity,
-                factRef,
-                gitlabProjectId,
-              );
-              break;
+          case FactNames.ComposerLockModified:
+            fact = await this.collectComposerLockModified(
+              entity,
+              factRef,
+              gitlabProjectId,
+            );
+            break;
 
-            case FactNames.DrupalExtensionInfoFile:
-              fact = await this.collectDrupalExtensionInfoFile(
-                entity,
-                factRef,
-                gitlabProjectId,
-              );
-              break;
+          case FactNames.DrupalExtensionInfoFile:
+            fact = await this.collectDrupalExtensionInfoFile(
+              entity,
+              factRef,
+              gitlabProjectId,
+            );
+            break;
 
-            case FactNames.Environments:
-              fact = await this.collectEnvironments(
-                entity,
-                factRef,
-                gitlabProjectId,
-              );
-              break;
+          case FactNames.Environments:
+            fact = await this.collectEnvironments(
+              entity,
+              factRef,
+              gitlabProjectId,
+            );
+            break;
 
-            case FactNames.LatestCommit:
-              fact = await this.collectLatestCommit(
-                entity,
-                factRef,
-                gitlabProjectId,
-              );
-              break;
+          case FactNames.LatestCommit:
+            fact = await this.collectLatestCommit(
+              entity,
+              factRef,
+              gitlabProjectId,
+            );
+            break;
 
-            case FactNames.LatestPipeline:
-              fact = await this.collectLatestPipeline(
-                entity,
-                factRef,
-                gitlabProjectId,
-              );
-              break;
+          case FactNames.LatestPipeline:
+            fact = await this.collectLatestPipeline(
+              entity,
+              factRef,
+              gitlabProjectId,
+            );
+            break;
 
-            case FactNames.MergeRequestApprovalRules:
-              fact = await this.collectMergeRequestApprovalRules(
-                entity,
-                factRef,
-                gitlabProjectId,
-              );
-              break;
+          case FactNames.MergeRequestApprovalRules:
+            fact = await this.collectMergeRequestApprovalRules(
+              entity,
+              factRef,
+              gitlabProjectId,
+            );
+            break;
 
-            case FactNames.RepositoryTree:
-              fact = await this.collectRepositoryTree(
-                entity,
-                factRef,
-                gitlabProjectId,
-              );
-              break;
+          case FactNames.RepositoryTree:
+            fact = await this.collectRepositoryTree(
+              entity,
+              factRef,
+              gitlabProjectId,
+            );
+            break;
 
-            case FactNames.SharedStages:
-              fact = await this.collectSharedStages(
-                entity,
-                factRef,
-                gitlabProjectId,
-              );
-              break;
+          case FactNames.SharedStages:
+            fact = await this.collectSharedStages(
+              entity,
+              factRef,
+              gitlabProjectId,
+            );
+            break;
 
-            default:
-            // Do nothing.
-          }
-        }
-        catch {
-          continue;
+          default:
+          // Do nothing.
         }
 
         if (fact !== undefined) {
