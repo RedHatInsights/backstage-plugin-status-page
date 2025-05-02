@@ -532,7 +532,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
     // If the file modification time was not found, skip this fact for
     // this entity.
     if (modified_time === undefined) {
-      this.logger.info(`Unable to collect ${stringifyFactRef(factRef)}: unable to get modification time for composer.lock for GitLab project "${gitlabProjectId}" in RedHatGitLabFactCollector.`);
+      this.logger.error(`Unable to collect ${stringifyFactRef(factRef)}: unable to get modification time for composer.lock for GitLab project "${gitlabProjectId}" in RedHatGitLabFactCollector.`);
 
       return undefined;
     }
@@ -583,7 +583,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
       if (!drupalReleaseHistoryResponse.ok) {
         this.logger.error(`HTTP ${drupalReleaseHistoryResponse.status} response from ${drupalReleaseHistoryUrl}.`);
 
-        throw new Error(`Unable to get Drupal release history, HTTP status ${drupalReleaseHistoryResponse.status}`);
+        return undefined;
       }
       // Parse the XML response into an object.
       drupalReleaseHistory = this.xmlParser.parse(await drupalReleaseHistoryResponse.text());
@@ -591,7 +591,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
       if (drupalReleaseHistory === undefined) {
         this.logger.error(`Unable to parse Drupal release history XML.`);
 
-        throw new Error(`Unable to parse Drupal release history XML.`);
+        return undefined;
       }
       // Store the parsed object in the cache.
       this.cache.set(drupalReleaseHistoryCacheKey, drupalReleaseHistory, {
@@ -626,7 +626,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
     if (highestBranch === undefined) {
       this.logger.error(`Highest supported Drupal branch is empty, source value from API is ${drupalReleaseHistory.project.supported_branches}`);
 
-      throw new Error(`Highest supported Drupal branch is empty`);
+      return undefined;
     }
     // Remove the '^' so the value is just, for example, '11.1'.
     highestBranch = highestBranch.substring(1);
@@ -667,7 +667,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
     if (infoFile === undefined) {
       this.logger.error(`Unable to find .info.yml file for project ${gitlabProjectId}`);
 
-      throw new Error(`Unable to find .info.yml file for project ${gitlabProjectId}`);
+      return undefined;
     }
 
     // Get the raw YAML of the info file.
@@ -682,7 +682,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
     if (typeof infoFileContents !== 'string' || infoFileContents.length < 1) {
       this.logger.error(`Unable to get contents of file ${infoFile.name}`);
 
-      throw new Error(`Unable to get contents of file ${infoFile.name}`);
+      return undefined;
     }
 
     // Parse the YAML into an object.
@@ -691,7 +691,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
     if (typeof parsedInfoFile !== 'object') {
       this.logger.error(`Unable to parse info file ${infoFile.name} from GitLab project ${gitlabProjectId}`);
 
-      throw new Error(`Unable to parse info file ${infoFile.name} from GitLab project ${gitlabProjectId}`);
+      return undefined;
     }
 
     // Return the fact.
@@ -779,14 +779,14 @@ export class RedHatGitLabFactCollector implements FactCollector {
     if (project === undefined) {
       this.logger.error(`Unable to get GitLab project ${gitlabProjectId}`);
 
-      throw new Error(`Unable to get GitLab project ${gitlabProjectId}`);
+      return undefined;
     }
     const commit = await this.gitlab.Commits.show(gitlabProjectId, project.default_branch);
     // If the most recent commit could not be found, throw an error.
     if (commit === undefined) {
       this.logger.error(`Unable to get latest commit for GitLab project ${gitlabProjectId}`);
 
-      throw new Error(`Unable to get latest commit for GitLab project ${gitlabProjectId}`);
+      return undefined;
     }
 
     return {
@@ -880,7 +880,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
     if (rules === undefined) {
       this.logger.error(`Unable to get merge request approval rules for GitLab project ${gitlabProjectId}`);
 
-      throw new Error(`Unable to get merge request approval rules for GitLab project ${gitlabProjectId}`);
+      return undefined;
     }
 
     return {
@@ -1023,7 +1023,9 @@ export class RedHatGitLabFactCollector implements FactCollector {
 
       // Throw an error if the file is undefined.
       if (file === undefined) {
-        throw new Error('Unknown error while getting file');
+        this.logger.error('Unknown error while getting file');
+
+        return undefined;
       }
 
       // Get the file's latest commit.
@@ -1034,7 +1036,9 @@ export class RedHatGitLabFactCollector implements FactCollector {
 
       // Throw an error if either the commit or the committed date is undefined.
       if (commit?.committed_date === undefined) {
-        throw new Error(`Unknown error while getting commit ${commit.id}`);
+        this.logger.error(`Unknown error while getting commit ${commit.id}`);
+
+        return undefined;
       }
 
       // Return the timestamp as a DateTime.
