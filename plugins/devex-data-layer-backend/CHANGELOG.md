@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-devex-data-layer-backend [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-data-layer-backend@1.5.0...@appdev-platform/backstage-plugin-devex-data-layer-backend@1.6.0) (2025-05-02)
+
+
+### Features
+
+* **ADP-726:** Hydra attachments analytics ([f0727e5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/f0727e50fc7059ae108110374242ae8fe8aea9b4))
+
 ## @appdev-platform/backstage-plugin-devex-data-layer-backend [1.5.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-data-layer-backend@1.4.0...@appdev-platform/backstage-plugin-devex-data-layer-backend@1.5.0) (2025-04-29)
 
 
