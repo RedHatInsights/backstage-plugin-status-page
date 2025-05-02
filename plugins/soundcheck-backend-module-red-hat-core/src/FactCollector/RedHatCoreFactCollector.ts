@@ -30,12 +30,6 @@ import {
   Status,
 } from "../types/Status";
 import * as chrono from 'chrono-node';
-import {
-  CmdbTokenConfigurationPairMissingError,
-  EntityMissingCmdbAnnotationError,
-  EntityMissingProductionLinkError,
-  NotOkResponseError,
-} from "../errors";
 import RedHatCoreDependencyComposerSchema from '../schemas/RedHatCoreDependencyComposer.schema.json';
 import RedHatCoreDependencyDrupalSchema from '../schemas/RedHatCoreDependencyDrupal.schema.json';
 import RedHatCoreStatusSchema from '../schemas/RedHatCoreStatus.schema.json';
@@ -183,35 +177,30 @@ export class RedHatCoreFactCollector implements FactCollector {
 
         fact = undefined;
 
-        try {
-          switch (parsedFactRef.name) {
-            case 'dependency-composer':
-              fact = await this.collectDependencyComposer(
-                entity,
-                factRef,
-              );
-              break;
+        switch (parsedFactRef.name) {
+          case 'dependency-composer':
+            fact = await this.collectDependencyComposer(
+              entity,
+              factRef,
+            );
+            break;
 
-            case 'dependency-drupal':
-              fact = await this.collectDependencyDrupal(
-                entity,
-                factRef,
-              );
-              break;
+          case 'dependency-drupal':
+            fact = await this.collectDependencyDrupal(
+              entity,
+              factRef,
+            );
+            break;
 
-            case 'status':
-              fact = await this.collectStatus(
-                entity,
-                factRef,
-              );
-              break;
+          case 'status':
+            fact = await this.collectStatus(
+              entity,
+              factRef,
+            );
+            break;
 
-            default:
-            // Do nothing.
-          }
-        }
-        catch (error: any) {
-          this.logger.info(error);
+          default:
+          // Do nothing.
         }
 
         if (fact !== undefined) {
@@ -295,6 +284,11 @@ export class RedHatCoreFactCollector implements FactCollector {
   ): Promise<Fact | undefined> {
     // Get the dependencies.
     const response = await this.sendRequest(entity, '/api/red-hat-core/status/dependency/composer');
+    if (response === undefined) {
+      this.logger.error(`Unable to get Composer dependencies for ${stringifyEntityRef(entity)}.`);
+
+      return undefined;
+    }
     const dependencies = response.data.dependencies.composer;
 
     return {
@@ -325,6 +319,11 @@ export class RedHatCoreFactCollector implements FactCollector {
     factRef: FactRef,
   ): Promise<Fact | undefined> {
     const response = await this.sendRequest(entity, '/api/red-hat-core/status/dependency/drupal');
+    if (response === undefined) {
+      this.logger.error(`Unable to get Drupal dependencies for ${stringifyEntityRef(entity)}.`);
+
+      return undefined;
+    }
     const dependencies = response.data.dependencies.drupal;
 
     return {
@@ -355,6 +354,12 @@ export class RedHatCoreFactCollector implements FactCollector {
     factRef: FactRef,
   ): Promise<Fact | undefined> {
     const response = await this.sendRequest(entity, '/api/red-hat-core/status');
+    if (response === undefined) {
+      this.logger.error(`Unable to get Drupal status report for ${stringifyEntityRef(entity)}.`);
+
+      return undefined;
+    }
+
     const statuses: Status[] = response.data.statuses;
 
     for (const status of statuses) {
@@ -389,26 +394,28 @@ export class RedHatCoreFactCollector implements FactCollector {
    * @param {Entity} entity
    *   Entity to get the API token for.
    *
-   * @return {string}
+   * @return {string | undefined}
    *   API token.
-   *
-   * @throws {EntityMissingCmdbAnnotationError | CmdbTokenConfigurationPairMissingError}
    *
    * @protected
    */
   protected getEntityToken(
     entity: Entity,
-  ): string {
+  ): string | undefined {
     // Get the entity's CMDB code.
     if (!entity.metadata.annotations?.hasOwnProperty(this.annotationAppCmdbCode)) {
-      throw new EntityMissingCmdbAnnotationError(`Unable to get CMDB code from entity ${stringifyEntityRef(entity)}.`);
+      this.logger.error(`Unable to get CMDB code from entity ${stringifyEntityRef(entity)}.`);
+
+      return undefined;
     }
     const appCode: string = entity.metadata.annotations[this.annotationAppCmdbCode];
 
     // Get the CMDB code/token pair configuration.
     const platformConfig: Config | undefined = this.platforms.find((platform) => platform.get('appCode') === appCode);
     if (platformConfig === undefined) {
-      throw new CmdbTokenConfigurationPairMissingError(`CMDB app code and token configuration not found for ${stringifyEntityRef(entity)}.`);
+      this.logger.error(`CMDB app code and token configuration not found for ${stringifyEntityRef(entity)}.`);
+
+      return undefined;
     }
 
     return platformConfig.get('token');
@@ -420,22 +427,22 @@ export class RedHatCoreFactCollector implements FactCollector {
    * @param {Entity} entity
    *   Entity to get the production link from.
    *
-   * @return {EntityLink}
+   * @return {EntityLink | undefined}
    *   Entity link.
-   *
-   * @throws {EntityMissingProductionLinkError}
    *
    * @protected
    */
   protected getEntityProductionLink(
     entity: Entity,
-  ): EntityLink {
+  ): EntityLink | undefined {
     const links: EntityLink[] = entity.metadata.links ?? [];
     this.logger.debug(`Links for entity ${stringifyEntityRef(entity)}: ${JSON.stringify(links)}`);
     const productionLink: EntityLink | undefined = links.find((link) => link.title === 'Origin Production URL');
-    // Throw an error if the production origin link was not found.
+    // Return undefined if the production origin link was not found.
     if (productionLink === undefined) {
-      throw new EntityMissingProductionLinkError(`Unable to find production origin link for entity ${stringifyEntityRef(entity)}.`);
+      this.logger.error(`Unable to find production origin link for entity ${stringifyEntityRef(entity)}.`);
+
+      return undefined;
     }
 
     return productionLink;
@@ -451,8 +458,6 @@ export class RedHatCoreFactCollector implements FactCollector {
    *
    * @return {any}
    *   Response data.
-   *
-   * @throws {NotOkResponseError}
    *
    * @protected
    */
@@ -474,8 +479,18 @@ export class RedHatCoreFactCollector implements FactCollector {
 
     // Get the production origin link from the entity.
     const productionLink = this.getEntityProductionLink(entity);
+    if (productionLink === undefined) {
+      this.logger.error(`Unable to send request, unable to get production link for ${stringifyEntityRef(entity)}.`);
+
+      return undefined;
+    }
     // Get the API token for the entity.
     const token = this.getEntityToken(entity);
+    if (token === undefined) {
+      this.logger.error(`Unable to send request, unable to get API token for ${stringifyEntityRef(entity)}.`);
+
+      return undefined;
+    }
     // Get the Drupal dependency information from the Red Hat Core API.
     const url: string = `${productionLink.url}${endpoint}`;
     const response: Response = await fetch(url, {
@@ -484,9 +499,11 @@ export class RedHatCoreFactCollector implements FactCollector {
       },
     });
 
-    // If the response was not HTTP 2xx, throw an error.
+    // If the response was not HTTP 2xx, return undefined.
     if (!response.ok) {
-      throw new NotOkResponseError(`HTTP ${response.status} response from ${url} for entity ${stringifyEntityRef(entity)}`);
+      this.logger.error(`HTTP ${response.status} response from ${url} for entity ${stringifyEntityRef(entity)}`);
+
+      return undefined;
     }
 
     // Get and decode the response body.
