@@ -597,7 +597,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
       // The API is public, no authentication is necessary.
       const drupalReleaseHistoryResponse: Response = await fetch(drupalReleaseHistoryUrl);
       this.logger.debug(`HTTP ${drupalReleaseHistoryResponse.status} response from ${drupalReleaseHistoryUrl}.`);
-      // If the response was not HTTP 200, throw an error.
+      // If the response was not HTTP 200, return undefined.
       if (!drupalReleaseHistoryResponse.ok) {
         this.logger.error(`HTTP ${drupalReleaseHistoryResponse.status} response from ${drupalReleaseHistoryUrl}.`);
 
@@ -605,7 +605,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
       }
       // Parse the XML response into an object.
       drupalReleaseHistory = this.xmlParser.parse(await drupalReleaseHistoryResponse.text());
-      // If the parser did not parse the XML, throw an error.
+      // If the parser did not parse the XML, return undefined.
       if (drupalReleaseHistory === undefined) {
         this.logger.error(`Unable to parse Drupal release history XML.`);
 
@@ -681,7 +681,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
       }
     }
 
-    // If no info file was found at all, throw an error.
+    // If no info file was found at all, return undefined.
     if (infoFile === undefined) {
       this.logger.error(`Unable to find .info.yml file for project ${gitlabProjectId}`);
 
@@ -695,8 +695,8 @@ export class RedHatGitLabFactCollector implements FactCollector {
       project.default_branch,
     );
 
-    // If the contents are not a string, or if the string is empty, throw an
-    // error.
+    // If the contents are not a string, or if the string is empty, return
+    // undefined.
     if (typeof infoFileContents !== 'string' || infoFileContents.length < 1) {
       this.logger.error(`Unable to get contents of file ${infoFile.name}`);
 
@@ -705,7 +705,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
 
     // Parse the YAML into an object.
     const parsedInfoFile = yamlParse(infoFileContents);
-    // If the YAML was not parsed into an object, throw an error.
+    // If the YAML was not parsed into an object, return undefined.
     if (typeof parsedInfoFile !== 'object') {
       this.logger.error(`Unable to parse info file ${infoFile.name} from GitLab project ${gitlabProjectId}`);
 
@@ -793,14 +793,14 @@ export class RedHatGitLabFactCollector implements FactCollector {
     gitlabProjectId: string | number,
   ): Promise<Fact | undefined> {
     const project = await this.gitlab.Projects.show(gitlabProjectId);
-    // If the project could not be found, throw an error.
+    // If the project could not be found, return undefined.
     if (project === undefined) {
       this.logger.error(`Unable to get GitLab project ${gitlabProjectId}`);
 
       return undefined;
     }
     const commit = await this.gitlab.Commits.show(gitlabProjectId, project.default_branch);
-    // If the most recent commit could not be found, throw an error.
+    // If the most recent commit could not be found, return undefined.
     if (commit === undefined) {
       this.logger.error(`Unable to get latest commit for GitLab project ${gitlabProjectId}`);
 
@@ -897,7 +897,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
     if (tree === undefined) {
       this.logger.error(`Unable to get repository tree for GitLab project ${gitlabProjectId}`);
 
-      throw new Error(`Unable to get repository tree for GitLab project ${gitlabProjectId}`);
+      return undefined;
     }
 
     return {
@@ -1088,7 +1088,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
         project.default_branch,
       );
 
-      // Throw an error if the file is undefined.
+      // Return undefined if the file is undefined.
       if (file === undefined) {
         this.logger.error('Unknown error while getting file');
 
@@ -1101,7 +1101,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
         file.last_commit_id,
       );
 
-      // Throw an error if either the commit or the committed date is undefined.
+      // Return undefined if either the commit or the committed date is undefined.
       if (commit?.committed_date === undefined) {
         this.logger.error(`Unknown error while getting commit ${commit.id}`);
 
