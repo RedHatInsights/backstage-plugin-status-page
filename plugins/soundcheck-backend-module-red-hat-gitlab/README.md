@@ -13,6 +13,7 @@ the [GitLab fact collector built-in to Soundcheck][soundcheck-gitlab-fact-collec
 * Latest [commit][gitlab-commits]
 * Latest [pipeline][gitlab-pipelines]
 * [Merge request approval rules][gitlab-merge-request-approval-rules]
+* [Repository tree][gitlab-repository-tree]
 * [Shared stages][red-hat-gitlab-shared] usage
 
 ## Prerequisites
@@ -69,6 +70,8 @@ backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-
 [gitlab-pipelines]: https://docs.gitlab.com/ee/ci/pipelines/index.html
 
 [gitlab-pipelines-api]: https://docs.gitlab.com/ee/api/pipelines.html
+
+[gitlab-repository-tree]: https://archives.docs.gitlab.com/16.11/ee/api/repositories.html#list-repository-tree
 
 [php-composer]: https://getcomposer.org/
 

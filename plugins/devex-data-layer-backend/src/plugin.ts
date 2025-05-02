@@ -50,7 +50,8 @@ export const devexDataLayerPlugin = createBackendPlugin({
         const runner = scheduler.createScheduledTaskRunner(schedulerConfig);
         runner.run({
           fn: () => {
-            splunkQueryService.fetchHistoricalData();
+            splunkQueryService.fetchDTLHistoricalData();
+            splunkQueryService.fetchHydraHistoricalData();
           },
           id: 'splunk-query-service-runner__id',
         });

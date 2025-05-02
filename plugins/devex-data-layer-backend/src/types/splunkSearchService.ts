@@ -1,3 +1,4 @@
 export interface SplunkSearchServices {
-  fetchHistoricalData(): Promise<void>;
+  fetchDTLHistoricalData(): Promise<void>;
+  fetchHydraHistoricalData(): Promise<void>;
 }

@@ -35,5 +35,5 @@ spec:
   owner: group:redhat/one-platform-devs
   system: devex/redhat-experience-platform
   dependsOn:
-    - devex/devex-data-layer-backend-plugin
-  subcomponentOf: devex/backstage-console-frontend
+    - component:devex/devex-data-layer-backend-plugin
+  subcomponentOf: component:devex/backstage-console-frontend

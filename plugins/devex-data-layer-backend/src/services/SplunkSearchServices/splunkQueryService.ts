@@ -4,9 +4,20 @@ import {
   DatabaseService,
 } from '@backstage/backend-plugin-api';
 import {
+  HydraAttachmentLogIds,
+  HydraCaseBotLogIds,
+  HydraNotificationsLogIds,
   PollingTypes,
   queryForAkamaiApiGatewayRequestsRecord,
   queryForAkamaiApiGatewayResponseTimeRecord,
+  queryForAttachmentsDownloads,
+  queryForAttachmentsUniqueUsers,
+  queryForAttachmentsUploads,
+  queryForCaseBotFrequencyPerCommand,
+  queryForCaseBotUniqueUsers,
+  queryForNotificationsActiveUsers,
+  queryForNotificationsPerChannel,
+  queryForNotificationsServed,
   queryForNumberOfSubgraphsDeveloped,
   queryForTotalRequestOnInternalServer,
   queryForTotalRequestOnPublicServer,
@@ -18,6 +29,8 @@ import {
   fetchErrorRatesPerSubgraph,
   fetchSubgraphs,
 } from './HistoricalSearches';
+import { HydraSplunkDatabase } from '../../database/HydraSplunkDatabase';
+import { triggerFetch } from './HydraSearches';
 
 export async function CreateSplunkQueryService({
   logger,
@@ -38,8 +51,13 @@ export async function CreateSplunkQueryService({
     skipMigrations: true,
   });
 
+  const hydraDatabaseServer = await HydraSplunkDatabase.create({
+    knex: await database.getClient(),
+    skipMigrations: true,
+  });
+
   return {
-    async fetchHistoricalData() {
+    async fetchDTLHistoricalData() {
       try {
         await fetchSubgraphs(
           splunkApiHost,
@@ -111,6 +129,61 @@ export async function CreateSplunkQueryService({
           queryForTotalRequestOnPublicServer,
           PollingTypes.GatewayPublic,
         );
+      } catch (err) {
+        logger.error(String(err));
+      }
+    },
+    async fetchHydraHistoricalData() {
+      try {
+        const fetchList = [
+          // Notifications
+          {
+            query: queryForNotificationsActiveUsers,
+            logId: HydraNotificationsLogIds.ActiveUsers,
+          },
+          {
+            query: queryForNotificationsServed,
+            logId: HydraNotificationsLogIds.NotificationsServed,
+          },
+          {
+            query: queryForNotificationsPerChannel,
+            logId: HydraNotificationsLogIds.NotificationsPerChannel,
+          },
+
+          // Attachments
+          {
+            query: queryForAttachmentsUniqueUsers,
+            logId: HydraAttachmentLogIds.UniqueUsers,
+          },
+          {
+            query: queryForAttachmentsDownloads,
+            logId: HydraAttachmentLogIds.AttachmentsDownloads,
+          },
+          {
+            query: queryForAttachmentsUploads,
+            logId: HydraAttachmentLogIds.AttachmentsUploads,
+          },
+
+          // Case bot
+          {
+            query: queryForCaseBotUniqueUsers,
+            logId: HydraCaseBotLogIds.UniqueUsers,
+          },
+          {
+            query: queryForCaseBotFrequencyPerCommand,
+            logId: HydraCaseBotLogIds.FrequencyPerCommand,
+          },
+        ];
+
+        for (const fetchItem of fetchList) {
+          await triggerFetch(
+            splunkApiHost,
+            token,
+            hydraDatabaseServer,
+            fetchItem.query,
+            fetchItem.logId,
+          );
+        }
       } catch (err) {
         logger.error(String(err));
       }

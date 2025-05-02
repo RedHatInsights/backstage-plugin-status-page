@@ -2,13 +2,24 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { DataLayerBackendDatabase } from './database/DataLayerBackendDatabase';
 import { DatabaseService } from '@backstage/backend-plugin-api';
+import { HydraSplunkDatabase } from './database/HydraSplunkDatabase';
+import { HydraNotificationsLogIds } from './services/SplunkSearchServices';
+import { HydraAttachmentLogIds } from './services/SplunkSearchServices/constants';
 
 export async function createRouter(
   databaseServer: DatabaseService,
 ): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
+
+  // DB instance for DATA-LAYER backend
   const database = await DataLayerBackendDatabase.create({
+    knex: await databaseServer.getClient(),
+    skipMigrations: false,
+  });
+
+  // DB instance for Hydra Dashboard backend
+  const hydraDatabase = await HydraSplunkDatabase.create({
     knex: await databaseServer.getClient(),
     skipMigrations: false,
   });
@@ -58,6 +69,48 @@ export async function createRouter(
     const publicData = await database.getQueryTypeData(isPublic);
     const internalData = await database.getQueryTypeData(!isPublic);
     res.json({ data: { internal: internalData, external: publicData } });
+  });
+
+  router.get('/hydra/notifications/active-users', async (_req, res) => {
+    const cachedData = await hydraDatabase.getSearchDataByLogId(
+      HydraNotificationsLogIds.ActiveUsers,
+    );
+    res.json({ data: cachedData });
+  });
+
+  router.get('/hydra/notifications/count', async (_req, res) => {
+    const cachedData = await hydraDatabase.getSearchDataByLogId(
+      HydraNotificationsLogIds.NotificationsServed,
+    );
+    res.json({ data: cachedData });
+  });
+
+  router.get('/hydra/notifications/by-channel', async (_req, res) => {
+    const cachedData = await hydraDatabase.getSearchDataByLogId(
+      HydraNotificationsLogIds.NotificationsPerChannel,
+    );
+    res.json({ data: cachedData });
+  });
+
+  router.get('/hydra/attachments/unique-users', async (_req, res) => {
+    const cachedData = await hydraDatabase.getSearchDataByLogId(
+      HydraAttachmentLogIds.UniqueUsers,
+    );
+    res.json({ data: cachedData });
+  });
+
+  router.get('/hydra/attachments/downloads', async (_req, res) => {
+    const cachedData = await hydraDatabase.getSearchDataByLogId(
+      HydraAttachmentLogIds.AttachmentsDownloads,
+    );
+    res.json({ data: cachedData });
+  });
+
+  router.get('/hydra/attachments/uploads', async (_req, res) => {
+    const cachedData = await hydraDatabase.getSearchDataByLogId(
+      HydraAttachmentLogIds.AttachmentsUploads,
+    );
+    res.json({ data: cachedData });
   });
 
   return router;

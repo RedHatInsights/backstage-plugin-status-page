@@ -198,33 +198,27 @@ export function pollingBySubgraph(
         // Store the new data here
         if (searchResultResponse && searchResultResponse.results) {
           const dbResult = await getData(pollingType, databaseServer, subgraph);
-          if (dbResult) {
-            if (
-              JSON.parse(dbResult.searchData).data.length <=
-              searchResultResponse.results.length
-            )
-              await updateData(
-                pollingType,
-                databaseServer,
-                searchResultResponse.results,
-                subgraph,
-              );
-          } else {
+
+          if (!dbResult) {
             await insertData(
               pollingType,
               databaseServer,
               searchResultResponse.results,
               subgraph,
             );
+          } else if (
+            searchStatusResponse?.entry &&
+            searchStatusResponse.entry[0].content.isDone
+          ) {
+            await updateData(
+              pollingType,
+              databaseServer,
+              searchResultResponse.results,
+              subgraph,
+            );
+            clearInterval(interval);
+            resolve('Success: Search completed, stopping api calls');
           }
-        }
-        if (
-          searchStatusResponse &&
-          searchStatusResponse.entry &&
-          searchStatusResponse.entry[0].content.isDone
-        ) {
-          clearInterval(interval);
-          resolve('Success: Search completed, stopping api calls');
         }
       } catch (error) {
         clearInterval(interval);
@@ -259,31 +253,24 @@ export function commonPolling(
         if (searchResultResponse && searchResultResponse.results) {
           const dbResult = await getData(pollingType, databaseServer);
 
-          if (dbResult) {
-            if (
-              JSON.parse(dbResult.searchData).data.length <=
-              searchResultResponse.results.length
-            )
-              await updateData(
-                pollingType,
-                databaseServer,
-                searchResultResponse.results,
-              );
-          } else {
+          if (!dbResult) {
             await insertData(
               pollingType,
               databaseServer,
               searchResultResponse.results,
             );
+          } else if (
+            searchStatusResponse?.entry &&
+            searchStatusResponse.entry[0].content.isDone
+          ) {
+            await updateData(
+              pollingType,
+              databaseServer,
+              searchResultResponse.results,
+            );
+            clearInterval(interval);
+            resolve('Success: Search completed, stopping api calls');
           }
-        }
-        if (
-          searchStatusResponse &&
-          searchStatusResponse.entry &&
-          searchStatusResponse.entry[0].content.isDone
-        ) {
-          clearInterval(interval);
-          resolve('Success: Search completed, stopping api calls');
         }
       } catch (error) {
         clearInterval(interval);

@@ -8,7 +8,14 @@ import {
 } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
-import { CMDBApi, cmdbApiRef, JiraApi, jiraApiRef } from './api';
+import {
+  CMDBApi,
+  cmdbApiRef,
+  dataLayerApiRef,
+  DTLApi,
+  JiraApi,
+  jiraApiRef,
+} from './api';
 
 export const hydraSupportDashboardPlugin = createPlugin({
   id: 'hydra-support-dashboard',
@@ -36,14 +43,23 @@ export const hydraSupportDashboardPlugin = createPlugin({
         return new CMDBApi(deps);
       },
     },
+    {
+      api: dataLayerApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory(deps: { discoveryApi: DiscoveryApi; fetchApi: FetchApi }) {
+        return new DTLApi(deps);
+      },
+    },
   ],
 });
 
 export const HydraSupportDashboardPage = hydraSupportDashboardPlugin.provide(
   createRoutableExtension({
     name: 'HydraSupportDashboardPage',
-    component: () =>
-      import('./components/Dashboard').then(m => m.AnalyticsDashboard),
+    component: () => import('./components/Dashboard').then(m => m.Dashboard),
     mountPoint: rootRouteRef,
   }),
 );

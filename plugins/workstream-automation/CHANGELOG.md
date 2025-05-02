@@ -1,5 +1,26 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.11.5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.11.4...@appdev-platform/backstage-plugin-workstream-automation@1.11.5) (2025-04-30)
+
+
+### Bug Fixes
+
+* **PULSE-601:** fix workstream card on entity tab ([6bed52d](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/6bed52d042407883ce1d8f44c6574ec2296c696b))
+
+## @appdev-platform/backstage-plugin-workstream-automation [1.11.4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.11.3...@appdev-platform/backstage-plugin-workstream-automation@1.11.4) (2025-04-29)
+
+
+### Bug Fixes
+
+* **PULSE-601:** hide card if there are no workstreams ([67b3c89](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/67b3c8937c539aef4398a9652007b4fb0440451b))
+
+## @appdev-platform/backstage-plugin-workstream-automation [1.11.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.11.2...@appdev-platform/backstage-plugin-workstream-automation@1.11.3) (2025-04-29)
+
+
+### Bug Fixes
+
+* **PULSE-601:** fix infinite loading bug ([e91b21c](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/e91b21cdaaa5b6611f19a70d9872529cbec03939))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.11.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.11.1...@appdev-platform/backstage-plugin-workstream-automation@1.11.2) (2025-04-15)
 
 

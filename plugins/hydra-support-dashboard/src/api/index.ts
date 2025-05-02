@@ -12,14 +12,15 @@ export const cmdbApiRef = createApiRef<CMDBApi>({
   id: 'cmdb',
 });
 
+export const dataLayerApiRef = createApiRef<DTLApi>({
+  id: 'devex-data-layer',
+});
+
 export class JiraApi {
   private discoveryApi: DiscoveryApi;
   private fetchApi: FetchApi;
 
-  constructor(options: {
-    discoveryApi: DiscoveryApi;
-    fetchApi: FetchApi;
-  }) {
+  constructor(options: { discoveryApi: DiscoveryApi; fetchApi: FetchApi }) {
     this.discoveryApi = options.discoveryApi;
     this.fetchApi = options.fetchApi;
   }
@@ -47,15 +48,12 @@ export class JiraApi {
 
   async getConfig() {
     const baseUrl = await this.getBaseUrl();
-    const resp = await this.fetchApi.fetch(
-      `${baseUrl}/hydrasupport`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+    const resp = await this.fetchApi.fetch(`${baseUrl}/hydrasupport`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+    });
     return await resp.json();
   }
 }
@@ -86,5 +84,51 @@ export class CMDBApi {
       },
     );
     return await resp.json();
+  }
+}
+
+export class DTLApi {
+  private discoveryApi: DiscoveryApi;
+  private fetchApi: FetchApi;
+
+  constructor(options: { discoveryApi: DiscoveryApi; fetchApi: FetchApi }) {
+    this.discoveryApi = options.discoveryApi;
+    this.fetchApi = options.fetchApi;
+  }
+
+  async getNotificationsSplunkStats(endpoint: string) {
+    const baseUrl = await this.discoveryApi.getBaseUrl('devex-data-layer');
+    const response = await this.fetchApi
+      .fetch(`${baseUrl}/hydra/notifications/${endpoint}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(data => {
+        return data.json();
+      })
+      .catch(_err => {
+        return null;
+      });
+    return response;
+  }
+
+  async getAttachmentsSplunkStats(endpoint: string) {
+    const baseUrl = await this.discoveryApi.getBaseUrl('devex-data-layer');
+    const response = await this.fetchApi
+      .fetch(`${baseUrl}/hydra/attachments/${endpoint}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(data => {
+        return data.json();
+      })
+      .catch(_err => {
+        return null;
+      });
+    return response;
   }
 }
