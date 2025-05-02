@@ -25,6 +25,16 @@ export const queryForNotificationsActiveUsers = `search index="federated:rh_jbos
 export const queryForNotificationsServed = `search host="hydra-notifications-engine-prod*" index="federated:rh_jboss" "notifications-engine ReportProcessor :" | timechart span=1d count AS "Notifications Sent"`;
 export const queryForNotificationsPerChannel = `search host="hydra-notifications-engine-prod*" index="federated:rh_jboss" "notifications-engine ReportProcessor :" "Channel" | rex field=_raw "Channel\\\\s+(?<channel>[^\\\\|]+)" | eval channel=trim(channel) | timechart span="1d" count by channel`;
 
+// Hydra Attachments Queries
+export const queryForAttachmentsDownloads = `search index=federated:rh_jboss host="hydra-attachments-prod*" sourcetype=access_combined path="*download*" OR "Case-Attachment-Metadata-Service:Start download operation*"|timechart count span=1d`;
+export const queryForAttachmentsUniqueUsers = `search index=federated:rh_jboss host="hydra-attachments-prod*" | timechart span=1d distinct_count("authenticatedUser")`;
+export const queryForAttachmentsUploads = `search index=federated:rh_jboss host="hydra-attachments-prod*" sourcetype=access_combined path="*/upload/credentials" | timechart span=1d count`;
+
+// Hydra CaseBot Queries
+export const queryForCaseBotUniqueUsers = `search host="hydra-bots-prod*" index="federated:rh_jboss" "hydra-bots EventLoggingMiddleware: Received Event: {*\\\\"command\\\\":*}" OR "hydra-bots CaseMessageEventHandler: Message event processed - {*\\\\"command\\\\":*}" OR "hydra-bots MessageEventHandler: Message event processed - {*\"command\":*}" | rex "\\\\"user_id\":\\\\"(?<user_id>[^\\\\"]+)\\\\"" | timechart span=1mon distinct_count(user_id) AS "#Users"`;
+export const queryForCaseBotFrequencyPerCommand = `search host="hydra-bots-prod*" index="federated:rh_jboss" "hydra-bots EventLoggingMiddleware: Received Event: {*\\\\"command\":*}" OR "hydra-bots CaseMessageEventHandler: Message event processed - {*\\\\"command\\\\":*}" OR "hydra-bots MessageEventHandler: Message event processed - {*\\\\"command\\\\":*}" | rex "\\\\"command\\\\":\\\\s*\\\\"(?<command_name>[^\\\\"]+)\\\\"" | timechart span=1mon count by command_name`
+
+
 export enum PollingTypes {
   Subgraph = 'Subgraph',
   GatewayRequest = 'Gateway',
@@ -36,10 +46,26 @@ export enum PollingTypes {
   HydraNotificationsActiveUsers = 'HydraNotificationsActiveUsers',
   HydraNotificationsServed = 'HydraNotificationsServed',
   HydraNotificationsPerChannel = 'HydraNotificationsPerChannel',
+  HydraAttachmentsDownloads = 'HydraAttachmentsDownloads',
+  HydraAttachmentsUploads = 'HydraAttachmentsUploads',
+  HydraAttachmentsUniqueUsers = 'HydraAttachmentsUniqueUsers',
+  HydraCaseBotUniqueUsers = 'HydraCaseBotUniqueUsers',
+  HydraCaseBotCommandFrequency = 'HydraCaseBotCommandFrequency',
 }
 
 export enum HydraNotificationsLogIds {
-  ActiveUsers = 'active_users',
+  ActiveUsers = 'notifications_active_users',
   NotificationsServed = 'notifications_served',
   NotificationsPerChannel = 'notifications_per_channel',
+}
+
+export enum HydraAttachmentLogIds {
+  UniqueUsers = 'attachments_unique_users',
+  AttachmentsDownloads = 'attachments_downloads',
+  AttachmentsUploads = 'attachments_uploads',
+}
+
+export enum HydraCaseBotLogIds {
+  UniqueUsers = 'casebot_unique_users',
+  FrequencyPerCommand = 'casebot_frequency_per_command'
 }

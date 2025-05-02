@@ -1,104 +1,34 @@
 import { getResultsWithSearchId, getSearchStatus } from '../../api';
 import { HydraSplunkStore } from '../../database/HydraSplunkDatabase';
-import { HydraNotificationsLogIds, PollingTypes } from './constants';
 
-async function getData(
-  pollingType: PollingTypes,
-  databaseServer: HydraSplunkStore,
-) {
-  switch (pollingType) {
-    case PollingTypes.HydraNotificationsActiveUsers:
-      return (
-        (await databaseServer.getSearchDataByLogId(
-          HydraNotificationsLogIds.ActiveUsers,
-        )) || null
-      );
-    case PollingTypes.HydraNotificationsServed:
-      return (
-        (await databaseServer.getSearchDataByLogId(
-          HydraNotificationsLogIds.NotificationsServed,
-        )) || null
-      );
-    case PollingTypes.HydraNotificationsPerChannel:
-      return (
-        (await databaseServer.getSearchDataByLogId(
-          HydraNotificationsLogIds.NotificationsPerChannel,
-        )) || null
-      );
-    default:
-      return null;
-  }
+async function getData(logId: string, databaseServer: HydraSplunkStore) {
+  return (await databaseServer.getSearchDataByLogId(logId)) || null;
 }
 
 async function insertData(
-  pollingType: PollingTypes,
+  logId: string,
   databaseServer: HydraSplunkStore,
   results: any,
 ) {
-  switch (pollingType) {
-    case PollingTypes.HydraNotificationsActiveUsers:
-      await databaseServer.insertSearchData({
-        logId: HydraNotificationsLogIds.ActiveUsers,
-        searchData: JSON.stringify({
-          data: results,
-        }),
-      });
-      break;
-    case PollingTypes.HydraNotificationsServed:
-      await databaseServer.insertSearchData({
-        logId: HydraNotificationsLogIds.NotificationsServed,
-        searchData: JSON.stringify({
-          data: results,
-        }),
-      });
-      break;
-    case PollingTypes.HydraNotificationsPerChannel:
-      await databaseServer.insertSearchData({
-        logId: HydraNotificationsLogIds.NotificationsPerChannel,
-        searchData: JSON.stringify({
-          data: results,
-        }),
-      });
-      break;
-    default:
-      break;
-  }
+  await databaseServer.insertSearchData({
+    logId: logId,
+    searchData: JSON.stringify({
+      data: results,
+    }),
+  });
 }
 
 async function updateData(
-  pollingType: PollingTypes,
+  logId: string,
   databaseServer: HydraSplunkStore,
   results: any,
 ) {
-  switch (pollingType) {
-    case PollingTypes.HydraNotificationsActiveUsers:
-      await databaseServer.updateSearchDataByLogId({
-        logId: HydraNotificationsLogIds.ActiveUsers,
-        searchData: JSON.stringify({
-          data: results,
-        }),
-      });
-      break;
-    case PollingTypes.HydraNotificationsServed:
-      await databaseServer.updateSearchDataByLogId({
-        logId: HydraNotificationsLogIds.NotificationsServed,
-        searchData: JSON.stringify({
-          data: results,
-        }),
-      });
-      break;
-
-    case PollingTypes.HydraNotificationsPerChannel:
-      await databaseServer.updateSearchDataByLogId({
-        logId: HydraNotificationsLogIds.NotificationsPerChannel,
-        searchData: JSON.stringify({
-          data: results,
-        }),
-      });
-      break;
-    default:
-      break;
-  }
+  await databaseServer.updateSearchDataByLogId({
+    logId: logId,
+    searchData: JSON.stringify({
+      data: results,
+    }),
+  });
 }
 
 export function hydraPolling(
@@ -106,7 +36,7 @@ export function hydraPolling(
   token: string,
   searchId: string,
   databaseServer: HydraSplunkStore,
-  pollingType: PollingTypes,
+  logId: string,
 ) {
   return new Promise((resolve, reject) => {
     const interval = setInterval(async () => {
@@ -124,29 +54,26 @@ export function hydraPolling(
 
         // Store the new data here
         if (searchResultResponse && searchResultResponse.results) {
-          const dbResult = await getData(pollingType, databaseServer);
+          const dbResult = await getData(logId, databaseServer);
 
-          if (dbResult) {
-            await updateData(
-              pollingType,
-              databaseServer,
-              searchResultResponse.results,
-            );
-          } else {
+          if (!dbResult) {
             await insertData(
-              pollingType,
+              logId,
               databaseServer,
               searchResultResponse.results,
             );
+          } else if (
+            searchStatusResponse?.entry &&
+            searchStatusResponse.entry[0].content.isDone
+          ) {
+            await updateData(
+              logId,
+              databaseServer,
+              searchResultResponse.results,
+            );
+            clearInterval(interval);
+            resolve('Success: Search completed, stopping api calls');
           }
-        }
-        if (
-          searchStatusResponse &&
-          searchStatusResponse.entry &&
-          searchStatusResponse.entry[0].content.isDone
-        ) {
-          clearInterval(interval);
-          resolve('Success: Search completed, stopping api calls');
         }
       } catch (error) {
         clearInterval(interval);

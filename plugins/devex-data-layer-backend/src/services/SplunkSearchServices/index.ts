@@ -21,6 +21,5 @@ export {
 } from './HistoricalSearches';
 
 export {
-  fetchNotificationsServed,
-  fetchNotificationActiveUsers,
+  triggerFetch,
 } from './HydraSearches';
