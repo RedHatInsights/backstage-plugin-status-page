@@ -4,7 +4,7 @@
  * @returns { Promise<void> }
  */
 exports.up = async function(knex) {
-    return await knex.schema.createTable('hydra_notifications', table => {
+    return await knex.schema.createTable('hydra', table => {
         table.string('log_id').notNullable().comment('Search name!');
         table.jsonb('search_data').notNullable().comment('Searched Data!');
         table.timestamp('last_updated_on').notNullable().comment("Last search date & time");
@@ -16,5 +16,5 @@ exports.up = async function(knex) {
  * @returns { Promise<void> }
  */
 exports.down = async function(knex) {
-    return await knex.schema.dropTable('hydra_notifications');
+    return await knex.schema.dropTable('hydra');
 };

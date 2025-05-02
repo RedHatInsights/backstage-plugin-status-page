@@ -274,7 +274,7 @@ export const NotificationsAnalytics = () => {
 
   return (
     <div
-      style={{ border: '1px ridge', padding: '1rem', borderRadius: '0.3rem' }}
+      style={{ border: '1px ridge', padding: '1rem', borderRadius: '0.3rem', marginBottom:'1rem' }}
     >
       <div
         style={{
@@ -284,7 +284,7 @@ export const NotificationsAnalytics = () => {
         }}
       >
         <div>
-          <Typography variant="h5">
+          <Typography variant="h3">
             <div>Notifications Analytics</div>
           </Typography>
         </div>

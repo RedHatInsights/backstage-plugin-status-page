@@ -14,7 +14,7 @@ export interface HydraSplunkStore {
 }
 
 export class HydraSplunkDatabase implements HydraSplunkStore {
-  private readonly HYDRA_NOTIFICATIONS_TABLE = 'hydra_notifications';
+  private readonly HYDRA_TABLE = 'hydra';
 
   static async create(options: {
     knex: Knex;
@@ -34,7 +34,7 @@ export class HydraSplunkDatabase implements HydraSplunkStore {
 
   async insertSearchData(data: GatewayRequest): Promise<GatewayRequest> {
     const [dbResult] = await this.db<GatewayRequestModel>(
-      this.HYDRA_NOTIFICATIONS_TABLE,
+      this.HYDRA_TABLE,
     ).insert(
       {
         ...this.mapDataToModel({ ...data }),
@@ -45,9 +45,7 @@ export class HydraSplunkDatabase implements HydraSplunkStore {
     return this.mapModelToData(dbResult);
   }
   async getSearchDataByLogId(logId: string): Promise<GatewayRequest | null> {
-    const dbResult = await this.db<GatewayRequestModel>(
-      this.HYDRA_NOTIFICATIONS_TABLE,
-    )
+    const dbResult = await this.db<GatewayRequestModel>(this.HYDRA_TABLE)
       .where('log_id', logId)
       .first();
     return dbResult ? this.mapModelToData(dbResult) : null;
@@ -56,9 +54,7 @@ export class HydraSplunkDatabase implements HydraSplunkStore {
   async updateSearchDataByLogId(
     data: GatewayRequest,
   ): Promise<GatewayRequest | null> {
-    const [dbResult] = await this.db<GatewayRequestModel>(
-      this.HYDRA_NOTIFICATIONS_TABLE,
-    )
+    const [dbResult] = await this.db<GatewayRequestModel>(this.HYDRA_TABLE)
       .select('*')
       .where('log_id', data.logId)
       .update(
