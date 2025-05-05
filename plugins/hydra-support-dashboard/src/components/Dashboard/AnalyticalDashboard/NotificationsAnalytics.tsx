@@ -6,6 +6,7 @@ import {
   FormControl,
   Grid,
   InputLabel,
+  LinearProgress,
   MenuItem,
   Select,
   Typography,
@@ -17,7 +18,11 @@ import {
   lineElementClasses,
   markElementClasses,
 } from '@mui/x-charts';
-import { ChartTimePeriods, RedHatStandardColors } from '../constants';
+import {
+  ChartTimePeriods,
+  RedHatStandardColors,
+  getLocaleNumberString,
+} from '../constants';
 
 export enum NotificationsApiEndpoints {
   ActiveUsers = 'active-users',
@@ -25,6 +30,7 @@ export enum NotificationsApiEndpoints {
   NotificationsPerChannel = 'by-channel',
 }
 export const NotificationsAnalytics = () => {
+  const [loadingData, setLoadingData] = useState(false);
   const [seriesForNotificationsServed, setSeriesForNotificationsServed] =
     useState<number[]>([]);
   const [xLabelsForNotificationsServed, setXLabelsForNotificationsServed] =
@@ -47,6 +53,7 @@ export const NotificationsAnalytics = () => {
 
   const fetchNotificationsStats = async () => {
     try {
+      setLoadingData(true);
       const activeUsersResponse =
         await dataLayerApi.getNotificationsSplunkStats(
           NotificationsApiEndpoints.ActiveUsers,
@@ -84,20 +91,13 @@ export const NotificationsAnalytics = () => {
           JSON.parse(notificationsPerChannelResponse.data?.searchData).data,
         );
       }
+      setLoadingData(false);
     } catch (err) {
       setActiveUsers(0);
       setNotificationsPerChannel([]);
       setNotificationsServedData([]);
+      setLoadingData(false);
     }
-  };
-
-  const getLocaleNumberString = (totalRequests: number) => {
-    let stringValue = `${totalRequests.toLocaleString('en-US')}`;
-    const million = 1000000;
-    if (totalRequests > million) {
-      stringValue = `${(totalRequests / million).toFixed(1)} Million`;
-    }
-    return stringValue;
   };
 
   const getTimedStats = (statistics: any[]) => {
@@ -274,7 +274,12 @@ export const NotificationsAnalytics = () => {
 
   return (
     <div
-      style={{ border: '1px ridge', padding: '1rem', borderRadius: '0.3rem', marginBottom:'1rem' }}
+      style={{
+        border: '1px ridge',
+        padding: '1rem',
+        borderRadius: '0.3rem',
+        marginBottom: '1rem',
+      }}
     >
       <div
         style={{
@@ -290,180 +295,183 @@ export const NotificationsAnalytics = () => {
         </div>
         <div>{getFilters()}</div>
       </div>
-
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <InfoCard>
-            <Typography variant="h3" style={{ textAlign: 'center' }}>
-              <span style={{ fontWeight: 'bold' }}>{activeUsers}</span> Active
-              Users for Past 6 Months
-            </Typography>
-          </InfoCard>
-        </Grid>
-        <Grid item xs={9}>
-          <InfoCard>
-            <div style={{ maxHeight: '20rem' }}>
-              <Typography
-                variant="h5"
-                style={{ display: 'flex', justifyContent: 'space-between' }}
-              >
-                <div>Notifications Served Per Day</div>
+      {loadingData ? (
+        <LinearProgress />
+      ) : (
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <InfoCard>
+              <Typography variant="h3" style={{ textAlign: 'center' }}>
+                <span style={{ fontWeight: 'bold' }}>{activeUsers}</span> Active
+                Users for Past 6 Months
               </Typography>
-              <Divider style={{ margin: '0.5rem' }} />
-              <LineChart
-                height={300}
-                margin={{ left: 100, bottom: 50 }}
-                slotProps={{
-                  legend: {
-                    position: { vertical: 'bottom', horizontal: 'middle' },
-                  },
-                }}
-                series={[{ data: seriesForNotificationsServed }]}
-                xAxis={[
-                  {
-                    scaleType: 'point',
-                    data: xLabelsForNotificationsServed,
-                  },
-                ]}
-                sx={{
-                  [`.${lineElementClasses.root}, .${markElementClasses.root}`]:
-                    {
-                      strokeWidth: 1,
-                    },
-                  '.MuiLineElement-series-pvId': {
-                    strokeDasharray: '5 5',
-                  },
-                  '.MuiLineElement-series-uvId': {
-                    strokeDasharray: '3 4 5 2',
-                  },
-                  [`.${markElementClasses.root}:not(.${markElementClasses.highlighted})`]:
-                    {
-                      fill: '#fff',
-                    },
-                  [`& .${markElementClasses.highlighted}`]: {
-                    stroke: 'none',
-                  },
-                }}
-                colors={RedHatStandardColors}
-              />
-            </div>
-          </InfoCard>
-        </Grid>
-        <Grid item xs={3}>
-          <InfoCard>
-            <div style={{ minHeight: '20rem' }}>
-              <Typography variant="h6">Total Notifications Sent</Typography>
-              <>
-                <Typography variant="h2">
-                  {getNumberStats(notificationsServedData)
-                    .totalNotificationsStringValue || 'N/A'}
+            </InfoCard>
+          </Grid>
+          <Grid item xs={9}>
+            <InfoCard>
+              <div style={{ maxHeight: '20rem' }}>
+                <Typography
+                  variant="h5"
+                  style={{ display: 'flex', justifyContent: 'space-between' }}
+                >
+                  <div>Notifications Served Per Day</div>
                 </Typography>
                 <Divider style={{ margin: '0.5rem' }} />
-                <Typography variant="h6" style={{ marginBottom: '1rem' }}>
-                  Average Notifications Per Day
-                </Typography>
-                <Typography variant="h2">
-                  {getNumberStats(notificationsServedData)
-                    .averageNotificationsPerDayStringValue || 'N/A'}
+                <LineChart
+                  height={300}
+                  margin={{ left: 100, bottom: 50 }}
+                  slotProps={{
+                    legend: {
+                      position: { vertical: 'bottom', horizontal: 'middle' },
+                    },
+                  }}
+                  series={[{ data: seriesForNotificationsServed }]}
+                  xAxis={[
+                    {
+                      scaleType: 'point',
+                      data: xLabelsForNotificationsServed,
+                    },
+                  ]}
+                  sx={{
+                    [`.${lineElementClasses.root}, .${markElementClasses.root}`]:
+                      {
+                        strokeWidth: 1,
+                      },
+                    '.MuiLineElement-series-pvId': {
+                      strokeDasharray: '5 5',
+                    },
+                    '.MuiLineElement-series-uvId': {
+                      strokeDasharray: '3 4 5 2',
+                    },
+                    [`.${markElementClasses.root}:not(.${markElementClasses.highlighted})`]:
+                      {
+                        fill: '#fff',
+                      },
+                    [`& .${markElementClasses.highlighted}`]: {
+                      stroke: 'none',
+                    },
+                  }}
+                  colors={RedHatStandardColors}
+                />
+              </div>
+            </InfoCard>
+          </Grid>
+          <Grid item xs={3}>
+            <InfoCard>
+              <div style={{ minHeight: '20rem' }}>
+                <Typography variant="h6">Total Notifications Sent</Typography>
+                <>
+                  <Typography variant="h2">
+                    {getNumberStats(notificationsServedData)
+                      .totalNotificationsStringValue || 'N/A'}
+                  </Typography>
+                  <Divider style={{ margin: '0.5rem' }} />
+                  <Typography variant="h6" style={{ marginBottom: '1rem' }}>
+                    Average Notifications Per Day
+                  </Typography>
+                  <Typography variant="h2">
+                    {getNumberStats(notificationsServedData)
+                      .averageNotificationsPerDayStringValue || 'N/A'}
+                  </Typography>
+                  <Divider style={{ margin: '0.5rem' }} />
+                  <Typography variant="h6" style={{ marginBottom: '1rem' }}>
+                    Maximum Notifications In A Day
+                  </Typography>
+                  <Typography variant="h2">
+                    {getNumberStats(notificationsServedData)
+                      .maximumNotificationsInADayStringValue || 'N/A'}
+                  </Typography>
+                </>
+              </div>
+            </InfoCard>
+          </Grid>
+          <Grid item xs={9}>
+            <InfoCard>
+              <div style={{ minHeight: '25rem' }}>
+                <Typography
+                  variant="h5"
+                  style={{ display: 'flex', justifyContent: 'space-between' }}
+                >
+                  <div>Notifications Sent Per Channel</div>
+                  <div>{}</div>
                 </Typography>
                 <Divider style={{ margin: '0.5rem' }} />
-                <Typography variant="h6" style={{ marginBottom: '1rem' }}>
-                  Maximum Notifications In A Day
-                </Typography>
-                <Typography variant="h2">
-                  {getNumberStats(notificationsServedData)
-                    .maximumNotificationsInADayStringValue || 'N/A'}
-                </Typography>
-              </>
-            </div>
-          </InfoCard>
-        </Grid>
-        <Grid item xs={9}>
-          <InfoCard>
-            <div style={{ minHeight: '25rem' }}>
-              <Typography
-                variant="h5"
-                style={{ display: 'flex', justifyContent: 'space-between' }}
-              >
-                <div>Notifications Sent Per Channel</div>
-                <div>{}</div>
-              </Typography>
-              <Divider style={{ margin: '0.5rem' }} />
-              <LineChart
-                height={350}
-                margin={{ left: 100, bottom: 80 }}
-                slotProps={{
-                  legend: {
-                    position: { vertical: 'bottom', horizontal: 'middle' },
-                  },
-                }}
-                series={series}
-                xAxis={[{ scaleType: 'point', data: xLabels || [] }]}
-                sx={{
-                  [`.${lineElementClasses.root}, .${markElementClasses.root}`]:
-                    {
-                      strokeWidth: 1,
+                <LineChart
+                  height={350}
+                  margin={{ left: 100, bottom: 80 }}
+                  slotProps={{
+                    legend: {
+                      position: { vertical: 'bottom', horizontal: 'middle' },
                     },
-                  '.MuiLineElement-series-pvId': {
-                    strokeDasharray: '5 5',
-                  },
-                  '.MuiLineElement-series-uvId': {
-                    strokeDasharray: '3 4 5 2',
-                  },
-                  [`.${markElementClasses.root}:not(.${markElementClasses.highlighted})`]:
-                    {
-                      fill: '#fff',
+                  }}
+                  series={series}
+                  xAxis={[{ scaleType: 'point', data: xLabels || [] }]}
+                  sx={{
+                    [`.${lineElementClasses.root}, .${markElementClasses.root}`]:
+                      {
+                        strokeWidth: 1,
+                      },
+                    '.MuiLineElement-series-pvId': {
+                      strokeDasharray: '5 5',
                     },
-                  [`& .${markElementClasses.highlighted}`]: {
-                    stroke: 'none',
-                  },
-                }}
-                colors={RedHatStandardColors}
-              />
-            </div>
-          </InfoCard>
-        </Grid>
-        <Grid item xs={3}>
-          <InfoCard>
-            <div style={{ minHeight: '25rem' }}>
-              <>
-                <Typography variant="h6" style={{ marginBottom: '1rem' }}>
-                  Notifications Sent Per Channel
-                </Typography>
-                <Divider style={{ margin: '0.5rem' }} />
+                    '.MuiLineElement-series-uvId': {
+                      strokeDasharray: '3 4 5 2',
+                    },
+                    [`.${markElementClasses.root}:not(.${markElementClasses.highlighted})`]:
+                      {
+                        fill: '#fff',
+                      },
+                    [`& .${markElementClasses.highlighted}`]: {
+                      stroke: 'none',
+                    },
+                  }}
+                  colors={RedHatStandardColors}
+                />
+              </div>
+            </InfoCard>
+          </Grid>
+          <Grid item xs={3}>
+            <InfoCard>
+              <div style={{ minHeight: '25rem' }}>
+                <>
+                  <Typography variant="h6" style={{ marginBottom: '1rem' }}>
+                    Notifications Sent Per Channel
+                  </Typography>
+                  <Divider style={{ margin: '0.5rem' }} />
 
-                {Object.keys(
-                  getNumberStatsForChannel().averageRequestsPerClient,
-                ).length
-                  ? Object.keys(
-                      getNumberStatsForChannel().averageRequestsPerClient,
-                    ).map(
-                      (client, index) =>
-                        index < 10 && (
-                          <Grid container spacing={2}>
-                            <Grid item xs={8}>
-                              <Chip
-                                label={client}
-                                key={`${index}_client-name-chip__id`}
-                                size="small"
-                              />
-                              {/* {client} */}
+                  {Object.keys(
+                    getNumberStatsForChannel().averageRequestsPerClient,
+                  ).length
+                    ? Object.keys(
+                        getNumberStatsForChannel().averageRequestsPerClient,
+                      ).map(
+                        (client, index) =>
+                          index < 10 && (
+                            <Grid container spacing={2}>
+                              <Grid item xs={8}>
+                                <Chip
+                                  label={client}
+                                  key={`${index}_client-name-chip__id`}
+                                  size="small"
+                                />
+                                {/* {client} */}
+                              </Grid>
+                              <Grid item xs={4} style={{ textAlign: 'right' }}>
+                                {
+                                  getNumberStatsForChannel()
+                                    .averageRequestsPerClient[client]
+                                }
+                              </Grid>
                             </Grid>
-                            <Grid item xs={4} style={{ textAlign: 'right' }}>
-                              {
-                                getNumberStatsForChannel()
-                                  .averageRequestsPerClient[client]
-                              }
-                            </Grid>
-                          </Grid>
-                        ),
-                    )
-                  : 'N/A'}
-              </>
-            </div>
-          </InfoCard>
+                          ),
+                      )
+                    : 'N/A'}
+                </>
+              </div>
+            </InfoCard>
+          </Grid>
         </Grid>
-      </Grid>
+      )}
     </div>
   );
 };

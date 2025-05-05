@@ -5,6 +5,7 @@ import {
   FormControl,
   Grid,
   InputLabel,
+  LinearProgress,
   MenuItem,
   Select,
   Typography,
@@ -17,7 +18,11 @@ import {
   lineElementClasses,
   markElementClasses,
 } from '@mui/x-charts';
-import { ChartTimePeriods, RedHatStandardColors } from '../constants';
+import {
+  ChartTimePeriods,
+  RedHatStandardColors,
+  getLocaleNumberString,
+} from '../constants';
 
 export enum AttachmentsApiEndpoints {
   UniqueUsers = 'unique-users',
@@ -25,6 +30,7 @@ export enum AttachmentsApiEndpoints {
   AttachmentsUploads = 'uploads',
 }
 export const AttachmentsAnalytics = () => {
+  const [loadingData, setLoadingData] = useState(false);
   const [seriesForAttachmentsDownloads, setSeriesForAttachmentsDownloads] =
     useState<number[]>([]);
   const [xLabelsForAttachmentsDownloads, setXLabelsForAttachmentsDownloads] =
@@ -52,6 +58,7 @@ export const AttachmentsAnalytics = () => {
 
   const fetchNotificationsStats = async () => {
     try {
+      setLoadingData(true);
       const uniqueUsersResponse = await dataLayerApi.getAttachmentsSplunkStats(
         AttachmentsApiEndpoints.UniqueUsers,
       );
@@ -84,20 +91,13 @@ export const AttachmentsAnalytics = () => {
           JSON.parse(notificationsPerChannelResponse.data?.searchData).data,
         );
       }
+      setLoadingData(false);
     } catch (err) {
       setUniqueUsers([]);
       setAttachmentDownloads([]);
       setAttachmentUploads([]);
+      setLoadingData(false);
     }
-  };
-
-  const getLocaleNumberString = (totalRequests: number) => {
-    let stringValue = `${totalRequests.toLocaleString('en-US')}`;
-    const million = 1000000;
-    if (totalRequests > million) {
-      stringValue = `${(totalRequests / million).toFixed(1)} Million`;
-    }
-    return stringValue;
   };
 
   const getTimedStats = (statistics: any[]) => {
@@ -291,223 +291,226 @@ export const AttachmentsAnalytics = () => {
         </div>
         <div>{getFilters()}</div>
       </div>
-
-      <Grid container spacing={2}>
-        <Grid item xs={8}>
-          <InfoCard>
-            <div style={{ minHeight: '15rem' }}>
-              <Typography
-                variant="h5"
-                style={{ display: 'flex', justifyContent: 'space-between' }}
-              >
-                <div>Attachments Daily Downloads (Via Hydra)</div>
-              </Typography>
-              <Divider style={{ margin: '0.5rem' }} />
-              <BarChart
-                height={200}
-                series={[
-                  {
-                    data: seriesForUniqueUsers,
-                    label: 'Unique Users',
-                    type: 'bar',
-                  },
-                ]}
-                xAxis={[{ scaleType: 'band', data: xLabelsForUniqueUsers }]}
-                yAxis={[
-                  { id: 'leftAxisId' },
-                  { id: 'rightAxisId', position: 'right' },
-                ]}
-              />
-            </div>
-          </InfoCard>
-        </Grid>
-        <Grid item xs={4}>
-          <InfoCard>
-            <div style={{ minHeight: '15rem' }}>
-              <Typography variant="h5">
-                <div>Total Unique User Activities</div>
-              </Typography>
-              <Typography variant="h5">
-                <div style={{ fontSize: '4rem', textAlign: 'center' }}>
-                  {
-                    getNumberStatsForUniqueUsers()
-                      .totalUserActivitiesStringValue
-                  }
-                </div>
-              </Typography>
-              <Divider style={{ margin: '0.5rem' }} />
-              <Typography variant="h5">
-                <div>Daily Average Unique Users</div>
-              </Typography>
-              <Typography variant="h5">
-                <div style={{ fontSize: '3.5rem', textAlign: 'center' }}>
-                  {
-                    getNumberStatsForUniqueUsers()
-                      .dailyAverageUniqueUsersStringValue
-                  }
-                </div>
-              </Typography>
-            </div>
-          </InfoCard>
-        </Grid>
-        <Grid item xs={9}>
-          <InfoCard>
-            <div style={{ maxHeight: '20rem' }}>
-              <Typography
-                variant="h5"
-                style={{ display: 'flex', justifyContent: 'space-between' }}
-              >
-                <div>Attachments Daily Downloads (Via Hydra)</div>
-              </Typography>
-              <Divider style={{ margin: '0.5rem' }} />
-              <LineChart
-                height={300}
-                margin={{ left: 100, bottom: 50 }}
-                slotProps={{
-                  legend: {
-                    position: { vertical: 'bottom', horizontal: 'middle' },
-                  },
-                }}
-                series={[{ data: seriesForAttachmentsDownloads }]}
-                xAxis={[
-                  {
-                    scaleType: 'point',
-                    data: xLabelsForAttachmentsDownloads,
-                  },
-                ]}
-                sx={{
-                  [`.${lineElementClasses.root}, .${markElementClasses.root}`]:
-                    {
-                      strokeWidth: 1,
-                    },
-                  '.MuiLineElement-series-pvId': {
-                    strokeDasharray: '5 5',
-                  },
-                  '.MuiLineElement-series-uvId': {
-                    strokeDasharray: '3 4 5 2',
-                  },
-                  [`.${markElementClasses.root}:not(.${markElementClasses.highlighted})`]:
-                    {
-                      fill: '#fff',
-                    },
-                  [`& .${markElementClasses.highlighted}`]: {
-                    stroke: 'none',
-                  },
-                }}
-                colors={RedHatStandardColors}
-              />
-            </div>
-          </InfoCard>
-        </Grid>
-        <Grid item xs={3}>
-          <InfoCard>
-            <div style={{ minHeight: '20rem' }}>
-              <Typography variant="h6">Total Downloads</Typography>
-              <>
-                <Typography variant="h2">
-                  {getNumberStats(attachmentDownloads)
-                    .totalRequestsStringValue || 'N/A'}
+      {loadingData ? (
+        <LinearProgress />
+      ) : (
+        <Grid container spacing={2}>
+          <Grid item xs={8}>
+            <InfoCard>
+              <div style={{ minHeight: '15rem' }}>
+                <Typography
+                  variant="h5"
+                  style={{ display: 'flex', justifyContent: 'space-between' }}
+                >
+                  <div>Attachments Daily Downloads (Via Hydra)</div>
                 </Typography>
                 <Divider style={{ margin: '0.5rem' }} />
-                <Typography variant="h6" style={{ marginBottom: '1rem' }}>
-                  Average Downloads Per Day
-                </Typography>
-                <Typography variant="h2">
-                  {getNumberStats(attachmentDownloads)
-                    .averageRequestsPerDayStringValue || 'N/A'}
-                </Typography>
-                <Divider style={{ margin: '0.5rem' }} />
-                <Typography variant="h6" style={{ marginBottom: '1rem' }}>
-                  Maximum Downloads In A Day
-                </Typography>
-                <Typography variant="h2">
-                  {getNumberStats(attachmentDownloads)
-                    .maximumRequestsInADayStringValue || 'N/A'}
-                </Typography>
-              </>
-            </div>
-          </InfoCard>
-        </Grid>
-        <Grid item xs={9}>
-          <InfoCard>
-            <div style={{ maxHeight: '20rem' }}>
-              <Typography
-                variant="h5"
-                style={{ display: 'flex', justifyContent: 'space-between' }}
-              >
-                <div>Attachments Daily Uploads (Via Hydra)</div>
-                <div>{}</div>
-              </Typography>
-              <Divider style={{ margin: '0.5rem' }} />
-              <LineChart
-                height={300}
-                margin={{ left: 100, bottom: 50 }}
-                slotProps={{
-                  legend: {
-                    position: { vertical: 'bottom', horizontal: 'middle' },
-                  },
-                }}
-                series={[{ data: seriesForAttachmentsUploads }]}
-                xAxis={[
-                  {
-                    scaleType: 'point',
-                    data: xLabelsForAttachmentsUploads,
-                  },
-                ]}
-                sx={{
-                  [`.${lineElementClasses.root}, .${markElementClasses.root}`]:
+                <BarChart
+                  height={200}
+                  series={[
                     {
-                      strokeWidth: 1,
+                      data: seriesForUniqueUsers,
+                      label: 'Unique Users',
+                      type: 'bar',
                     },
-                  '.MuiLineElement-series-pvId': {
-                    strokeDasharray: '5 5',
-                  },
-                  '.MuiLineElement-series-uvId': {
-                    strokeDasharray: '3 4 5 2',
-                  },
-                  [`.${markElementClasses.root}:not(.${markElementClasses.highlighted})`]:
+                  ]}
+                  xAxis={[{ scaleType: 'band', data: xLabelsForUniqueUsers }]}
+                  yAxis={[
+                    { id: 'leftAxisId' },
+                    { id: 'rightAxisId', position: 'right' },
+                  ]}
+                />
+              </div>
+            </InfoCard>
+          </Grid>
+          <Grid item xs={4}>
+            <InfoCard>
+              <div style={{ minHeight: '15rem' }}>
+                <Typography variant="h5">
+                  <div>Total Unique User Activities</div>
+                </Typography>
+                <Typography variant="h5">
+                  <div style={{ fontSize: '4rem', textAlign: 'center' }}>
                     {
-                      fill: '#fff',
+                      getNumberStatsForUniqueUsers()
+                        .totalUserActivitiesStringValue
+                    }
+                  </div>
+                </Typography>
+                <Divider style={{ margin: '0.5rem' }} />
+                <Typography variant="h5">
+                  <div>Daily Average Unique Users</div>
+                </Typography>
+                <Typography variant="h5">
+                  <div style={{ fontSize: '3.5rem', textAlign: 'center' }}>
+                    {
+                      getNumberStatsForUniqueUsers()
+                        .dailyAverageUniqueUsersStringValue
+                    }
+                  </div>
+                </Typography>
+              </div>
+            </InfoCard>
+          </Grid>
+          <Grid item xs={9}>
+            <InfoCard>
+              <div style={{ maxHeight: '20rem' }}>
+                <Typography
+                  variant="h5"
+                  style={{ display: 'flex', justifyContent: 'space-between' }}
+                >
+                  <div>Attachments Daily Downloads (Via Hydra)</div>
+                </Typography>
+                <Divider style={{ margin: '0.5rem' }} />
+                <LineChart
+                  height={300}
+                  margin={{ left: 100, bottom: 50 }}
+                  slotProps={{
+                    legend: {
+                      position: { vertical: 'bottom', horizontal: 'middle' },
                     },
-                  [`& .${markElementClasses.highlighted}`]: {
-                    stroke: 'none',
-                  },
-                }}
-                colors={RedHatStandardColors}
-              />
-            </div>
-          </InfoCard>
-        </Grid>
-        <Grid item xs={3}>
-          <InfoCard>
-            <div style={{ minHeight: '20rem' }}>
-              <Typography variant="h6">Total Uploads</Typography>
-              <>
-                <Typography variant="h2">
-                  {getNumberStats(attachmentUploads).totalRequestsStringValue ||
-                    'N/A'}
+                  }}
+                  series={[{ data: seriesForAttachmentsDownloads }]}
+                  xAxis={[
+                    {
+                      scaleType: 'point',
+                      data: xLabelsForAttachmentsDownloads,
+                    },
+                  ]}
+                  sx={{
+                    [`.${lineElementClasses.root}, .${markElementClasses.root}`]:
+                      {
+                        strokeWidth: 1,
+                      },
+                    '.MuiLineElement-series-pvId': {
+                      strokeDasharray: '5 5',
+                    },
+                    '.MuiLineElement-series-uvId': {
+                      strokeDasharray: '3 4 5 2',
+                    },
+                    [`.${markElementClasses.root}:not(.${markElementClasses.highlighted})`]:
+                      {
+                        fill: '#fff',
+                      },
+                    [`& .${markElementClasses.highlighted}`]: {
+                      stroke: 'none',
+                    },
+                  }}
+                  colors={RedHatStandardColors}
+                />
+              </div>
+            </InfoCard>
+          </Grid>
+          <Grid item xs={3}>
+            <InfoCard>
+              <div style={{ minHeight: '20rem' }}>
+                <Typography variant="h6">Total Downloads</Typography>
+                <>
+                  <Typography variant="h2">
+                    {getNumberStats(attachmentDownloads)
+                      .totalRequestsStringValue || 'N/A'}
+                  </Typography>
+                  <Divider style={{ margin: '0.5rem' }} />
+                  <Typography variant="h6" style={{ marginBottom: '1rem' }}>
+                    Average Downloads Per Day
+                  </Typography>
+                  <Typography variant="h2">
+                    {getNumberStats(attachmentDownloads)
+                      .averageRequestsPerDayStringValue || 'N/A'}
+                  </Typography>
+                  <Divider style={{ margin: '0.5rem' }} />
+                  <Typography variant="h6" style={{ marginBottom: '1rem' }}>
+                    Maximum Downloads In A Day
+                  </Typography>
+                  <Typography variant="h2">
+                    {getNumberStats(attachmentDownloads)
+                      .maximumRequestsInADayStringValue || 'N/A'}
+                  </Typography>
+                </>
+              </div>
+            </InfoCard>
+          </Grid>
+          <Grid item xs={9}>
+            <InfoCard>
+              <div style={{ maxHeight: '20rem' }}>
+                <Typography
+                  variant="h5"
+                  style={{ display: 'flex', justifyContent: 'space-between' }}
+                >
+                  <div>Attachments Daily Uploads (Via Hydra)</div>
+                  <div>{}</div>
                 </Typography>
                 <Divider style={{ margin: '0.5rem' }} />
-                <Typography variant="h6" style={{ marginBottom: '1rem' }}>
-                  Average Uploads Per Day
-                </Typography>
-                <Typography variant="h2">
-                  {getNumberStats(attachmentUploads)
-                    .averageRequestsPerDayStringValue || 'N/A'}
-                </Typography>
-                <Divider style={{ margin: '0.5rem' }} />
-                <Typography variant="h6" style={{ marginBottom: '1rem' }}>
-                  Maximum Uploads In A Day
-                </Typography>
-                <Typography variant="h2">
-                  {getNumberStats(attachmentUploads)
-                    .maximumRequestsInADayStringValue || 'N/A'}
-                </Typography>
-              </>
-            </div>
-          </InfoCard>
+                <LineChart
+                  height={300}
+                  margin={{ left: 100, bottom: 50 }}
+                  slotProps={{
+                    legend: {
+                      position: { vertical: 'bottom', horizontal: 'middle' },
+                    },
+                  }}
+                  series={[{ data: seriesForAttachmentsUploads }]}
+                  xAxis={[
+                    {
+                      scaleType: 'point',
+                      data: xLabelsForAttachmentsUploads,
+                    },
+                  ]}
+                  sx={{
+                    [`.${lineElementClasses.root}, .${markElementClasses.root}`]:
+                      {
+                        strokeWidth: 1,
+                      },
+                    '.MuiLineElement-series-pvId': {
+                      strokeDasharray: '5 5',
+                    },
+                    '.MuiLineElement-series-uvId': {
+                      strokeDasharray: '3 4 5 2',
+                    },
+                    [`.${markElementClasses.root}:not(.${markElementClasses.highlighted})`]:
+                      {
+                        fill: '#fff',
+                      },
+                    [`& .${markElementClasses.highlighted}`]: {
+                      stroke: 'none',
+                    },
+                  }}
+                  colors={RedHatStandardColors}
+                />
+              </div>
+            </InfoCard>
+          </Grid>
+          <Grid item xs={3}>
+            <InfoCard>
+              <div style={{ minHeight: '20rem' }}>
+                <Typography variant="h6">Total Uploads</Typography>
+                <>
+                  <Typography variant="h2">
+                    {getNumberStats(attachmentUploads)
+                      .totalRequestsStringValue || 'N/A'}
+                  </Typography>
+                  <Divider style={{ margin: '0.5rem' }} />
+                  <Typography variant="h6" style={{ marginBottom: '1rem' }}>
+                    Average Uploads Per Day
+                  </Typography>
+                  <Typography variant="h2">
+                    {getNumberStats(attachmentUploads)
+                      .averageRequestsPerDayStringValue || 'N/A'}
+                  </Typography>
+                  <Divider style={{ margin: '0.5rem' }} />
+                  <Typography variant="h6" style={{ marginBottom: '1rem' }}>
+                    Maximum Uploads In A Day
+                  </Typography>
+                  <Typography variant="h2">
+                    {getNumberStats(attachmentUploads)
+                      .maximumRequestsInADayStringValue || 'N/A'}
+                  </Typography>
+                </>
+              </div>
+            </InfoCard>
+          </Grid>
         </Grid>
-      </Grid>
+      )}
     </div>
   );
 };
