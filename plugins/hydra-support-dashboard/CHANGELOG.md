@@ -1,5 +1,13 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-hydra-support-dashboard [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-hydra-support-dashboard@1.3.0...@appdev-platform/backstage-plugin-hydra-support-dashboard@1.4.0) (2025-05-05)
+
+
+### Features
+
+* **APD-727:** Analytics for command usage and user metrics in Hydra Case Bot ([b7b85e4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/b7b85e48289d12697d508eeadb38aa5d274c0e5a))
+* **ADP-726:** Hydra attachments analytics ([f0727e5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/f0727e50fc7059ae108110374242ae8fe8aea9b4))
+
 ## @appdev-platform/backstage-plugin-hydra-support-dashboard [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-hydra-support-dashboard@1.2.1...@appdev-platform/backstage-plugin-hydra-support-dashboard@1.3.0) (2025-04-29)
 
 
