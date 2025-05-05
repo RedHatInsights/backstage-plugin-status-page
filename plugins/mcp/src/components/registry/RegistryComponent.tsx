@@ -1,13 +1,14 @@
 import { Link } from '@backstage/core-components';
 import {
+  alertApiRef,
   discoveryApiRef,
-  useApi
+  useApi,
 } from '@backstage/core-plugin-api';
+import { CircularProgress } from '@material-ui/core';
 import Drawer from '@material-ui/core/Drawer';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import yaml from 'js-yaml';
 import React, { useEffect, useState } from 'react';
 
 const useStyles = makeStyles(theme => ({
@@ -64,70 +65,80 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-
-
 export const RegistryComponent = () => {
   const classes = useStyles();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState<any>(null);
   const [cardsData, setCardsData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const discoveryApi = useApi(discoveryApiRef);
+  const alertApi = useApi(alertApiRef);
   useEffect(() => {
     const fetchCatalog = async () => {
-
       const data = await discoveryApi.getBaseUrl('proxy');
       try {
-        const response = await fetch(
-          `${data}/mcp`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+        const response = await fetch(`${data}/mcp/raw`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
           },
-        );
+        });
 
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
 
-        const text = await response.text();
-        const parsedData = yaml.load(text) as Record<string, {
-          title: string;
-          owner: string;
-          description: string;
-          gitUrl: string;
-        }>;
-
-        const cards = Object.entries(parsedData).map(([id, value]) => ({
+        const jsonData = await response.json();
+        const parsedData = jsonData;
+        const cards = Object.entries(parsedData).map(([id, value]: any) => ({
           id,
-          title: value.title,
-          owner: value.owner,
+          name: value.name,
+          maintainers: value.maintainers,
           description: value.description,
-          gitUrl: value.gitUrl,
-          getStarted: value.gitUrl,
-          learnMore: value.gitUrl,
-          tag: []
+          gitUrl: value.url,
+          documentation: value.documentation,
+          readme: value.readme,
+          tag:
+            typeof value.tags === 'string'
+              ? value.tags.split(',').map((tag: string) => tag.trim())
+              : [],
+          npmId: value.npmId,
+          dockerId: value.dockerId,
+          version: value.version,
+          changelog: value.changelog,
+          offer: value.offer,
+          status: value.status,
+          customRegistry: value.customRegistry,
         }));
+
         setCardsData(cards);
         setLoading(false);
       } catch (err: any) {
-        setError(err.message);
+        alertApi.post({
+          message: 'Failed to load the registry data.',
+          severity: 'error',
+        });
         setLoading(false);
       }
     };
     fetchCatalog();
-  }, [discoveryApi]);
-
+  }, [alertApi, discoveryApi]);
 
   if (loading) {
-    return <Typography>Loading...</Typography>;
-  }
-
-  if (error) {
-    return <Typography>Error: {error}</Typography>;
+    return (
+      <>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '60vh',
+          }}
+        >
+          <CircularProgress />
+        </div>
+      </>
+    );
   }
 
   const handleView = (card: any) => {
@@ -144,22 +155,35 @@ export const RegistryComponent = () => {
     <>
       <Grid container alignItems="center" spacing={2}>
         {cardsData.map(el => (
-          <Grid item key={el.id} xs={12} sm={6} md={4} >
+          <Grid item key={el.id} xs={12} sm={6} md={4}>
             <div className={classes.box}>
               <Typography variant="h6" gutterBottom>
-                {el.title}
+                {el.name}
               </Typography>
-
-              <Typography variant="subtitle2" color="textSecondary" gutterBottom>
-                {`Owner: ${el.owner}`}
+              <Typography
+                variant="subtitle2"
+                color="textSecondary"
+                gutterBottom
+              >
+                {` ${el.id}`}
+              </Typography>
+              <Typography
+                variant="subtitle2"
+                color="textSecondary"
+                gutterBottom
+              >
+                {`Maintainer: ${el.maintainers}`}
               </Typography>
               <Typography variant="body2">
-                {el.description.length > 80
-                  ? `${el.description.slice(0, 80)}...`
+                {el.description.length > 120
+                  ? `${el.description.slice(0, 120)}...`
                   : el.description}
               </Typography>
               <div className={classes.actions}>
-                <button className={classes.viewButton} onClick={() => handleView(el)}>
+                <button
+                  className={classes.viewButton}
+                  onClick={() => handleView(el)}
+                >
                   View
                 </button>
                 {el.learnMore && (
@@ -173,17 +197,114 @@ export const RegistryComponent = () => {
         ))}
       </Grid>
       <Drawer anchor="right" open={drawerOpen} onClose={handleCloseDrawer}>
-        <div className={classes.drawerContent}>
+        <div
+          className={classes.drawerContent}
+          style={{
+            padding: '24px',
+            minWidth: '400px',
+            backgroundColor: '#f4f6f8',
+            borderLeft: '4px solid #3f51b5',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            overflowY: 'auto',
+          }}
+        >
           {selectedCard && (
             <>
-              <Typography variant="h6" gutterBottom>
-                {selectedCard.title}
+              <Typography
+                variant="h6"
+                gutterBottom
+                style={{ fontWeight: 600, marginBottom: '12px' }}
+              >
+                {selectedCard.name}
               </Typography>
-              <Typography variant="subtitle2" color="textSecondary" gutterBottom>
-                {`Owner: ${selectedCard.owner}`}
+
+              <Typography
+                variant="subtitle2"
+                color="textSecondary"
+                gutterBottom
+              >
+                <strong>Maintainers:</strong> {selectedCard.maintainers}
               </Typography>
+
               <Typography variant="body2" gutterBottom>
-                {selectedCard.description}
+                <strong>Description:</strong> {selectedCard.description}
+              </Typography>
+
+              <Typography variant="body2" gutterBottom>
+                <strong>Git URL:</strong>{' '}
+                <a
+                  href={selectedCard.gitUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-block',
+                    marginRight: '20px',
+                    color: '#3f51b5',
+                    textDecoration: 'none',
+                    transition: 'color 0.3s ease',
+                  }}
+                >
+                  {selectedCard.gitUrl}
+                </a>
+              </Typography>
+
+              <Typography variant="body2" gutterBottom>
+                <strong>Documentation:</strong>{' '}
+                <a
+                  href={selectedCard.documentation}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    color: '#3f51b5',
+                    textDecoration: 'none',
+                    transition: 'color 0.3s ease',
+                  }}
+                >
+                  {selectedCard.documentation}
+                </a>
+              </Typography>
+
+              <Typography variant="body2" gutterBottom>
+                <strong>Readme:</strong>{' '}
+                {selectedCard.readme || 'No readme available'}
+              </Typography>
+
+              <Typography variant="body2" gutterBottom>
+                <strong>Tags:</strong>{' '}
+                {selectedCard.tag.join(', ') || 'No tags'}
+              </Typography>
+
+              <Typography variant="body2" gutterBottom>
+                <strong>NPM ID:</strong> {selectedCard.npmId || 'Not available'}
+              </Typography>
+
+              <Typography variant="body2" gutterBottom>
+                <strong>Docker ID:</strong>{' '}
+                {selectedCard.dockerId || 'Not available'}
+              </Typography>
+
+              <Typography variant="body2" gutterBottom>
+                <strong>Version:</strong> {selectedCard.version}
+              </Typography>
+
+              <Typography variant="body2" gutterBottom>
+                <strong>Changelog:</strong>{' '}
+                {selectedCard.changelog || 'No changelog available'}
+              </Typography>
+
+              <Typography variant="body2" gutterBottom>
+                <strong>Offer:</strong>{' '}
+                {selectedCard.offer || 'No offer available'}
+              </Typography>
+
+              <Typography variant="body2" gutterBottom>
+                <strong>Status:</strong> {selectedCard.status || 'NA'}
+              </Typography>
+
+              <Typography variant="body2" gutterBottom>
+                <strong>Custom Registry:</strong>{' '}
+                {selectedCard.customRegistry || 'Not available'}
               </Typography>
             </>
           )}

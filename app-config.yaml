@@ -132,10 +132,14 @@ proxy:
       changeOrigin: true
       allowedMethods: ['GET']
     '/mcp':
-      target: ${MCP_SERVER_BASE_URL}
+      target:  ${MCP_SERVER_BASE_URL}
+      headers:
+        PRIVATE-TOKEN:  ${MCP_SERVER_TOKEN}
+        Content-Type: 'application/json'
       credentials: dangerously-allow-unauthenticated
       changeOrigin: true
-      allowedMethods: ['GET', 'OPTIONS']
+      allowedMethods: ['GET', 'OPTIONS', 'PUT']
+      secure: false 
 
 jira:
   proxyPath: /jira
