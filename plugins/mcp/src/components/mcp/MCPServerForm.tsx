@@ -41,6 +41,7 @@ const MCPServerForm: React.FC<MCPServerFormProps> = ({ open, onClose }) => {
     offer: '',
     documentation: '',
     status: '',
+    customRegistry: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -134,6 +135,7 @@ const MCPServerForm: React.FC<MCPServerFormProps> = ({ open, onClose }) => {
       offer: '',
       documentation: '',
       status: '',
+      customRegistry: '',
     });
     setStep(1);
     setLoading(false);
@@ -256,20 +258,25 @@ const MCPServerForm: React.FC<MCPServerFormProps> = ({ open, onClose }) => {
       case 2:
         return (
           <>
-            {['readme', 'changelog', 'offer', 'documentation', 'status'].map(
-              field => (
-                <TextField
-                  key={field}
-                  label={field.charAt(0).toUpperCase() + field.slice(1)}
-                  name={field}
-                  value={formData[field as keyof typeof formData]}
-                  onChange={handleFormChange}
-                  fullWidth
-                  margin="dense"
-                  disabled={loading}
-                />
-              ),
-            )}
+            {[
+              'readme',
+              'changelog',
+              'offer',
+              'documentation',
+              'status',
+              'customRegistry',
+            ].map(field => (
+              <TextField
+                key={field}
+                label={field.charAt(0).toUpperCase() + field.slice(1)}
+                name={field}
+                value={formData[field as keyof typeof formData]}
+                onChange={handleFormChange}
+                fullWidth
+                margin="dense"
+                disabled={loading}
+              />
+            ))}
           </>
         );
       case 3:

@@ -108,6 +108,7 @@ export const RegistryComponent = () => {
           changelog: value.changelog,
           offer: value.offer,
           status: value.status,
+          customRegistry: value.customRegistry,
         }));
 
         setCardsData(cards);
@@ -298,7 +299,12 @@ export const RegistryComponent = () => {
               </Typography>
 
               <Typography variant="body2" gutterBottom>
-                <strong>Status:</strong> {selectedCard.status}
+                <strong>Status:</strong> {selectedCard.status || 'NA'}
+              </Typography>
+
+              <Typography variant="body2" gutterBottom>
+                <strong>Custom Registry:</strong>{' '}
+                {selectedCard.customRegistry || 'Not available'}
               </Typography>
             </>
           )}
