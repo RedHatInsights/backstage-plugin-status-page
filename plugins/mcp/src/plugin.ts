@@ -1,6 +1,6 @@
 import {
   createPlugin,
-  createRoutableExtension
+  createRoutableExtension,
 } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
@@ -15,8 +15,7 @@ export const mcpPlugin = createPlugin({
 export const McpPage = mcpPlugin.provide(
   createRoutableExtension({
     name: 'McpPage',
-    component: () =>
-      import('./components/mcp').then(m => m.MCPServer),
+    component: () => import('./components/mcp').then(m => m.MCPServer),
     mountPoint: rootRouteRef,
   }),
 );

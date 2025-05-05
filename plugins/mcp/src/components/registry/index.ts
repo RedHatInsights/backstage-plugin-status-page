@@ -1,1 +1,1 @@
-export { RegistryComponent  } from './RegistryComponent';
+export { RegistryComponent } from './RegistryComponent';
