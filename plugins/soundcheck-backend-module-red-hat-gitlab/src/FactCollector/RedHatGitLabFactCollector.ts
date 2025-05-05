@@ -224,81 +224,86 @@ export class RedHatGitLabFactCollector implements FactCollector {
 
         fact = undefined;
 
-        switch (parsedFactRef.name) {
-          case FactNames.CodeCoverage:
-            fact = await this.collectCodeCoverage(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+        try {
+          switch (parsedFactRef.name) {
+            case FactNames.CodeCoverage:
+              fact = await this.collectCodeCoverage(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          case FactNames.ComposerLockModified:
-            fact = await this.collectComposerLockModified(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+            case FactNames.ComposerLockModified:
+              fact = await this.collectComposerLockModified(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          case FactNames.DrupalExtensionInfoFile:
-            fact = await this.collectDrupalExtensionInfoFile(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+            case FactNames.DrupalExtensionInfoFile:
+              fact = await this.collectDrupalExtensionInfoFile(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          case FactNames.Environments:
-            fact = await this.collectEnvironments(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+            case FactNames.Environments:
+              fact = await this.collectEnvironments(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          case FactNames.LatestCommit:
-            fact = await this.collectLatestCommit(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+            case FactNames.LatestCommit:
+              fact = await this.collectLatestCommit(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          case FactNames.LatestPipeline:
-            fact = await this.collectLatestPipeline(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+            case FactNames.LatestPipeline:
+              fact = await this.collectLatestPipeline(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          case FactNames.MergeRequestApprovalRules:
-            fact = await this.collectMergeRequestApprovalRules(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+            case FactNames.MergeRequestApprovalRules:
+              fact = await this.collectMergeRequestApprovalRules(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          case FactNames.RepositoryTree:
-            fact = await this.collectRepositoryTree(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+            case FactNames.RepositoryTree:
+              fact = await this.collectRepositoryTree(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          case FactNames.SharedStages:
-            fact = await this.collectSharedStages(
-              entity,
-              factRef,
-              gitlabProjectId,
-            );
-            break;
+            case FactNames.SharedStages:
+              fact = await this.collectSharedStages(
+                entity,
+                factRef,
+                gitlabProjectId,
+              );
+              break;
 
-          default:
-          // Do nothing.
+            default:
+            // Do nothing.
+          }
+        }
+        catch {
+          continue;
         }
 
         if (fact !== undefined) {
@@ -545,7 +550,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
     // If the file modification time was not found, skip this fact for
     // this entity.
     if (modified_time === undefined) {
-      this.logger.error(`Unable to collect ${stringifyFactRef(factRef)}: unable to get modification time for composer.lock for GitLab project "${gitlabProjectId}" in RedHatGitLabFactCollector.`);
+      this.logger.info(`Unable to collect ${stringifyFactRef(factRef)}: unable to get modification time for composer.lock for GitLab project "${gitlabProjectId}" in RedHatGitLabFactCollector.`);
 
       return undefined;
     }
@@ -592,19 +597,19 @@ export class RedHatGitLabFactCollector implements FactCollector {
       // The API is public, no authentication is necessary.
       const drupalReleaseHistoryResponse: Response = await fetch(drupalReleaseHistoryUrl);
       this.logger.debug(`HTTP ${drupalReleaseHistoryResponse.status} response from ${drupalReleaseHistoryUrl}.`);
-      // If the response was not HTTP 200, return undefined.
+      // If the response was not HTTP 200, throw an error.
       if (!drupalReleaseHistoryResponse.ok) {
         this.logger.error(`HTTP ${drupalReleaseHistoryResponse.status} response from ${drupalReleaseHistoryUrl}.`);
 
-        return undefined;
+        throw new Error(`Unable to get Drupal release history, HTTP status ${drupalReleaseHistoryResponse.status}`);
       }
       // Parse the XML response into an object.
       drupalReleaseHistory = this.xmlParser.parse(await drupalReleaseHistoryResponse.text());
-      // If the parser did not parse the XML, return undefined.
+      // If the parser did not parse the XML, throw an error.
       if (drupalReleaseHistory === undefined) {
         this.logger.error(`Unable to parse Drupal release history XML.`);
 
-        return undefined;
+        throw new Error(`Unable to parse Drupal release history XML.`);
       }
       // Store the parsed object in the cache.
       this.cache.set(drupalReleaseHistoryCacheKey, drupalReleaseHistory, {
@@ -639,7 +644,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
     if (highestBranch === undefined) {
       this.logger.error(`Highest supported Drupal branch is empty, source value from API is ${drupalReleaseHistory.project.supported_branches}`);
 
-      return undefined;
+      throw new Error(`Highest supported Drupal branch is empty`);
     }
     // Remove the '^' so the value is just, for example, '11.1'.
     highestBranch = highestBranch.substring(1);
@@ -676,11 +681,11 @@ export class RedHatGitLabFactCollector implements FactCollector {
       }
     }
 
-    // If no info file was found at all, return undefined.
+    // If no info file was found at all, throw an error.
     if (infoFile === undefined) {
       this.logger.error(`Unable to find .info.yml file for project ${gitlabProjectId}`);
 
-      return undefined;
+      throw new Error(`Unable to find .info.yml file for project ${gitlabProjectId}`);
     }
 
     // Get the raw YAML of the info file.
@@ -690,21 +695,21 @@ export class RedHatGitLabFactCollector implements FactCollector {
       project.default_branch,
     );
 
-    // If the contents are not a string, or if the string is empty, return
-    // undefined.
+    // If the contents are not a string, or if the string is empty, throw an
+    // error.
     if (typeof infoFileContents !== 'string' || infoFileContents.length < 1) {
       this.logger.error(`Unable to get contents of file ${infoFile.name}`);
 
-      return undefined;
+      throw new Error(`Unable to get contents of file ${infoFile.name}`);
     }
 
     // Parse the YAML into an object.
     const parsedInfoFile = yamlParse(infoFileContents);
-    // If the YAML was not parsed into an object, return undefined.
+    // If the YAML was not parsed into an object, throw an error.
     if (typeof parsedInfoFile !== 'object') {
       this.logger.error(`Unable to parse info file ${infoFile.name} from GitLab project ${gitlabProjectId}`);
 
-      return undefined;
+      throw new Error(`Unable to parse info file ${infoFile.name} from GitLab project ${gitlabProjectId}`);
     }
 
     // Return the fact.
@@ -788,18 +793,18 @@ export class RedHatGitLabFactCollector implements FactCollector {
     gitlabProjectId: string | number,
   ): Promise<Fact | undefined> {
     const project = await this.gitlab.Projects.show(gitlabProjectId);
-    // If the project could not be found, return undefined.
+    // If the project could not be found, throw an error.
     if (project === undefined) {
       this.logger.error(`Unable to get GitLab project ${gitlabProjectId}`);
 
-      return undefined;
+      throw new Error(`Unable to get GitLab project ${gitlabProjectId}`);
     }
     const commit = await this.gitlab.Commits.show(gitlabProjectId, project.default_branch);
-    // If the most recent commit could not be found, return undefined.
+    // If the most recent commit could not be found, throw an error.
     if (commit === undefined) {
       this.logger.error(`Unable to get latest commit for GitLab project ${gitlabProjectId}`);
 
-      return undefined;
+      throw new Error(`Unable to get latest commit for GitLab project ${gitlabProjectId}`);
     }
 
     return {
@@ -892,7 +897,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
     if (tree === undefined) {
       this.logger.error(`Unable to get repository tree for GitLab project ${gitlabProjectId}`);
 
-      return undefined;
+      throw new Error(`Unable to get repository tree for GitLab project ${gitlabProjectId}`);
     }
 
     return {
@@ -942,7 +947,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
     if (rules === undefined) {
       this.logger.error(`Unable to get merge request approval rules for GitLab project ${gitlabProjectId}`);
 
-      return undefined;
+      throw new Error(`Unable to get merge request approval rules for GitLab project ${gitlabProjectId}`);
     }
 
     return {
@@ -1083,11 +1088,9 @@ export class RedHatGitLabFactCollector implements FactCollector {
         project.default_branch,
       );
 
-      // Return undefined if the file is undefined.
+      // Throw an error if the file is undefined.
       if (file === undefined) {
-        this.logger.error('Unknown error while getting file');
-
-        return undefined;
+        throw new Error('Unknown error while getting file');
       }
 
       // Get the file's latest commit.
@@ -1096,11 +1099,9 @@ export class RedHatGitLabFactCollector implements FactCollector {
         file.last_commit_id,
       );
 
-      // Return undefined if either the commit or the committed date is undefined.
+      // Throw an error if either the commit or the committed date is undefined.
       if (commit?.committed_date === undefined) {
-        this.logger.error(`Unknown error while getting commit ${commit.id}`);
-
-        return undefined;
+        throw new Error(`Unknown error while getting commit ${commit.id}`);
       }
 
       // Return the timestamp as a DateTime.
