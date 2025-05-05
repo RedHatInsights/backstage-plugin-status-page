@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-devex-data-layer-backend [1.7.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-data-layer-backend@1.6.0...@appdev-platform/backstage-plugin-devex-data-layer-backend@1.7.0) (2025-05-05)
+
+
+### Features
+
+* **APD-727:** Analytics for command usage and user metrics in Hydra Case Bot ([b7b85e4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/b7b85e48289d12697d508eeadb38aa5d274c0e5a))
+
 ## @appdev-platform/backstage-plugin-devex-data-layer-backend [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-data-layer-backend@1.5.0...@appdev-platform/backstage-plugin-devex-data-layer-backend@1.6.0) (2025-05-02)
 
 
