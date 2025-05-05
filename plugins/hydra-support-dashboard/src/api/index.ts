@@ -131,4 +131,22 @@ export class DTLApi {
       });
     return response;
   }
+
+  async getCaseBotSplunkStats(endpoint: string) {
+    const baseUrl = await this.discoveryApi.getBaseUrl('devex-data-layer');
+    const response = await this.fetchApi
+      .fetch(`${baseUrl}/hydra/casebot/${endpoint}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(data => {
+        return data.json();
+      })
+      .catch(_err => {
+        return null;
+      });
+    return response;
+  }
 }

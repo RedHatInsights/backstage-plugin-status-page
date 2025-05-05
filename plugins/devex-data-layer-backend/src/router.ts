@@ -4,7 +4,10 @@ import { DataLayerBackendDatabase } from './database/DataLayerBackendDatabase';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { HydraSplunkDatabase } from './database/HydraSplunkDatabase';
 import { HydraNotificationsLogIds } from './services/SplunkSearchServices';
-import { HydraAttachmentLogIds } from './services/SplunkSearchServices/constants';
+import {
+  HydraAttachmentLogIds,
+  HydraCaseBotLogIds,
+} from './services/SplunkSearchServices/constants';
 
 export async function createRouter(
   databaseServer: DatabaseService,
@@ -109,6 +112,20 @@ export async function createRouter(
   router.get('/hydra/attachments/uploads', async (_req, res) => {
     const cachedData = await hydraDatabase.getSearchDataByLogId(
       HydraAttachmentLogIds.AttachmentsUploads,
+    );
+    res.json({ data: cachedData });
+  });
+
+  router.get('/hydra/casebot/unique-users', async (_req, res) => {
+    const cachedData = await hydraDatabase.getSearchDataByLogId(
+      HydraCaseBotLogIds.UniqueUsers,
+    );
+    res.json({ data: cachedData });
+  });
+
+  router.get('/hydra/casebot/commands', async (_req, res) => {
+    const cachedData = await hydraDatabase.getSearchDataByLogId(
+      HydraCaseBotLogIds.FrequencyPerCommand,
     );
     res.json({ data: cachedData });
   });

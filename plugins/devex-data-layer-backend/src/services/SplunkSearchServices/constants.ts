@@ -31,9 +31,8 @@ export const queryForAttachmentsUniqueUsers = `search index=federated:rh_jboss h
 export const queryForAttachmentsUploads = `search index=federated:rh_jboss host="hydra-attachments-prod*" sourcetype=access_combined path="*/upload/credentials" | timechart span=1d count`;
 
 // Hydra CaseBot Queries
-export const queryForCaseBotUniqueUsers = `search host="hydra-bots-prod*" index="federated:rh_jboss" "hydra-bots EventLoggingMiddleware: Received Event: {*\\\\"command\\\\":*}" OR "hydra-bots CaseMessageEventHandler: Message event processed - {*\\\\"command\\\\":*}" OR "hydra-bots MessageEventHandler: Message event processed - {*\"command\":*}" | rex "\\\\"user_id\":\\\\"(?<user_id>[^\\\\"]+)\\\\"" | timechart span=1mon distinct_count(user_id) AS "#Users"`;
-export const queryForCaseBotFrequencyPerCommand = `search host="hydra-bots-prod*" index="federated:rh_jboss" "hydra-bots EventLoggingMiddleware: Received Event: {*\\\\"command\":*}" OR "hydra-bots CaseMessageEventHandler: Message event processed - {*\\\\"command\\\\":*}" OR "hydra-bots MessageEventHandler: Message event processed - {*\\\\"command\\\\":*}" | rex "\\\\"command\\\\":\\\\s*\\\\"(?<command_name>[^\\\\"]+)\\\\"" | timechart span=1mon count by command_name`
-
+export const queryForCaseBotUniqueUsers = `search host="hydra-bots-prod*" index="federated:rh_jboss" "hydra-bots EventLoggingMiddleware: Received Event: {*\\"command\\":*}" OR "hydra-bots CaseMessageEventHandler: Message event processed - {*\\"command\\":*}" OR "hydra-bots MessageEventHandler: Message event processed - {*\\"command\\":*}" | rex "\\"user_id\\":\\"(?<user_id>[^\\"]+)\\"" | timechart span=1mon distinct_count(user_id) AS "#Users"`;
+export const queryForCaseBotFrequencyPerCommand = `search host="hydra-bots-prod*" index="federated:rh_jboss" "hydra-bots EventLoggingMiddleware: Received Event: {*\\"command\\":*}" OR "hydra-bots CaseMessageEventHandler: Message event processed - {*\\"command\\":*}" OR "hydra-bots MessageEventHandler: Message event processed - {*\\"command\\":*}" | rex "\\"command\\":\\s*\\"(?<command_name>[^\\"]+)\\"" | timechart span=1mon count by command_name`;
 
 export enum PollingTypes {
   Subgraph = 'Subgraph',
@@ -67,5 +66,5 @@ export enum HydraAttachmentLogIds {
 
 export enum HydraCaseBotLogIds {
   UniqueUsers = 'casebot_unique_users',
-  FrequencyPerCommand = 'casebot_frequency_per_command'
+  FrequencyPerCommand = 'casebot_frequency_per_command',
 }
