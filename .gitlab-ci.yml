@@ -1,8 +1,8 @@
 variables:
-  GITLAB_DIR: "$CI_PROJECT_DIR/.gitlab"
-  GITLAB_SCRIPTS_DIR: "$GITLAB_DIR/scripts"
-  GITLAB_TEMPLATES_DIR: "$GITLAB_DIR/templates"
-  TEMP_DIR: "$CI_PROJECT_DIR/tmp"
+  GITLAB_DIR: '$CI_PROJECT_DIR/.gitlab'
+  GITLAB_SCRIPTS_DIR: '$GITLAB_DIR/scripts'
+  GITLAB_TEMPLATES_DIR: '$GITLAB_DIR/templates'
+  TEMP_DIR: '$CI_PROJECT_DIR/tmp'
 
 stages:
   - install
@@ -26,7 +26,7 @@ yarn_install:
   stage: install
   image: images.paas.redhat.com/dat/nodeci-base-image:1.0.0
   tags:
-    - shared
+    - shared-podman
   needs: []
   rules:
     - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == 'merge_request_event')
@@ -49,7 +49,7 @@ yarn_build:
   stage: build
   image: images.paas.redhat.com/dat/nodeci-base-image:1.0.0
   tags:
-    - shared
+    - shared-podman
   needs: ['yarn_install']
   rules:
     - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == 'merge_request_event')
@@ -77,7 +77,7 @@ yarn_lint:
   stage: lint
   image: images.paas.redhat.com/dat/nodeci-base-image:1.0.0
   tags:
-    - shared
+    - shared-podman
   needs: ['yarn_install']
   rules:
     - if: ($CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_PIPELINE_SOURCE == 'merge_request_event')
@@ -90,7 +90,7 @@ publish_plugins:
   stage: publish
   image: images.paas.redhat.com/dat/nodeci-base-image:1.0.0
   tags:
-    - shared
+    - shared-podman
   needs:
     - job: yarn_build
       artifacts: true
