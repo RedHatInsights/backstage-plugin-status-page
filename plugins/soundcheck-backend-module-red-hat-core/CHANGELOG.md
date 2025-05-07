@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core@1.1.0...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core@1.2.0) (2025-05-07)
+
+
+### Features
+
+* **PULSE-622:** Do not throw errors in fact collectors ([7ecbb2f](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/7ecbb2ff7685fccc6bb59b372eecbd431cafd012))
+
 ## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core@1.0.1...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core@1.1.0) (2025-04-25)
 
 
