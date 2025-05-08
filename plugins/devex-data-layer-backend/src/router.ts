@@ -7,6 +7,8 @@ import { HydraNotificationsLogIds } from './services/SplunkSearchServices';
 import {
   HydraAttachmentLogIds,
   HydraCaseBotLogIds,
+  HydraRestLogIds,
+  HydraSearchLogIds,
 } from './services/SplunkSearchServices/constants';
 
 export async function createRouter(
@@ -126,6 +128,34 @@ export async function createRouter(
   router.get('/hydra/casebot/commands', async (_req, res) => {
     const cachedData = await hydraDatabase.getSearchDataByLogId(
       HydraCaseBotLogIds.FrequencyPerCommand,
+    );
+    res.json({ data: cachedData });
+  });
+
+  router.get('/hydra/search/unique-users', async (_req, res) => {
+    const cachedData = await hydraDatabase.getSearchDataByLogId(
+      HydraSearchLogIds.UniqueUsers,
+    );
+    res.json({ data: cachedData });
+  });
+
+  router.get('/hydra/search/requests', async (_req, res) => {
+    const cachedData = await hydraDatabase.getSearchDataByLogId(
+      HydraSearchLogIds.SearchRequest,
+    );
+    res.json({ data: cachedData });
+  });
+
+  router.get('/hydra/rest/unique-users', async (_req, res) => {
+    const cachedData = await hydraDatabase.getSearchDataByLogId(
+      HydraRestLogIds.UniqueUsers,
+    );
+    res.json({ data: cachedData });
+  });
+
+  router.get('/hydra/rest/cases', async (_req, res) => {
+    const cachedData = await hydraDatabase.getSearchDataByLogId(
+      HydraRestLogIds.CasesCreated,
     );
     res.json({ data: cachedData });
   });

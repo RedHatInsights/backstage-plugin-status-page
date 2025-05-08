@@ -31,7 +31,7 @@ export const Dashboard = ({}: Props) => {
                 aria-label="Hydra Dashboard Tabs"
               >
                 <Tab label="Analytical Dashboard" value="1" />
-                <Tab label="Support Dashboard" value="2" />
+                {/* <Tab label="Support Dashboard" value="2" /> */}
               </TabList>
             </Box>
             <TabPanel value="1">

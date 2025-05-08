@@ -11,6 +11,20 @@ export {
   queryForNotificationsActiveUsers,
   queryForNotificationsPerChannel,
   HydraNotificationsLogIds,
+  queryForAttachmentsDownloads,
+  queryForAttachmentsUniqueUsers,
+  queryForAttachmentsUploads,
+  queryForCaseBotFrequencyPerCommand,
+  queryForCaseBotUniqueUsers,
+  queryForHydraSearchActiveUsers,
+  queryForHydraSearchRequests,
+  queryForNotificationsServed,
+  queryForRestActiveUsers,
+  queryForRestCasesCreated,
+  HydraAttachmentLogIds,
+  HydraCaseBotLogIds,
+  HydraRestLogIds,
+  HydraSearchLogIds,
 } from './constants';
 export { pollingBySubgraph, commonPolling } from './schedulingMethods';
 export {
@@ -20,6 +34,4 @@ export {
   fetchErrorRatesPerSubgraph,
 } from './HistoricalSearches';
 
-export {
-  triggerFetch,
-} from './HydraSearches';
+export { triggerFetch } from './HydraSearches';

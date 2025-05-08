@@ -1,6 +1,7 @@
 import { InfoCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import {
+  Button,
   Divider,
   FormControl,
   Grid,
@@ -25,9 +26,9 @@ import {
 } from '../constants';
 
 export enum AttachmentsApiEndpoints {
-  UniqueUsers = 'unique-users',
-  AttachmentDownloads = 'downloads',
-  AttachmentsUploads = 'uploads',
+  UniqueUsers = 'attachments/unique-users',
+  AttachmentDownloads = 'attachments/downloads',
+  AttachmentsUploads = 'attachments/uploads',
 }
 export const AttachmentsAnalytics = () => {
   const [loadingData, setLoadingData] = useState(false);
@@ -47,6 +48,8 @@ export const AttachmentsAnalytics = () => {
   const [xLabelsForUniqueUsers, setXLabelsForUniqueUsers] = useState<string[]>(
     [],
   );
+  const [lastUpdatedOn, setLastUpdatedOn] = useState<string>('');
+  const isButtonDisabled = true;
 
   const dataLayerApi = useApi(dataLayerApiRef);
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<string>(
@@ -56,39 +59,43 @@ export const AttachmentsAnalytics = () => {
   const [attachmentDownloads, setAttachmentDownloads] = useState<[]>([]);
   const [attachmentUploads, setAttachmentUploads] = useState<[]>([]);
 
-  const fetchNotificationsStats = async () => {
+  const fetchAttachmentStats = async () => {
     try {
       setLoadingData(true);
-      const uniqueUsersResponse = await dataLayerApi.getAttachmentsSplunkStats(
+      const uniqueUsersResponse = await dataLayerApi.getHydraSplunkStats(
         AttachmentsApiEndpoints.UniqueUsers,
       );
-      const notificationsServedResponse =
-        await dataLayerApi.getAttachmentsSplunkStats(
+      const attachmentDownloadsResponse =
+        await dataLayerApi.getHydraSplunkStats(
           AttachmentsApiEndpoints.AttachmentDownloads,
         );
-      const notificationsPerChannelResponse =
-        await dataLayerApi.getAttachmentsSplunkStats(
-          AttachmentsApiEndpoints.AttachmentsUploads,
-        );
+      const attachmentsUploadsResponse = await dataLayerApi.getHydraSplunkStats(
+        AttachmentsApiEndpoints.AttachmentsUploads,
+      );
       if (uniqueUsersResponse?.data && uniqueUsersResponse.data?.searchData) {
         setUniqueUsers(JSON.parse(uniqueUsersResponse.data?.searchData).data);
       }
 
       if (
-        notificationsServedResponse?.data &&
-        notificationsServedResponse.data?.searchData
+        attachmentDownloadsResponse?.data &&
+        attachmentDownloadsResponse.data?.searchData
       ) {
         setAttachmentDownloads(
-          JSON.parse(notificationsServedResponse.data?.searchData).data,
+          JSON.parse(attachmentDownloadsResponse.data?.searchData).data,
+        );
+        setLastUpdatedOn(
+          new Date(
+            attachmentDownloadsResponse?.data?.lastUpdatedOn,
+          ).toDateString(),
         );
       }
 
       if (
-        notificationsPerChannelResponse?.data &&
-        notificationsPerChannelResponse.data?.searchData
+        attachmentsUploadsResponse?.data &&
+        attachmentsUploadsResponse.data?.searchData
       ) {
         setAttachmentUploads(
-          JSON.parse(notificationsPerChannelResponse.data?.searchData).data,
+          JSON.parse(attachmentsUploadsResponse.data?.searchData).data,
         );
       }
       setLoadingData(false);
@@ -254,7 +261,7 @@ export const AttachmentsAnalytics = () => {
   };
 
   useEffect(() => {
-    fetchNotificationsStats();
+    fetchAttachmentStats();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -285,8 +292,13 @@ export const AttachmentsAnalytics = () => {
         }}
       >
         <div>
-          <Typography variant="h3">
+          <Typography variant="h3" style={{ display: 'flex', gap: '1rem' }}>
             <div>Attachments Analytics</div>
+            <div>
+              <Button size="small" disabled={isButtonDisabled}>
+                {`Last updated on: ${lastUpdatedOn}`}
+              </Button>
+            </div>
           </Typography>
         </div>
         <div>{getFilters()}</div>
@@ -295,14 +307,14 @@ export const AttachmentsAnalytics = () => {
         <LinearProgress />
       ) : (
         <Grid container spacing={2}>
-          <Grid item xs={8}>
+          <Grid item xs={9}>
             <InfoCard>
               <div style={{ minHeight: '15rem' }}>
                 <Typography
-                  variant="h5"
+                  variant="h6"
                   style={{ display: 'flex', justifyContent: 'space-between' }}
                 >
-                  <div>Attachments Daily Downloads (Via Hydra)</div>
+                  <div>Attachments Daily Unique Users</div>
                 </Typography>
                 <Divider style={{ margin: '0.5rem' }} />
                 <BarChart
@@ -323,31 +335,27 @@ export const AttachmentsAnalytics = () => {
               </div>
             </InfoCard>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <InfoCard>
               <div style={{ minHeight: '15rem' }}>
-                <Typography variant="h5">
+                <Typography variant="h6">
                   <div>Total Unique User Activities</div>
                 </Typography>
-                <Typography variant="h5">
-                  <div style={{ fontSize: '4rem', textAlign: 'center' }}>
-                    {
-                      getNumberStatsForUniqueUsers()
-                        .totalUserActivitiesStringValue
-                    }
-                  </div>
+                <Typography variant="h6" style={{ fontSize: '2rem' }}>
+                  {
+                    getNumberStatsForUniqueUsers()
+                      .totalUserActivitiesStringValue
+                  }
                 </Typography>
                 <Divider style={{ margin: '0.5rem' }} />
-                <Typography variant="h5">
+                <Typography variant="h6">
                   <div>Daily Average Unique Users</div>
                 </Typography>
-                <Typography variant="h5">
-                  <div style={{ fontSize: '3.5rem', textAlign: 'center' }}>
-                    {
-                      getNumberStatsForUniqueUsers()
-                        .dailyAverageUniqueUsersStringValue
-                    }
-                  </div>
+                <Typography variant="h6" style={{ fontSize: '2rem' }}>
+                  {
+                    getNumberStatsForUniqueUsers()
+                      .dailyAverageUniqueUsersStringValue
+                  }
                 </Typography>
               </div>
             </InfoCard>
@@ -356,7 +364,7 @@ export const AttachmentsAnalytics = () => {
             <InfoCard>
               <div style={{ maxHeight: '20rem' }}>
                 <Typography
-                  variant="h5"
+                  variant="h6"
                   style={{ display: 'flex', justifyContent: 'space-between' }}
                 >
                   <div>Attachments Daily Downloads (Via Hydra)</div>
@@ -406,7 +414,7 @@ export const AttachmentsAnalytics = () => {
               <div style={{ minHeight: '20rem' }}>
                 <Typography variant="h6">Total Downloads</Typography>
                 <>
-                  <Typography variant="h2">
+                  <Typography variant="h6" style={{ fontSize: '2rem' }}>
                     {getNumberStats(attachmentDownloads)
                       .totalRequestsStringValue || 'N/A'}
                   </Typography>
@@ -414,7 +422,7 @@ export const AttachmentsAnalytics = () => {
                   <Typography variant="h6" style={{ marginBottom: '1rem' }}>
                     Average Downloads Per Day
                   </Typography>
-                  <Typography variant="h2">
+                  <Typography variant="h6" style={{ fontSize: '2rem' }}>
                     {getNumberStats(attachmentDownloads)
                       .averageRequestsPerDayStringValue || 'N/A'}
                   </Typography>
@@ -422,7 +430,7 @@ export const AttachmentsAnalytics = () => {
                   <Typography variant="h6" style={{ marginBottom: '1rem' }}>
                     Maximum Downloads In A Day
                   </Typography>
-                  <Typography variant="h2">
+                  <Typography variant="h6" style={{ fontSize: '2rem' }}>
                     {getNumberStats(attachmentDownloads)
                       .maximumRequestsInADayStringValue || 'N/A'}
                   </Typography>
@@ -434,7 +442,7 @@ export const AttachmentsAnalytics = () => {
             <InfoCard>
               <div style={{ maxHeight: '20rem' }}>
                 <Typography
-                  variant="h5"
+                  variant="h6"
                   style={{ display: 'flex', justifyContent: 'space-between' }}
                 >
                   <div>Attachments Daily Uploads (Via Hydra)</div>
@@ -485,7 +493,7 @@ export const AttachmentsAnalytics = () => {
               <div style={{ minHeight: '20rem' }}>
                 <Typography variant="h6">Total Uploads</Typography>
                 <>
-                  <Typography variant="h2">
+                  <Typography variant="h6" style={{ fontSize: '2rem' }}>
                     {getNumberStats(attachmentUploads)
                       .totalRequestsStringValue || 'N/A'}
                   </Typography>
@@ -493,7 +501,7 @@ export const AttachmentsAnalytics = () => {
                   <Typography variant="h6" style={{ marginBottom: '1rem' }}>
                     Average Uploads Per Day
                   </Typography>
-                  <Typography variant="h2">
+                  <Typography variant="h6" style={{ fontSize: '2rem' }}>
                     {getNumberStats(attachmentUploads)
                       .averageRequestsPerDayStringValue || 'N/A'}
                   </Typography>
@@ -501,7 +509,7 @@ export const AttachmentsAnalytics = () => {
                   <Typography variant="h6" style={{ marginBottom: '1rem' }}>
                     Maximum Uploads In A Day
                   </Typography>
-                  <Typography variant="h2">
+                  <Typography variant="h6" style={{ fontSize: '2rem' }}>
                     {getNumberStats(attachmentUploads)
                       .maximumRequestsInADayStringValue || 'N/A'}
                   </Typography>

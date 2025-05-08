@@ -7,6 +7,8 @@ import {
   HydraAttachmentLogIds,
   HydraCaseBotLogIds,
   HydraNotificationsLogIds,
+  HydraRestLogIds,
+  HydraSearchLogIds,
   PollingTypes,
   queryForAkamaiApiGatewayRequestsRecord,
   queryForAkamaiApiGatewayResponseTimeRecord,
@@ -15,10 +17,14 @@ import {
   queryForAttachmentsUploads,
   queryForCaseBotFrequencyPerCommand,
   queryForCaseBotUniqueUsers,
+  queryForHydraSearchActiveUsers,
+  queryForHydraSearchRequests,
   queryForNotificationsActiveUsers,
   queryForNotificationsPerChannel,
   queryForNotificationsServed,
   queryForNumberOfSubgraphsDeveloped,
+  queryForRestActiveUsers,
+  queryForRestCasesCreated,
   queryForTotalRequestOnInternalServer,
   queryForTotalRequestOnPublicServer,
 } from './constants';
@@ -136,7 +142,7 @@ export async function CreateSplunkQueryService({
     async fetchHydraHistoricalData() {
       try {
         const fetchList = [
-          // Notifications
+          // // Notifications
           {
             query: queryForNotificationsActiveUsers,
             logId: HydraNotificationsLogIds.ActiveUsers,
@@ -172,6 +178,26 @@ export async function CreateSplunkQueryService({
           {
             query: queryForCaseBotFrequencyPerCommand,
             logId: HydraCaseBotLogIds.FrequencyPerCommand,
+          },
+
+          // Rest
+          {
+            query: queryForRestActiveUsers,
+            logId: HydraRestLogIds.UniqueUsers,
+          },
+          {
+            query: queryForRestCasesCreated,
+            logId: HydraRestLogIds.CasesCreated,
+          },
+
+          // Search
+          {
+            query: queryForHydraSearchActiveUsers,
+            logId: HydraSearchLogIds.UniqueUsers,
+          },
+          {
+            query: queryForHydraSearchRequests,
+            logId: HydraSearchLogIds.SearchRequest,
           },
         ];
 

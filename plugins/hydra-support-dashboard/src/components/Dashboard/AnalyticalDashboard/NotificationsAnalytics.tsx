@@ -1,6 +1,7 @@
 import { InfoCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import {
+  Button,
   Chip,
   Divider,
   FormControl,
@@ -25,9 +26,9 @@ import {
 } from '../constants';
 
 export enum NotificationsApiEndpoints {
-  ActiveUsers = 'active-users',
-  NotificationsServed = 'count',
-  NotificationsPerChannel = 'by-channel',
+  ActiveUsers = 'notifications/active-users',
+  NotificationsServed = 'notifications/count',
+  NotificationsPerChannel = 'notifications/by-channel',
 }
 export const NotificationsAnalytics = () => {
   const [loadingData, setLoadingData] = useState(false);
@@ -51,19 +52,21 @@ export const NotificationsAnalytics = () => {
     [],
   );
 
+  const [lastUpdatedOn, setLastUpdatedOn] = useState<string>('');
+  const isButtonDisabled = true;
+
   const fetchNotificationsStats = async () => {
     try {
       setLoadingData(true);
-      const activeUsersResponse =
-        await dataLayerApi.getNotificationsSplunkStats(
-          NotificationsApiEndpoints.ActiveUsers,
-        );
+      const activeUsersResponse = await dataLayerApi.getHydraSplunkStats(
+        NotificationsApiEndpoints.ActiveUsers,
+      );
       const notificationsServedResponse =
-        await dataLayerApi.getNotificationsSplunkStats(
+        await dataLayerApi.getHydraSplunkStats(
           NotificationsApiEndpoints.NotificationsServed,
         );
       const notificationsPerChannelResponse =
-        await dataLayerApi.getNotificationsSplunkStats(
+        await dataLayerApi.getHydraSplunkStats(
           NotificationsApiEndpoints.NotificationsPerChannel,
         );
       if (activeUsersResponse?.data && activeUsersResponse.data?.searchData) {
@@ -72,6 +75,9 @@ export const NotificationsAnalytics = () => {
         )[0];
         parseInt(stringCount, 10);
         setActiveUsers(stringCount ? parseInt(stringCount, 10) : 0);
+        setLastUpdatedOn(
+          new Date(activeUsersResponse?.data?.lastUpdatedOn).toDateString(),
+        );
       }
 
       if (
@@ -289,8 +295,19 @@ export const NotificationsAnalytics = () => {
         }}
       >
         <div>
-          <Typography variant="h3">
+          <Typography
+            variant="h3"
+            style={{
+              display: 'flex',
+              gap: '1rem',
+            }}
+          >
             <div>Notifications Analytics</div>
+            <div>
+              <Button size="small" disabled={isButtonDisabled}>
+                {`Last updated on: ${lastUpdatedOn}`}
+              </Button>
+            </div>
           </Typography>
         </div>
         <div>{getFilters()}</div>
@@ -301,7 +318,10 @@ export const NotificationsAnalytics = () => {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <InfoCard>
-              <Typography variant="h3" style={{ textAlign: 'center' }}>
+              <Typography
+                variant="h6"
+                style={{ textAlign: 'center', fontSize: '1.5rem' }}
+              >
                 <span style={{ fontWeight: 'bold' }}>{activeUsers}</span> Active
                 Users for Past 6 Months
               </Typography>
@@ -311,7 +331,7 @@ export const NotificationsAnalytics = () => {
             <InfoCard>
               <div style={{ maxHeight: '20rem' }}>
                 <Typography
-                  variant="h5"
+                  variant="h6"
                   style={{ display: 'flex', justifyContent: 'space-between' }}
                 >
                   <div>Notifications Served Per Day</div>
@@ -361,7 +381,7 @@ export const NotificationsAnalytics = () => {
               <div style={{ minHeight: '20rem' }}>
                 <Typography variant="h6">Total Notifications Sent</Typography>
                 <>
-                  <Typography variant="h2">
+                  <Typography variant="h6" style={{ fontSize: '2rem' }}>
                     {getNumberStats(notificationsServedData)
                       .totalNotificationsStringValue || 'N/A'}
                   </Typography>
@@ -369,7 +389,7 @@ export const NotificationsAnalytics = () => {
                   <Typography variant="h6" style={{ marginBottom: '1rem' }}>
                     Average Notifications Per Day
                   </Typography>
-                  <Typography variant="h2">
+                  <Typography variant="h6" style={{ fontSize: '2rem' }}>
                     {getNumberStats(notificationsServedData)
                       .averageNotificationsPerDayStringValue || 'N/A'}
                   </Typography>
@@ -377,7 +397,7 @@ export const NotificationsAnalytics = () => {
                   <Typography variant="h6" style={{ marginBottom: '1rem' }}>
                     Maximum Notifications In A Day
                   </Typography>
-                  <Typography variant="h2">
+                  <Typography variant="h6" style={{ fontSize: '2rem' }}>
                     {getNumberStats(notificationsServedData)
                       .maximumNotificationsInADayStringValue || 'N/A'}
                   </Typography>
@@ -389,7 +409,7 @@ export const NotificationsAnalytics = () => {
             <InfoCard>
               <div style={{ minHeight: '25rem' }}>
                 <Typography
-                  variant="h5"
+                  variant="h6"
                   style={{ display: 'flex', justifyContent: 'space-between' }}
                 >
                   <div>Notifications Sent Per Channel</div>
@@ -456,7 +476,13 @@ export const NotificationsAnalytics = () => {
                                 />
                                 {/* {client} */}
                               </Grid>
-                              <Grid item xs={4} style={{ textAlign: 'right' }}>
+                              <Grid
+                                item
+                                xs={4}
+                                style={{
+                                  textAlign: 'right',
+                                }}
+                              >
                                 {
                                   getNumberStatsForChannel()
                                     .averageRequestsPerClient[client]

@@ -96,46 +96,10 @@ export class DTLApi {
     this.fetchApi = options.fetchApi;
   }
 
-  async getNotificationsSplunkStats(endpoint: string) {
+  async getHydraSplunkStats(endpoint: string) {
     const baseUrl = await this.discoveryApi.getBaseUrl('devex-data-layer');
     const response = await this.fetchApi
-      .fetch(`${baseUrl}/hydra/notifications/${endpoint}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      .then(data => {
-        return data.json();
-      })
-      .catch(_err => {
-        return null;
-      });
-    return response;
-  }
-
-  async getAttachmentsSplunkStats(endpoint: string) {
-    const baseUrl = await this.discoveryApi.getBaseUrl('devex-data-layer');
-    const response = await this.fetchApi
-      .fetch(`${baseUrl}/hydra/attachments/${endpoint}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      .then(data => {
-        return data.json();
-      })
-      .catch(_err => {
-        return null;
-      });
-    return response;
-  }
-
-  async getCaseBotSplunkStats(endpoint: string) {
-    const baseUrl = await this.discoveryApi.getBaseUrl('devex-data-layer');
-    const response = await this.fetchApi
-      .fetch(`${baseUrl}/hydra/casebot/${endpoint}`, {
+      .fetch(`${baseUrl}/hydra/${endpoint}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
