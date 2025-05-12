@@ -2,7 +2,6 @@ import { InfoCard } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   Button,
-  Chip,
   Divider,
   FormControl,
   Grid,
@@ -14,25 +13,26 @@ import {
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { dataLayerApiRef } from '../../../api';
-import { BarChart } from '@mui/x-charts';
+import {
+  BarChart,
+  LineChart,
+  lineElementClasses,
+  markElementClasses,
+} from '@mui/x-charts';
 import {
   ChartTimePeriods,
-  MonthNames,
   RedHatStandardColors,
   getLocaleNumberString,
 } from '../constants';
 
-export enum CaseBotApiEndpoints {
-  UniqueUsers = 'casebot/unique-users',
-  Commands = 'casebot/commands',
+export enum RestApiEndpoints {
+  UniqueUsers = 'rest/unique-users',
+  Commands = 'rest/cases',
 }
-export const CaseBotAnalytics = () => {
+export const RestAnalytics = () => {
   const [loadingData, setLoadingData] = useState(false);
-  const [seriesForCommandsFrequency, setSeriesForCommandsFrequency] = useState(
-    [],
-  );
-  const [xLabelsForCommandsFrequency, setXLabelsForCommandsFrequency] =
-    useState<string[]>([]);
+  const [seriesForRestCases, setSeriesForRestCases] = useState([]);
+  const [xLabelsForRestCases, setXLabelsForRestCases] = useState<string[]>([]);
 
   const [seriesForUniqueUsers, setSeriesForUniqueUsers] = useState<number[]>(
     [],
@@ -40,23 +40,24 @@ export const CaseBotAnalytics = () => {
   const [xLabelsForUniqueUsers, setXLabelsForUniqueUsers] = useState<string[]>(
     [],
   );
+
+  const dataLayerApi = useApi(dataLayerApiRef);
+  const [selectedTimePeriod, setSelectedTimePeriod] = useState<string>(
+    ChartTimePeriods[0].id,
+  );
+  const [uniqueUsers, setUniqueUsers] = useState<[]>([]);
+  const [restCases, setRestCases] = useState<[]>([]);
   const [lastUpdatedOn, setLastUpdatedOn] = useState<string>('');
   const isButtonDisabled = true;
 
-  const dataLayerApi = useApi(dataLayerApiRef);
-  const selectedTimePeriod = ChartTimePeriods[0].id;
-  const [uniqueUsers, setUniqueUsers] = useState<[]>([]);
-  const [commandsFrequency, setCommandsFrequency] = useState<[]>([]);
-  const isFilterDisabled = true;
-
-  const fetchCaseBotStats = async () => {
+  const fetchRestStats = async () => {
     try {
       setLoadingData(true);
       const uniqueUsersResponse = await dataLayerApi.getHydraSplunkStats(
-        CaseBotApiEndpoints.UniqueUsers,
+        RestApiEndpoints.UniqueUsers,
       );
-      const commandsFrequencyResponse = await dataLayerApi.getHydraSplunkStats(
-        CaseBotApiEndpoints.Commands,
+      const restCasesCreatedResponse = await dataLayerApi.getHydraSplunkStats(
+        RestApiEndpoints.Commands,
       );
 
       if (uniqueUsersResponse?.data && uniqueUsersResponse.data?.searchData) {
@@ -67,17 +68,17 @@ export const CaseBotAnalytics = () => {
       }
 
       if (
-        commandsFrequencyResponse?.data &&
-        commandsFrequencyResponse.data?.searchData
+        restCasesCreatedResponse?.data &&
+        restCasesCreatedResponse.data?.searchData
       ) {
-        setCommandsFrequency(
-          JSON.parse(commandsFrequencyResponse.data?.searchData).data,
+        setRestCases(
+          JSON.parse(restCasesCreatedResponse.data?.searchData).data,
         );
       }
       setLoadingData(false);
     } catch (_err) {
       setUniqueUsers([]);
-      setCommandsFrequency([]);
+      setRestCases([]);
       setLoadingData(false);
     }
   };
@@ -100,7 +101,7 @@ export const CaseBotAnalytics = () => {
     let workingDays: number = 0;
 
     timedStats?.forEach((stats: { [key: string]: string }) => {
-      const count = parseInt(stats['#Users'], 10);
+      const count = parseInt(stats['distinct_count(AuthenticatedUser)'], 10);
       totalUserCount += count;
       totalUsersExcludingWeekends += count;
       workingDays++;
@@ -124,46 +125,20 @@ export const CaseBotAnalytics = () => {
 
   const getNumberStats = (statistics: any[]) => {
     const timedStats = getTimedStats(statistics);
-    let totalFrequencies = 0;
-    let totalFrequenciesPerCommand: { [key: string]: number } = {};
+    let totalCasesCreated = 0;
+    let workingDays: number = 0;
     timedStats.forEach(stat => {
-      let currentStatTotalFrequencies = 0;
-      Object.keys(stat).forEach(name => {
-        if (!['_span', '_spandays', '_time', 'NULL'].includes(name)) {
-          currentStatTotalFrequencies += parseInt(stat[name], 10);
-          totalFrequenciesPerCommand = {
-            ...totalFrequenciesPerCommand,
-            [name]: totalFrequenciesPerCommand[name]
-              ? totalFrequenciesPerCommand[name] + parseInt(stat[name], 10)
-              : parseInt(stat[name], 10),
-          };
-        }
-      });
-      totalFrequencies += currentStatTotalFrequencies;
+      totalCasesCreated += parseInt(stat.count, 10);
+      workingDays++;
     });
-    const averageRequestPerDayStringValue =
-      getLocaleNumberString(totalFrequencies);
 
-    const sortedEntries = Object.entries(totalFrequenciesPerCommand).sort(
-      (valueA, valueB) => valueB[1] - valueA[1],
+    const averageCasesPerDayStringValue = getLocaleNumberString(
+      Math.ceil(totalCasesCreated / workingDays),
     );
-    const sortedObject = Object.fromEntries(sortedEntries);
-    let averageFrequenciesPerCommand: { [key: string]: string } = {};
 
-    Object.keys(sortedObject).forEach(client => {
-      if (client !== 'OTHER')
-        averageFrequenciesPerCommand = {
-          ...averageFrequenciesPerCommand,
-          [client]: getLocaleNumberString(totalFrequenciesPerCommand[client]),
-        };
-    });
-    if (totalFrequenciesPerCommand?.OTHER)
-      averageFrequenciesPerCommand = {
-        ...averageFrequenciesPerCommand,
-        ['OTHER']: getLocaleNumberString(totalFrequenciesPerCommand.OTHER),
-      };
-
-    return { averageRequestPerDayStringValue, averageFrequenciesPerCommand };
+    const totalCasesCreatedStringValue =
+      getLocaleNumberString(totalCasesCreated);
+    return { averageCasesPerDayStringValue, totalCasesCreatedStringValue };
   };
 
   const formatLineChartDataForUniqueUsers = () => {
@@ -173,9 +148,10 @@ export const CaseBotAnalytics = () => {
       const chartSeries: number[] = [];
 
       timedStats?.forEach((stats: { [key: string]: string }) => {
-        requestDates.push(MonthNames[new Date(stats._time).getMonth()]);
-
-        chartSeries.push(parseInt(stats['#Users'], 10));
+        requestDates.push(new Date(stats._time).toDateString());
+        chartSeries.push(
+          parseInt(stats['distinct_count(AuthenticatedUser)'], 10),
+        );
       });
 
       setSeriesForUniqueUsers(chartSeries);
@@ -186,44 +162,21 @@ export const CaseBotAnalytics = () => {
     }
   };
 
-  const formatCommandsFrequencyLineChart = () => {
+  const formatCaseCreationLineChart = () => {
     try {
-      const timedStats = getTimedStats(commandsFrequency);
+      const timedStats = getTimedStats(restCases);
       const requestDates: string[] = [];
-      const clientRequestByName: { [key: string]: number[] } = {};
-      timedStats?.forEach((stats: { [key: string]: string }) => {
-        const clientNames = Object.keys(stats);
-        requestDates.push(MonthNames[new Date(stats._time).getMonth()]);
-        clientNames.forEach(name => {
-          if (!['_span', '_spandays', '_time', 'NULL'].includes(name)) {
-            if (clientRequestByName[name]) {
-              clientRequestByName[name] = [
-                ...clientRequestByName[name],
-                parseInt(stats[name], 10),
-              ];
-            } else {
-              clientRequestByName[name] = [parseInt(stats[name], 10)];
-            }
-          }
-        });
-      });
-
       const chartSeries: any = [];
-
-      Object.keys(clientRequestByName).forEach(name => {
-        chartSeries.push({
-          data: clientRequestByName[name],
-          label: name,
-          id: `${name}__Id`,
-          stack: 'total',
-        });
+      timedStats?.forEach((stats: { [key: string]: string }) => {
+        requestDates.push(new Date(stats._time).toDateString());
+        chartSeries.push(parseInt(stats.count, 10));
       });
 
-      setSeriesForCommandsFrequency(chartSeries);
-      setXLabelsForCommandsFrequency(requestDates);
+      setSeriesForRestCases(chartSeries);
+      setXLabelsForRestCases(requestDates);
     } catch (_err) {
-      setSeriesForCommandsFrequency([]);
-      setXLabelsForCommandsFrequency([]);
+      setSeriesForRestCases([]);
+      setXLabelsForRestCases([]);
     }
   };
 
@@ -236,7 +189,9 @@ export const CaseBotAnalytics = () => {
             labelId="Period"
             label="Period"
             value={selectedTimePeriod}
-            disabled={isFilterDisabled}
+            onChange={evt => {
+              setSelectedTimePeriod(`${evt.target.value}`);
+            }}
           >
             {ChartTimePeriods.map(period => (
               <MenuItem value={period.id}>{period.title}</MenuItem>
@@ -248,17 +203,17 @@ export const CaseBotAnalytics = () => {
   };
 
   useEffect(() => {
-    fetchCaseBotStats();
+    fetchRestStats();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (commandsFrequency.length) formatCommandsFrequencyLineChart();
+    if (restCases.length) formatCaseCreationLineChart();
     if (uniqueUsers.length) formatLineChartDataForUniqueUsers();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [commandsFrequency, uniqueUsers]);
+  }, [restCases, uniqueUsers, selectedTimePeriod]);
 
   return (
     <div
@@ -284,7 +239,7 @@ export const CaseBotAnalytics = () => {
               gap: '1rem',
             }}
           >
-            <div>CaseBot Analytics</div>
+            <div>Hydra Rest Analytics</div>
             <div>
               <Button size="small" disabled={isButtonDisabled}>
                 {`Last updated on: ${lastUpdatedOn}`}
@@ -292,7 +247,7 @@ export const CaseBotAnalytics = () => {
             </div>
           </Typography>
         </div>
-        <div>{getFilters()}</div>
+        {getFilters()}
       </div>
       {loadingData ? (
         <LinearProgress />
@@ -305,7 +260,7 @@ export const CaseBotAnalytics = () => {
                   variant="h5"
                   style={{ display: 'flex', justifyContent: 'space-between' }}
                 >
-                  <div>CaseBot Monthly Active Users</div>
+                  <div>Hydra Rest Daily Unique Users</div>
                 </Typography>
                 <Divider style={{ margin: '0.5rem' }} />
                 <BarChart
@@ -342,7 +297,7 @@ export const CaseBotAnalytics = () => {
                 </Typography>
                 <Divider style={{ margin: '0.5rem' }} />
                 <Typography variant="h6">
-                  <div>Avg. Monthly Active Users</div>
+                  <div>Avg. Daily Active Users</div>
                 </Typography>
                 <Typography variant="h6">
                   <div style={{ fontSize: '2rem', textAlign: 'center' }}>
@@ -357,23 +312,48 @@ export const CaseBotAnalytics = () => {
           </Grid>
           <Grid item xs={9}>
             <InfoCard>
-              <div style={{ height: '32rem' }}>
+              <div style={{ height: '15rem' }}>
                 <Typography
-                  variant="h6"
+                  variant="h5"
                   style={{ display: 'flex', justifyContent: 'space-between' }}
                 >
-                  <div>Frequency per Command on CaseBot</div>
+                  <div>Hydra Rest - Cases Created</div>
                 </Typography>
                 <Divider style={{ margin: '0.5rem' }} />
-
-                <BarChart
-                  height={480}
-                  margin={{ left: 100, top: 100 }}
-                  series={seriesForCommandsFrequency}
-                  yAxis={[
-                    { scaleType: 'band', data: xLabelsForCommandsFrequency },
+                <LineChart
+                  height={240}
+                  margin={{ left: 100, bottom: 50 }}
+                  slotProps={{
+                    legend: {
+                      position: { vertical: 'bottom', horizontal: 'middle' },
+                    },
+                  }}
+                  series={[{ data: seriesForRestCases }]}
+                  xAxis={[
+                    {
+                      scaleType: 'point',
+                      data: xLabelsForRestCases,
+                    },
                   ]}
-                  layout="horizontal"
+                  sx={{
+                    [`.${lineElementClasses.root}, .${markElementClasses.root}`]:
+                      {
+                        strokeWidth: 1,
+                      },
+                    '.MuiLineElement-series-pvId': {
+                      strokeDasharray: '5 5',
+                    },
+                    '.MuiLineElement-series-uvId': {
+                      strokeDasharray: '3 4 5 2',
+                    },
+                    [`.${markElementClasses.root}:not(.${markElementClasses.highlighted})`]:
+                      {
+                        fill: '#fff',
+                      },
+                    [`& .${markElementClasses.highlighted}`]: {
+                      stroke: 'none',
+                    },
+                  }}
                   colors={RedHatStandardColors}
                 />
               </div>
@@ -381,54 +361,25 @@ export const CaseBotAnalytics = () => {
           </Grid>
           <Grid item xs={3}>
             <InfoCard>
-              <div style={{ height: '32rem' }}>
-                <Typography variant="h6">Total Commands</Typography>
+              <div style={{ height: '15rem' }}>
+                <Typography variant="h6">Total Cases Created</Typography>
                 <>
                   <Typography variant="h6">
                     <div style={{ fontSize: '2rem', textAlign: 'center' }}>
-                      {getNumberStats(commandsFrequency)
-                        .averageRequestPerDayStringValue || 'N/A'}
+                      {getNumberStats(restCases).totalCasesCreatedStringValue ||
+                        'N/A'}
                     </div>
                   </Typography>
                   <Divider style={{ margin: '0.5rem' }} />
                   <Typography variant="h6" style={{ marginBottom: '1rem' }}>
-                    Frequency per Command (top 10)
+                    Avg. Daily Cases Created
                   </Typography>
-                  {Object.keys(
-                    getNumberStats(commandsFrequency)
-                      .averageFrequenciesPerCommand,
-                  ).length
-                    ? Object.keys(
-                        getNumberStats(commandsFrequency)
-                          .averageFrequenciesPerCommand,
-                      ).map(
-                        (client, index) =>
-                          index < 10 && (
-                            <Grid container spacing={2}>
-                              <Grid item xs={9}>
-                                <Chip
-                                  label={client}
-                                  key={`${index}_command-name-chip__id`}
-                                  size="small"
-                                />
-                                {/* {client} */}
-                              </Grid>
-                              <Grid
-                                item
-                                xs={3}
-                                style={{
-                                  textAlign: 'right',
-                                }}
-                              >
-                                {
-                                  getNumberStats(commandsFrequency)
-                                    .averageFrequenciesPerCommand[client]
-                                }
-                              </Grid>
-                            </Grid>
-                          ),
-                      )
-                    : 'N/A'}
+                  <Typography variant="h6">
+                    <div style={{ fontSize: '2rem', textAlign: 'center' }}>
+                      {getNumberStats(restCases)
+                        .averageCasesPerDayStringValue || 'N/A'}
+                    </div>
+                  </Typography>
                 </>
               </div>
             </InfoCard>
