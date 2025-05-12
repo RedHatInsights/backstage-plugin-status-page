@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-hydra-support-dashboard [1.5.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-hydra-support-dashboard@1.4.0...@appdev-platform/backstage-plugin-hydra-support-dashboard@1.5.0) (2025-05-12)
+
+
+### Features
+
+* **APD-728:** Hydra Rest and Search Analytics on Hydra Dashboard ([da52e5b](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/da52e5b5d49584fea5ed75cf8b1d903f1465c0f3))
+
 ## @appdev-platform/backstage-plugin-hydra-support-dashboard [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-hydra-support-dashboard@1.3.0...@appdev-platform/backstage-plugin-hydra-support-dashboard@1.4.0) (2025-05-05)
 
 
