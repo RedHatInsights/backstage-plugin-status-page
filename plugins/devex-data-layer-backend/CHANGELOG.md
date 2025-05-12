@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-devex-data-layer-backend [1.8.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-data-layer-backend@1.7.0...@appdev-platform/backstage-plugin-devex-data-layer-backend@1.8.0) (2025-05-12)
+
+
+### Features
+
+* **APD-728:** Hydra Rest and Search Analytics on Hydra Dashboard ([da52e5b](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/da52e5b5d49584fea5ed75cf8b1d903f1465c0f3))
+
 ## @appdev-platform/backstage-plugin-devex-data-layer-backend [1.7.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-data-layer-backend@1.6.0...@appdev-platform/backstage-plugin-devex-data-layer-backend@1.7.0) (2025-05-05)
 
 
