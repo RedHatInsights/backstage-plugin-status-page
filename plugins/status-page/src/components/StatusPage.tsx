@@ -2,7 +2,7 @@ import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { Button, Grid, InputAdornment, TextField } from '@material-ui/core';
 import { useEffect, useState } from 'react';
-import { outageApiRef } from '../api';
+import { statusApiRef } from '../api';
 import CreateIncident from './CreateIncident';
 import DeleteIncident from './DeleteIncident';
 import IncidentsTable from './IncidentsTable';
@@ -22,14 +22,14 @@ export const StatusPageComponent = () => {
     });
   const [editingIncident, setEditingIncident] = useState<any | null>(null);
   const [deletingIncident, setDeletingIncident] = useState<any | null>(null);
-  const outageApi = useApi(outageApiRef);
+  const statusApi = useApi(statusApiRef);
   const [components, setComponents] = useState<any | []>([]);
   const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
     const loadIncidents = async () => {
       try {
-        const fetchedIncidents = await outageApi.fetchIncidents();
+        const fetchedIncidents = await statusApi.fetchIncidents();
         setIncidents(fetchedIncidents);
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -38,7 +38,7 @@ export const StatusPageComponent = () => {
     };
     const loadComponents = async () => {
       try {
-        const response = await outageApi.fetchComponents();
+        const response = await statusApi.fetchComponents();
         setComponents(response);
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -47,10 +47,10 @@ export const StatusPageComponent = () => {
     };
     loadIncidents();
     loadComponents();
-  }, [outageApi]);
+  }, [statusApi]);
 
   const handleCreateSubmit = async (incidentData: Incident) => {
-    const updatedIncidents = await outageApi.createIncident(incidentData);
+    const updatedIncidents = await statusApi.createIncident(incidentData);
     setIncidents(updatedIncidents);
     setCreateModalOpen(false);
   };
@@ -66,7 +66,7 @@ export const StatusPageComponent = () => {
     incidentId: string,
     updatedData: UpdateIncidentProps,
   ) => {
-    const updatedIncidents = await outageApi.updateIncident(
+    const updatedIncidents = await statusApi.updateIncident(
       incidentId,
       updatedData,
     );
@@ -74,7 +74,7 @@ export const StatusPageComponent = () => {
   };
 
   const handleDeleteIncident = async (incidentId: string) => {
-    const updatedIncidents = await outageApi.deleteIncident(incidentId);
+    const updatedIncidents = await statusApi.deleteIncident(incidentId);
     setIncidents(updatedIncidents);
     setDeletingIncident(null);
   };

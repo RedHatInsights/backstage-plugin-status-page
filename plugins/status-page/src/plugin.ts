@@ -8,17 +8,17 @@ import {
   FetchApi,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
-import { outageApiRef, StatusPageApi } from './api';
+import { statusApiRef, StatusPageApi } from './api';
 import { rootRouteRef } from './routes';
 
-export const outageTemplatePlugin = createPlugin({
-  id: 'outages',
+export const statusPagePlugin = createPlugin({
+  id: 'status',
   routes: {
     root: rootRouteRef,
   },
   apis: [
     {
-      api: outageApiRef,
+      api: statusApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
         fetchApi: fetchApiRef,
@@ -35,7 +35,7 @@ export const outageTemplatePlugin = createPlugin({
   ],
 });
 
-export const StatusPageComponent = outageTemplatePlugin.provide(
+export const StatusPageComponent = statusPagePlugin.provide(
   createRoutableExtension({
     name: 'StatusPageComponent',
     component: () =>

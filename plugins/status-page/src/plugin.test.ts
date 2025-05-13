@@ -1,7 +1,7 @@
-import { outageTemplatePlugin } from './plugin';
+import { statusPagePlugin } from './plugin';
 
-describe('outages', () => {
+describe('status', () => {
   it('should export plugin', () => {
-    expect(outageTemplatePlugin).toBeDefined();
+    expect(statusPagePlugin).toBeDefined();
   });
 });
