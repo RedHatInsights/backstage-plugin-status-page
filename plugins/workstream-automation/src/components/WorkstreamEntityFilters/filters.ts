@@ -43,7 +43,7 @@ export class WorkstreamPortfolioFilter implements EntityFilter {
 
   filterEntity(entity: Entity): boolean {
     const portfolio = entity.spec?.portfolio as string[];
-    return this.values.every(v => portfolio.includes(v));
+    return this.values.some(value => portfolio.includes(value));
   }
 
   getCatalogFilters(): Record<string, string | string[]> {
