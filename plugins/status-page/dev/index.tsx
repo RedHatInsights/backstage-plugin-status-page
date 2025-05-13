@@ -1,11 +1,10 @@
-import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { outageTemplatePlugin, OutageTemplatePage } from '../src/plugin';
+import { statusPagePlugin, StatusPageComponent } from '../src/plugin';
 
 createDevApp()
-  .registerPlugin(outageTemplatePlugin)
+  .registerPlugin(statusPagePlugin)
   .addPage({
-    element: <OutageTemplatePage />,
+    element: <StatusPageComponent />,
     title: 'Root Page',
     path: '/status-page',
   })

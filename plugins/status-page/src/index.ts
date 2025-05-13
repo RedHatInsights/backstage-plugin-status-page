@@ -1,1 +1,1 @@
-export { outageTemplatePlugin, StatusPageComponent } from './plugin';
+export { statusPagePlugin, StatusPageComponent } from './plugin';

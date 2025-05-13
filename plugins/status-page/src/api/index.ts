@@ -5,8 +5,8 @@ import {
   FetchApi,
 } from '@backstage/core-plugin-api';
 
-export const outageApiRef = createApiRef<StatusPageApi>({
-  id: 'outages',
+export const statusApiRef = createApiRef<StatusPageApi>({
+  id: 'status',
 });
 
 export class StatusPageApi {
