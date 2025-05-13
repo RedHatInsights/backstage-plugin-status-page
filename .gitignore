@@ -18,6 +18,7 @@ node_modules/
 # Yarn files
 .pnp.*
 .yarn/*
+.yarnrc.yml
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
