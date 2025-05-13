@@ -27,6 +27,7 @@ import {
   WorkstreamLeadPicker,
   WorkstreamPillarPicker,
   WorkstreamPortfolioPicker,
+  WorkstreamTechLeadPicker,
 } from '@appdev-platform/backstage-plugin-workstream-automation';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { workstreamCreatePermission } from '@appdev-platform/backstage-plugin-workstream-automation-common';
@@ -35,7 +36,6 @@ import {
   ExportCsv as exportCsv,
   ExportPdf as exportPdf,
 } from '@material-table/exporters';
-
 
 const HeaderButtons = () => {
   const createComponentLink = useRouteRef(
@@ -86,6 +86,7 @@ export const CatalogPage = () => {
               <WorkstreamPillarPicker />
               <WorkstreamPortfolioPicker />
               <UserWorkstreamPicker />
+              <WorkstreamTechLeadPicker />
               <EntityLifecyclePicker />
               <EntityTagPicker />
               <EntityOwnerPicker />

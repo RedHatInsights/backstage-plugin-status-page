@@ -8,6 +8,7 @@ export {
   WorkstreamPillarPicker,
   WorkstreamPortfolioPicker,
   UserWorkstreamPicker,
+  WorkstreamTechLeadPicker,
 } from './components/WorkstreamEntityFilters';
 
 export { JiraIcon, SlackIcon } from './components/Icons';

@@ -10,6 +10,7 @@ export const WorkstreamPortfolioPicker = () => {
       isEntityRef
       name="portfolio"
       path="spec.portfolio"
+      showCounts
     />
   );
 };
