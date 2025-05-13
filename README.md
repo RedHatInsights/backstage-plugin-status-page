@@ -25,3 +25,8 @@ proxy:
 ```
 
 For local development, developers will need to use a mock Atlassian Status Page instance with test incidents and components for populating the status table. A default test API URL and OAuth authorization token can be found in `local.env`.
+
+## Atrribution
+Original plugin design and functionality implemented by team XE Compass
+
+https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/-/tree/main/plugins/outage-template
