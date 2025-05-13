@@ -1,11 +1,12 @@
 import { PropsWithChildren } from 'react';
-import { makeStyles } from '@material-ui/core';
+import { Grid, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExtensionIcon from '@material-ui/icons/Extension';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
+import Assessment from '@material-ui/icons/Assessment';
 import {
   Settings as SidebarSettings,
   UserSettingsSignInAvatar,
@@ -27,6 +28,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import { MyGroupsSidebarItem } from '@backstage/plugin-org';
 import GroupIcon from '@material-ui/icons/People';
+import { IconComponent } from '@backstage/core-plugin-api';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -79,6 +81,15 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         <SidebarDivider />
         <SidebarScrollWrapper>
           {/* Items in this group will be scrollable if they run out of space */}
+          <Grid container>
+            <Grid item xs={8}>
+              <SidebarItem
+                icon={Assessment as IconComponent}
+                to="status-page"
+                text="Status Page"
+              />
+            </Grid>
+          </Grid>
         </SidebarScrollWrapper>
       </SidebarGroup>
       <SidebarSpace />
