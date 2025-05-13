@@ -111,4 +111,5 @@ backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-
 backend.add(import('@backstage/plugin-devtools-backend'));
 
 backend.add(import('@appdev-platform/backstage-plugin-devex-data-layer-backend'));
+backend.add(import('@appdev-platform/backstage-plugin-catalog-backend-module-mcp-server'));
 backend.start();

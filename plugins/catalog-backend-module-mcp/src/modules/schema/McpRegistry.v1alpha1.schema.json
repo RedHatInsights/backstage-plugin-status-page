@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "McpRegistry.v1alpha1.schema.json",
+  "title": "MCP Server Entity Schema",
+  "description": "Schema for MCPServer kind extending Backstage entity model",
+  "type": "object",
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "spec"
+  ],
+  "properties": {
+    "apiVersion": {
+      "type": "string",
+      "enum": [
+        "redhat.com/v1alpha1"
+      ]
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "MCPServer"
+      ]
+    },
+    "metadata": {
+      "type": "object",
+      "required": [
+        "name",
+        "title",
+        "description"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "annotations": {
+          "type": "object",
+          "properties": {
+            "nexus-repository-manager/repository": {
+              "type": "string"
+            },
+            "nexus-repository-manager/name": {
+              "type": "string"
+            },
+            "gitlab.com/project-slug": {
+              "type": "string"
+            },
+            "npm/package": {
+              "type": "string"
+            },
+            "npm/registry": {
+              "type": "string"
+            },
+            "npm/stable-tag": {
+              "type": "string"
+            },
+            "quay.io/repository-slug": {
+              "type": "string"
+            },
+            "backstage.io/techdocs-ref": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "url",
+              "title"
+            ],
+            "properties": {
+              "url": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "spec": {
+      "type": "object",
+      "required": [
+        "type",
+        "lifecycle",
+        "status",
+        "owner",
+        "version"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Type of the MCP server, e.g., tool / resource"
+        },
+        "lifecycle": {
+          "type": "string",
+          "enum": [
+            "experimental",
+            "alpha",
+            "beta",
+            "production"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "active",
+            "inactive",
+            "deprecated"
+          ]
+        },
+        "owner": {
+          "type": "string",
+          "description": "Owner of the MCP server"
+        },
+        "version": {
+          "type": "string",
+          "description": "Version of the server component"
+        },
+        "offer": {
+          "type": "string",
+          "description": "What this component offers (e.g. product, platform)"
+        },
+        "dependsOn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of entityRefs this component depends on"
+        },
+        "providesApi": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of APIs provided by this component"
+        },
+        "consumesApi": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of APIs consumed by this component"
+        },
+        "contacts": {
+          "type": "array",
+          "description": "List of contact groups, each with a label and users",
+          "items": {
+            "type": "object",
+            "required": [
+              "label",
+              "users"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "description": "Label for the contact group (e.g., Primary, Secondary)"
+              },
+              "users": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "Entity reference to a user (e.g., user:default/souchowd)"
+                },
+                "description": "List of user entityRefs"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      }
+    }
+  }
+}
