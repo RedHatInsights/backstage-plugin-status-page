@@ -1,4 +1,4 @@
-import { EntityDisplayName } from '@backstage/plugin-catalog-react';
+import { parseEntityRef } from '@backstage/catalog-model';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
@@ -31,11 +31,11 @@ export const PickerOption = memo((props: OptionProps) => {
 
   const label = showCounts ? (
     <>
-      {isEnitityRef ? <EntityDisplayName entityRef={value} /> : value}
+      {isEnitityRef ? parseEntityRef(value).name : value}
       {` (${availableOptions?.[value]})`}
     </>
   ) : (
-    <>{isEnitityRef ? <EntityDisplayName entityRef={value} /> : value}</>
+    <>{isEnitityRef ? parseEntityRef(value).name : value}</>
   );
 
   return (
