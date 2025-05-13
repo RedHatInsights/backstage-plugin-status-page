@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.11.6](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.11.5...@appdev-platform/backstage-plugin-workstream-automation@1.11.6) (2025-05-13)
+
+
+### Bug Fixes
+
+* **PULSE-598:** show entity names in filter options ([c0c0913](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/c0c091377c4df3b699d315d1b24600809da3e222))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.11.5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.11.4...@appdev-platform/backstage-plugin-workstream-automation@1.11.5) (2025-04-30)
 
 
