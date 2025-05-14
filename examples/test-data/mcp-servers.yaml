@@ -1,0 +1,34 @@
+---
+apiVersion: redhat.com/v1alpha1
+kind: MCPServer
+metadata:
+  name: mcp-server-1
+  title: Demo MCP Server
+  description: A Model Context Protocol (MCP) server lets AI assistants like Claude use the Exa AI Search API for web searches. This setup allows AI models to get real-time web information in a safe and controlled way.
+  tags:
+    - knowledge
+    - solution
+  annotations:
+    servicenow.com/appcode: ONEP-003
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-workstream-automation-common
+    gitlab.com/project-slug: souchowd/mcp-registry
+    gitlab.com/instance: gitlab.cee.redhat.com
+    quay.io/repository-slug: 'redhat/mcp-server-kb:latest'
+    backstage.io/techdocs-ref: dir:.
+
+  links:
+    - url: https://gitlab.cee.redhat.com/souchowd/mcp-registry/-/wikis/Knowledge-Base
+      title: Other Docs
+      type: documentation
+spec:
+  type: resource
+  lifecycle: alpha
+  status: active
+  owner: user:redhat/npatil
+  version: 2.0.0
+  offer: Red Hat SSO
+  contacts:
+    - label: Maintainers
+      users:
+        - user:redhat/souchowd

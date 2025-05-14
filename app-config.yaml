@@ -275,6 +275,10 @@ catalog:
       rules:
         - allow: [User, Group]
 
+    # Local example mcp server
+    - type: file
+      target: ../../examples/test-data/mcp-servers.yaml
+
     - type: url
       target: ${MCP_TEMPLATE}
       allow: [Template]
