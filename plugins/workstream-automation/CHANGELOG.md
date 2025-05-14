@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.12.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.11.6...@appdev-platform/backstage-plugin-workstream-automation@1.12.0) (2025-05-14)
+
+
+### Features
+
+* **PULSE-596:** add new filter for tech lead ([a392d91](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/a392d913905c2bc3f5ae638d9a73e6cce8e9fa0a))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.11.6](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.11.5...@appdev-platform/backstage-plugin-workstream-automation@1.11.6) (2025-05-13)
 
 
