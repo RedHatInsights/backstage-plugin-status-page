@@ -144,6 +144,7 @@ catalog:
         - Location
         - Workstream
         - EnrichmentData
+        - MCPServers
 
   locations:
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
@@ -185,6 +186,10 @@ catalog:
     # Test entity for enrichment data plugin
     - type: file
       target: ./examples/test-data/enrichment-data.yaml
+
+    # Test entities for mcp servers
+    - type: file
+      target: ./examples/test-data/mcp-servers.yaml
 
     # Local example template
     - type: file

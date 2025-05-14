@@ -592,6 +592,102 @@ const WorkstreamEntityPage = () => {
   );
 };
 
+const MCPEntityPage = (
+  <EntityLayout>
+    <EntityLayout.Route path="/" title="Overview">
+      <Grid container style={{marginInline: 'auto'}} xs={12} md={10} spacing={3} alignItems="stretch" justifyContent='center'>
+        {entityWarningContent}
+        <Grid item md={8} xs={12}>
+          <Grid item xs={12}>
+            <EntityAboutCard variant="gridItem" />
+          </Grid>
+          <Grid item xs={12}>
+            <EntityWorkstreamCard />
+          </Grid>
+          <Grid item xs={12}>
+            <EntityHasSubcomponentsCard variant="gridItem" />
+          </Grid>
+        </Grid>
+        <Grid item md={4} xs={12}>
+          <EntitySwitch>
+            <EntitySwitch.Case if={isAppCodeAvailable}>
+              <Grid item xs={12}>
+                <ServiceDetailsCard variant="gridItem" />
+              </Grid>
+            </EntitySwitch.Case>
+            <EntitySwitch.Case if={isContactDetailsAvailable}>
+              <Grid item xs={12}>
+                <ContactDetailsCard />
+              </Grid>
+            </EntitySwitch.Case>
+            <EntitySwitch.Case if={isReportPortalAvailable}>
+              <Grid item xs={12}>
+                <ReportPortalOverviewCard variant="gridItem" />
+              </Grid>
+            </EntitySwitch.Case>
+          </EntitySwitch>
+
+          <Grid item xs={12}>
+            <EntityLinksCard variant="gridItem" />
+          </Grid>
+          <Grid item xs={12}>
+            <EntityCatalogGraphCard variant="gridItem" height={400} />
+          </Grid>
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/docs" title="Docs">
+      {techdocsContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/dependencies" title="Dependencies">
+      <Grid container spacing={3} alignItems="stretch">
+        <Grid item md={6}>
+          <EntityDependsOnComponentsCard variant="gridItem" />
+        </Grid>
+        <Grid item md={6}>
+          <EntityDependsOnResourcesCard variant="gridItem" />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/api" title="API">
+      <Grid container spacing={3} alignItems="stretch">
+        <Grid item md={6}>
+          <EntityProvidedApisCard />
+        </Grid>
+        <Grid item md={6}>
+          <EntityConsumedApisCard />
+        </Grid>
+      </Grid>
+    </EntityLayout.Route>
+
+    {/* Gitlab Entity Configuration */}
+    <EntityLayout.Route path="/gitlab" title="Gitlab">
+      <></>
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/ci-cd" title="CI/CD">
+      {cicdContent}
+    </EntityLayout.Route>
+
+    {/* Build Artifacts Configuration */}
+    <EntityLayout.Route path="/build" title="Artifacts">
+      <></>
+    </EntityLayout.Route>
+
+    {/* Jira plugin Configuration */}
+    <EntityLayout.Route path="/jira" title="Jira">
+      {jiraContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/feedback" title="Feedback">
+      <EntityFeedbackPage />
+    </EntityLayout.Route>
+  </EntityLayout>
+);
+
 export const entityPage = (
   <EntitySwitch>
     <EntitySwitch.Case if={isKind('component')} children={componentPage} />
@@ -603,6 +699,7 @@ export const entityPage = (
     <EntitySwitch.Case if={isKind('user')} children={userPage} />
     <EntitySwitch.Case if={isKind('system')} children={systemPage} />
     <EntitySwitch.Case if={isKind('domain')} children={domainPage} />
+    <EntitySwitch.Case if={isKind('mcpserver')} children={MCPEntityPage} />
 
     <EntitySwitch.Case>{defaultEntityPage}</EntitySwitch.Case>
   </EntitySwitch>
