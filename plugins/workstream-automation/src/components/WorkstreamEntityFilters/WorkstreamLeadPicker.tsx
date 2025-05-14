@@ -10,6 +10,7 @@ export const WorkstreamLeadPicker = () => {
       path="spec.lead"
       Filter={WorkstreamLeadFilter}
       isEntityRef
+      showCounts
     />
   );
 };

@@ -138,7 +138,7 @@ export const columnFactories = Object.freeze({
       field: 'enitity.spec.members',
       title: 'Members',
       sorting: false,
-      width: '18%',
+      width: '15%',
       render: ({ entity }) => (
         <MembersColumn members={entity.spec?.members as Member[]} />
       ),
@@ -176,13 +176,12 @@ export const columnFactories = Object.freeze({
       field: 'enitity.spec.members',
       title: 'Technical Lead',
       sorting: false,
-      width: '12%',
+      width: '15%',
       customExport: ({ entity }) =>
         (entity.spec?.members as Member[])
           .filter(member => member.role === 'Technical Lead')
           .map(member => parseEntityRef(member.userRef).name)
           .join(',\n') ?? '-',
-      hidden: true,
       searchable: false,
       hiddenByColumnsButton: false,
       render: ({ entity }) => {

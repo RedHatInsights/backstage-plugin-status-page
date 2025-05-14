@@ -9,6 +9,7 @@ export const WorkstreamPillarPicker = () => {
       label="Pillar"
       name="pillar"
       path="spec.pillar"
+      showCounts
     />
   );
 };
