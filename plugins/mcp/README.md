@@ -1,5 +1,7 @@
 # mcp
 
+> ## *_This plugin is deprecated._
+
 Welcome to the mcp plugin!
 
 _This plugin was created through the Backstage CLI_
