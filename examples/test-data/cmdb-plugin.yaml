@@ -75,7 +75,8 @@ kind: Component
 metadata:
   annotations:
     servicenow.com/appcode: DYFO-001
-  description: Form builder application including a submission and processing queue
+  description:
+    Form builder application including a submission and processing queue
     for sending forms to different downstream systems.
   name: dynamic-form
   namespace: uxe

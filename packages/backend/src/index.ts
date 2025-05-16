@@ -101,15 +101,41 @@ backend.add(import('@backstage-community/plugin-report-portal-backend'));
 
 // Spotify soundcheck plugin
 backend.add(import('@spotify/backstage-plugin-soundcheck-backend'));
-backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator'));
-backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core'));
-backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab'));
-backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow'));
-backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet'));
+backend.add(
+  import(
+    '@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator'
+  ),
+);
+backend.add(
+  import(
+    '@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core'
+  ),
+);
+backend.add(
+  import(
+    '@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab'
+  ),
+);
+backend.add(
+  import(
+    '@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow'
+  ),
+);
+backend.add(
+  import(
+    '@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet'
+  ),
+);
 
 // DevTools backend
 backend.add(import('@backstage/plugin-devtools-backend'));
 
-backend.add(import('@appdev-platform/backstage-plugin-devex-data-layer-backend'));
 backend.add(import('@appdev-platform/backstage-plugin-catalog-backend-module-mcp-server'));
+backend.add(
+  import('@appdev-platform/backstage-plugin-devex-data-layer-backend'),
+);
+// backend.add(import('@appdev-platform/backstage-plugin-devex-data-layer-backend'));
+backend.add(
+  import('@appdev-platform/backstage-plugin-audit-compliance-backend'),
+);
 backend.start();

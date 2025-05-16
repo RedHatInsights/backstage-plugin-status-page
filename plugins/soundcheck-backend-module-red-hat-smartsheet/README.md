@@ -6,12 +6,14 @@ _This plugin was created through the Backstage CLI_
 https://backstage.spotify.com/docs/plugins/soundcheck/tutorials/custom-fact-collector
 
 Add to .env
+
 ```bash
 SMARTSHEET_API_TOKEN=<token>
 SMARTSHEET_SHEET_ID='5931846954444676'
 ```
 
 Add to app-config.yaml
+
 ```yaml
 soundcheck:
   collectors:

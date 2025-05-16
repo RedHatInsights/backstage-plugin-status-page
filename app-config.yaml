@@ -49,16 +49,17 @@ backend:
   database:
     client: better-sqlite3
     connection: ':memory:'
-    # client: pg
-    # connection:
-    #   host: ${POSTGRES_HOST}
-    #   port: ${POSTGRES_PORT}
-    #   user: ${POSTGRES_USER}
-    #   password: ${POSTGRES_PASSWORD}
-
   cache:
     store: memory
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
+  auth:
+    externalAccess:
+      - type: static
+        options:
+          token: ${AUDIT_COMPLIANCE_ACCESS_TOKEN}
+          subject: audit-compliance-token
+        accessRestrictions:
+          - plugin: audit-compliance
 
 integrations:
   github:
@@ -132,14 +133,14 @@ proxy:
       changeOrigin: true
       allowedMethods: ['GET']
     '/mcp':
-      target:  ${MCP_SERVER_BASE_URL}
+      target: ${MCP_SERVER_BASE_URL}
       headers:
-        PRIVATE-TOKEN:  ${MCP_SERVER_TOKEN}
+        PRIVATE-TOKEN: ${MCP_SERVER_TOKEN}
         Content-Type: 'application/json'
       credentials: dangerously-allow-unauthenticated
       changeOrigin: true
       allowedMethods: ['GET', 'OPTIONS', 'PUT']
-      secure: false 
+      secure: false
 
 jira:
   proxyPath: /jira
@@ -347,6 +348,11 @@ dataLayer:
   splunkSubgraphsSnippet: ${SPLUNK_SUBGRAPHS_SNIPPET}
   schedule:
     frequency:
-      hours: 12
+      hour: 6
     timeout:
-      hours: 6
+      hours: 12
+
+auditCompliance:
+  roverUsername: ${ROVER_USERNAME}
+  roverPassword: ${ROVER_PASSWORD}
+  roverBaseUrl: ${ROVER_BASE_URL}

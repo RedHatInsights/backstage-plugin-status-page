@@ -16,6 +16,7 @@
     "build-image": "docker build ../.. -f Dockerfile --tag backstage"
   },
   "dependencies": {
+    "@appdev-platform/backstage-plugin-audit-compliance-backend": "*",
     "@appdev-platform/backstage-plugin-catalog-backend-module-cmdb": "*",
     "@appdev-platform/backstage-plugin-catalog-backend-module-enrichment": "*",
     "@appdev-platform/backstage-plugin-catalog-backend-module-mcp-server": "*",

@@ -1,5 +1,5 @@
 import { TechRadarPage } from '@backstage-community/plugin-tech-radar';
-import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
+import { ApiExplorerPage, apiDocsPlugin } from '@backstage/plugin-api-docs';
 import {
   CatalogEntityPage,
   CatalogIndexPage,
@@ -14,8 +14,8 @@ import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import { SearchPage } from '@backstage/plugin-search';
 import {
   TechDocsIndexPage,
-  techdocsPlugin,
   TechDocsReaderPage,
+  techdocsPlugin,
 } from '@backstage/plugin-techdocs';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
@@ -23,9 +23,11 @@ import { UserSettingsPage } from '@backstage/plugin-user-settings';
 import React from 'react';
 import { Navigate, Route } from 'react-router-dom';
 import { apis } from './apis';
-import { entityPage } from './components/catalog/EntityPage';
 import { Root } from './components/Root';
+import { entityPage } from './components/catalog/EntityPage';
 import { searchPage } from './components/search/SearchPage';
+
+import { AuditCompliancePage } from '@appdev-platform/backstage-plugin-audit-compliance';
 
 import {
   AppDevDashboardPage,
@@ -61,17 +63,21 @@ import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unproc
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import {
-  feedbackPlugin,
   GlobalFeedbackPage,
   OpcFeedbackComponent,
+  feedbackPlugin,
 } from '@janus-idp/backstage-plugin-feedback';
 import WebLinkIcon from '@material-ui/icons/Language';
 import SettingsEthernet from '@material-ui/icons/SettingsEthernet';
 import { getThemes } from '@red-hat-developer-hub/backstage-plugin-theme';
 import { SoundcheckRoutingPage } from '@spotify/backstage-plugin-soundcheck';
-
-import { CatalogPage } from './components/CatalogPage/CatalogPage';
+import {
+  AuditDetailsSection,
+  AuditInitiation,
+  AuditSummary,
+} from '@appdev-platform/backstage-plugin-audit-compliance';
 import { McpPage } from '@appdev-platform/backstage-plugin-mcp';
+import { CatalogPage } from './components/CatalogPage/CatalogPage';
 
 const app = createApp({
   apis,
@@ -186,6 +192,20 @@ const routes = (
     <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
     <Route path="/devtools" element={<DevToolsPage />} />
     <Route path="/mcp" element={<McpPage />} />
+    <Route path="/audit-compliance" element={<AuditCompliancePage />} />
+    <Route
+      path="/audit-compliance/details/:app_name"
+      element={<AuditCompliancePage />}
+    />
+    <Route
+      path="/audit-compliance/:app_name/:frequency/:period/summary"
+      element={<AuditSummary />}
+    />
+    <Route path="/audit-compliance/:app_name" element={<AuditInitiation />} />
+    <Route
+      path="/audit-compliance/:app_name/:period/:quarter/details"
+      element={<AuditDetailsSection />}
+    />
   </FlatRoutes>
 );
 
