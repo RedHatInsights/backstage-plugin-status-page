@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-devex-data-layer-backend [1.9.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-data-layer-backend@1.8.0...@appdev-platform/backstage-plugin-devex-data-layer-backend@1.9.0) (2025-05-16)
+
+
+### Features
+
+* **audit-compliance:**  [POC]Audit and Compliance Front End and Backend Plugin ([0ab30b5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/0ab30b567c247a3902427a6765b5d16f8c3d08e1))
+
 ## @appdev-platform/backstage-plugin-devex-data-layer-backend [1.8.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-data-layer-backend@1.7.0...@appdev-platform/backstage-plugin-devex-data-layer-backend@1.8.0) (2025-05-12)
 
 
