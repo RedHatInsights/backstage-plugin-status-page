@@ -40,7 +40,19 @@ export class StatusPageApi {
         );
       }
       const data = await response.json();
-      return data.map((incident: any) => ({
+
+      const res = await this.fetchApi.fetch(`${baseUrl}/scheduled-maintenances.json`, {
+        method: 'GET',
+      });
+      if (!res.ok) {
+        throw new Error(
+          `Failed to fetch scheduled maintenances: ${res.status} ${res.statusText}`,
+        );
+      }
+      const maintenaceData = await res.json();
+      data.incidents.push(...maintenaceData.scheduled_maintenances)
+
+      return data.incidents.map((incident: any) => ({
         id: incident.id,
         name: incident.name,
         status: incident.status,
@@ -75,7 +87,7 @@ export class StatusPageApi {
   async fetchComponents() {
     try {
       const baseUrl = await this.getBaseUrl();
-      const response = await this.fetchApi.fetch(`${baseUrl}/components`, {
+      const response = await this.fetchApi.fetch(`${baseUrl}/components.json`, {
         method: 'GET',
       });
 
@@ -85,7 +97,7 @@ export class StatusPageApi {
         );
       }
       const data = await response.json();
-      return data.map((component: any) => ({
+      return data.components.map((component: any) => ({
         id: component.id,
         name: component.name,
         status: component.status,
