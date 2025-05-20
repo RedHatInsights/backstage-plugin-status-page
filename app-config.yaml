@@ -46,9 +46,7 @@ integrations:
 proxy:
   endpoints:
     '/statuspage':
-      target: ${STATUSPAGE_URL}
-      headers:
-        Authorization: ${STATUSPAGE_AUTH}
+      target: "https://status.redhat.com/api/v2"
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 # Note: After experimenting with basic setup, use CI/CD to generate docs
