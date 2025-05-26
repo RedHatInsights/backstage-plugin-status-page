@@ -109,7 +109,7 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
   return (
     <InfoCard
       {...props}
-      title={`Members (${members ? members.length : 0})`}
+      title={`Members (${members ? members.length + 1 : 0})`} // +1 for workstream lead
       noPadding
       headerProps={{
         classes: { action: classes.action },
@@ -149,9 +149,10 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
               : []),
             ...tableData,
           ]}
+          title={undefined}
           options={{
             padding: 'dense',
-            toolbar: false,
+            toolbar: true,
             draggable: false,
             pageSize: 10,
             pageSizeOptions: [10, 20, 30],
