@@ -72,6 +72,74 @@ export class StatuspageApi {
     }
   }
 
+  async fetchIncident(id: string) {
+    try {
+      const baseUrl = await this.getBaseUrl();
+      const response = await this.fetchApi.fetch(`${baseUrl}/incidents/${id}`, {
+        method: 'GET',
+      });
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch incident: ${response.status} ${response.statusText}`,
+        );
+      }
+      const result = await response.json();
+      const incident = result.data;
+      const formattedIncident = {
+        id: incident.id,
+        name: incident.name,
+        status: incident.status,
+        impact: incident.impact ?? 'unknown',
+        impactOverride: incident.impact_override ?? 'N/A',
+        createdAt: incident.created_at,
+        updatedAt: incident.updated_at,
+        monitoringAt: incident.monitoring_at,
+        body: incident.body ?? '',
+        resolvedAt: incident.resolved_at,
+        scheduledFor: incident.scheduled_for,
+        scheduledUntil: incident.scheduled_until,
+        scheduledAutoCompleted: incident.scheduled_auto_completed,
+        components: [],
+        incidentUpdates: [],
+      };
+      formattedIncident.components = Array.isArray(incident.components)
+        ? incident.components.map((comp: any) => ({
+          id: comp.id,
+          name: comp.name,
+          status: comp.status,
+          groupId: comp.group_id,
+          updatedAt: comp.updated_at,
+          createdAt: comp.created_at,
+          startDate: comp.start_date,
+        }))
+        : [];
+      formattedIncident.incidentUpdates = Array.isArray(incident.incident_updates)
+        ? incident.incident_updates.map((update: any) => ({
+          id: update.id,
+          status: update.status,
+          body: update.body ?? '',
+          createdAt: update.created_at,
+          updatedAt: update.updated_at,
+          affectedComponents: Array.isArray(update.affected_components)
+            ? update.affected_components.map((ac: any) => ({
+              code: ac.code,
+              name: ac.name,
+              oldStatus: ac.old_status,
+              newStatus: ac.new_status,
+            }))
+            : [],
+        }))
+        : [];
+      return formattedIncident;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error fetching incident:', error);
+      throw new Error(`Failed to fetch incident`,);
+
+    }
+  }
+
+
   async fetchComponents() {
     try {
       const baseUrl = await this.getBaseUrl();
@@ -85,13 +153,8 @@ export class StatuspageApi {
         );
       }
       const data = await response.json();
-      return data.data.map((component: any) => ({
-        id: component.id,
-        name: component.name,
-        status: component.status,
-        createdAt: component.created_at,
-        updatedAt: component.updated_at,
-      }));
+      const groupedData = await this.listComponentsWithinGroups(data.data);
+      return groupedData;
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error fetching components:', error);
@@ -103,7 +166,7 @@ export class StatuspageApi {
     }
   }
 
-  async createIncident(incidentData: Incident) {
+  async createIncident(incidentData: StatusPageIncident) {
     try {
       const baseUrl = await this.getBaseUrl();
       await this.fetchApi.fetch(`${baseUrl}/incidents`, {
@@ -186,5 +249,29 @@ export class StatuspageApi {
       });
       return [];
     }
+  }
+
+
+  async listComponentsWithinGroups(data: any) {
+    const groups: any = {};
+    const groupIdToName: any = {};
+    for (const item of data) {
+      if (item.group === true) {
+        groupIdToName[item.id] = item.name;
+        groups[item.name] = [];
+      }
+    }
+    for (const item of data) {
+      if (item.group === false) {
+        const groupName = item.group_id ? groupIdToName[item.group_id] : null;
+        const targetGroup = groupName || "Others";
+
+        if (!groups[targetGroup]) {
+          groups[targetGroup] = [];
+        }
+        groups[targetGroup].push(item); 
+      }
+    }
+    return groups;
   }
 }

@@ -12,13 +12,37 @@ interface Incident {
   scheduledAutoCompleted: boolean;
   startedAt: string;
   resolvedAt: string;
+  componentStatus: ComponentStatusMap
 }
+
+interface StatusPageIncident {
+  id?: string;
+  name?: string;
+  status?: string;
+  impact_override?: string;
+  created_at?: string;
+  updated_at?: string;
+  component_ids?: any[];
+  body?: string;
+  notify?: boolean;
+  incident_updates?: { status?: string; body?: string }[];
+  scheduled_for?: string;
+  scheduled_until?: string;
+  scheduled_auto_completed?: boolean;
+  started_at?: string;
+  resolved_at?: string;
+  components?: ComponentStatusMap;
+}
+
+type ComponentStatusMap = {
+  [key: string]: string; 
+}; 
 
 interface CreateIncidentProps {
   component: any;
   open: boolean;
   onClose: () => void;
-  onSubmit: (incidentData: any) => void;
+  onSubmit: (incidentData: StatusPageIncident) => void;
 }
 
 interface IncidentsTableProps {

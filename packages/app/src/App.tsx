@@ -78,6 +78,7 @@ import {
 } from '@appdev-platform/backstage-plugin-audit-compliance';
 import { McpPage } from '@appdev-platform/backstage-plugin-mcp';
 import { CatalogPage } from './components/CatalogPage/CatalogPage';
+import { CreateIncident, UpdateIncident } from '@appdev-platform/backstage-plugin-outages';
 
 const app = createApp({
   apis,
@@ -189,6 +190,8 @@ const routes = (
     <Route path="/dashboard/data-layer" element={<DataLayerDashboardPage />} />
     <Route path="/dashboard/compass" element={<PulseDashboardPage />} />
     <Route path="/status-page" element={<OutageTemplatePage />} />
+    <Route path="/status-page/create-incident" element={<CreateIncident />} />
+    <Route path="/status-page/:type/:incident_id" element={<UpdateIncident />} />
     <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
     <Route path="/devtools" element={<DevToolsPage />} />
     <Route path="/mcp" element={<McpPage />} />

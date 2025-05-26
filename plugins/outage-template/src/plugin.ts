@@ -9,12 +9,13 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { outageApiRef, StatuspageApi } from './api';
-import { rootRouteRef } from './routes';
+import { createIncidentRouteRef, rootRouteRef } from './routes';
 
 export const outageTemplatePlugin = createPlugin({
   id: 'outages',
   routes: {
     root: rootRouteRef,
+    createIncident: createIncidentRouteRef,
   },
   apis: [
     {
