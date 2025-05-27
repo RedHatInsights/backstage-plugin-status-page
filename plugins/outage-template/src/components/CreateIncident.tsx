@@ -184,6 +184,7 @@ export const CreateIncident = () => {
     }));
   };
 
+
   const handleSubmit = () => {
     if (isMaintenanceForm) {
       if (!topic || !startDate || !endDate || !maintenanceDescription || !maintenanceStatus || !impactOverride) {
