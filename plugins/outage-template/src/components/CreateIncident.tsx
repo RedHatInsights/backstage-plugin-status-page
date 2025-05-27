@@ -66,6 +66,8 @@ export const CreateIncident = () => {
   const [showAll, setShowAll] = useState(false);
   const groupEntries = Object.entries(components ?? {});
   const visibleGroups = showAll ? groupEntries : groupEntries.slice(0, 3);
+  const [startDateError, setStartDateError] = useState('');
+  const [endDateError, setEndDateError] = useState('');
 
   useEffect(() => {
     const loadData = async () => {
@@ -90,21 +92,40 @@ export const CreateIncident = () => {
 
   const getCurrentUTCDateTime = () => new Date().toISOString().slice(0, 16);
 
+
+  const getMinUTCDateTime = () => {
+    const minDate = new Date();
+    minDate.setDate(minDate.getUTCDate() - 1);
+    return minDate.toISOString().slice(0, 16);
+  };
+
+  const getMaxUTCDateTime = () => {
+    const maxDate = new Date();
+    maxDate.setFullYear(maxDate.getUTCFullYear() + 10);
+    return maxDate.toISOString().slice(0, 16);
+  };
+
   const handleStartTimeChange = (e: any) => {
     const newStartTime = e.target.value;
+    setStartDateError('')
     setStartDate(newStartTime);
-    if (endDate && newStartTime >= endDate) setEndDate('');
+
+    if (newStartTime < getMinUTCDateTime()) {
+      setStartDateError('Invalid Start Time');
+      setStartDate('')
+    }
+    else if (endDate && newStartTime >= endDate) {
+      setEndDate('')
+    } else setStartDateError('');
   };
 
   const handleEndTimeChange = (e: any) => {
     const newEndTime = e.target.value;
-    if (newEndTime > startDate) {
-      setEndDate(newEndTime);
-    } else {
-      alertApi.post({
-        message: 'End time must be greater than Start time',
-        severity: 'error',
-      });
+    setEndDateError('')
+    setEndDate(newEndTime);
+    if (newEndTime > startDate) setEndDate(newEndTime);
+    else {
+      setEndDateError('End time must be after start time.');
     }
   };
 
@@ -162,6 +183,7 @@ export const CreateIncident = () => {
       [componentId]: _status,
     }));
   };
+
 
   const handleSubmit = () => {
     if (isMaintenanceForm) {
@@ -330,8 +352,10 @@ export const CreateIncident = () => {
                           fullWidth
                           value={startDate}
                           onChange={handleStartTimeChange}
-                          inputProps={{ min: getCurrentUTCDateTime() }}
+                          inputProps={{ min: getMinUTCDateTime(), max: getMaxUTCDateTime() }}
                           InputLabelProps={{ shrink: true }}
+                          error={!!startDateError}
+                          helperText={startDateError}
                         />
                       </Grid>
 
@@ -342,8 +366,10 @@ export const CreateIncident = () => {
                           fullWidth
                           value={endDate}
                           onChange={handleEndTimeChange}
-                          inputProps={{ min: startDate || getCurrentUTCDateTime() }}
+                          inputProps={{ min: startDate || getCurrentUTCDateTime(), max: getMaxUTCDateTime() }}
                           InputLabelProps={{ shrink: true }}
+                          error={!!endDateError}
+                          helperText={endDateError}
                         />
                       </Grid>
 

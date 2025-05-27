@@ -1,5 +1,5 @@
 import { Content, Page } from '@backstage/core-components';
-import { alertApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
+import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import {
   Accordion,
   AccordionDetails,
@@ -41,7 +41,6 @@ export const UpdateIncident = () => {
   const [body, setBody] = useState('');
   const [scheduledFor, setScheduledFor] = useState('');
   const [scheduledUntil, setScheduledUntil] = useState('');
-  const alertApi = useApi(alertApiRef);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [selectedComponents, setSelectedComponents] = useState<string[]>([]);
@@ -51,6 +50,7 @@ export const UpdateIncident = () => {
   const [showAll] = useState(false);
   const [incidentData, setIncidentData] = useState<any>(null);
   const [showAllComponents, setShowAllComponents] = useState(false);
+  const [endDateError, setEndDateError] = useState('');
 
   const incidentComponentIds = new Set(
     incidentData?.components?.map((c: any) => c.id) || []
@@ -67,6 +67,12 @@ export const UpdateIncident = () => {
     {}
   );
 
+  const getMaxUTCDateTime = () => {
+    const maxDate = new Date();
+    maxDate.setFullYear(maxDate.getUTCFullYear() + 10);
+    return maxDate.toISOString().slice(0, 16);
+  };
+
   const groupEntries = showAllComponents
     ? Object.entries(components ?? {})
     : Object.entries(filteredComponents);
@@ -75,13 +81,13 @@ export const UpdateIncident = () => {
 
   const handleEndTimeChange = (e: any) => {
     const newEndTime = e.target.value;
+    setEndDateError('')
+    setScheduledUntil(newEndTime);
+
     if (newEndTime > scheduledFor) {
       setScheduledUntil(newEndTime);
     } else {
-      alertApi.post({
-        message: 'End time must be greater than Start time',
-        severity: 'error',
-      });
+      setEndDateError('End time must be after start time.');
     }
   };
 
@@ -320,7 +326,10 @@ export const UpdateIncident = () => {
                         InputLabelProps={{ shrink: true }}
                         inputProps={{
                           min: `${scheduledFor}`.slice(0, 16),
+                          max: getMaxUTCDateTime()
                         }}
+                        error={!!endDateError}
+                        helperText={endDateError}
                       />
                     </Grid>
 
@@ -425,10 +434,18 @@ export const UpdateIncident = () => {
                     rows={4}
                   />
                 </Grid>
-                <Grid item>
-                  <Button variant="contained" color="primary" onClick={handleUpdate}>
-                    Submit
-                  </Button>
+
+                <Grid container justify="center" spacing={2} style={{ marginTop: 32 }}>
+                  <Grid item>
+                    <Button variant="outlined" onClick={() => window.history.back()}>
+                      Cancel
+                    </Button>
+                  </Grid>
+                  <Grid item>
+                    <Button variant="contained" color="primary" onClick={handleUpdate}>
+                      Submit
+                    </Button>
+                  </Grid>
                 </Grid>
               </Grid>
             </Box>
