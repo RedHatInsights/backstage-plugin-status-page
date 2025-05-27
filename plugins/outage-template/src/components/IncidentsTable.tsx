@@ -112,13 +112,17 @@ const IncidentsTable = ({
                   {tabIndex === 1 && (
                     <>
                       <TableCell>
-                        {new Date(incident.scheduledFor).toISOString()}
+                        {incident.scheduledFor && !isNaN(new Date(incident.scheduledFor).getTime())
+                          ? new Date(incident.scheduledFor).toISOString()
+                          : 'N/A'}
                       </TableCell>
                       <TableCell>
-                        {new Date(incident.scheduledUntil).toISOString()}
+                        {incident.scheduledUntil && !isNaN(new Date(incident.scheduledUntil).getTime())
+                          ? new Date(incident.scheduledUntil).toISOString()
+                          : 'N/A'}
                       </TableCell>
                       <TableCell>
-                        {incident.resolvedAt
+                        {incident.resolvedAt && !isNaN(new Date(incident.resolvedAt).getTime())
                           ? new Date(incident.resolvedAt).toISOString()
                           : 'N/A'}
                       </TableCell>
