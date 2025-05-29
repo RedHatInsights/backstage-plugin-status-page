@@ -120,3 +120,6 @@ export interface ServiceNowComplianceControlItem {
 export interface ServiceNowComplianceControlsResponse {
   result: ServiceNowComplianceControlItem[];
 }
+export interface ServiceNowPIAComplianceControlsResponse {
+  state: string;
+}
