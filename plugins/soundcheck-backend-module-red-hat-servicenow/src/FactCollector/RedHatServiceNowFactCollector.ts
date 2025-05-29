@@ -15,7 +15,11 @@ import {
   FactRef,
   stringifyFactRef,
 } from '@spotify/backstage-plugin-soundcheck-common';
-import { COLLECTOR_ID, SERVICE_FACT_REFERENCE } from '../lib/constants';
+import {
+  COLLECTOR_ID,
+  SERVICE_FACT_REFERENCE,
+  PIA_STATE_FACT_REFERENCE,
+} from '../lib/constants';
 import {
   ServiceNowClient,
   CMDBMeta,
@@ -86,7 +90,7 @@ export class RedHatServiceNowFactCollector implements FactCollector {
     if (params?.factRefs) {
       if (
         !params.factRefs.find(
-          value => stringifyFactRef(value) === SERVICE_FACT_REFERENCE,
+          value => stringifyFactRef(value) === SERVICE_FACT_REFERENCE || PIA_STATE_FACT_REFERENCE,
         )
       ) {
         this.logger.warn(
@@ -97,7 +101,6 @@ export class RedHatServiceNowFactCollector implements FactCollector {
         return [];
       }
     }
-
     // TODO: Look into how this works.
     if (params?.refresh) {
       this.logger.warn('Refresh is not supported for this collector');
@@ -154,6 +157,23 @@ export class RedHatServiceNowFactCollector implements FactCollector {
         continue;
       }
 
+      const piaData = await serviceNowClient.getComplianceControlsByTriggerId(cmdbSysId);
+      if (!piaData || !piaData.items || !Array.isArray(piaData.items)) {
+        this.logger.error(
+          `Invalid response from ServiceNow for entity ${entity.metadata.namespace}/${entity.metadata.name}`,
+        );
+        continue;
+      }
+
+      const piaResponseState = piaData.items.map(item => item?.state);
+
+      facts.push({
+        factRef: PIA_STATE_FACT_REFERENCE,
+        entityRef: stringifyEntityRef(entity),
+        data: { pia_state: piaResponseState } as JsonObject,
+        timestamp: new Date().toISOString(),
+      });
+
       facts.push({
         factRef: SERVICE_FACT_REFERENCE,
         entityRef: stringifyEntityRef(entity),
@@ -169,46 +189,60 @@ export class RedHatServiceNowFactCollector implements FactCollector {
 
   /** @inheritdoc */
   async getFactNames(): Promise<string[]> {
-    return [SERVICE_FACT_REFERENCE];
+    return [SERVICE_FACT_REFERENCE, PIA_STATE_FACT_REFERENCE];
   }
 
   /** @inheritdoc */
   async getDataSchema(factName: FactRef): Promise<string | undefined> {
-    if (factName === SERVICE_FACT_REFERENCE.split('/')[1]) {
-      return JSON.stringify({
-        title: 'ESS Compliance Controls',
-        description: 'Enterprise Security Standards (ESS) compliance controls.',
-        type: 'object',
-        properties: {
-          controls: {
-            type: 'array',
-            items: {
-              name: {
-                type: 'string',
-              },
-              state: {
-                type: 'string',
-              },
-              status: {
-                type: 'string',
-              },
-              frequency: {
-                type: 'string',
-              },
-              sys_created_on: {
-                type: 'string',
-                format: 'date-time',
-              },
-              sys_updated_on: {
-                type: 'string',
-                format: 'date-time',
+    switch (stringifyFactRef(factName)) {
+      case SERVICE_FACT_REFERENCE.split('/')[1]:
+        return JSON.stringify({
+          title: 'ESS Compliance Controls',
+          description:
+            'Enterprise Security Standards (ESS) compliance controls.',
+          type: 'object',
+          properties: {
+            controls: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  state: { type: 'string' },
+                  status: { type: 'string' },
+                  frequency: { type: 'string' },
+                  sys_created_on: { type: 'string', format: 'date-time' },
+                  sys_updated_on: { type: 'string', format: 'date-time' },
+                },
+                required: [
+                  'name',
+                  'state',
+                  'status',
+                  'frequency',
+                  'sys_created_on',
+                  'sys_updated_on',
+                ],
               },
             },
           },
-        },
-      });
+        });
+
+      case PIA_STATE_FACT_REFERENCE.split('/')[1]:
+        return JSON.stringify({
+          title: 'PIA State',
+          type: 'object',
+          properties: {
+            pia_state: {
+              type: 'array',
+              items: { type: 'string' },
+            },
+          },
+          required: ['pia_state'],
+        });
+
+      default:
+        return undefined;
     }
-    return undefined;
   }
 
   /** @inheritdoc */
@@ -226,7 +260,7 @@ export class RedHatServiceNowFactCollector implements FactCollector {
       const collectionConfig = collect;
       return {
         // Update this if we support more than 1 collection of facts.
-        factRefs: [SERVICE_FACT_REFERENCE],
+        factRefs: [SERVICE_FACT_REFERENCE, PIA_STATE_FACT_REFERENCE],
         filter:
           collectionConfig.getOptional('filter') ??
           this.config?.getOptional('filter') ??
