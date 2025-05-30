@@ -43,7 +43,7 @@ export const OutageComponent = () => {
   }, [outageApi]);
 
   const handleUpdateIncident = (incidentId: string) => {
-    navigate(`/status-page/incident/${incidentId}`)
+    navigate(`/status-page/incident/${incidentId}`);
   };
 
   const handleDeleteIncident = async (incidentId: string) => {
@@ -109,7 +109,7 @@ export const OutageComponent = () => {
                 onDelete={incidentId => setDeletingIncident(incidentId)}
               />
             </Grid>
-          )};
+          )}
         </Grid>
 
         <DeleteIncident
