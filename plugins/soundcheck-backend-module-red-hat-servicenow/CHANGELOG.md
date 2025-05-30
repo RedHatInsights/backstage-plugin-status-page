@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.0.2...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.1.0) (2025-05-30)
+
+
+### Features
+
+* **PULSE-630:** add fact collector to retrieve pia_state CMDB data from ServiceNow ([d30251e](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/d30251eae73faedf944359a55bf650206d1a70a4))
+
 ## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.0.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.0.1...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.0.2) (2025-04-16)
 
 
