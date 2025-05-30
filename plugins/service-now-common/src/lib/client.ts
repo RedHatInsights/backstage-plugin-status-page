@@ -1,18 +1,18 @@
-import {
-  LoggerService
-} from '@backstage/backend-plugin-api';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 import {
   PagedResponse,
   ServiceNowIntegrationConfig,
   CommonListOptions,
-  ServiceNowComplianceControlsResponse
+  ServiceNowComplianceControlsResponse,
+  ServiceNowPIAComplianceControlsResponse,
 } from './types';
 
 import {
   CMDB_ESS_TABLE_NAME,
   DEFAULT_CMDB_QUERY_SIZE,
-  CMDB_ESS_RECORD_FIELDS
+  CMDB_ESS_RECORD_FIELDS,
+  CMDB_PIA_TABLE_NAME,
 } from './constants';
 
 /**
@@ -44,9 +44,20 @@ export class ServiceNowClient {
     return this.pagedRequest<ServiceNowComplianceControlsResponse>(uri, {
       ...options,
       sysparm_query: sysparmQuery,
-      sysparm_fields: [...CMDB_ESS_RECORD_FIELDS, ...sysparm_fields].join(
-        ',',
-      ),
+      sysparm_fields: [...CMDB_ESS_RECORD_FIELDS, ...sysparm_fields].join(','),
+    });
+  }
+
+  async getComplianceControlsByTriggerId(
+    triggerId: string,
+    options?: CommonListOptions,
+  ) {
+    const uri = `/api/now/table/${CMDB_PIA_TABLE_NAME}`;
+
+    const sysparmQuery = `trigger_id=${triggerId}`;
+    return this.pagedRequest<ServiceNowPIAComplianceControlsResponse>(uri, {
+      ...options,
+      sysparm_query: sysparmQuery,
     });
   }
 
@@ -73,8 +84,7 @@ export class ServiceNowClient {
 
     if (!response.ok) {
       throw new Error(
-        `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
-          response.status
+        `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${response.status
         } - ${response.statusText}`,
       );
     }
@@ -112,7 +122,9 @@ export async function* paginated<T = any>(
   } while (res.nextOffset);
 }
 
-export function getSNowRequestOptions({ credentials }: ServiceNowIntegrationConfig): {
+export function getSNowRequestOptions({
+  credentials,
+}: ServiceNowIntegrationConfig): {
   headers: Record<string, string>;
 } {
   // TODO: Can we use a base64 encoded token instead of this?

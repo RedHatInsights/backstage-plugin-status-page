@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.13.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.12.0...@appdev-platform/backstage-plugin-workstream-automation@1.13.0) (2025-05-27)
+
+
+### Features
+
+* **PULSE-597:** add search bar in members card ([aa6658c](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/aa6658c7c362f31fe0feab8c056f193ac5de4f6c))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.12.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.11.6...@appdev-platform/backstage-plugin-workstream-automation@1.12.0) (2025-05-14)
 
 

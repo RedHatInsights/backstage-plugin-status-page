@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-outages [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-outages@1.2.5...@appdev-platform/backstage-plugin-outages@1.3.0) (2025-05-26)
+
+
+### Features
+
+* **outage-plugin:** revamp of creation and updation form with component hierarchy support ([0ade453](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/0ade4535a7a3f502400c9127e4a4be85dffa3995))
+
 ## @appdev-platform/backstage-plugin-outages [1.2.5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-outages@1.2.4...@appdev-platform/backstage-plugin-outages@1.2.5) (2025-04-14)
 
 

@@ -31,7 +31,7 @@ export const workstreamPermissions = [
   workstreamUpdatePermission,
 ];
 
-export { type WorkstreamDataV1alpha1 } from './types';
+export * from './types';
 
 export {
   WORKSTREAM_RELATION_PAIR,
