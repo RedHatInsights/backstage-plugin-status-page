@@ -65,7 +65,7 @@ export const CreateIncident = () => {
   const [scheduledAutoCompleted, setScheduledAutoCompleted] = useState(true);
   const [showAll, setShowAll] = useState(false);
   const groupEntries = Object.entries(components ?? {});
-  const visibleGroups = showAll ? groupEntries : groupEntries.slice(0, 3);
+  const visibleGroups = showAll ? groupEntries : groupEntries.slice(0, 5);
   const [startDateError, setStartDateError] = useState('');
   const [endDateError, setEndDateError] = useState('');
 
@@ -393,7 +393,7 @@ export const CreateIncident = () => {
                               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                 <Typography>{groupName}</Typography>
                               </AccordionSummary>
-                              <AccordionDetails >
+                              <AccordionDetails>
                                 <List dense>
                                   {groupComponents.map((component: any) => {
                                     const isChecked = selectedComponents.includes(component.id);
@@ -407,7 +407,7 @@ export const CreateIncident = () => {
                                             px: 1,
                                           }}
                                         >
-                                          <Box sx={{ display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+                                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                             <Checkbox
                                               edge="start"
                                               checked={isChecked}
@@ -419,8 +419,6 @@ export const CreateIncident = () => {
                                             <ListItemText
                                               primary={component.name}
                                               primaryTypographyProps={{ noWrap: true }}
-                                              style={{ marginLeft: 8 }}
-
                                             />
                                           </Box>
                                           {isChecked ? (
@@ -451,8 +449,18 @@ export const CreateIncident = () => {
 
                           {groupEntries.length > 3 && (
                             <Box display="flex" justifyContent="center" mt={2}>
-                              <Button size="small" onClick={() => setShowAll(!showAll)}>
-                                {showAll ? 'Show Less' : 'Show More'}
+                              <Button
+                                size="small"
+                                onClick={() => {
+                                  setShowAll(!showAll);
+                                  if (!showAll) {
+                                    setTimeout(() => {
+                                      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                                    }, 100);
+                                  }
+                                }}
+                              >
+                                {showAll ? 'Show Less' : 'Show All Groups'}
                               </Button>
                             </Box>
                           )}
@@ -482,14 +490,10 @@ export const CreateIncident = () => {
                         </Grid>
                       </Grid>
                     </Grid>
-
                   </Grid>
-
-
                 </Grid>
               ) : (
                 <Grid container spacing={3}>
-                  {/* Left Column: Incident Form */}
                   <Grid item xs={12} md={12}>
                     <Grid container direction="column" spacing={3}>
                       <Grid item>
@@ -547,7 +551,8 @@ export const CreateIncident = () => {
                           </Select>
                         </FormControl>
                       </Grid>
-                      <Grid item >
+
+                      <Grid item>
                         <FormControl fullWidth>
                           <FormLabel>Select Components</FormLabel>
                           <Box mt={2} />
@@ -556,7 +561,7 @@ export const CreateIncident = () => {
                               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                 <Typography>{groupName}</Typography>
                               </AccordionSummary>
-                              <AccordionDetails >
+                              <AccordionDetails>
                                 <List dense>
                                   {groupComponents.map((component: any) => {
                                     const isChecked = selectedComponents.includes(component.id);
@@ -610,6 +615,24 @@ export const CreateIncident = () => {
                               </AccordionDetails>
                             </Accordion>
                           ))}
+
+                          {groupEntries.length > 3 && (
+                            <Box display="flex" justifyContent="center" mt={2}>
+                              <Button
+                                size="small"
+                                onClick={() => {
+                                  setShowAll(!showAll);
+                                  if (!showAll) {
+                                    setTimeout(() => {
+                                      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                                    }, 100);
+                                  }
+                                }}
+                              >
+                                {showAll ? 'Show Less' : 'Show All Groups'}
+                              </Button>
+                            </Box>
+                          )}
                         </FormControl>
                       </Grid>
                       <Grid item>

@@ -167,10 +167,10 @@ export const UpdateIncident = () => {
         id,
         updatedData,
       );
+      navigate('/status-page');
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error creating incident:', error);
-      navigate('/status-page');
     } finally {
       setSubmitLoading(false);
     }
@@ -422,8 +422,6 @@ export const UpdateIncident = () => {
                     ))}
                   </FormControl>
                 </Grid>
-
-                {/* Description */}
                 <Grid item >
                   <TextField
                     label="Description"
