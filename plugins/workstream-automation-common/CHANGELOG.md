@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation-common [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-common@1.2.1...@appdev-platform/backstage-plugin-workstream-automation-common@1.3.0) (2025-05-30)
+
+
+### Features
+
+* create type for ART entity ([83d41ef](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/83d41efe90dcb8d57f807940db99d9496239db82))
+
 ## @appdev-platform/backstage-plugin-workstream-automation-common [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-common@1.1.1...@appdev-platform/backstage-plugin-workstream-automation-common@1.2.0) (2025-01-29)
 
 
