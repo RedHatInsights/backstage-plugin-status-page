@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.6.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.6.1...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.6.2) (2025-05-30)
+
+
+### Other changes
+
+* **release:** 1.0.0 [skip ci] ([d6bd9ac](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/d6bd9acfc0b76b52c5e87c70aa349cbc0872f4bd))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb 1.0.0 (2025-05-30)
 
 
