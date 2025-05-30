@@ -744,7 +744,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev-platform/backstage-plugin-service-now-common@npm:1.0.0, @appdev-platform/backstage-plugin-service-now-common@workspace:plugins/service-now-common":
+"@appdev-platform/backstage-plugin-service-now-common@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@appdev-platform/backstage-plugin-service-now-common@npm:1.1.0"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.2.1"
+    "@backstage/backend-tasks": "npm:^0.6.1"
+    "@backstage/catalog-model": "npm:^1.7.3"
+    "@backstage/config": "npm:^1.3.2"
+    "@backstage/types": "npm:^1.2.1"
+  checksum: 10/c64783c04ba076ce3560026f997b25c7d879c5f4f86b5050a5fc000ffe96a9ef81dcb504429a299117d632c2b623b81e985d62b9f70a13cfc6d5b1e3d9a34d02
+  languageName: node
+  linkType: hard
+
+"@appdev-platform/backstage-plugin-service-now-common@workspace:plugins/service-now-common":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-service-now-common@workspace:plugins/service-now-common"
   dependencies:
@@ -817,7 +830,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@workspace:plugins/soundcheck-backend-module-red-hat-servicenow"
   dependencies:
-    "@appdev-platform/backstage-plugin-service-now-common": "npm:1.0.0"
+    "@appdev-platform/backstage-plugin-service-now-common": "npm:1.1.0"
     "@backstage/backend-plugin-api": "npm:^1.1.1"
     "@backstage/backend-test-utils": "npm:^1.2.1"
     "@backstage/catalog-model": "npm:^1.7.3"
