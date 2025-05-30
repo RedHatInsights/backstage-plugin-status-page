@@ -47,7 +47,6 @@ export const UpdateIncident = () => {
   const [components, setComponents] = useState<any>({});
   const [componentStatus, setComponentStatus] = useState<ComponentStatusMap>({});
   const [scheduledAutoCompleted, setScheduledAutoCompleted] = useState(true);
-  const [showAll] = useState(false);
   const [incidentData, setIncidentData] = useState<any>(null);
   const [showAllComponents, setShowAllComponents] = useState(false);
   const [endDateError, setEndDateError] = useState('');
@@ -76,8 +75,6 @@ export const UpdateIncident = () => {
   const groupEntries = showAllComponents
     ? Object.entries(components ?? {})
     : Object.entries(filteredComponents);
-
-  const visibleGroups = showAll ? groupEntries : groupEntries.slice(0, 3);
 
   const handleEndTimeChange = (e: any) => {
     const newEndTime = e.target.value;
@@ -361,7 +358,7 @@ export const UpdateIncident = () => {
                       </Button>
                     </Box>
                     <Box mt={2} />
-                    {visibleGroups.map(([groupName, groupComponents]: any) => (
+                    {groupEntries.map(([groupName, groupComponents]: any) => (
                       <Accordion key={groupName} elevation={0}>
                         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                           <Typography>{groupName}</Typography>
