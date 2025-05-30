@@ -460,7 +460,7 @@ export const CreateIncident = () => {
                                   }
                                 }}
                               >
-                                {showAll ? 'Show Less' : 'Show All Groups'}
+                                {showAll ? 'Show Less' : 'Show All'}
                               </Button>
                             </Box>
                           )}
@@ -629,7 +629,7 @@ export const CreateIncident = () => {
                                   }
                                 }}
                               >
-                                {showAll ? 'Show Less' : 'Show All Groups'}
+                                {showAll ? 'Show Less' : 'Show All'}
                               </Button>
                             </Box>
                           )}
