@@ -39,20 +39,9 @@ export class StatusPageApi {
           `Failed to fetch incidents: ${response.status} ${response.statusText}`,
         );
       }
-      const data = await response.json();
+      const incidents = await response.json();
 
-      const res = await this.fetchApi.fetch(`${baseUrl}/scheduled-maintenances.json`, {
-        method: 'GET',
-      });
-      if (!res.ok) {
-        throw new Error(
-          `Failed to fetch scheduled maintenances: ${res.status} ${res.statusText}`,
-        );
-      }
-      const maintenaceData = await res.json();
-      data.incidents.push(...maintenaceData.scheduled_maintenances)
-
-      return data.incidents.map((incident: any) => ({
+      return incidents.map((incident: any) => ({
         id: incident.id,
         name: incident.name,
         status: incident.status,
@@ -87,7 +76,7 @@ export class StatusPageApi {
   async fetchComponents() {
     try {
       const baseUrl = await this.getBaseUrl();
-      const response = await this.fetchApi.fetch(`${baseUrl}/components.json`, {
+      const response = await this.fetchApi.fetch(`${baseUrl}/components`, {
         method: 'GET',
       });
 
@@ -96,8 +85,8 @@ export class StatusPageApi {
           `Failed to fetch components: ${response.status} ${response.statusText}`,
         );
       }
-      const data = await response.json();
-      return data.components.map((component: any) => ({
+      const components = await response.json();
+      return components.map((component: any) => ({
         id: component.id,
         name: component.name,
         status: component.status,
