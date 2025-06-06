@@ -6,6 +6,7 @@ import {
   CommonListOptions,
   ServiceNowComplianceControlsResponse,
   ServiceNowPIAComplianceControlsResponse,
+  ServiceNowSIAComplianceControlsResponse,
 } from './types';
 
 import {
@@ -13,6 +14,8 @@ import {
   DEFAULT_CMDB_QUERY_SIZE,
   CMDB_ESS_RECORD_FIELDS,
   CMDB_PIA_TABLE_NAME,
+  CMDB_SIA_RECORD_FIELDS,
+  CMDB_SIA_TABLE_NAME,
 } from './constants';
 
 /**
@@ -58,6 +61,20 @@ export class ServiceNowClient {
     return this.pagedRequest<ServiceNowPIAComplianceControlsResponse>(uri, {
       ...options,
       sysparm_query: sysparmQuery,
+    });
+  }
+  async getSIAComplianceControlsBySysId(
+    sysId: string,
+    options?: CommonListOptions,
+  ) {
+    const uri = `/api/now/table/${CMDB_SIA_TABLE_NAME}`;
+    const sysparmQuery = `applies_to=${sysId}`;
+    const sysparm_fields = options?.sysparm_fields?.split?.(',') ?? [];
+
+    return this.pagedRequest<ServiceNowSIAComplianceControlsResponse>(uri, {
+      ...options,
+      sysparm_query: sysparmQuery,
+      sysparm_fields: [...CMDB_SIA_RECORD_FIELDS, ...sysparm_fields].join(','),
     });
   }
 

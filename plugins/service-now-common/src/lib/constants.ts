@@ -10,6 +10,7 @@ export const RELATION_DELEGATED_TO = 'delegatedTo';
 // API params.
 export const CMDB_ESS_TABLE_NAME = 'sn_compliance_control';
 export const CMDB_PIA_TABLE_NAME = 'asmt_assessment_instance';
+export const CMDB_SIA_TABLE_NAME = 'sn_bia_analysis'
 export const DEFAULT_CMDB_QUERY_SIZE = 100;
 export const CMDB_TABLE_NAME = 'cmdb_ci_business_app';
 export const CMDB_IMPORT_TAG = 'imported-from:cmdb';
@@ -20,6 +21,13 @@ export const CMDB_ESS_RECORD_FIELDS = [
   "state",
   "name",
   "status"
+]
+export const CMDB_SIA_RECORD_FIELDS = [
+  "sys_created_on",
+  "name",
+  "sys_updated_on",
+  "state",
+  "expires",
 ]
 export const DEFAULT_CMDB_RECORD_FIELDS = [
   'sys_id',

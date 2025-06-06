@@ -123,3 +123,12 @@ export interface ServiceNowComplianceControlsResponse {
 export interface ServiceNowPIAComplianceControlsResponse {
   state: string;
 }
+
+export interface ServiceNowSIAComplianceControlsResponse {
+  sys_created_on: string;
+  name: string;
+  sys_updated_on: string;
+  state: string;
+  expires:string;
+  expiresCount:number;
+}
