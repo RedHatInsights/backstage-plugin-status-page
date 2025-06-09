@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-service-now-common [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-service-now-common@1.1.0...@appdev-platform/backstage-plugin-service-now-common@1.2.0) (2025-06-09)
+
+
+### Features
+
+* **PULSE-650:** add functionality to fetch CMDB_SIA details from ServiceNow based on sysId ([4760152](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/47601523fde67b5535629fa772348a87c8760be5))
+
 ## @appdev-platform/backstage-plugin-service-now-common [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-service-now-common@1.0.0...@appdev-platform/backstage-plugin-service-now-common@1.1.0) (2025-05-30)
 
 
