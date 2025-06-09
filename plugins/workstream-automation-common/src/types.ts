@@ -1,5 +1,8 @@
 import { Entity, EntityLink } from '@backstage/catalog-model';
 
+/**
+ * @deprecated Use {@link WorkstreamEntity} instead
+ */
 export interface WorkstreamDataV1alpha1 extends Entity {
   apiVersion: 'console.one.redhat.com/v1alpha1' | 'redhat.com/v1alpha1';
   kind: 'Workstream';
@@ -56,7 +59,7 @@ export interface WorkstreamEntity extends Entity {
 
 export interface ArtEntity extends Entity {
   apiVersion: 'workstreams/v1';
-  kind: 'Art';
+  kind: 'ART';
   metadata: {
     name: string;
     title?: string;
