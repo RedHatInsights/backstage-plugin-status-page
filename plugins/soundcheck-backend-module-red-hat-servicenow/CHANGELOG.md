@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.1.1...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.2.0) (2025-06-09)
+
+
+### Features
+
+* **PULSE-650:** add functionality to fetch SIA  data from ServiceNow CMDB API ([b821c3e](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/b821c3ea8756d081700a97f3f7fb8b615dd02669))
+
 ## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.1.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.1.0...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.1.1) (2025-06-09)
 
 
