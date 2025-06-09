@@ -1,5 +1,13 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation-backend [1.8.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.8.2...@appdev-platform/backstage-plugin-workstream-automation-backend@1.8.3) (2025-06-09)
+
+
+
+### Dependencies
+
+* **@appdev-platform/backstage-plugin-workstream-automation-common:** upgraded to 1.3.1
+
 ## @appdev-platform/backstage-plugin-workstream-automation-backend [1.8.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.8.1...@appdev-platform/backstage-plugin-workstream-automation-backend@1.8.2) (2025-05-30)
 
 
