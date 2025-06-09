@@ -19,6 +19,7 @@ import {
   COLLECTOR_ID,
   SERVICE_FACT_REFERENCE,
   PIA_STATE_FACT_REFERENCE,
+  SIA_STATE_FACT_REFERENCE,
 } from '../lib/constants';
 import {
   ServiceNowClient,
@@ -86,11 +87,16 @@ export class RedHatServiceNowFactCollector implements FactCollector {
     },
   ): Promise<(Fact | CollectionError)[]> {
     const facts: Fact[] = [];
+    const allowedRefs = [
+      stringifyFactRef(SERVICE_FACT_REFERENCE),
+      stringifyFactRef(PIA_STATE_FACT_REFERENCE),
+      stringifyFactRef(SIA_STATE_FACT_REFERENCE),
+    ];
 
     if (params?.factRefs) {
       if (
-        !params.factRefs.find(
-          value => stringifyFactRef(value) === SERVICE_FACT_REFERENCE || PIA_STATE_FACT_REFERENCE,
+        !params.factRefs.some(ref =>
+          allowedRefs.includes(stringifyFactRef(ref)),
         )
       ) {
         this.logger.warn(
@@ -157,7 +163,9 @@ export class RedHatServiceNowFactCollector implements FactCollector {
         continue;
       }
 
-      const piaData = await serviceNowClient.getComplianceControlsByTriggerId(cmdbSysId);
+      const piaData = await serviceNowClient.getComplianceControlsByTriggerId(
+        cmdbSysId,
+      );
       if (!piaData || !piaData.items || !Array.isArray(piaData.items)) {
         this.logger.error(
           `Invalid response from ServiceNow for entity ${entity.metadata.namespace}/${entity.metadata.name}`,
@@ -167,10 +175,35 @@ export class RedHatServiceNowFactCollector implements FactCollector {
 
       const piaResponseState = piaData.items.map(item => item?.state);
 
+      const siaData = await serviceNowClient.getSIAComplianceControlsBySysId(
+        cmdbSysId,
+      );
+      if (!siaData || !siaData.items || !Array.isArray(siaData.items)) {
+        this.logger.error(
+          `Invalid response from ServiceNow for SIA compliance controls for entity ${entity.metadata.namespace}/${entity.metadata.name}`,
+        );
+        continue;
+      }
+      const now = Date.now();
+
+      const siaResponse = siaData.items.map(item => ({
+        ...item,
+        expiresCount: Math.ceil(
+          (new Date(item.expires).getTime() - now) / 86400000,
+        ),
+      }));
+
       facts.push({
         factRef: PIA_STATE_FACT_REFERENCE,
         entityRef: stringifyEntityRef(entity),
         data: { pia_state: piaResponseState } as JsonObject,
+        timestamp: new Date().toISOString(),
+      });
+
+      facts.push({
+        factRef: SIA_STATE_FACT_REFERENCE,
+        entityRef: stringifyEntityRef(entity),
+        data: { sia_state: siaResponse } as unknown as JsonObject,
         timestamp: new Date().toISOString(),
       });
 
@@ -189,7 +222,11 @@ export class RedHatServiceNowFactCollector implements FactCollector {
 
   /** @inheritdoc */
   async getFactNames(): Promise<string[]> {
-    return [SERVICE_FACT_REFERENCE, PIA_STATE_FACT_REFERENCE];
+    return [
+      SERVICE_FACT_REFERENCE,
+      PIA_STATE_FACT_REFERENCE,
+      SIA_STATE_FACT_REFERENCE,
+    ];
   }
 
   /** @inheritdoc */
@@ -239,6 +276,34 @@ export class RedHatServiceNowFactCollector implements FactCollector {
           },
           required: ['pia_state'],
         });
+      case SIA_STATE_FACT_REFERENCE.split('/')[1]:
+        return JSON.stringify({
+          title: 'SIA State',
+          type: 'object',
+          properties: {
+            sia_state: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  name: { type: 'string' },
+                  state: { type: 'string' },
+                  expires: { type: 'string' },
+                  sys_created_on: { type: 'string', format: 'date-time' },
+                  sys_updated_on: { type: 'string', format: 'date-time' },
+                },
+                required: [
+                  'name',
+                  'state',
+                  'expires',
+                  'sys_created_on',
+                  'sys_updated_on',
+                ],
+              },
+            },
+          },
+          required: ['sia_state'],
+        });
 
       default:
         return undefined;
@@ -260,7 +325,11 @@ export class RedHatServiceNowFactCollector implements FactCollector {
       const collectionConfig = collect;
       return {
         // Update this if we support more than 1 collection of facts.
-        factRefs: [SERVICE_FACT_REFERENCE, PIA_STATE_FACT_REFERENCE],
+        factRefs: [
+          SERVICE_FACT_REFERENCE,
+          PIA_STATE_FACT_REFERENCE,
+          SIA_STATE_FACT_REFERENCE,
+        ],
         filter:
           collectionConfig.getOptional('filter') ??
           this.config?.getOptional('filter') ??
