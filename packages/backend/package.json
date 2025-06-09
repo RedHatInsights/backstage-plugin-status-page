@@ -22,6 +22,7 @@
     "@appdev-platform/backstage-plugin-catalog-backend-module-mcp-server": "*",
     "@appdev-platform/backstage-plugin-catalog-backend-module-spaship": "*",
     "@appdev-platform/backstage-plugin-devex-data-layer-backend": "*",
+    "@appdev-platform/backstage-plugin-scaffolder-backend-module-custom-filters": "*",
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator": "*",
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core": "*",
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab": "*",
