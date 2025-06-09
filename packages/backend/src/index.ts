@@ -131,6 +131,7 @@ backend.add(
 backend.add(import('@backstage/plugin-devtools-backend'));
 
 backend.add(import('@appdev-platform/backstage-plugin-catalog-backend-module-mcp-server'));
+
 backend.add(
   import('@appdev-platform/backstage-plugin-devex-data-layer-backend'),
 );
@@ -138,4 +139,7 @@ backend.add(
 backend.add(
   import('@appdev-platform/backstage-plugin-audit-compliance-backend'),
 );
+
+backend.add(import('@appdev-platform/backstage-plugin-scaffolder-backend-module-custom-filters'));
+
 backend.start();

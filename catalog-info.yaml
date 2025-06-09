@@ -20,6 +20,7 @@ spec:
     - ./plugins/matomo-backend/catalog-info.yaml
     - ./plugins/outage-template/catalog-info.yaml
     - ./plugins/proxy-manager/catalog-info.yaml
+    - ./plugins/scaffolder-backend-module-custom-filters/catalog-info.yaml
     - ./plugins/soundcheck-backend-module-droperator/catalog-info.yaml
     - ./plugins/soundcheck-backend-module-red-hat-core/catalog-info.yaml
     - ./plugins/soundcheck-backend-module-red-hat-gitlab/catalog-info.yaml
