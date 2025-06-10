@@ -15,7 +15,8 @@ import {
   entityPresentationApiRef,
   catalogApiRef,
 } from '@backstage/plugin-catalog-react';
-import SettingsEthernet from '@material-ui/icons/SettingsEthernet';
+import GroupWorkIcon from '@material-ui/icons/GroupWork';
+import AdbIcon from '@material-ui/icons/Adb';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
@@ -33,7 +34,7 @@ export const apis: AnyApiFactory[] = [
     api: entityPresentationApiRef,
     deps: { catalogApiImp: catalogApiRef },
     factory: ({ catalogApiImp }) => {
-      const kindIcons = { workstream: SettingsEthernet };
+      const kindIcons = { workstream: GroupWorkIcon, art: AdbIcon };
       return DefaultEntityPresentationApi.create({
         catalogApi: catalogApiImp,
         kindIcons,

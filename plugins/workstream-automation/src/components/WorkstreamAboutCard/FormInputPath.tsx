@@ -1,4 +1,4 @@
-import { WorkstreamDataV1alpha1 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { WorkstreamEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import {
@@ -18,7 +18,7 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 
 export const FormInputPath = (props: {
   currentWorkstreamName?: string;
-  entity: WorkstreamDataV1alpha1;
+  entity: WorkstreamEntity;
 }) => {
   const { entity, currentWorkstreamName } = props;
 

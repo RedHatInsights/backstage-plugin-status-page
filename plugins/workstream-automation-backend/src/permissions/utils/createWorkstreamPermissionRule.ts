@@ -1,11 +1,11 @@
 import {
   RESOURCE_TYPE_WORKSTREAM_ENTITY,
-  WorkstreamDataV1alpha1,
+  WorkstreamEntity,
 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
 
 export const createWorkstreamPermissionRule = makeCreatePermissionRule<
-  WorkstreamDataV1alpha1,
+  WorkstreamEntity,
   { key: string; value: string },
   typeof RESOURCE_TYPE_WORKSTREAM_ENTITY
 >();

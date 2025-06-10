@@ -78,7 +78,11 @@ import {
 } from '@appdev-platform/backstage-plugin-audit-compliance';
 import { McpPage } from '@appdev-platform/backstage-plugin-mcp';
 import { CatalogPage } from './components/CatalogPage/CatalogPage';
-import { CreateIncident, UpdateIncident } from '@appdev-platform/backstage-plugin-outages';
+import {
+  CreateIncident,
+  UpdateIncident,
+} from '@appdev-platform/backstage-plugin-outages';
+import AdbIcon from '@material-ui/icons/Adb';
 
 const app = createApp({
   apis,
@@ -112,6 +116,7 @@ const app = createApp({
   ],
   icons: {
     'kind:workstream': SettingsEthernet,
+    'kind:art': AdbIcon,
     mail: EmailIcon,
     slack_contact: SlackIcon,
     jira: JiraIcon,
@@ -164,6 +169,7 @@ const routes = (
       element={
         <CatalogGraphPage
           relationPairs={[WORKSTREAM_RELATION_PAIR, ...ALL_RELATION_PAIRS]}
+          showArrowHeads
         />
       }
     />
@@ -191,7 +197,10 @@ const routes = (
     <Route path="/dashboard/compass" element={<PulseDashboardPage />} />
     <Route path="/status-page" element={<OutageTemplatePage />} />
     <Route path="/status-page/create-incident" element={<CreateIncident />} />
-    <Route path="/status-page/:type/:incident_id" element={<UpdateIncident />} />
+    <Route
+      path="/status-page/:type/:incident_id"
+      element={<UpdateIncident />}
+    />
     <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
     <Route path="/devtools" element={<DevToolsPage />} />
     <Route path="/mcp" element={<McpPage />} />

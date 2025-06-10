@@ -595,7 +595,15 @@ const WorkstreamEntityPage = () => {
 const MCPEntityPage = (
   <EntityLayout>
     <EntityLayout.Route path="/" title="Overview">
-      <Grid container style={{marginInline: 'auto'}} xs={12} md={10} spacing={3} alignItems="stretch" justifyContent='center'>
+      <Grid
+        container
+        style={{ marginInline: 'auto' }}
+        xs={12}
+        md={10}
+        spacing={3}
+        alignItems="stretch"
+        justifyContent="center"
+      >
         {entityWarningContent}
         <Grid item md={8} xs={12}>
           <Grid item xs={12}>
@@ -688,12 +696,64 @@ const MCPEntityPage = (
   </EntityLayout>
 );
 
+const ArtEntityPage = () => {
+  const { allowed } = usePermission({ permission: workstreamDeletePermission });
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  return (
+    <>
+      {deleteModalOpen && (
+        <WorkstreamDeleteModal
+          open={deleteModalOpen}
+          deleteModalCloseFn={setDeleteModalOpen}
+        />
+      )}
+      <EntityLayout
+        UNSTABLE_contextMenuOptions={{ disableUnregister: true }}
+        {...(allowed && {
+          UNSTABLE_extraContextMenuItems: [
+            {
+              title: 'Delete',
+              Icon: Delete,
+              onClick: () => setDeleteModalOpen(true),
+            },
+          ],
+        })}
+      >
+        <EntityLayout.Route path="/overview" title="Overview">
+          <Grid container spacing={3} alignItems="stretch">
+            {entityWarningContent}
+            <Grid item xs={12} lg={6} xl={7}>
+              <WorkstreamAboutCard variant="gridItem" />
+            </Grid>
+            <Grid item xs={12} lg={6} xl={5}>
+              <WorkstreamLinksCard variant="flex" />
+            </Grid>
+            <Grid item xs={12} lg={6} xl={6}>
+              <WorkstreamMembersCard variant="flex" />
+            </Grid>
+            <Grid item xs={12} lg={6} xl={6}>
+              <EntityWorkstreamCard variant="flex" />
+            </Grid>
+            <Grid item xs={12} lg={6} xl={6}>
+              <EntityCatalogGraphCard height={350} />
+            </Grid>
+          </Grid>
+        </EntityLayout.Route>
+      </EntityLayout>
+    </>
+  );
+};
+
 export const entityPage = (
   <EntitySwitch>
     <EntitySwitch.Case if={isKind('component')} children={componentPage} />
     <EntitySwitch.Case if={isKind('api')} children={apiPage} />
     <EntitySwitch.Case if={isKind('workstream')}>
       <WorkstreamEntityPage />
+    </EntitySwitch.Case>
+    <EntitySwitch.Case if={isKind('art')}>
+      <ArtEntityPage />
     </EntitySwitch.Case>
     <EntitySwitch.Case if={isKind('group')} children={groupPage} />
     <EntitySwitch.Case if={isKind('user')} children={userPage} />

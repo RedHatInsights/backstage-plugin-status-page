@@ -1,5 +1,5 @@
 import {
-  WorkstreamDataV1alpha1,
+  WorkstreamEntity,
   workstreamUpdatePermission,
 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
@@ -49,9 +49,12 @@ const StyledGrid = withStyles(theme => ({
 }))(Grid);
 
 export const WorkstreamAboutCard = (props: { variant: InfoCardVariants }) => {
-  const { entity, refresh } = useAsyncEntity<WorkstreamDataV1alpha1>();
+  const { entity, refresh } = useAsyncEntity<WorkstreamEntity>();
   const alertApi = useApi(alertApiRef);
   const classes = useStyles();
+  const artRef = entity?.relations?.find(p =>
+    p.targetRef.startsWith('art:'),
+  )?.targetRef;
 
   const [editModalOpen, setEditModalOpen] = useState(false);
 
@@ -154,6 +157,18 @@ export const WorkstreamAboutCard = (props: { variant: InfoCardVariants }) => {
           </StyledGrid>
           <StyledGrid xs={12}>{entity.spec.pillar}</StyledGrid>
         </Grid>
+        {artRef ? (
+          <Grid item xs={6}>
+            <StyledGrid xs={12}>
+              <Typography variant="body1" color="textSecondary">
+                ART
+              </Typography>
+            </StyledGrid>
+            <StyledGrid xs={12}>
+              <EntityRefLink entityRef={artRef} />
+            </StyledGrid>
+          </Grid>
+        ) : null}
       </Grid>
     </InfoCard>
   ) : (

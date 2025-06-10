@@ -1,22 +1,23 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "WorkstreamEntity",
-  "description": "Workstream data extends existing Group kind in backstage",
+  "$id": "ArtEntityV1alpha1",
+  "description": "ART entity schema to group workstreams",
   "examples": [
     {
       "apiVersion": "workstreams/v1",
-      "kind": "Workstream",
+      "kind": "ART",
       "metadata": {
         "annotations": {
           "jira/project-key": "PROJECT"
         },
-        "name": "lorem_workstream",
-        "title": "Lorem - Workstream",
+        "name": "lorem-art",
+        "title": "Lorem - ART",
         "namespace": "company",
         "createdAt": "timestamp",
         "updatedAt": "timestamp",
+        "updatedBy": "user:company/bar",
         "createdBy": "user:company/foo",
-        "description": "Some description of workstream",
+        "description": "Some description of ART",
         "links": [
           {
             "url": "mailto://team-devs@company.com",
@@ -34,26 +35,25 @@
         "members": [
           {
             "userRef": "user:company/foo",
-            "role": "Senior Developer"
+            "role": "Software Architect"
           },
           {
             "userRef": "user:company/bar",
-            "role": "Assistant Developer"
+            "role": "Software Architect"
           }
         ],
         "pillar": "Platform Engineering",
-        "portfolio": [
-          "component:company/component-1",
-          "component:company/component-2",
-          "component:company/component-3"
+        "workstreams": [
+          "workstream:company/ws-1",
+          "workstream:company/ws-2",
+          "workstream:company/ws-3"
         ],
-        "lead": "user:company/baz"
+        "rte": "user:company/baz"
       }
     }
   ],
   "type": "object",
   "required": ["apiVersion", "kind"],
-
   "allOf": [
     {
       "$ref": "Entity"
@@ -69,39 +69,39 @@
           "type": "string",
           "description": "The high level entity type being described.",
           "minLength": 1,
-          "enum": ["Workstream"]
+          "enum": ["ART"]
         },
         "metadata": {
           "$ref": "EntityMeta",
           "type": "object",
           "properties": {
-            "workstreamId": {
+            "artId": {
               "type": "string",
-              "description": "Unique UUID of workstream"
+              "description": "Unique UUID of ART"
             },
             "createdOn": {
               "type": "string",
-              "description": "Timestamp when workstream was created"
+              "description": "Timestamp when ART was created"
             },
             "updatedOn": {
               "type": "string",
-              "description": "Timestamp when last changes were made to workstream"
+              "description": "Timestamp when last changes were made to ART"
+            },
+            "createdBy": {
+              "type": "string",
+              "description": "Entity ref to user who created the ART"
             },
             "updatedBy": {
               "type": "string",
               "description": "Entity ref to user who updated the ART"
-            },
-            "createdBy": {
-              "type": "string",
-              "description": "Entity ref to user who created the workstream"
             }
           }
         },
         "spec": {
           "type": "object",
-          "required": ["members", "portfolio", "pillar"],
+          "required": ["members", "workstreams", "rte"],
           "properties": {
-            "lead": {
+            "rte": {
               "anyOf": [
                 {
                   "type": "string"
@@ -126,38 +126,24 @@
                   "role": {
                     "type": "string",
                     "description": "Role of a member in an workstream",
-                    "examples": [
-                      "Technical Lead",
-                      "Developer",
-                      "Assistant developer"
-                    ]
+                    "examples": ["Software Architect", "Senior Architect"]
                   }
                 }
               }
             },
-            "portfolio": {
+            "workstreams": {
               "type": "array",
-              "description": "Portfolio associated with workstream",
+              "description": "workstreams associated with ART",
               "items": {
                 "type": "string",
-                "description": "entityRef of Component/System",
-                "examples": ["component:default/example-website"]
+                "description": "entityRef of Workstream",
+                "examples": ["workstream:default/ws-1"]
               }
             },
             "pillar": {
               "type": "string",
               "description": "Under which pillar does it come",
               "examples": ["Platform Engineering"]
-            },
-            "art": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                { "type": "null" }
-              ],
-              "examples": [null, "workstream:redhat/compass"],
-              "description": "Entity ref of user who is lead of the workstream"
             }
           }
         }

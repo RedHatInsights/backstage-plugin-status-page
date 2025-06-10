@@ -1,13 +1,7 @@
 import { Knex } from 'knex';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { Member, Workstream } from '../types';
 import { WorkstreamDatabaseModel } from './types';
 import { EntityLink } from '@backstage/catalog-model';
-
-const migrationsDir = resolvePackagePath(
-  '@appdev-platform/backstage-plugin-workstream-automation-backend',
-  'migrations',
-);
 
 export interface WorkstreamBackendStore {
   insertWorkstream(data: Workstream): Promise<Workstream>;
@@ -20,19 +14,7 @@ export interface WorkstreamBackendStore {
 
 export class WorkstreamBackendDatabase implements WorkstreamBackendStore {
   private readonly WORKSTREAM_TABLE = 'workstreams';
-  static async create(options: {
-    knex: Knex;
-    skipMigrations: boolean;
-  }): Promise<WorkstreamBackendStore> {
-    const database = options.knex;
 
-    if (!options.skipMigrations)
-      await database.migrate.latest({
-        directory: migrationsDir,
-      });
-
-    return new WorkstreamBackendDatabase(database);
-  }
   constructor(private readonly db: Knex) {}
 
   async deleteWorkstream(id: string): Promise<any> {
@@ -115,6 +97,8 @@ export class WorkstreamBackendDatabase implements WorkstreamBackendStore {
       pillar: workstream.pillar,
       lead: workstream.lead,
       jira_project: workstream.jiraProject,
+      art: workstream.art,
+      updated_by: workstream.updatedBy,
       created_by: workstream.createdBy,
       links: JSON.stringify(
         workstream.links.map(link => ({
@@ -144,6 +128,8 @@ export class WorkstreamBackendDatabase implements WorkstreamBackendStore {
       updatedAt: dbModel.updated_at,
       createdBy: dbModel.created_by,
       links: JSON.parse(dbModel.links) as EntityLink[],
+      updatedBy: dbModel.updated_by ?? dbModel.created_by,
+      art: dbModel.art,
     };
   }
 }

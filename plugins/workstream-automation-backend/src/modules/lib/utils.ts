@@ -4,9 +4,12 @@ import {
   entityKindSchemaValidator,
   KindValidator,
 } from '@backstage/catalog-model';
-import { Workstream } from '../../types';
+import { ART, Workstream } from '../../types';
 import { ANNOTATION_JIRA_PROJECT_KEY } from './constants';
-import { WorkstreamDataV1alpha1 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import {
+  ArtEntity,
+  WorkstreamEntity,
+} from '@appdev-platform/backstage-plugin-workstream-automation-common';
 
 export function ajvCompiledJsonSchemaValidator(schema: unknown): KindValidator {
   let validator: undefined | ((data: unknown) => any);
@@ -20,14 +23,51 @@ export function ajvCompiledJsonSchemaValidator(schema: unknown): KindValidator {
   };
 }
 
+export function artToEntityKind(options: {
+  data: ART;
+  location: string;
+  namespace: string;
+}): ArtEntity {
+  const { data, location, namespace } = options;
+  return {
+    apiVersion: 'workstreams/v1',
+    kind: 'ART',
+    metadata: {
+      name: data.name,
+      title: data.title,
+      namespace: namespace,
+      ...(data.description && { description: data.description }),
+      createdAt: data.createdAt ?? new Date().toISOString(),
+      updatedAt: data.updatedAt ?? new Date().toISOString(),
+      createdBy: data.createdBy,
+      updatedBy: data.updatedBy,
+      annotations: {
+        [ANNOTATION_LOCATION]: location,
+        [ANNOTATION_ORIGIN_LOCATION]: location,
+        ...(data.jiraProject
+          ? { [ANNOTATION_JIRA_PROJECT_KEY]: data.jiraProject }
+          : null),
+      },
+      artId: data.artId,
+      links: data.links,
+    },
+    spec: {
+      members: data.members,
+      rte: data.rte ?? '',
+      workstreams: data.workstreams,
+      pillar: data.pillar,
+    },
+  };
+}
+
 export function workstreamToEntityKind(options: {
   data: Workstream;
   location: string;
   namespace: string;
-}): WorkstreamDataV1alpha1 {
+}): WorkstreamEntity {
   const { data, location, namespace } = options;
   return {
-    apiVersion: 'console.one.redhat.com/v1alpha1',
+    apiVersion: 'workstreams/v1',
     kind: 'Workstream',
     metadata: {
       name: data.name,
@@ -37,6 +77,7 @@ export function workstreamToEntityKind(options: {
       createdAt: data.createdAt ?? new Date().toISOString(),
       updatedAt: data.updatedAt ?? new Date().toISOString(),
       createdBy: data.createdBy,
+      updatedBy: data.updatedBy,
       workstreamId: data.workstreamId,
       annotations: {
         [ANNOTATION_LOCATION]: location,
@@ -52,6 +93,7 @@ export function workstreamToEntityKind(options: {
       pillar: data.pillar,
       portfolio: data.portfolio,
       lead: data.lead,
+      ...(data.art && { art: data.art }),
     },
   };
 }

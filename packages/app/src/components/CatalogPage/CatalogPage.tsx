@@ -28,6 +28,7 @@ import {
   WorkstreamPillarPicker,
   WorkstreamPortfolioPicker,
   WorkstreamTechLeadPicker,
+  CreateArtModal,
 } from '@appdev-platform/backstage-plugin-workstream-automation';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { workstreamCreatePermission } from '@appdev-platform/backstage-plugin-workstream-automation-common';
@@ -50,8 +51,13 @@ const HeaderButtons = () => {
     filters: { kind },
   } = useEntityList();
 
-  if (kind?.value === 'workstream')
-    return <>{isAllowed && <CreateWorkstreamModal />}</>;
+  if (kind?.value === 'workstream' || kind?.value === 'art')
+    return (
+      <>
+        {isAllowed && <CreateWorkstreamModal />}
+        {isAllowed && <CreateArtModal />}
+      </>
+    );
 
   return (
     <>

@@ -1,5 +1,5 @@
 import {
-  WorkstreamDataV1alpha1,
+  WorkstreamEntity,
   workstreamUpdatePermission,
 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import {
@@ -34,8 +34,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
-  const { entity, loading: isLoading } =
-    useAsyncEntity<WorkstreamDataV1alpha1>();
+  const { entity, loading: isLoading } = useAsyncEntity<WorkstreamEntity>();
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const members = entity?.spec.members;

@@ -1,10 +1,14 @@
 import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { Workstream } from '../../types';
-import { WorkstreamDataV1alpha1 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import {
+  ArtEntity,
+  WorkstreamEntity,
+} from '@appdev-platform/backstage-plugin-workstream-automation-common';
 
 export interface WorkstreamBackendApi {
   getAllWorkstreams(): Promise<Workstream[]>;
-  getWorkstreamByLocation(location: string): Promise<WorkstreamDataV1alpha1>;
+  getWorkstreamByLocation(location: string): Promise<WorkstreamEntity>;
+  getArtByLocation(location: string): Promise<ArtEntity>;
 }
 
 export class WorkstreamBackendClient implements WorkstreamBackendApi {
@@ -36,14 +40,21 @@ export class WorkstreamBackendClient implements WorkstreamBackendApi {
     return (await response.json()).data as Workstream[];
   }
 
-  async getWorkstreamByLocation(
-    location: string,
-  ): Promise<WorkstreamDataV1alpha1> {
+  async getArtByLocation(location: string): Promise<ArtEntity> {
+    const response = await fetch(location, {
+      headers: {
+        Authorization: `bearer ${await this.getPluginServiceToken()}`,
+      },
+    });
+    return (await response.json()) as ArtEntity;
+  }
+
+  async getWorkstreamByLocation(location: string): Promise<WorkstreamEntity> {
     const response = await fetch(location, {
       headers: {
         Authorization: `Bearer ${await this.getPluginServiceToken()}`,
       },
     });
-    return (await response.json()) as WorkstreamDataV1alpha1;
+    return (await response.json()) as WorkstreamEntity;
   }
 }
