@@ -1,4 +1,4 @@
-import { stringifyEntityRef, SystemEntity } from '@backstage/catalog-model';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import { ErrorBoundary, Table, TableColumn } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import {
@@ -23,22 +23,18 @@ import {
   Theme,
   Typography,
 } from '@material-ui/core';
-import { Autocomplete, TabContext, TabList } from '@material-ui/lab';
+import { TabContext, TabList } from '@material-ui/lab';
 import TabPanel from '@material-ui/lab/TabPanel';
 import { kebabCase } from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
-import { workstreamApiRef } from '../../api';
-import {
-  CustomUserEntity,
-  Member,
-  TableRowDataType,
-  Workstream,
-} from '../../types';
+import { artApiRef } from '../../api';
+import { ART, CustomUserEntity, Member, TableRowDataType } from '../../types';
 
 import { MemberDetailsForm } from './Forms/MemberDetailsForm';
-import { WorkstreamDetailsForm } from './Forms/WorkstreamDetailsForm';
-import { Form1, Form2 } from './Inputs/types';
+import { ArtDetailsForm } from './Forms/ArtDetailsForm';
+import { ARTForm1, ARTForm2 } from './types';
+import { WorkstreamEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 
 const useStyles = makeStyles((theme: Theme) => ({
   fullHeightDialog: {
@@ -89,19 +85,19 @@ const TabTitle = (props: { index: string; label: string; value: string }) => {
 };
 
 const ReviewDetailsContent = (props: {
-  form1: UseFormReturn<Form1>;
-  form2: UseFormReturn<Form2>;
+  form1: UseFormReturn<ARTForm1>;
+  form2: UseFormReturn<ARTForm2>;
 }) => {
   const { form1, form2 } = props;
-  const workstreamDetails = form1.getValues();
+  const artDetails = form1.getValues();
   const { selectedMembers } = form2.getValues();
-  const columns: TableColumn<TableRowDataType>[] = [
+  const memberTableColumns: TableColumn<TableRowDataType>[] = [
     {
       id: 'name',
       title: 'Name',
       field: 'user.spec.profile.displayName',
       render: data => (
-        <EntityDisplayName entityRef={data.user} hideIcon disableTooltip />
+        <EntityDisplayName entityRef={data.user} disableTooltip />
       ),
     },
     {
@@ -133,6 +129,22 @@ const ReviewDetailsContent = (props: {
     },
   ];
 
+  const workstreamTableColumns: TableColumn<WorkstreamEntity>[] = [
+    {
+      field: 'metadata.name',
+      title: 'Name',
+      render: data => <EntityDisplayName entityRef={data} />,
+    },
+    {
+      field: 'spec.lead',
+      title: 'Workstream Lead',
+    },
+    {
+      field: 'metadata.annotations.jira/project-key',
+      title: 'Jira Project',
+    },
+  ];
+
   function getHumanReadableValue(option: CustomUserEntity) {
     return option.spec.profile
       ? `${option.spec.profile.displayName} (${option.spec.profile.email})`
@@ -148,14 +160,14 @@ const ReviewDetailsContent = (props: {
         <Typography variant="h3">Review</Typography>
       </Grid>
       <Grid item xs={12}>
-        <Typography variant="body1">Workstream Details</Typography>
+        <Typography variant="body1">ART Details</Typography>
       </Grid>
       <Grid item xs={12}>
         <TextField
           variant="outlined"
           fullWidth
-          label="Workstream Name"
-          value={workstreamDetails.workstreamName}
+          label="ART Name"
+          value={artDetails.artName}
           InputProps={{ readOnly: true }}
         />
       </Grid>
@@ -164,7 +176,7 @@ const ReviewDetailsContent = (props: {
           variant="outlined"
           fullWidth
           label="Description"
-          value={workstreamDetails.description}
+          value={artDetails.description}
           InputProps={{ readOnly: true }}
         />
       </Grid>
@@ -172,12 +184,8 @@ const ReviewDetailsContent = (props: {
         <TextField
           variant="outlined"
           fullWidth
-          label="Lead Name"
-          value={
-            workstreamDetails.lead
-              ? getHumanReadableValue(workstreamDetails.lead)
-              : '-'
-          }
+          label="Release Train Engineer (RTE)"
+          value={artDetails.rte ? getHumanReadableValue(artDetails.rte) : '-'}
           InputProps={{ readOnly: true }}
         />
       </Grid>
@@ -186,7 +194,7 @@ const ReviewDetailsContent = (props: {
           variant="outlined"
           fullWidth
           label="Pillar"
-          value={workstreamDetails.pillar}
+          value={artDetails.pillar}
           InputProps={{ readOnly: true }}
         />
       </Grid>
@@ -195,7 +203,7 @@ const ReviewDetailsContent = (props: {
           variant="outlined"
           fullWidth
           label="JIRA Project"
-          value={`${workstreamDetails.jiraProject?.name} (${workstreamDetails.jiraProject?.key})`}
+          value={`${artDetails.jiraProject?.name} (${artDetails.jiraProject?.key})`}
           InputProps={{ readOnly: true }}
         />
       </Grid>
@@ -204,7 +212,7 @@ const ReviewDetailsContent = (props: {
           variant="outlined"
           fullWidth
           label="Email"
-          value={workstreamDetails.email}
+          value={artDetails.email}
           InputProps={{ readOnly: true }}
         />
       </Grid>
@@ -213,46 +221,36 @@ const ReviewDetailsContent = (props: {
           variant="outlined"
           fullWidth
           label="Slack Link"
-          value={workstreamDetails.slackChannelUrl}
+          value={artDetails.slackChannelUrl}
           InputProps={{ readOnly: true }}
         />
       </Grid>
       <Grid item xs={12}>
-        <Autocomplete
-          freeSolo
-          disableClearable
-          multiple
-          fullWidth
-          options={[] as SystemEntity[]}
-          value={workstreamDetails.portfolio}
-          getOptionLabel={option => stringifyEntityRef(option)}
-          renderTags={(value, renderProps) =>
-            value.map((option, index) => (
-              <Chip
-                label={stringifyEntityRef(option)}
-                {...renderProps({ index })}
-                deleteIcon={<></>}
-              />
-            ))
-          }
-          renderInput={params => (
-            <TextField {...params} variant="outlined" label="Portfolio" />
-          )}
+        <Typography variant="body1">Workstreams</Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Table
+          columns={workstreamTableColumns}
+          data={artDetails.workstreams}
+          options={{
+            toolbar: false,
+            padding: 'dense',
+            paging: artDetails.workstreams.length > 5 ? true : false,
+          }}
         />
       </Grid>
       <Grid item xs={12}>
         <Typography variant="body1">Member Details</Typography>
       </Grid>
-
       <Grid item xs={12}>
         <Table
-          columns={columns}
+          columns={memberTableColumns}
           data={[
-            ...(workstreamDetails.lead
+            ...(artDetails.rte
               ? [
                   {
-                    role: 'Workstream Lead',
-                    user: workstreamDetails.lead,
+                    role: 'Release Train Engineer (RTE)',
+                    user: artDetails.rte,
                   },
                 ]
               : []),
@@ -261,6 +259,7 @@ const ReviewDetailsContent = (props: {
           options={{
             toolbar: false,
             padding: 'dense',
+            paging: selectedMembers.length + 1 > 5 ? true : false,
           }}
         />
       </Grid>
@@ -268,97 +267,48 @@ const ReviewDetailsContent = (props: {
   );
 };
 
-export const CreateWorkstreamModal = () => {
+export const CreateArtModal = () => {
   const classes = useStyles();
-  const workstreamApi = useApi(workstreamApiRef);
+  const artApi = useApi(artApiRef);
   const [value, setValue] = useState<string>('1');
-
-  const form1 = useForm<Form1>({
+  const form1 = useForm<ARTForm1>({
     values: {
-      workstreamName: undefined,
+      artName: undefined,
       description: undefined,
-      lead: undefined,
-      pillar: undefined,
-      jiraProject: undefined,
       email: undefined,
+      jiraProject: undefined,
+      // jiraProject: { name: 'PULSE', key: 'PULSE' },
+      pillar: undefined,
+      rte: undefined,
       slackChannelUrl: undefined,
-      portfolio: [],
+      workstreams: [],
     },
     mode: 'all',
   });
 
-  const form2 = useForm<Form2>({
+  const form2 = useForm<ARTForm2>({
     values: {
       kind: { label: 'Rover User', value: 'user' },
       searchQuery: null,
       selectedMembers: [],
     },
-    mode: 'onSubmit',
   });
 
   const handleChange = (val: string) => {
-    if (form1.formState.isValid) {
-      setValue(val);
-    }
+    if (form1.formState.isValid) setValue(val);
   };
-  const [workstreamData, setWorkstreamData] = useState<Workstream>();
+  const [artData, setArtData] = useState<ART>();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const workstreamDetails = form1.getValues();
+  const artDetails = form1.getValues();
   const { selectedMembers } = form2.getValues();
 
-  function handleCreate(_e: React.MouseEvent<HTMLButtonElement>) {
-    if (workstreamDetails.workstreamName) {
-      setLoading(true);
-      setWorkstreamData({
-        name: kebabCase(workstreamDetails.workstreamName),
-        title: workstreamDetails.workstreamName,
-        members: selectedMembers.map<Member>(val => ({
-          userRef: stringifyEntityRef(val.user),
-          role: val.role ?? '-',
-        })),
-        description: workstreamDetails.description,
-        jiraProject: workstreamDetails.jiraProject?.key,
-        lead: workstreamDetails.lead
-          ? stringifyEntityRef(workstreamDetails.lead)
-          : undefined,
-        pillar: workstreamDetails.pillar,
-        portfolio: workstreamDetails.portfolio.map<string>(val =>
-          stringifyEntityRef(val),
-        ),
-        // TODO: add ART field to workstream form
-        art: undefined,
-        links: [
-          ...(workstreamDetails.slackChannelUrl
-            ? [
-                {
-                  url: workstreamDetails.slackChannelUrl,
-                  title: 'Slack',
-                  type: 'Contact',
-                  icon: 'slack_contact',
-                },
-              ]
-            : []),
-          ...(workstreamDetails.email
-            ? [
-                {
-                  url: workstreamDetails.email,
-                  title: 'Email',
-                  type: 'Email',
-                  icon: 'email',
-                },
-              ]
-            : []),
-        ],
-      });
-    }
-  }
   const [openFinalModal, setOpenFinalModal] = useState(false);
 
   useEffect(() => {
-    if (loading && workstreamData) {
-      workstreamApi
-        .createNewWorkstream(workstreamData)
+    if (loading && artData) {
+      artApi
+        .createNewArt(artData)
         .then(_data => {
           setLoading(false);
           form1.reset();
@@ -369,15 +319,15 @@ export const CreateWorkstreamModal = () => {
           setLoading(false);
         });
     }
-  }, [workstreamApi, workstreamData, form2, form1, loading]);
+  }, [artApi, artData, form1, form2, loading]);
 
   const tabsMap = [
     {
       index: '1',
-      label: 'Workstream details',
+      label: 'Art details',
       children: (
         <FormProvider {...form1}>
-          <WorkstreamDetailsForm />
+          <ArtDetailsForm />
         </FormProvider>
       ),
     },
@@ -385,7 +335,7 @@ export const CreateWorkstreamModal = () => {
       index: '2',
       label: 'Member details',
       children: (
-        <ErrorBoundary slackChannel={{ name: 'one-platform' }}>
+        <ErrorBoundary slackChannel={{ name: 'form-one-platform' }}>
           <FormProvider {...form2}>
             <MemberDetailsForm form1={form1} />
           </FormProvider>
@@ -405,9 +355,52 @@ export const CreateWorkstreamModal = () => {
     form1.reset();
     form2.reset();
     setValue('1');
-    setWorkstreamData(undefined);
+    setArtData(undefined);
     setOpenFinalModal(false);
     setOpen(false);
+  }
+
+  function handleCreate(_e: React.MouseEvent<HTMLButtonElement>) {
+    if (artDetails.artName) {
+      setLoading(true);
+      setArtData({
+        name: kebabCase(artDetails.artName),
+        title: artDetails.artName,
+        members: selectedMembers.map<Member>(val => ({
+          userRef: stringifyEntityRef(val.user),
+          role: val.role ?? '-',
+        })),
+        description: artDetails.description,
+        jiraProject: artDetails.jiraProject?.key,
+        rte: artDetails.rte ? stringifyEntityRef(artDetails.rte) : undefined,
+        pillar: artDetails.pillar,
+        workstreams: artDetails.workstreams.map<string>(val =>
+          stringifyEntityRef(val),
+        ),
+        links: [
+          ...(artDetails.slackChannelUrl
+            ? [
+                {
+                  url: artDetails.slackChannelUrl,
+                  title: 'Slack',
+                  type: 'Contact',
+                  icon: 'slack_contact',
+                },
+              ]
+            : []),
+          ...(artDetails.email
+            ? [
+                {
+                  url: artDetails.email,
+                  title: 'Email',
+                  type: 'Email',
+                  icon: 'email',
+                },
+              ]
+            : []),
+        ],
+      });
+    }
   }
 
   const nextButtonProps = (): ButtonProps => {
@@ -447,7 +440,7 @@ export const CreateWorkstreamModal = () => {
   const {
     filters: { kind },
   } = useEntityList();
-  if (kind?.value !== 'workstream') {
+  if (kind?.value !== 'art') {
     return <></>;
   }
 
@@ -459,7 +452,7 @@ export const CreateWorkstreamModal = () => {
         onClick={() => setOpen(true)}
         color="primary"
       >
-        Create Workstream
+        Create ART
       </Button>
       {open && (
         <Dialog
@@ -470,7 +463,7 @@ export const CreateWorkstreamModal = () => {
           }
           PaperProps={{ className: classes.fullHeightDialog }}
         >
-          <DialogTitle>Create a workstream</DialogTitle>
+          <DialogTitle>Create a ART</DialogTitle>
           <DialogContent dividers className={classes.root}>
             <TabContext value={value}>
               <TabList
@@ -538,11 +531,9 @@ export const CreateWorkstreamModal = () => {
             <Grid container>
               <Grid item xs={12}>
                 <Typography variant="h5">
-                  Your workstream{' '}
+                  Your ART{' '}
                   <b>
-                    <EntityRefLink
-                      entityRef={`workstream:redhat/${workstreamData?.name}`}
-                    />
+                    <EntityRefLink entityRef={`art:redhat/${artData?.name}`} />
                   </b>{' '}
                   has been created successfully.
                 </Typography>

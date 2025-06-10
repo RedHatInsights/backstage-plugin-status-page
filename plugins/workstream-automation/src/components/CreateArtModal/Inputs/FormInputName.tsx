@@ -1,4 +1,4 @@
-import { WorkstreamEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { ArtEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { TextField } from '@material-ui/core';
@@ -8,13 +8,13 @@ import React, { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useDebounce } from 'react-use';
 
-export const FormInputName = (props: { currentEntity?: WorkstreamEntity }) => {
+export const FormInputName = (props: { currentEntity?: ArtEntity }) => {
   const { currentEntity } = props;
   const catalogApi = useApi(catalogApiRef);
-  const { control } = useFormContext<{ workstreamName: string }>();
+  const { control } = useFormContext<{ artName: string }>();
 
   const [loading, setLoading] = useState(false);
-  const [workstreamName, setWorkstreamName] = useState('');
+  const [artName, setArtName] = useState('');
   const [options, setOptions] = useState<string[]>([]);
 
   const handleNameChange = async (
@@ -23,20 +23,20 @@ export const FormInputName = (props: { currentEntity?: WorkstreamEntity }) => {
   ) => {
     if (value.length > 2) {
       setLoading(true);
-      setWorkstreamName(value);
+      setArtName(value);
     }
   };
 
   useDebounce(
     () => {
-      if (workstreamName.length > 2) {
+      if (artName.length > 2) {
         catalogApi
           .queryEntities({
             filter: {
-              kind: 'Workstream',
+              kind: 'ART',
             },
             fullTextFilter: {
-              term: workstreamName,
+              term: artName,
               fields: ['metadata.name', 'metadata.title'],
             },
             fields: ['metadata.title', 'metadata.name'],
@@ -54,14 +54,14 @@ export const FormInputName = (props: { currentEntity?: WorkstreamEntity }) => {
       }
     },
     400,
-    [workstreamName, setLoading],
+    [artName, setLoading],
   );
   return (
     <Controller
-      name="workstreamName"
+      name="artName"
       control={control}
       rules={{
-        required: 'Workstream name is required',
+        required: 'ART name is required',
         validate: val => {
           for (const option of options) {
             if (
@@ -70,7 +70,7 @@ export const FormInputName = (props: { currentEntity?: WorkstreamEntity }) => {
             )
               return true;
             if (kebabCase(option) === kebabCase(val.trim()))
-              return 'Cannot use an already available workstream name';
+              return 'Cannot use an already available ART name';
           }
           return true;
         },
@@ -82,7 +82,7 @@ export const FormInputName = (props: { currentEntity?: WorkstreamEntity }) => {
             freeSolo
             value={value ?? null}
             options={options}
-            groupBy={() => 'Available workstreams'}
+            groupBy={() => 'Available ARTs'}
             onBlur={onBlur}
             loading={loading}
             onInputChange={(e, val) => {
@@ -93,7 +93,7 @@ export const FormInputName = (props: { currentEntity?: WorkstreamEntity }) => {
               <TextField
                 {...params}
                 inputRef={ref}
-                label="Workstream Name"
+                label="ART Name"
                 variant="outlined"
                 required
                 error={!!error}

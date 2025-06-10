@@ -11,3 +11,7 @@ export function getRoleFromRelation(
   const _rolesMap = { ...rolesMap, ...customRolesMap };
   return _rolesMap[role] ?? '-';
 }
+
+export const artRolesMap: { [key: string]: string } = {
+  'system-architect': 'System Architect',
+};

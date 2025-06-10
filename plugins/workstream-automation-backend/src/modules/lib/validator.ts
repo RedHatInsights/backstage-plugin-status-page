@@ -1,5 +1,8 @@
 import { ajvCompiledJsonSchemaValidator } from './utils';
-import schema from '../schema/WorkstreamData.v1alpha1.schema.json';
+import workstreamSchema from '../schema/WorkstreamData.v1alpha1.schema.json';
+import artSchema from '../schema/ArtEntity.schema.json';
 
-export const workstreamDataV1alpha1Validator =
-  ajvCompiledJsonSchemaValidator(schema);
+export const workstreamEntityValidator =
+  ajvCompiledJsonSchemaValidator(workstreamSchema);
+
+export const artEntityValidator = ajvCompiledJsonSchemaValidator(artSchema);

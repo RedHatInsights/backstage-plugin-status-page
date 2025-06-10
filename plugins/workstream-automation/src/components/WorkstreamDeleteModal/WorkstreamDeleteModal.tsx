@@ -1,4 +1,4 @@
-import { WorkstreamDataV1alpha1 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { WorkstreamEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
@@ -19,7 +19,7 @@ type DeleteProps = {
 
 export const WorkstreamDeleteModal = (props: DeleteProps) => {
   const { open, deleteModalCloseFn } = props;
-  const { entity } = useEntity<WorkstreamDataV1alpha1>();
+  const { entity } = useEntity<WorkstreamEntity>();
   const workstreamApi = useApi(workstreamApiRef);
   const navigate = useNavigate();
   const alertApi = useApi(alertApiRef);

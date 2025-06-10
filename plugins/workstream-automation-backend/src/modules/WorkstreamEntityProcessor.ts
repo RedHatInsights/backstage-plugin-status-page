@@ -1,7 +1,8 @@
 import {
+  ArtEntity,
   RELATION_LEAD_BY,
   RELATION_LEAD_OF,
-  WorkstreamDataV1alpha1,
+  WorkstreamEntity,
 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import {
@@ -11,6 +12,10 @@ import {
   RELATION_HAS_MEMBER,
   RELATION_HAS_PART,
   RELATION_MEMBER_OF,
+  RELATION_CHILD_OF,
+  RELATION_OWNED_BY,
+  RELATION_OWNER_OF,
+  RELATION_PARENT_OF,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
@@ -23,7 +28,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { kebabCase } from 'lodash';
 import { WorkstreamBackendApi } from './lib/client';
-import { workstreamDataV1alpha1Validator } from './lib/validator';
+import { artEntityValidator, workstreamEntityValidator } from './lib/validator';
 
 export class WorkstreamEntityProcessor implements CatalogProcessor {
   private readonly logger: LoggerService;
@@ -42,7 +47,10 @@ export class WorkstreamEntityProcessor implements CatalogProcessor {
   }
 
   async validateEntityKind?(entity: Entity): Promise<boolean> {
-    return workstreamDataV1alpha1Validator.check(entity);
+    if (entity.kind === 'ART') return workstreamEntityValidator.check(entity);
+    else if (entity.kind === 'Workstream')
+      return artEntityValidator.check(entity);
+    return false;
   }
 
   async readLocation?(
@@ -70,9 +78,13 @@ export class WorkstreamEntityProcessor implements CatalogProcessor {
       entity.kind === 'Location' &&
       location.target.match(/api\/workstream/g)
     ) {
-      const data = await this.workstreamClient.getWorkstreamByLocation(
-        location.target,
-      );
+      let data: WorkstreamEntity | ArtEntity;
+      if (location.target.match(/api\/workstream\/art/g))
+        data = await this.workstreamClient.getArtByLocation(location.target);
+      else
+        data = await this.workstreamClient.getWorkstreamByLocation(
+          location.target,
+        );
       emit(processingResult.entity(location, data));
     }
     function doEmit(
@@ -108,8 +120,53 @@ export class WorkstreamEntityProcessor implements CatalogProcessor {
       }
     }
 
+    if (entity.kind === 'ART') {
+      const artEntity = entity as ArtEntity;
+      this.logger.debug(
+        `Creating relations for ${artEntity.metadata.name} ART`,
+      );
+      const members = artEntity.spec.members;
+      members.forEach(member => {
+        doEmit(
+          member.userRef,
+          { defaultNamespace: selfRef.namespace },
+          kebabCase(member.role),
+          kebabCase(member.role),
+        );
+        doEmit(
+          member.userRef,
+          { defaultNamespace: selfRef.namespace },
+          RELATION_HAS_MEMBER,
+          RELATION_MEMBER_OF,
+        );
+      });
+
+      const workstreams = artEntity.spec.workstreams;
+      workstreams.forEach(ws =>
+        doEmit(
+          ws,
+          { defaultNamespace: selfRef.namespace },
+          RELATION_PARENT_OF,
+          RELATION_CHILD_OF,
+        ),
+      );
+
+      doEmit(
+        artEntity.spec.rte,
+        { defaultNamespace: selfRef.namespace },
+        'release-train-engineer',
+        'release-train-engineer',
+      );
+      doEmit(
+        artEntity.spec.rte,
+        { defaultNamespace: selfRef.namespace },
+        RELATION_OWNED_BY,
+        RELATION_OWNER_OF,
+      );
+    }
+
     if (entity.kind === 'Workstream') {
-      const workstreamEntity = entity as WorkstreamDataV1alpha1;
+      const workstreamEntity = entity as WorkstreamEntity;
       this.logger.debug(
         `Creating relations for ${workstreamEntity.metadata.name} workstream.`,
       );
@@ -118,15 +175,14 @@ export class WorkstreamEntityProcessor implements CatalogProcessor {
         doEmit(
           member.userRef,
           { defaultNamespace: selfRef.namespace },
-          RELATION_HAS_MEMBER,
-          RELATION_MEMBER_OF,
+          kebabCase(member.role),
+          kebabCase(member.role),
         );
-
         doEmit(
           member.userRef,
           { defaultNamespace: selfRef.namespace },
-          kebabCase(member.role),
-          kebabCase(member.role),
+          RELATION_HAS_MEMBER,
+          RELATION_MEMBER_OF,
         );
       });
       const portfolios = workstreamEntity.spec.portfolio;

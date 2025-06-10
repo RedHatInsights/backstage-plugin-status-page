@@ -18,7 +18,25 @@ export type Workstream = {
   jiraProject?: string;
   createdAt?: string;
   updatedAt?: string;
+  updatedBy?: string;
   createdBy?: string;
+  links?: EntityLink[];
+  art?: string;
+};
+
+export type ART = {
+  name?: string;
+  title?: string;
+  description?: string;
+  pillar?: string;
+  workstreams?: string[];
+  rte?: string;
+  members?: Member[];
+  jiraProject?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
   links?: EntityLink[];
 };
 

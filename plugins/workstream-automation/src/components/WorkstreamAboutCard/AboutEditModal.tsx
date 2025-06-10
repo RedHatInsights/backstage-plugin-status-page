@@ -1,4 +1,4 @@
-import { WorkstreamDataV1alpha1 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { WorkstreamEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   alertApiRef,
@@ -32,7 +32,7 @@ import { FormInputPath } from './FormInputPath';
 import { Form } from './type';
 
 type EditDialogProps = {
-  entity: WorkstreamDataV1alpha1;
+  entity: WorkstreamEntity;
   open: boolean;
   editModalCloseFn: Function;
 };

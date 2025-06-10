@@ -11,7 +11,7 @@ import {
 } from '@backstage/core-plugin-api';
 
 import { rootRouteRef } from './routes';
-import { WorkstreamApi, workstreamApiRef } from './api';
+import { ArtApi, artApiRef, WorkstreamApi, workstreamApiRef } from './api';
 
 export const workstreamAutomationPlugin = createPlugin({
   id: 'workstream-automation',
@@ -32,6 +32,21 @@ export const workstreamAutomationPlugin = createPlugin({
         identityApi: IdentityApi;
       }) {
         return new WorkstreamApi(deps);
+      },
+    },
+    {
+      api: artApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+        identityApi: identityApiRef,
+      },
+      factory(deps: {
+        discoveryApi: DiscoveryApi;
+        fetchApi: FetchApi;
+        identityApi: IdentityApi;
+      }) {
+        return new ArtApi(deps);
       },
     },
   ],
@@ -102,6 +117,16 @@ export const WorkstreamLinksCard = workstreamAutomationPlugin.provide(
         import('./components/WorkstreamLinksCard').then(
           m => m.WorkstreamLinksCard,
         ),
+    },
+  }),
+);
+
+export const CreateArtModal = workstreamAutomationPlugin.provide(
+  createComponentExtension({
+    name: 'CreateNewArt',
+    component: {
+      lazy: () =>
+        import('./components/CreateArtModal').then(m => m.CreateArtModal),
     },
   }),
 );

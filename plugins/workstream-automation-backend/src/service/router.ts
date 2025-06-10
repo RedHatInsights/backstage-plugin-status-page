@@ -1,7 +1,7 @@
 import {
   RESOURCE_TYPE_WORKSTREAM_ENTITY,
   workstreamCreatePermission,
-  WorkstreamDataV1alpha1,
+  WorkstreamEntity,
   workstreamDeletePermission,
   workstreamPermissions,
   workstreamUpdatePermission,
@@ -14,6 +14,7 @@ import {
   HttpAuthService,
   LoggerService,
   PermissionsService,
+  resolvePackagePath,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
@@ -27,6 +28,9 @@ import { workstreamToEntityKind } from '../modules/lib/utils';
 import { workstreamPermissionRules } from '../permissions/rules';
 import { Workstream } from '../types';
 import { v4 } from 'uuid';
+import artRouter from './artRouter';
+import { Knex } from 'knex';
+import { ArtBackendDatabase } from '../database/ArtBackendDatabase';
 
 export interface RouterOptions {
   logger: LoggerService;
@@ -38,16 +42,39 @@ export interface RouterOptions {
   httpAuth: HttpAuthService;
 }
 
+const migrationsDir = resolvePackagePath(
+  '@appdev-platform/backstage-plugin-workstream-automation-backend',
+  'migrations',
+);
+
+async function createDatabaseSchema(options: {
+  knex: Knex;
+  skipMigrations: boolean;
+}) {
+  const database = options.knex;
+
+  if (!options.skipMigrations)
+    await database.migrate.latest({
+      directory: migrationsDir,
+    });
+}
+
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const { logger, config, auth, discovery, permissions, httpAuth } = options;
 
   const router = express.Router();
-  const database = await WorkstreamBackendDatabase.create({
-    knex: await options.database.getClient(),
+  const dbClient = await options.database.getClient();
+
+  await createDatabaseSchema({
+    knex: dbClient,
     skipMigrations: false,
   });
+
+  const workstreamDatabaseClient = new WorkstreamBackendDatabase(dbClient);
+  const artDatabaseClient = new ArtBackendDatabase(dbClient);
+
   const catalogApi = new CatalogClient({ discoveryApi: discovery });
   const apiBaseUrl = await discovery.getBaseUrl('workstream');
 
@@ -68,7 +95,7 @@ export async function createRouter(
         credentials,
       );
       const { items: workstreamEntities } = resp;
-      return workstreamEntities as WorkstreamDataV1alpha1[];
+      return workstreamEntities as WorkstreamEntity[];
     },
   });
 
@@ -81,9 +108,18 @@ export async function createRouter(
 
   router.use(permissionIntegrationRouter);
 
+  router.use(
+    '/art',
+    await artRouter({
+      ...options,
+      artDatabaseClient,
+      catalogApi,
+    }),
+  );
+
   // TODO create filters for member, pillar, lead, jira_project
   router.get('/', async (_req, res) => {
-    const result = await database.listWorkstreams();
+    const result = await workstreamDatabaseClient.listWorkstreams();
     res.status(200).json({ data: result });
   });
 
@@ -106,12 +142,14 @@ export async function createRouter(
     const worksteamData: Workstream = req.body.data;
     worksteamData.links = worksteamData.links ?? [];
 
-    if (await database.getWorkstreamById(worksteamData.name)) {
+    if (await workstreamDatabaseClient.getWorkstreamById(worksteamData.name)) {
       throw new ConflictError(
         `Workstream ${worksteamData.name} already exists`,
       );
     }
-    const result = await database.insertWorkstream(worksteamData);
+    const result = await workstreamDatabaseClient.insertWorkstream(
+      worksteamData,
+    );
 
     const workstreamLocation = `${apiBaseUrl}/${result.name}`;
     const { token: catalogServiceToken } = await auth.getPluginRequestToken({
@@ -152,7 +190,9 @@ export async function createRouter(
     }
     const data: Partial<Workstream> = req.body.data;
 
-    const originalData = await database.getWorkstreamById(workstreamName);
+    const originalData = await workstreamDatabaseClient.getWorkstreamById(
+      workstreamName,
+    );
     if (originalData === null) {
       return res.status(404).json({
         error: `${workstreamName} workstream not found`,
@@ -164,7 +204,10 @@ export async function createRouter(
       ...data,
     };
 
-    const result = await database.updateWorkstream(workstreamName, updatedData);
+    const result = await workstreamDatabaseClient.updateWorkstream(
+      workstreamName,
+      updatedData,
+    );
     if (result === null) {
       return res.status(500).json({
         error: 'Something went wrong',
@@ -214,7 +257,7 @@ export async function createRouter(
 
   router.get('/:workstream_name', async (req, res) => {
     const name = req.params.workstream_name;
-    const result = await database.getWorkstreamById(name);
+    const result = await workstreamDatabaseClient.getWorkstreamById(name);
 
     if (result) {
       const workstreamEntity = workstreamToEntityKind({
@@ -241,7 +284,7 @@ export async function createRouter(
       throw new NotAllowedError('Unauthorized');
     }
     const name = req.params.workstream_name;
-    const result = await database.getWorkstreamById(name);
+    const result = await workstreamDatabaseClient.getWorkstreamById(name);
 
     if (result) {
       const { token: catalogServiceToken } = await auth.getPluginRequestToken({
@@ -257,7 +300,7 @@ export async function createRouter(
         await catalogApi.removeLocationById(resp.id, {
           token: catalogServiceToken,
         });
-      await database.deleteWorkstream(name);
+      await workstreamDatabaseClient.deleteWorkstream(name);
       return res.status(200).json({ message: 'Deleted successfully' });
     }
     return res.status(404).json({

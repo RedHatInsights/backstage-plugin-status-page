@@ -1,4 +1,4 @@
-import { WorkstreamDataV1alpha1 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { WorkstreamEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import {
   GroupEntity,
   RELATION_HAS_MEMBER,
@@ -44,7 +44,7 @@ interface EditDialogProps {
 }
 
 export const MembersEditModal = (props: EditDialogProps) => {
-  const { entity: currentEntity } = useEntity<WorkstreamDataV1alpha1>();
+  const { entity: currentEntity } = useEntity<WorkstreamEntity>();
   const leadRef = currentEntity.spec.lead;
   const { setEditModal: setEditModalOpen, leadEntity } = props;
   const [tableData, setTableData] = useState(props.tableData);

@@ -1,4 +1,4 @@
-import { WorkstreamDataV1alpha1 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { WorkstreamEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import {
   InfoCard,
   InfoCardVariants,
@@ -27,7 +27,7 @@ export const EntityWorkstreamCard = (props: {
 }) => {
   const { entity } = useEntity<CustomUserEntity>();
   const catalogApi = useApi(catalogApiRef);
-  const [workstreams, setWorkstreams] = useState<WorkstreamDataV1alpha1[]>([]);
+  const [workstreams, setWorkstreams] = useState<WorkstreamEntity[]>([]);
   const [loading, setLoading] = useState(true);
   const inWorkstreams = entity.relations?.filter(
     relation =>
@@ -41,14 +41,14 @@ export const EntityWorkstreamCard = (props: {
         catalogApi
           .getEntityByRef(rel.targetRef)
           .then(res =>
-            setWorkstreams(ws => ws.concat(res as WorkstreamDataV1alpha1)),
+            setWorkstreams(ws => ws.concat(res as WorkstreamEntity)),
           ),
       );
       setLoading(false);
     }
   }, [inWorkstreams, catalogApi, loading]);
 
-  const columns: TableColumn<WorkstreamDataV1alpha1>[] = [
+  const columns: TableColumn<WorkstreamEntity>[] = [
     {
       title: 'Name',
       field: 'metadata.name',
