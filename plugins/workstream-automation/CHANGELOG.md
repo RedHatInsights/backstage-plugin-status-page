@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.14.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.13.2...@appdev-platform/backstage-plugin-workstream-automation@1.14.0) (2025-06-10)
+
+
+### Features
+
+* **PULSE-389:** create ART entity for workstream automation plugin ([595d8b6](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/595d8b626c42178e58b02e0fc653058b74f84f2f))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.13.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.13.1...@appdev-platform/backstage-plugin-workstream-automation@1.13.2) (2025-06-09)
 
 
