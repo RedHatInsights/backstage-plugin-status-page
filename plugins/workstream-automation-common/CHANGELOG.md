@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation-common [1.3.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-common@1.3.1...@appdev-platform/backstage-plugin-workstream-automation-common@1.3.2) (2025-06-12)
+
+
+### Other changes
+
+* create permission definitions for ART ([9fa65c7](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/9fa65c7686a918497ae4bb1df2e77dbaadd8d874))
+
 ## @appdev-platform/backstage-plugin-workstream-automation-common [1.3.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-common@1.3.0...@appdev-platform/backstage-plugin-workstream-automation-common@1.3.1) (2025-06-09)
 
 
