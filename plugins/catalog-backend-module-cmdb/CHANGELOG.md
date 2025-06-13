@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.7.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.6.2...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.7.0) (2025-06-13)
+
+
+### Features
+
+* **PULSE-658:** add installStatusLabel to CMDB field ([7b89d28](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/7b89d284e44b84ac77295d029a1e3366adf15207))
+
 ## @appdev-platform/backstage-plugin-catalog-backend-module-cmdb [1.6.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.6.1...@appdev-platform/backstage-plugin-catalog-backend-module-cmdb@1.6.2) (2025-05-30)
 
 
