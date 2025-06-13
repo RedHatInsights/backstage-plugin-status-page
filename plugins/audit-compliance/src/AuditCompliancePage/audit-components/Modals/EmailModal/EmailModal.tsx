@@ -7,15 +7,8 @@ import {
   Button,
   Box,
 } from '@material-ui/core';
-import Email, { EmailRef } from '../SendEmail';
-
-interface EmailModalProps {
-  open: boolean;
-  onClose: () => void;
-  selectedRows: any[];
-  currentUser: string;
-  onEmailSendSuccess: () => void;
-}
+import { Email } from './SendEmail';
+import { EmailModalProps, EmailRef } from './types';
 
 export const EmailModal = ({
   open,
@@ -23,6 +16,9 @@ export const EmailModal = ({
   selectedRows,
   currentUser,
   onEmailSendSuccess,
+  app_name,
+  frequency,
+  period,
 }: EmailModalProps) => {
   const emailRef = useRef<EmailRef>(null);
 
@@ -38,8 +34,9 @@ export const EmailModal = ({
           ref={emailRef}
           selectedRows={selectedRows}
           currentUser={currentUser}
-          appName="Hydra"
-          auditPeriod="quarterly Q2 review"
+          appName={app_name}
+          auditPeriod={period}
+          frequency={frequency}
           onEmailSendSuccess={onEmailSendSuccess}
           onClose={onClose}
         />

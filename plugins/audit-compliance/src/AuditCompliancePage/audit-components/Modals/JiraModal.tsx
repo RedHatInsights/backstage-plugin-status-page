@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -6,26 +6,35 @@ import {
   DialogActions,
   Button,
   TextField,
-  MenuItem,
   Snackbar,
+  Box,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab'; // <-- MUI v4 Alert
 
 interface JiraModalProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (
-    ticketType: string,
-    jiraDescription: string,
-    comments: string,
-  ) => void;
+  onSubmit: (ticketType: string, description: string, comments: string) => void;
+  initialDescription: string;
+  initialTitle?: string;
 }
 
-const JiraModal: React.FC<JiraModalProps> = ({ open, onClose, onSubmit }) => {
-  const [ticketType, setTicketType] = useState('JIRA');
-  const [jiraDescription, setJiraDescription] = useState('');
+const JiraModal: React.FC<JiraModalProps> = ({
+  open,
+  onClose,
+  onSubmit,
+  initialDescription,
+  initialTitle,
+}) => {
+  const [ticketType, setTicketType] = useState('task');
+  const [jiraDescription, setJiraDescription] = useState(initialDescription);
   const [comments, setComments] = useState('');
   const [showSnackbar, setShowSnackbar] = useState(false);
+
+  // Update description when initialDescription changes
+  useEffect(() => {
+    setJiraDescription(initialDescription);
+  }, [initialDescription]);
 
   const handleSubmit = () => {
     if (!jiraDescription) {
@@ -34,57 +43,62 @@ const JiraModal: React.FC<JiraModalProps> = ({ open, onClose, onSubmit }) => {
     }
 
     onSubmit(ticketType, jiraDescription, comments);
-    setTicketType('JIRA');
+    setTicketType('task');
     setJiraDescription('');
     setComments('');
   };
 
   return (
     <>
-      <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-        <DialogTitle>Reject Entry</DialogTitle>
+      <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+        <DialogTitle>Create Jira Ticket</DialogTitle>
         <DialogContent>
-          <TextField
-            label="Ticket Type"
-            value={ticketType}
-            onChange={e => setTicketType(e.target.value)}
-            select
-            fullWidth
-            margin="normal"
-          >
-            <MenuItem value="JIRA">JIRA</MenuItem>
-            <MenuItem value="SNOW">SNOW</MenuItem>
-          </TextField>
-
-          <TextField
-            label="Jira Ticket Description"
-            value={jiraDescription}
-            onChange={e => setJiraDescription(e.target.value)}
-            multiline
-            rows={4}
-            variant="outlined"
-            fullWidth
-            margin="normal"
-          />
-
-          <TextField
-            label="Reviewer Comments"
-            value={comments}
-            onChange={e => setComments(e.target.value)}
-            multiline
-            rows={3}
-            variant="outlined"
-            fullWidth
-            margin="normal"
-          />
+          <Box display="flex" flexDirection="column" mt={2}>
+            {initialTitle && (
+              <TextField
+                label="Jira Ticket Title"
+                value={initialTitle}
+                fullWidth
+                disabled
+                variant="outlined"
+                size="small"
+                margin="normal"
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+            )}
+            <TextField
+              label="Description"
+              value={jiraDescription}
+              onChange={e => setJiraDescription(e.target.value)}
+              multiline
+              rows={4}
+              fullWidth
+              variant="outlined"
+              size="small"
+              margin="normal"
+            />
+            <TextField
+              label="Comments"
+              value={comments}
+              onChange={e => setComments(e.target.value)}
+              multiline
+              rows={4}
+              fullWidth
+              variant="outlined"
+              size="small"
+              margin="normal"
+              placeholder="Add any additional comments here..."
+            />
+          </Box>
         </DialogContent>
-
         <DialogActions>
-          <Button onClick={onClose} color="default">
+          <Button onClick={onClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleSubmit} color="secondary" variant="contained">
-            Submit
+          <Button onClick={handleSubmit} color="primary" variant="contained">
+            Create Ticket
           </Button>
         </DialogActions>
       </Dialog>

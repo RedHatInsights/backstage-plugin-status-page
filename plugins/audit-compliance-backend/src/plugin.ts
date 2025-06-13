@@ -9,7 +9,6 @@ import { createRouter } from './router';
  *
  * @public
  */
-
 export const auditCompliancePlugin = createBackendPlugin({
   pluginId: 'audit-compliance',
   register(env) {

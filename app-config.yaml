@@ -356,3 +356,7 @@ auditCompliance:
   roverUsername: ${ROVER_USERNAME}
   roverPassword: ${ROVER_PASSWORD}
   roverBaseUrl: ${ROVER_BASE_URL}
+  gitlabToken: ${GITLAB_TOKEN}
+  gitlabBaseUrl: ${GITLAB_BASE_URL}
+  jiraUrl: ${JIRA_URL}
+  jiraToken: ${JIRA_TOKEN}

@@ -4,7 +4,6 @@ import {
   createRouteRef,
 } from '@backstage/core-plugin-api';
 
-
 export const rootRouteRef = createRouteRef({
   id: 'audit-compliance',
 });
@@ -22,7 +21,7 @@ export const auditCompliancePlugin = createPlugin({
   routes: {
     root: rootRouteRef,
     details: detailsRouteRef,
-    configurations: configRouteRef, 
+    configurations: configRouteRef,
   },
 });
 
@@ -35,5 +34,3 @@ export const AuditCompliancePage = auditCompliancePlugin.provide(
     mountPoint: rootRouteRef,
   }),
 );
-
-
