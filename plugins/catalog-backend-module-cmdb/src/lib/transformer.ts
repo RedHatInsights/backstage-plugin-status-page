@@ -13,7 +13,7 @@ import {
   BusinessApplicationApiVersion,
   CMDB_IMPORT_TAG,
 } from './constants';
-import { getInstallStatus, getViewUrl, sanitizeUrl } from './utils';
+import { getInstallStatus, getInstallStatusLabel, getViewUrl, sanitizeUrl } from './utils';
 import {
   BusinessApplicationEntity,
   CMDBDiscoveryEntityProviderConfig,
@@ -89,6 +89,7 @@ function cmdbRecordToCMDBMeta(record: CMDBRecord): CMDBMeta {
     ownedBy: record['owned_by.user_name']?.toString()!,
     ownedByActive: record['owned_by.active']?.toString() === 'true',
     installStatus: record.install_status?.toString()!,
+    installStatusLabel: getInstallStatusLabel(record.install_status),
     businessCriticality: record.business_criticality?.toString()!,
     applicationType: record.application_type?.toString(),
     dataClassification: record.data_classification?.toString(),
