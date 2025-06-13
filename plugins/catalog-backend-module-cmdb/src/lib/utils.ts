@@ -25,3 +25,7 @@ export function getInstallStatus (installStatus: JsonValue) {
   }
   return installStatuses[installStatus?.toString()!];
 }
+
+export function getInstallStatusLabel(installStatus: JsonValue): string {
+  return installStatuses[installStatus?.toString() ?? ''] ?? 'Unknown';
+}

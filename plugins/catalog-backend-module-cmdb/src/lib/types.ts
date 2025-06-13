@@ -96,6 +96,7 @@ export type CMDBMeta = {
   ownedBy: string;
   ownedByActive: boolean;
   installStatus: string;
+  installStatusLabel: string;
   businessCriticality: string;
   applicationType?: string;
   dataClassification?: string;
