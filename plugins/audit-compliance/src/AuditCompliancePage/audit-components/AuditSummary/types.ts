@@ -13,7 +13,7 @@ export interface UserAuditEntry {
   ticket_reference?: string;
   access_change_date?: string;
   created_at?: string;
-  rover_group_name?: string;
+  account_name?: string;
   app_name?: string;
   frequency?: string;
   period?: string;
@@ -28,7 +28,7 @@ export interface ServiceAccountAuditEntry {
   user_role: string;
   manager: string;
   signed_off: 'approved' | 'rejected' | 'pending';
-  signed_off_by?: string;
+  sign_off_by?: string;
   sign_off_date?: string;
   comments?: string;
   ticket_reference?: string;

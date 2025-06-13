@@ -27,8 +27,12 @@ import { Root } from './components/Root';
 import { entityPage } from './components/catalog/EntityPage';
 import { searchPage } from './components/search/SearchPage';
 
-import { AuditCompliancePage } from '@appdev-platform/backstage-plugin-audit-compliance';
-
+import {
+  AuditCompliancePage,
+  AuditDetailsSection,
+  AuditInitiation,
+  AuditSummary,
+} from '@appdev-platform/backstage-plugin-audit-compliance';
 import {
   AppDevDashboardPage,
   DataLayerDashboardPage,
@@ -36,7 +40,12 @@ import {
 } from '@appdev-platform/backstage-plugin-devex-dashboard';
 import { DocsBotPage } from '@appdev-platform/backstage-plugin-docsbot';
 import { HydraSupportDashboardPage } from '@appdev-platform/backstage-plugin-hydra-support-dashboard';
-import { OutageTemplatePage } from '@appdev-platform/backstage-plugin-outages';
+import { McpPage } from '@appdev-platform/backstage-plugin-mcp';
+import {
+  CreateIncident,
+  OutageTemplatePage,
+  UpdateIncident,
+} from '@appdev-platform/backstage-plugin-outages';
 import { ProxyManagerPage } from '@appdev-platform/backstage-plugin-proxy-manager';
 import { SpashipGlobalPage } from '@appdev-platform/backstage-plugin-spaship';
 import {
@@ -67,22 +76,12 @@ import {
   OpcFeedbackComponent,
   feedbackPlugin,
 } from '@janus-idp/backstage-plugin-feedback';
+import AdbIcon from '@material-ui/icons/Adb';
 import WebLinkIcon from '@material-ui/icons/Language';
 import SettingsEthernet from '@material-ui/icons/SettingsEthernet';
 import { getThemes } from '@red-hat-developer-hub/backstage-plugin-theme';
 import { SoundcheckRoutingPage } from '@spotify/backstage-plugin-soundcheck';
-import {
-  AuditDetailsSection,
-  AuditInitiation,
-  AuditSummary,
-} from '@appdev-platform/backstage-plugin-audit-compliance';
-import { McpPage } from '@appdev-platform/backstage-plugin-mcp';
 import { CatalogPage } from './components/CatalogPage/CatalogPage';
-import {
-  CreateIncident,
-  UpdateIncident,
-} from '@appdev-platform/backstage-plugin-outages';
-import AdbIcon from '@material-ui/icons/Adb';
 
 const app = createApp({
   apis,
@@ -205,18 +204,14 @@ const routes = (
     <Route path="/devtools" element={<DevToolsPage />} />
     <Route path="/mcp" element={<McpPage />} />
     <Route path="/audit-compliance" element={<AuditCompliancePage />} />
+    <Route path="/audit-compliance/:app_name" element={<AuditInitiation />} />
     <Route
-      path="/audit-compliance/details/:app_name"
-      element={<AuditCompliancePage />}
+      path="/audit-compliance/:app_name/:frequency/:period/details"
+      element={<AuditDetailsSection />}
     />
     <Route
       path="/audit-compliance/:app_name/:frequency/:period/summary"
       element={<AuditSummary />}
-    />
-    <Route path="/audit-compliance/:app_name" element={<AuditInitiation />} />
-    <Route
-      path="/audit-compliance/:app_name/:period/:quarter/details"
-      element={<AuditDetailsSection />}
     />
   </FlatRoutes>
 );

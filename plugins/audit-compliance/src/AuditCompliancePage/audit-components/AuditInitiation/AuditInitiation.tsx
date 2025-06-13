@@ -1,4 +1,5 @@
 import {
+  Breadcrumbs,
   Content,
   Header,
   HeaderLabel,
@@ -10,6 +11,7 @@ import {
   discoveryApiRef,
   fetchApiRef,
   useApi,
+  configApiRef,
 } from '@backstage/core-plugin-api';
 import {
   Box,
@@ -23,11 +25,17 @@ import {
   Select,
   Tooltip,
   Typography,
+  Link,
 } from '@material-ui/core';
 import Group from '@material-ui/icons/Group';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+import {
+  AuditProgressStepper,
+  AuditStep,
+} from '../AuditProgressStepper/AuditProgressStepper';
+import { formatDisplayName } from '../AuditApplicationList/AuditApplicationList';
 
 const getQuarterOptions = () => [
   { value: 'Q1', label: 'Q1 (Jan - Mar)' },
@@ -48,6 +56,8 @@ interface AuditHistoryItem {
   auditFrequency: string;
   auditPeriod: string;
   created_at: string;
+  progress: AuditStep;
+  jira_key: string;
 }
 export const AuditInitiation = () => {
   const { app_name } = useParams<{ app_name: string }>();
@@ -57,23 +67,35 @@ export const AuditInitiation = () => {
   const [selectedQuarter, setSelectedQuarter] = useState('');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [auditHistory, setAuditHistory] = useState<AuditHistoryItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const alertApi = useApi(alertApiRef);
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
+  const configApi = useApi(configApiRef);
+  const jiraUrl = configApi.getString('auditCompliance.jiraUrl');
 
   const fetchAuditHistory = async () => {
     try {
+      if (!app_name) {
+        setAuditHistory([]);
+        return;
+      }
+
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
-      const response = await fetchApi.fetch(`${baseUrl}/audits`);
-      const result = await response.json();
+      const auditResponse = await fetchApi.fetch(
+        `${baseUrl}/audits?app_name=${encodeURIComponent(app_name)}`,
+      );
+      const result = await auditResponse.json();
       setAuditHistory(result || []);
-    } catch (err) {
+    } catch (error) {
       // eslint-disable-next-line no-console
-      console.error('Error fetching audit history', err);
+      console.error('Error fetching audit history', error);
       alertApi.post({
         message: 'Failed to load audit history.',
         severity: 'error',
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -140,6 +162,14 @@ export const AuditInitiation = () => {
     const isDuplicate = await checkDuplicate(frequency, period);
     if (isDuplicate) return;
 
+    setIsLoading(true);
+    // Show temporary loading alert
+    alertApi.post({
+      message: 'Initiating audit and fetching data...',
+      severity: 'info',
+      display: 'transient', // This will auto-dismiss after a few seconds
+    });
+
     try {
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
 
@@ -153,55 +183,37 @@ export const AuditInitiation = () => {
 
       if (!auditResponse.ok) {
         alertApi.post({
-          message: `Error: ${auditResult.error || 'Failed to initiate audit.'}`,
+          message:
+            auditResult.error || 'Failed to initiate audit. Please try again.',
           severity: 'error',
         });
         return;
       }
 
+      // Show success message with Jira ticket and report information
+      const successMessage = [
+        `Audit initiated successfully with Jira ticket ${auditResult.jira_ticket?.key}.`,
+        auditResult.reports_generated > 0
+          ? `Generated ${auditResult.reports_generated} reports from ${
+              auditResult.sources?.join(' and ') || 'Rover and GitLab'
+            }.`
+          : 'No reports were generated for this audit.',
+      ].join(' ');
+
       alertApi.post({
-        message: 'Audit initiated successfully.',
-        severity: 'success',
+        message: successMessage,
+        severity: auditResult.reports_generated > 0 ? 'success' : 'warning',
       });
 
-      // 🚨 Let user know rover data is now being fetched
-      alertApi.post({
-        message: 'Rover data is being pulled for the requested audit.',
-        severity: 'info',
-      });
-
-      // ✅ Refresh audit history right after audit creation
-      fetchAuditHistory();
-
-      // Step 2: Generate rover report in the background
-      const roverResponse = await fetchApi.fetch(`${baseUrl}/rover-report`, {
-        method: 'POST',
-        body: JSON.stringify({ appname: app_name, frequency, period }),
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      const roverResult = await roverResponse.json();
-
-      if (!roverResponse.ok) {
-        alertApi.post({
-          message: `Rover report error: ${
-            roverResult.error || 'Unknown error'
-          }`,
-          severity: 'error',
-        });
-      } else {
-        alertApi.post({
-          message: 'Rover report generated successfully.',
-          severity: 'success',
-        });
-      }
+      // Refresh audit history
+      await fetchAuditHistory();
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Error during audit initiation or report generation', err);
       alertApi.post({
-        message: 'Failed to initiate audit or generate report.',
+        message: 'Failed to initiate audit. Please try again.',
         severity: 'error',
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -217,8 +229,20 @@ export const AuditInitiation = () => {
   return (
     <Page themeId="tool">
       <Header
-        title="Audit and Compliance"
-        subtitle="Ensure Trust. Enforce Standards. Empower Teams."
+        title=" Audit and Compliance"
+        subtitle={
+          <Box>
+            <Typography variant="subtitle1" style={{ marginBottom: '8px' }}>
+              Ensure Trust. Enforce Standards. Empower Teams.
+            </Typography>
+            <Breadcrumbs aria-label="breadcrumb">
+              <RouterLink to="/audit-compliance">
+                Audit and Compliance
+              </RouterLink>
+              <Typography color="textPrimary">Audit Initiation</Typography>
+            </Breadcrumbs>
+          </Box>
+        }
       >
         <HeaderLabel
           label="Owner"
@@ -239,7 +263,8 @@ export const AuditInitiation = () => {
       <Content>
         <Box padding={3}>
           <Typography variant="h4" gutterBottom>
-            Audit for Application ID: <strong>{app_name}</strong>
+            Audit for Application ID:{' '}
+            <strong>{formatDisplayName(app_name ?? '')}</strong>
           </Typography>
           <Box mb={3}>
             <Grid container spacing={3}>
@@ -302,8 +327,9 @@ export const AuditInitiation = () => {
                 variant="contained"
                 color="primary"
                 onClick={handleStartAudit}
+                disabled={isLoading}
               >
-                Initiate New Audit
+                {isLoading ? 'Initiating Audit...' : 'Initiate New Audit'}
               </Button>
             </Box>
           </Box>
@@ -316,38 +342,99 @@ export const AuditInitiation = () => {
               <Table
                 title="Audit History"
                 columns={[
+                  {
+                    title: 'Jira Ticket',
+                    field: 'jira_key',
+                    render: (row: AuditHistoryItem) => {
+                      if (!row.jira_key) return 'N/A';
+                      return (
+                        <Link
+                          href={`${jiraUrl}/browse/${row.jira_key}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {row.jira_key}
+                        </Link>
+                      );
+                    },
+                  },
                   { title: 'Frequency', field: 'frequency' },
                   { title: 'Period', field: 'period' },
+
                   {
                     title: 'Status',
-                    render: rowData => {
-                      const status = rowData.status?.toUpperCase() || '';
+                    render: (row: AuditHistoryItem) => {
+                      const status = row.status?.toUpperCase() || '';
                       let chipStyle: React.CSSProperties = { fontWeight: 600 };
 
-                      if (status === 'IN_PROGRESS') {
+                      // Gradient color system: lighter colors for early stages, darker for completion
+                      if (status === 'AUDIT_STARTED') {
+                        // Blue for kickoff phase
                         chipStyle = {
-                          backgroundColor: '#FFA500',
+                          backgroundColor: '#E3F2FD',
+                          color: '#1565C0',
+                          borderColor: '#42A5F5',
+                          fontWeight: 600,
+                        };
+                      } else if (status === 'IN_PROGRESS') {
+                        // Amber for midway/in progress
+                        chipStyle = {
+                          backgroundColor: '#FFF3E0',
+                          color: '#E65100',
+                          borderColor: '#FF9800',
+                          fontWeight: 600,
+                        };
+                      } else if (status === 'ACCESS_REVIEW_COMPLETE') {
+                        // Dark amber for review done
+                        chipStyle = {
+                          backgroundColor: '#E65100',
+                          color: '#FFFFFF',
+                          borderColor: '#E65100',
                           fontWeight: 600,
                         };
                       } else if (status === 'COMPLETED') {
+                        // Green for success/fully complete
                         chipStyle = {
-                          backgroundColor: '#d1f1bb',
+                          backgroundColor: '#E8F5E8',
+                          color: '#1B5E20',
+                          borderColor: '#4CAF50',
+                          fontWeight: 600,
+                        };
+                      } else {
+                        // Default gray for unknown statuses
+                        chipStyle = {
+                          backgroundColor: '#F5F5F5',
+                          color: '#616161',
+                          borderColor: '#9E9E9E',
                           fontWeight: 600,
                         };
                       }
 
                       return (
-                        <Chip label={status} size="small" style={chipStyle} />
+                        <Chip
+                          label={status}
+                          size="small"
+                          variant="outlined"
+                          style={chipStyle}
+                        />
                       );
                     },
                   },
+                  {
+                    title: 'Audit Progress',
+                    field: 'progress',
+                    render: (row: AuditHistoryItem) => (
+                      <AuditProgressStepper activeStep={row.progress} />
+                    ),
+                  },
                   { title: 'Created At', field: 'created_at' },
+
                   {
                     title: 'View Details',
-                    render: rowData => (
+                    render: (row: AuditHistoryItem) => (
                       <Button
                         variant="outlined"
-                        onClick={() => handleViewDetails(rowData)}
+                        onClick={() => handleViewDetails(row)}
                       >
                         View Details
                       </Button>
