@@ -133,7 +133,10 @@ export const EntityWorkstreamCard = (props: {
         headerProps={{
           classes: { action: classes.action },
           action: entity.kind === 'ART' && (
-            <RequirePermission permission={artUpdatePermission}>
+            <RequirePermission
+              permission={artUpdatePermission}
+              errorPage={<></>}
+            >
               <IconButton onClick={() => setEditModalOpen(true)}>
                 <EditTwoTone />
               </IconButton>
