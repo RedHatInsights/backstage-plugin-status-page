@@ -220,7 +220,16 @@ catalog:
     entityFilename: catalog-info.yaml
     pullRequestBranchName: backstage-integration
   rules:
-    - allow: [Component, System, API, Resource, Location, Workstream, Template, MCPServer]
+    - allow:
+        - Component
+        - System
+        - API
+        - Resource
+        - Location
+        - Workstream
+        - Template
+        - MCPServer
+        - ART
   locations:
     # Local example data, file locations are relative to the backend process, typically `packages/backend`
     - type: file
@@ -299,7 +308,13 @@ permission:
   rbac:
     plugins:
       workstream:
-        permission: [workstream.create, workstream.delete, workstream.update]
+        permission:
+          - workstream.create
+          - workstream.update
+          - workstream.delete
+          - workstream.art.create
+          - workstream.art.update
+          - workstream.art.delete
         users:
           - name: group:development/guests
     admins:

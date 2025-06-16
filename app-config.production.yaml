@@ -45,6 +45,8 @@ workstream:
     software-engineer: Software Engineer
     quality-engineer: Quality Engineer
     program-lead: Program Lead
+  artRoles:
+    system-architect: System Architect
 
 integrations:
   servicenow:
