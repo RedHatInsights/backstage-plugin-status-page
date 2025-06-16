@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.15.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.15.0...@appdev-platform/backstage-plugin-workstream-automation@1.15.1) (2025-06-16)
+
+
+### Bug Fixes
+
+* **PULSE-751:** fix permission component ([3222b64](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/3222b648e2f7219b45ebba36f1283b75d411e15d))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.15.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.14.1...@appdev-platform/backstage-plugin-workstream-automation@1.15.0) (2025-06-16)
 
 
