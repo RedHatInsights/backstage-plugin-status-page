@@ -2,17 +2,11 @@ import { WorkstreamEntity } from '@appdev-platform/backstage-plugin-workstream-a
 import { CustomUserEntity, TableRowDataType } from '../../types';
 import { GroupEntity } from '@backstage/catalog-model/index';
 
-interface TJiraProject {
-  key: string;
-  name: string;
-}
-
 export type ARTForm1 = {
   artName: string | undefined;
   description?: string;
   rte?: CustomUserEntity;
   pillar?: string;
-  jiraProject?: TJiraProject;
   email?: string;
   slackChannelUrl?: string;
   workstreams: WorkstreamEntity[];

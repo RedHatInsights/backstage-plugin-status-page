@@ -130,3 +130,23 @@ export const CreateArtModal = workstreamAutomationPlugin.provide(
     },
   }),
 );
+
+export const ArtMembersCard = workstreamAutomationPlugin.provide(
+  createComponentExtension({
+    name: 'ArtMembersCard',
+    component: {
+      lazy: () =>
+        import('./components/Art/ArtMembersCard').then(m => m.ArtMembersCard),
+    },
+  }),
+);
+
+export const ArtAboutCard = workstreamAutomationPlugin.provide(
+  createComponentExtension({
+    name: 'ArtAboutCard',
+    component: {
+      lazy: () =>
+        import('./components/Art/ArtAboutCard').then(m => m.ArtAboutCard),
+    },
+  }),
+);

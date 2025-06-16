@@ -7,5 +7,12 @@ export interface Config {
     workstreamRoles?: {
       [key: string]: string;
     };
+    /**
+     * Override workstream roles with custom roles
+     * @deepVisibility frontend
+     */
+    artRoles?: {
+      [key: string]: string;
+    };
   };
 }

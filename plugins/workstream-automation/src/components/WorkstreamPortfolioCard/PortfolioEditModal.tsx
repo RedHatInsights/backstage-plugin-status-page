@@ -1,12 +1,9 @@
-import {
-  stringifyEntityRef,
-  SystemEntity,
-  ComponentEntity,
-} from '@backstage/catalog-model';
+import { stringifyEntityRef, Entity } from '@backstage/catalog-model';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   EntityDisplayName,
+  EntityRefLink,
   useEntity,
 } from '@backstage/plugin-catalog-react';
 import {
@@ -18,47 +15,59 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  List,
-  ListItem,
   TextField,
+  Typography,
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
 import { workstreamApiRef } from '../../api';
+import { ErrorPanel, Table, TableColumn } from '@backstage/core-components';
 
 type EditDialogProps = {
-  portfolio: string[];
   open: boolean;
   setEditModalOpen: Function;
+  entitiesNotFound: string[];
+  portfoliosData: Entity[];
 };
 
 export const PortfolioEditModal = (props: EditDialogProps) => {
-  const { portfolio, open, setEditModalOpen } = props;
-  const [allSystems, setAllSystems] = useState<
-    (ComponentEntity | SystemEntity)[]
-  >([]);
+  const { open, setEditModalOpen, entitiesNotFound, portfoliosData } = props;
+  const [allSystems, setAllSystems] = useState<Entity[]>([]);
   const [searchText, setSearchText] = useState<string>();
-  const [selectedSystems, setSelectedSystems] = useState<
-    (ComponentEntity | SystemEntity)[]
-  >([]);
+  const [selectedSystems, setSelectedSystems] =
+    useState<Entity[]>(portfoliosData);
   const { entity } = useEntity();
   const [loading, setLoading] = useState(false);
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
   const workstreamApi = useApi(workstreamApiRef);
 
+  const columns: TableColumn<Entity>[] = [
+    {
+      title: 'Name',
+      field: 'metadata.name',
+      cellStyle: { lineHeight: '1.6rem' },
+      render: data => <EntityRefLink entityRef={data} />,
+      width: '80%',
+    },
+    {
+      sorting: false,
+      title: 'Appcode',
+      align: 'center',
+      field: 'metadata.annotations.servicenow.com/appcode',
+      render: data =>
+        data.metadata?.annotations?.['servicenow.com/appcode'] ?? '-',
+    },
+  ];
+
   useEffect(() => {
     catalogApi
       .queryEntities({ filter: [{ kind: ['System', 'Component'] }], limit: 20 })
       .then(res => {
-        setAllSystems(res.items as (ComponentEntity | SystemEntity)[]);
+        setAllSystems(res.items as Entity[]);
       });
-    catalogApi.getEntitiesByRefs({ entityRefs: portfolio }).then(res => {
-      if (res.items)
-        setSelectedSystems(res.items as (ComponentEntity | SystemEntity)[]);
-    });
-  }, [catalogApi, portfolio]);
+  }, [catalogApi]);
 
   useDebounce(
     () => {
@@ -72,9 +81,7 @@ export const PortfolioEditModal = (props: EditDialogProps) => {
               fields: ['metadata.name', 'metadata.title'],
             },
           })
-          .then(res =>
-            setAllSystems(res.items as (ComponentEntity | SystemEntity)[]),
-          );
+          .then(res => setAllSystems(res.items as Entity[]));
       }
     },
     400,
@@ -107,13 +114,13 @@ export const PortfolioEditModal = (props: EditDialogProps) => {
       onClose={(_e, reason) => {
         if (reason !== 'backdropClick') handleClose();
       }}
-      maxWidth="sm"
+      maxWidth="md"
       fullWidth
     >
       <DialogTitle>Edit Portfolio</DialogTitle>
       <DialogContent
         dividers
-        style={{ minHeight: '30rem', maxHeight: '40rem' }}
+        style={{ minHeight: '30rem', maxHeight: '50rem' }}
       >
         <Grid container>
           <Grid item xs={12}>
@@ -155,15 +162,43 @@ export const PortfolioEditModal = (props: EditDialogProps) => {
             />
           </Grid>
           <Grid item xs={12}>
-            Add or Remove
-            <List>
-              {selectedSystems.map(system => (
-                <ListItem key={system.metadata.uid} divider>
-                  <EntityDisplayName entityRef={system} />
-                </ListItem>
-              ))}
-            </List>
+            <Table
+              data={selectedSystems}
+              columns={columns}
+              title="Selected Portfolios"
+              emptyContent={
+                <Typography
+                  align="center"
+                  style={{
+                    height: '3rem',
+                    alignContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  This workstream does not contain any portfolio.
+                </Typography>
+              }
+              options={{
+                padding: 'dense',
+                search: false,
+                draggable: false,
+                pageSize: portfoliosData.length > 5 ? 10 : 5,
+                pageSizeOptions: [5, 10, 25],
+              }}
+            />
           </Grid>
+          {entitiesNotFound.length > 0 && (
+            <Grid item xs={12}>
+              <ErrorPanel
+                error={{
+                  name: 'Missing portfolio',
+                  message: `Following entites are not found in catalog,\nand will be removed from workstream when you next hit the update button`,
+                  stack: ` - ${entitiesNotFound.join('\n - ')}`,
+                }}
+                title="Following entites are not found in catalog"
+              />
+            </Grid>
+          )}
         </Grid>
       </DialogContent>
       <DialogActions style={{ marginRight: '8px' }}>

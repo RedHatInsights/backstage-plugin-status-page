@@ -74,7 +74,14 @@ export class ArtBackendDatabase implements ArtDatabaseStore {
       jira_project: art.jiraProject,
       created_by: art.createdBy,
       updated_by: art.updatedBy,
-      links: JSON.stringify(art.links),
+      links: JSON.stringify(
+        art.links.map(link => ({
+          ...link,
+          ...(link.type?.toLowerCase() === 'email' && {
+            url: `mailto://${link.url}`,
+          }),
+        })),
+      ),
     };
   }
 

@@ -1,9 +1,10 @@
 import {
-  WorkstreamDataV1alpha1,
+  WorkstreamEntity,
   workstreamUpdatePermission,
 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
+  ErrorPanel,
   InfoCard,
   InfoCardVariants,
   Progress,
@@ -19,7 +20,7 @@ import {
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { IconButton, makeStyles, Typography } from '@material-ui/core';
 import EditTwoTone from '@material-ui/icons/EditTwoTone';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PortfolioEditModal } from './PortfolioEditModal';
 
 const useStyles = makeStyles(theme => ({
@@ -36,25 +37,28 @@ const useStyles = makeStyles(theme => ({
 export const WorkstreamPortfolioCard = (props: {
   variant: InfoCardVariants;
 }) => {
-  const { entity } = useAsyncEntity<WorkstreamDataV1alpha1>();
+  const { entity, loading: entityLoading } = useAsyncEntity<WorkstreamEntity>();
   const classes = useStyles();
-  const portfolios = useMemo(
-    () => (entity ? entity.spec.portfolio : []),
-    [entity],
-  );
   const catalogApi = useApi(catalogApiRef);
-  const [portfoliosData, setPortfoliosData] = useState<(Entity | undefined)[]>(
-    [],
-  );
-  const [loading, setLoading] = useState<boolean>(true);
+  const [portfoliosData, setPortfoliosData] = useState<Entity[]>([]);
+  const [entitiesNotFound, setEntitesNotFound] = useState<string[]>([]);
   useEffect(() => {
-    catalogApi
-      .getEntitiesByRefs({ entityRefs: portfolios })
-      .then(({ items }) => {
-        setPortfoliosData(items);
-        setLoading(false);
+    if (!entityLoading && entity) {
+      const portfolios = entity.spec.portfolio;
+      portfolios.forEach(portfolio => {
+        catalogApi
+          .getEntityByRef(portfolio)
+          .then(res =>
+            res
+              ? setPortfoliosData(pf => pf.concat(res))
+              : setEntitesNotFound(nf => nf.concat(portfolio)),
+          );
       });
-  }, [portfolios, catalogApi]);
+    } else {
+      setPortfoliosData([]);
+      setEntitesNotFound([]);
+    }
+  }, [catalogApi, entity, entityLoading]);
 
   const [editModalOpen, setEditModalOpen] = useState(false);
 
@@ -76,7 +80,7 @@ export const WorkstreamPortfolioCard = (props: {
     },
   ];
 
-  return loading ? (
+  return entityLoading || entity === undefined ? (
     <Progress />
   ) : (
     <>
@@ -84,15 +88,16 @@ export const WorkstreamPortfolioCard = (props: {
         <PortfolioEditModal
           setEditModalOpen={setEditModalOpen}
           open={editModalOpen}
-          portfolio={portfolios}
+          entitiesNotFound={entitiesNotFound}
+          portfoliosData={portfoliosData}
         />
       )}
       <InfoCard
         {...props}
-        title={`Portfolios (${portfolios.length})`}
+        title={`Portfolios (${portfoliosData.length})`}
         noPadding
         headerProps={{
-          classes: { action: classes.action },
+          classes: { action: classes.action, content: classes.cardContent },
           action: (
             <RequirePermission
               permission={workstreamUpdatePermission}
@@ -106,18 +111,10 @@ export const WorkstreamPortfolioCard = (props: {
           ),
         }}
       >
-        {editModalOpen && (
-          <PortfolioEditModal
-            setEditModalOpen={setEditModalOpen}
-            open={editModalOpen}
-            portfolio={portfolios}
-          />
-        )}
-
         <Table
-          style={{ borderRadius: 0, padding: 0 }}
-          isLoading={loading}
-          data={portfoliosData as Entity[]}
+          style={{ borderRadius: 0 }}
+          isLoading={entityLoading}
+          data={portfoliosData}
           columns={columns}
           emptyContent={
             <Typography
@@ -135,10 +132,20 @@ export const WorkstreamPortfolioCard = (props: {
             toolbar: false,
             padding: 'dense',
             draggable: false,
-            pageSize: 10,
+            pageSize: portfoliosData.length > 5 ? 10 : 5,
             pageSizeOptions: [5, 10, 25],
           }}
         />
+        {entitiesNotFound.length > 0 && (
+          <ErrorPanel
+            error={{
+              name: 'Missing portfolio',
+              message: `Following entites are not found in catalog`,
+              stack: ` - ${entitiesNotFound.join('\n - ')}`,
+            }}
+            title="Following entites are not found in catalog"
+          />
+        )}
       </InfoCard>
     </>
   );

@@ -1,5 +1,10 @@
 import { EntityLink } from '@backstage/catalog-model';
-import { IconComponent, useApi, useApp } from '@backstage/core-plugin-api';
+import {
+  alertApiRef,
+  IconComponent,
+  useApi,
+  useApp,
+} from '@backstage/core-plugin-api';
 import {
   Button,
   createStyles,
@@ -22,7 +27,11 @@ import { Autocomplete } from '@material-ui/lab';
 import { capitalize } from 'lodash';
 import React, { useState } from 'react';
 import { Control, Controller, useFieldArray, useForm } from 'react-hook-form';
-import { workstreamApiRef } from '../../api';
+import { artApiRef, workstreamApiRef } from '../../api';
+import {
+  ArtEntity,
+  WorkstreamEntity,
+} from '@appdev-platform/backstage-plugin-workstream-automation-common';
 
 type FormValues = {
   links: EntityLink[];
@@ -143,12 +152,14 @@ export const LinksEditModal = (props: {
   open: boolean;
   setModalOpen: Function;
   links: EntityLink[];
-  workstreamName: string;
+  currentEntity: WorkstreamEntity | ArtEntity;
 }) => {
   const LINK_TYPES = ['Document', 'Contact', 'Website', 'Email', 'Other'];
-  const { links, open, setModalOpen, workstreamName } = props;
+  const { links, open, setModalOpen, currentEntity } = props;
   const app = useApp();
   const workstreamApi = useApi(workstreamApiRef);
+  const artApi = useApi(artApiRef);
+  const alertApi = useApi(alertApiRef);
   const classes = useStyles();
   const icons = app.getSystemIcons();
   const form1 = useForm<FormValues>({
@@ -201,6 +212,7 @@ export const LinksEditModal = (props: {
                       options={LINK_TYPES}
                       getOptionSelected={(op, sel) => op === sel}
                       onChange={(_e, val) => onChange(val)}
+                      onInputChange={(_e, val) => onChange(val)}
                       disableClearable
                       value={value ?? ''}
                       selectOnFocus={false}
@@ -262,7 +274,7 @@ export const LinksEditModal = (props: {
                         getValues(
                           `links.${index}.type`,
                         )?.toLocaleLowerCase() !== 'email' &&
-                        !RegExp(/^(https|http):\/\/([a-zA-Z0-9-.]+\.).+$/).exec(
+                        !RegExp(/^(https|http):\/\/([a-zA-Z0-9-.]+).+$/).exec(
                           val,
                         )
                       )
@@ -325,14 +337,25 @@ export const LinksEditModal = (props: {
           focusRipple
           variant="contained"
           onClick={handleSubmit(data => {
-            workstreamApi
-              .updateWorkstream(workstreamName, {
-                name: workstreamName,
-                ...data,
-              })
-              .then(() => {
-                handleClose();
-              });
+            if (currentEntity.kind === 'Workstream')
+              workstreamApi
+                .updateWorkstream(currentEntity.metadata.name, {
+                  name: currentEntity.metadata.name,
+                  ...data,
+                })
+                .then(res =>
+                  alertApi.post({ message: res.message, display: 'transient' }),
+                );
+            else if (currentEntity.kind === 'ART')
+              artApi
+                .updateArt(currentEntity.metadata.name, {
+                  name: currentEntity.metadata.name,
+                  ...data,
+                })
+                .then(res =>
+                  alertApi.post({ message: res.message, display: 'transient' }),
+                );
+            handleClose();
           })}
           color="primary"
         >

@@ -123,19 +123,19 @@ export class ArtApi {
     });
     return await resp.json();
   }
-  async deleteArt(workstreamName: string) {
+  async deleteArt(artName: string) {
     const baseUrl = await this.getBaseUrl();
-    const resp = await this.fetchApi.fetch(`${baseUrl}/${workstreamName}`, {
+    const resp = await this.fetchApi.fetch(`${baseUrl}/${artName}`, {
       method: 'DELETE',
     });
     return await resp.json();
   }
 
-  async updateArt(workstreamName: string, data: Workstream) {
+  async updateArt(artName: string, data: ART) {
     if (data.name) {
       const baseUrl = await this.getBaseUrl();
       const updatedBy = await this.getCurrentUserRef();
-      const resp = await this.fetchApi.fetch(`${baseUrl}/${workstreamName}`, {
+      const resp = await this.fetchApi.fetch(`${baseUrl}/${artName}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -146,6 +146,6 @@ export class ArtApi {
       });
       return await resp.json();
     }
-    throw new Error('workstream name not found');
+    throw new Error('art name not found');
   }
 }

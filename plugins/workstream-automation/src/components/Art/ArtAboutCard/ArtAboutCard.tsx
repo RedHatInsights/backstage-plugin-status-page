@@ -1,18 +1,20 @@
 import {
-  WorkstreamEntity,
-  workstreamUpdatePermission,
+  ArtEntity,
+  artUpdatePermission,
 } from '@appdev-platform/backstage-plugin-workstream-automation-common';
-import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   InfoCard,
   InfoCardVariants,
   Progress,
 } from '@backstage/core-components';
-import { alertApiRef, useApi, useApp } from '@backstage/core-plugin-api';
-import { EntityRefLink, useAsyncEntity } from '@backstage/plugin-catalog-react';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  EntityPeekAheadPopover,
+  EntityRefLink,
+  useAsyncEntity,
+} from '@backstage/plugin-catalog-react';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import {
-  Box,
   Grid,
   IconButton,
   makeStyles,
@@ -21,10 +23,7 @@ import {
 } from '@material-ui/core';
 import CachedIcon from '@material-ui/icons/Cached';
 import EditTwoTone from '@material-ui/icons/EditTwoTone';
-import LinkTwoTone from '@material-ui/icons/LinkTwoTone';
 import React, { useState } from 'react';
-import { JiraIcon } from '../Icons/JiraIcon';
-import { LinkCard } from './LinkCard';
 import { AboutEditModal } from './AboutEditModal';
 
 const useStyles = makeStyles(theme => ({
@@ -35,27 +34,16 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const LinkIcon = (props: { val?: string }) => {
-  const app = useApp();
-  const { val: key } = props;
-  const Icon = key ? app.getSystemIcon(key) ?? LinkTwoTone : LinkTwoTone;
-  return <Icon color="primary" fontSize="large" />;
-};
-
 const StyledGrid = withStyles(theme => ({
   root: {
     paddingBottom: theme.spacing(1),
   },
 }))(Grid);
 
-export const WorkstreamAboutCard = (props: { variant: InfoCardVariants }) => {
-  const { entity, refresh } = useAsyncEntity<WorkstreamEntity>();
+export const ArtAboutCard = (props: { variant: InfoCardVariants }) => {
+  const { entity, refresh } = useAsyncEntity<ArtEntity>();
   const alertApi = useApi(alertApiRef);
   const classes = useStyles();
-  const artRef = entity?.relations?.find(p =>
-    p.targetRef.startsWith('art:'),
-  )?.targetRef;
-
   const [editModalOpen, setEditModalOpen] = useState(false);
 
   return entity ? (
@@ -65,11 +53,7 @@ export const WorkstreamAboutCard = (props: { variant: InfoCardVariants }) => {
       headerProps={{
         classes: { action: classes.action },
         action: (
-          <RequirePermission
-            permission={workstreamUpdatePermission}
-            resourceRef={stringifyEntityRef(entity)}
-            errorPage={<></>}
-          >
+          <RequirePermission permission={artUpdatePermission} errorPage={<></>}>
             <IconButton
               onClick={() => {
                 alertApi.post({
@@ -99,32 +83,6 @@ export const WorkstreamAboutCard = (props: { variant: InfoCardVariants }) => {
       <Grid container>
         <Grid item xs={12}>
           <Typography variant="body1" color="textSecondary">
-            Links
-          </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <Box display="flex" flexDirection="row">
-            {entity.metadata.links.map(val => {
-              return (
-                <LinkCard
-                  key={val.title}
-                  href={val.url}
-                  title={val.title}
-                  Icon={<LinkIcon val={val.icon} />}
-                />
-              );
-            })}
-            {entity.metadata.annotations['jira/project-key'] && (
-              <LinkCard
-                href={`https://issues.redhat.com/browse/${entity.metadata.annotations['jira/project-key']}`}
-                title="Jira"
-                Icon={<JiraIcon fontSize="large" />}
-              />
-            )}
-          </Box>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography variant="body1" color="textSecondary">
             Description
           </Typography>
         </Grid>
@@ -135,21 +93,23 @@ export const WorkstreamAboutCard = (props: { variant: InfoCardVariants }) => {
               : 'No Description'}
           </Typography>
         </Grid>
-        <Grid item xs={artRef ? 4 : 6}>
+        <Grid item xs={6}>
           <StyledGrid xs={12}>
             <Typography variant="body1" color="textSecondary">
-              Workstream Lead
+              Release Train Engineer
             </Typography>
           </StyledGrid>
           <StyledGrid xs={12}>
-            {entity.spec.lead ? (
-              <EntityRefLink entityRef={entity.spec.lead} />
+            {entity.spec.rte ? (
+              <EntityPeekAheadPopover entityRef={entity.spec.rte}>
+                <EntityRefLink entityRef={entity.spec.rte} />
+              </EntityPeekAheadPopover>
             ) : (
-              'No Lead'
+              'No RTE'
             )}
           </StyledGrid>
         </Grid>
-        <Grid item xs={artRef ? 4 : 6}>
+        <Grid item xs={6}>
           <StyledGrid xs={12}>
             <Typography variant="body1" color="textSecondary">
               Pillar name
@@ -157,18 +117,6 @@ export const WorkstreamAboutCard = (props: { variant: InfoCardVariants }) => {
           </StyledGrid>
           <StyledGrid xs={12}>{entity.spec.pillar}</StyledGrid>
         </Grid>
-        {artRef ? (
-          <Grid item xs={4}>
-            <StyledGrid xs={12}>
-              <Typography variant="body1" color="textSecondary">
-                ART
-              </Typography>
-            </StyledGrid>
-            <StyledGrid xs={12}>
-              <EntityRefLink entityRef={artRef} />
-            </StyledGrid>
-          </Grid>
-        ) : null}
       </Grid>
     </InfoCard>
   ) : (
