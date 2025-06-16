@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation-backend [1.10.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.9.1...@appdev-platform/backstage-plugin-workstream-automation-backend@1.10.0) (2025-06-16)
+
+
+### Features
+
+* **PULSE-751:** create overview page for ARTs ([9a2150c](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/9a2150cdb890cc8a1a03e5d042106d3bbd897425))
+
 ## @appdev-platform/backstage-plugin-workstream-automation-backend [1.9.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.9.0...@appdev-platform/backstage-plugin-workstream-automation-backend@1.9.1) (2025-06-12)
 
 
