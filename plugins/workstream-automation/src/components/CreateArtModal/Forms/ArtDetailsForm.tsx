@@ -2,7 +2,6 @@ import React from 'react';
 import { Grid, Typography } from '@material-ui/core';
 
 import {
-  FormInputJiraProject,
   FormInputName,
   FormInputWorkstreams,
   FormInputRteName,
@@ -37,9 +36,6 @@ export const ArtDetailsForm = () => {
           label="Pillar name"
           placeholder="Enter Pillar name"
         />
-      </Grid>
-      <Grid item xs={12}>
-        <FormInputJiraProject />
       </Grid>
       <Grid item xs={12}>
         <FormInputTextField

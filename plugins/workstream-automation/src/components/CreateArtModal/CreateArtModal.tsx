@@ -202,15 +202,6 @@ const ReviewDetailsContent = (props: {
         <TextField
           variant="outlined"
           fullWidth
-          label="JIRA Project"
-          value={`${artDetails.jiraProject?.name} (${artDetails.jiraProject?.key})`}
-          InputProps={{ readOnly: true }}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          variant="outlined"
-          fullWidth
           label="Email"
           value={artDetails.email}
           InputProps={{ readOnly: true }}
@@ -276,7 +267,6 @@ export const CreateArtModal = () => {
       artName: undefined,
       description: undefined,
       email: undefined,
-      jiraProject: undefined,
       // jiraProject: { name: 'PULSE', key: 'PULSE' },
       pillar: undefined,
       rte: undefined,
@@ -371,7 +361,6 @@ export const CreateArtModal = () => {
           role: val.role ?? '-',
         })),
         description: artDetails.description,
-        jiraProject: artDetails.jiraProject?.key,
         rte: artDetails.rte ? stringifyEntityRef(artDetails.rte) : undefined,
         pillar: artDetails.pillar,
         workstreams: artDetails.workstreams.map<string>(val =>

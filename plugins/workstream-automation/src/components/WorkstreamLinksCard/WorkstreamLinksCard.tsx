@@ -1,9 +1,10 @@
-import { workstreamUpdatePermission } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import {
-  Entity,
-  EntityLink,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+  ArtEntity,
+  artUpdatePermission,
+  WorkstreamEntity,
+  workstreamUpdatePermission,
+} from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { EntityLink, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   AppIcon,
   InfoCard,
@@ -50,7 +51,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const WorkstreamLinksCard = (props: { variant: InfoCardVariants }) => {
-  const { entity, loading } = useAsyncEntity<Entity>();
+  const { entity, loading } = useAsyncEntity<WorkstreamEntity | ArtEntity>();
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 
@@ -80,22 +81,36 @@ export const WorkstreamLinksCard = (props: { variant: InfoCardVariants }) => {
       headerProps={{
         classes: { action: classes.action },
         action: (
-          <RequirePermission
-            permission={workstreamUpdatePermission}
-            resourceRef={stringifyEntityRef(entity)}
-            errorPage={<></>}
-          >
-            <IconButton onClick={() => setOpen(true)}>
-              <EditTwoTone />
-            </IconButton>
-          </RequirePermission>
+          <>
+            {entity.kind === 'Workstream' && (
+              <RequirePermission
+                permission={workstreamUpdatePermission}
+                resourceRef={stringifyEntityRef(entity)}
+                errorPage={<></>}
+              >
+                <IconButton onClick={() => setOpen(true)}>
+                  <EditTwoTone />
+                </IconButton>
+              </RequirePermission>
+            )}
+            {entity.kind === 'ART' && (
+              <RequirePermission
+                permission={artUpdatePermission}
+                errorPage={<></>}
+              >
+                <IconButton onClick={() => setOpen(true)}>
+                  <EditTwoTone />
+                </IconButton>
+              </RequirePermission>
+            )}
+          </>
         ),
       }}
     >
       <LinksEditModal
         links={links}
         open={open}
-        workstreamName={entity.metadata.name}
+        currentEntity={entity}
         setModalOpen={setOpen}
       />
       {linkTypes.map(type => (

@@ -1,7 +1,13 @@
-import { WorkstreamEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import {
+  ArtEntity,
+  artUpdatePermission,
+  WorkstreamEntity,
+} from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import {
+  ErrorPanel,
   InfoCard,
   InfoCardVariants,
+  Progress,
   Table,
   TableColumn,
 } from '@backstage/core-components';
@@ -9,44 +15,64 @@ import {
   catalogApiRef,
   EntityDisplayName,
   EntityRefLink,
-  useEntity,
+  useAsyncEntity,
 } from '@backstage/plugin-catalog-react';
 import React, { useEffect, useState } from 'react';
 import { CustomUserEntity } from '../../types';
 import {
+  Entity,
   parseEntityRef,
   RELATION_MEMBER_OF,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { MembersColumn } from '../WorkstreamTable/MembersColumn';
 import { useApi } from '@backstage/core-plugin-api';
+import { WorkstreamEditModal } from './WorkstreamEditModal';
+import { IconButton, makeStyles } from '@material-ui/core';
+import EditTwoTone from '@material-ui/icons/EditTwoTone';
+import { RequirePermission } from '@backstage/plugin-permission-react';
+
+const useStyles = makeStyles(theme => ({
+  action: {
+    '& $button $span': {
+      color: theme.palette.text.primary,
+    },
+  },
+}));
 
 export const EntityWorkstreamCard = (props: {
   variant?: InfoCardVariants;
   showRoleColumn?: boolean;
 }) => {
-  const { entity } = useEntity<CustomUserEntity>();
+  const { entity, loading: entityLoading } = useAsyncEntity<
+    CustomUserEntity | ArtEntity | Entity
+  >();
   const catalogApi = useApi(catalogApiRef);
   const [workstreams, setWorkstreams] = useState<WorkstreamEntity[]>([]);
-  const [loading, setLoading] = useState(true);
-  const inWorkstreams = entity.relations?.filter(
-    relation =>
-      relation.type !== RELATION_MEMBER_OF &&
-      parseEntityRef(relation.targetRef).kind === 'workstream',
-  );
-
+  const [entitiesNotFound, setEntitiesNotFound] = useState<string[]>([]);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const classes = useStyles();
   useEffect(() => {
-    if (loading) {
+    if (!entityLoading && entity) {
+      const inWorkstreams = entity.relations?.filter(
+        relation =>
+          relation.type !== RELATION_MEMBER_OF &&
+          parseEntityRef(relation.targetRef).kind === 'workstream',
+      );
       inWorkstreams?.forEach(rel =>
         catalogApi
           .getEntityByRef(rel.targetRef)
           .then(res =>
-            setWorkstreams(ws => ws.concat(res as WorkstreamEntity)),
+            res
+              ? setWorkstreams(ws => ws.concat(res as WorkstreamEntity))
+              : setEntitiesNotFound(ws => ws.concat(rel.targetRef)),
           ),
       );
-      setLoading(false);
+    } else {
+      setWorkstreams([]);
+      setEntitiesNotFound([]);
     }
-  }, [inWorkstreams, catalogApi, loading]);
+  }, [catalogApi, entityLoading, entity]);
 
   const columns: TableColumn<WorkstreamEntity>[] = [
     {
@@ -60,10 +86,10 @@ export const EntityWorkstreamCard = (props: {
       tooltip: "Current user's role",
       hidden: !props.showRoleColumn,
       render: data => {
-        if (data.spec.lead === stringifyEntityRef(entity))
+        if (data.spec.lead === stringifyEntityRef(entity!))
           return 'Workstream Lead';
         const member = data.spec.members.find(
-          v => v.userRef === stringifyEntityRef(entity),
+          p => p.userRef === stringifyEntityRef(entity!),
         );
         return member?.role ?? '-';
       },
@@ -88,21 +114,51 @@ export const EntityWorkstreamCard = (props: {
     },
   ];
 
-  if (inWorkstreams?.length === 0) return null;
-
-  return (
-    <InfoCard
-      {...props}
-      title={`Workstreams (${inWorkstreams?.length})`}
-      noPadding
-    >
-      <Table
-        columns={columns}
-        style={{ borderRadius: 0, padding: 0 }}
-        data={workstreams}
-        isLoading={loading}
-        options={{ toolbar: false, draggable: false, padding: 'dense' }}
-      />
-    </InfoCard>
+  return entityLoading || entity === undefined ? (
+    <Progress />
+  ) : (
+    <>
+      {editModalOpen && (
+        <WorkstreamEditModal
+          workstreams={workstreams}
+          open={editModalOpen}
+          setEditModalOpen={setEditModalOpen}
+          entitiesNotFound={entitiesNotFound}
+        />
+      )}
+      <InfoCard
+        {...props}
+        title={`Workstreams (${workstreams?.length})`}
+        noPadding
+        headerProps={{
+          classes: { action: classes.action },
+          action: entity.kind === 'ART' && (
+            <RequirePermission permission={artUpdatePermission}>
+              <IconButton onClick={() => setEditModalOpen(true)}>
+                <EditTwoTone />
+              </IconButton>
+            </RequirePermission>
+          ),
+        }}
+      >
+        <Table
+          columns={columns}
+          style={{ borderRadius: 0, padding: 0 }}
+          data={workstreams}
+          isLoading={entityLoading}
+          options={{ toolbar: false, draggable: false, padding: 'dense' }}
+        />
+        {entitiesNotFound.length > 0 && (
+          <ErrorPanel
+            error={{
+              name: 'Missing workstreams',
+              message: `Following workstreams are not found in catalog`,
+              stack: ` - ${entitiesNotFound.join('\n - ')}`,
+            }}
+            title="Following workstreams are not found in catalog"
+          />
+        )}
+      </InfoCard>
+    </>
   );
 };

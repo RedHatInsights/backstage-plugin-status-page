@@ -78,7 +78,7 @@ import {
 } from '@janus-idp/backstage-plugin-feedback';
 import AdbIcon from '@material-ui/icons/Adb';
 import WebLinkIcon from '@material-ui/icons/Language';
-import SettingsEthernet from '@material-ui/icons/SettingsEthernet';
+import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import { getThemes } from '@red-hat-developer-hub/backstage-plugin-theme';
 import { SoundcheckRoutingPage } from '@spotify/backstage-plugin-soundcheck';
 import { CatalogPage } from './components/CatalogPage/CatalogPage';
@@ -114,7 +114,7 @@ const app = createApp({
     },
   ],
   icons: {
-    'kind:workstream': SettingsEthernet,
+    'kind:workstream': GroupWorkIcon,
     'kind:art': AdbIcon,
     mail: EmailIcon,
     slack_contact: SlackIcon,

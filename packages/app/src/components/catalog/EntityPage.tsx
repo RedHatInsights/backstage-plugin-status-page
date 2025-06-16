@@ -79,6 +79,8 @@ import {
   isContactDetailsAvailable,
 } from '@appdev-platform/backstage-plugin-contact-details';
 import {
+  ArtAboutCard,
+  ArtMembersCard,
   EntityWorkstreamCard,
   WorkstreamAboutCard,
   WorkstreamDeleteModal,
@@ -723,22 +725,26 @@ const ArtEntityPage = () => {
         <EntityLayout.Route path="/overview" title="Overview">
           <Grid container spacing={3} alignItems="stretch">
             {entityWarningContent}
-            <Grid item xs={12} lg={6} xl={7}>
-              <WorkstreamAboutCard variant="gridItem" />
-            </Grid>
-            <Grid item xs={12} lg={6} xl={5}>
-              <WorkstreamLinksCard variant="flex" />
+            <Grid item xs={12} lg={6} xl={6}>
+              <ArtAboutCard variant="gridItem" />
             </Grid>
             <Grid item xs={12} lg={6} xl={6}>
-              <WorkstreamMembersCard variant="flex" />
+              <WorkstreamLinksCard variant="gridItem" />
             </Grid>
             <Grid item xs={12} lg={6} xl={6}>
-              <EntityWorkstreamCard variant="flex" />
+              <ArtMembersCard variant="gridItem" />
             </Grid>
             <Grid item xs={12} lg={6} xl={6}>
-              <EntityCatalogGraphCard height={350} />
+              <EntityWorkstreamCard variant="gridItem" />
             </Grid>
           </Grid>
+        </EntityLayout.Route>
+        <EntityLayout.Route path="/diagram" title="Diagram">
+          <EntityCatalogGraphCard
+            variant="gridItem"
+            title="System Diagram"
+            height={700}
+          />
         </EntityLayout.Route>
       </EntityLayout>
     </>

@@ -18,7 +18,7 @@ import {
 } from '@material-ui/core';
 import { CustomUserEntity } from '../../types';
 import { getWorkstreamsRelations } from '../../utlis/getWorkstreamMembers';
-import { getRoleFromRelation } from '../../utlis/roleMapper';
+import { artRolesMap, getRoleFromRelation } from '../../utlis/roleMapper';
 import { AppIcon } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
@@ -82,7 +82,9 @@ export const MemberWarningChip = (props: { user: CustomUserEntity }) => {
                   <Typography variant="body2" style={{ marginLeft: 2 }}>
                     {getRoleFromRelation(v.type, {
                       leadOf: 'Workstream Lead',
+                      'release-train-engineer': 'Release Train Engineer (RTE)',
                       ...customRoles,
+                      ...artRolesMap,
                     })}
                   </Typography>
                 </Box>

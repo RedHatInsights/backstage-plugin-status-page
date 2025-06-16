@@ -1,4 +1,7 @@
-import { WorkstreamEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import {
+  ArtEntity,
+  WorkstreamEntity,
+} from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import {
@@ -9,7 +12,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import React from 'react';
-import { workstreamApiRef } from '../../api';
+import { artApiRef, workstreamApiRef } from '../../api';
 import { useNavigate } from 'react-router-dom';
 
 type DeleteProps = {
@@ -19,8 +22,9 @@ type DeleteProps = {
 
 export const WorkstreamDeleteModal = (props: DeleteProps) => {
   const { open, deleteModalCloseFn } = props;
-  const { entity } = useEntity<WorkstreamEntity>();
+  const { entity } = useEntity<WorkstreamEntity | ArtEntity>();
   const workstreamApi = useApi(workstreamApiRef);
+  const artApi = useApi(artApiRef);
   const navigate = useNavigate();
   const alertApi = useApi(alertApiRef);
 
@@ -37,7 +41,7 @@ export const WorkstreamDeleteModal = (props: DeleteProps) => {
     >
       <DialogContent dividers>
         <Typography variant="body1">
-          Are you sure you want to delete this workstream?
+          Are you sure you want to delete this&nbsp;{entity.kind}?
         </Typography>
       </DialogContent>
       <DialogActions style={{ marginRight: '8px' }}>
@@ -45,15 +49,28 @@ export const WorkstreamDeleteModal = (props: DeleteProps) => {
           variant="contained"
           color="secondary"
           onClick={() => {
-            workstreamApi.deleteWorkstream(entity.metadata.name).then(resp => {
-              alertApi.post({
-                message: resp.message,
-                display: 'transient',
-                severity: 'info',
+            if (entity.kind === 'Workstream')
+              workstreamApi
+                .deleteWorkstream(entity.metadata.name)
+                .then(resp => {
+                  alertApi.post({
+                    message: resp.message,
+                    display: 'transient',
+                    severity: 'info',
+                  });
+                  navigate('/catalog?filters[kind]=workstream');
+                  handleClose();
+                });
+            else if (entity.kind === 'ART')
+              artApi.deleteArt(entity.metadata.name).then(resp => {
+                alertApi.post({
+                  message: resp.message,
+                  display: 'transient',
+                  severity: 'info',
+                });
+                navigate('/catalog?filters[kind]=art');
+                handleClose();
               });
-              navigate('/catalog?filters[kind]=workstream');
-              handleClose();
-            });
           }}
         >
           Delete

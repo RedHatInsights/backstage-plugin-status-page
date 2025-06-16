@@ -41,15 +41,70 @@ export const isWorkstreamPermission = (permission: Permission) =>
 
 export class WorkstreamPolicy implements PermissionPolicy {
   private registeredPermissions: string[];
+  private allowedUsers: AllowedUsers[];
+  private readonly cache: CacheService;
   private CACHE_KEY = 'backstage:rbac:workstream:admins';
 
   constructor(
-    private pluginConfig: PluginPermissionConfig,
+    pluginConfig: PluginPermissionConfig,
     private auth: AuthService,
     private catalogApi: CatalogApi,
-    private cache: CacheService,
+    cache: CacheService,
   ) {
     this.registeredPermissions = pluginConfig.workstream.permission ?? [];
+    this.allowedUsers = pluginConfig.workstream.users ?? [];
+    this.cache = cache.withOptions({ defaultTtl: 1800000 }); // Keep the cache for 30 Mins
+  }
+  private mergeUser(users: AllowedUsers[], newUser: AllowedUsers) {
+    const existing = users.find(u => u.name === newUser.name);
+
+    if (existing) {
+      const permsSet = new Set([
+        ...(existing.permission ?? []),
+        ...(newUser.permission ?? []),
+      ]);
+      existing.permission = Array.from(permsSet);
+    } else {
+      users.push({ ...newUser });
+    }
+  }
+  private async refreshAndGetUsers() {
+    const cachedUsers = await this.cache.get<AllowedUsers[]>(this.CACHE_KEY);
+    if (cachedUsers) return cachedUsers;
+
+    const _allowedUsers: AllowedUsers[] = [];
+    for (const user of this.allowedUsers) {
+      if (
+        parseEntityRef(user.name, {
+          defaultKind: 'user',
+          defaultNamespace: 'redhat',
+        }).kind === 'group'
+      ) {
+        const groupEntity = await this.catalogApi.getEntityByRef(
+          user.name,
+          await this.auth.getPluginRequestToken({
+            targetPluginId: 'catalog',
+            onBehalfOf: await this.auth.getOwnServiceCredentials(),
+          }),
+        );
+        groupEntity?.relations
+          ?.filter(p => p.type === 'hasMember')
+          .forEach(relation =>
+            // if user is mututal in some other groups, merge them and update permissions
+            this.mergeUser(_allowedUsers, {
+              name: relation.targetRef,
+              permission: [...(user.permission ?? this.registeredPermissions)],
+            }),
+          );
+      } else {
+        this.mergeUser(_allowedUsers, {
+          name: user.name,
+          permission: [...(user.permission ?? this.registeredPermissions)],
+        });
+      }
+    }
+    await this.cache.set(this.CACHE_KEY, _allowedUsers);
+    return _allowedUsers;
   }
 
   async handle(
@@ -60,36 +115,11 @@ export class WorkstreamPolicy implements PermissionPolicy {
       return { result: AuthorizeResult.DENY };
     }
 
-    if (!(await this.cache.get<AllowedUsers[]>(this.CACHE_KEY))) {
-      const allowedUsers: AllowedUsers[] = [];
-      for (const admin of this.pluginConfig.workstream.users) {
-        if (
-          parseEntityRef(admin.name, {
-            defaultKind: 'user',
-            defaultNamespace: 'redhat',
-          }).kind === 'group'
-        ) {
-          const groupEntity = await this.catalogApi.getEntityByRef(
-            admin.name,
-            await this.auth.getPluginRequestToken({
-              onBehalfOf: await this.auth.getOwnServiceCredentials(),
-              targetPluginId: 'catalog',
-            }),
-          );
-          groupEntity?.relations?.forEach(
-            r =>
-              r.type === 'hasMember' &&
-              allowedUsers.push({ name: r.targetRef }),
-          );
-        } else allowedUsers.push(admin);
-      }
-      await this.cache.set(this.CACHE_KEY, allowedUsers, { ttl: 1800000 }); // Keep the cache for 30 Mins
-    }
-
-    const workstreamAdminUsers = await this.cache.get<AllowedUsers[]>(
-      this.CACHE_KEY,
+    const allowedUsers = await this.refreshAndGetUsers();
+    const userFound = allowedUsers.find(
+      p => p.name === user?.info.userEntityRef,
     );
-    if (workstreamAdminUsers?.some(p => p.name === user.info.userEntityRef)) {
+    if (userFound && userFound.permission?.includes(request.permission.name)) {
       return { result: AuthorizeResult.ALLOW };
     }
 
