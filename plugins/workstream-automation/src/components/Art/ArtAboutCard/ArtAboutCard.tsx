@@ -112,7 +112,7 @@ export const ArtAboutCard = (props: { variant: InfoCardVariants }) => {
         <Grid item xs={6}>
           <StyledGrid xs={12}>
             <Typography variant="body1" color="textSecondary">
-              Pillar name
+              Pillar
             </Typography>
           </StyledGrid>
           <StyledGrid xs={12}>{entity.spec.pillar}</StyledGrid>

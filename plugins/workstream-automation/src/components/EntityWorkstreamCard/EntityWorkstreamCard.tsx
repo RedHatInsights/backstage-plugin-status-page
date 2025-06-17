@@ -149,7 +149,11 @@ export const EntityWorkstreamCard = (props: {
           style={{ borderRadius: 0, padding: 0 }}
           data={workstreams}
           isLoading={entityLoading}
-          options={{ toolbar: false, draggable: false, padding: 'dense' }}
+          options={{
+            draggable: false,
+            padding: 'dense',
+            pageSize: workstreams.length > 5 ? 10 : 5,
+          }}
         />
         {entitiesNotFound.length > 0 && (
           <ErrorPanel
