@@ -512,6 +512,7 @@ export class AuditComplianceDatabase {
    * @param params.comments - Additional comments
    * @param params.manager_uid - Manager UID for constructing email address
    * @param params.current_user_uid - Current user UID for fallback email
+   * @param params.manager_name - Manager name for enhanced description
    * @returns Promise resolving to created Jira ticket details
    * @throws Error if Jira project not found or ticket creation fails
    */
@@ -525,6 +526,7 @@ export class AuditComplianceDatabase {
     comments,
     manager_uid,
     current_user_uid,
+    manager_name,
   }: {
     service_account: string;
     appName: string;
@@ -535,21 +537,20 @@ export class AuditComplianceDatabase {
     comments: string;
     manager_uid?: string;
     current_user_uid?: string;
+    manager_name?: string;
   }) {
     const jiraUrl = this.config.getString('auditCompliance.jiraUrl');
     const jiraToken = this.config.getString('auditCompliance.jiraToken');
     try {
-      this.logger.info(
-        'Creating Jira ticket for service account access review',
-        {
-          service_account,
-          appName,
-          frequency,
-          period,
-          manager_uid,
-          current_user_uid,
-        },
-      );
+      this.logger.info('Creating Service Account Jira ticket', {
+        service_account,
+        appName,
+        frequency,
+        period,
+        manager_name,
+        manager_uid,
+        current_user_uid,
+      });
 
       const jira_project = await this.getJiraProjectByAppName(appName);
       if (!jira_project) {
@@ -569,11 +570,16 @@ export class AuditComplianceDatabase {
       }
       this.logger.info(`Using assignee email: ${assigneeEmail}`);
 
+      // Enhance description with manager information if available
+      const enhancedDescription = manager_name
+        ? `${description}\n\n*Manager:* ${manager_name}`
+        : description;
+
       const requestBody: JiraRequestBody = {
         fields: {
           project: { key: jira_project },
           summary: title,
-          description: description,
+          description: enhancedDescription,
           issuetype: { name: 'Task' },
           labels: [
             `${appName}-${period}-${frequency}-Service-Account-Review`,
@@ -582,7 +588,6 @@ export class AuditComplianceDatabase {
           assignee: { emailAddress: assigneeEmail },
         },
       };
-
       if (parentEpicKey?.trim()) {
         requestBody.fields.customfield_12311140 = parentEpicKey.trim();
       }
@@ -783,6 +788,7 @@ export class AuditComplianceDatabase {
               comments: comments || '',
               manager_uid: item.manager_uid,
               current_user_uid: item.current_user_uid,
+              manager_name: item.manager_name,
             });
 
             results.push({

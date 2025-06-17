@@ -370,18 +370,7 @@ export class RoverDatabase implements RoverStore {
             ? await this.getUserInfo(managerUid)
             : null;
           const managerName = managerInfo?.cn || managerUid || app_owner || '';
-          console.log(
-            ' --------------> in generateRoverData',
-            {
-              managerUid,
-              managerInfo,
-              managerName,
-            },
-            'for uid',
-            uid,
-            'user',
-            user.manager,
-          );
+       
           const row = {
             environment,
             full_name: user.cn,

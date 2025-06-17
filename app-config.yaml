@@ -375,3 +375,9 @@ auditCompliance:
   gitlabBaseUrl: ${GITLAB_BASE_URL}
   jiraUrl: ${JIRA_URL}
   jiraToken: ${JIRA_TOKEN}
+  email:
+    host: ${EMAIL_HOST}
+    port: ${EMAIL_PORT}
+    from: ${EMAIL_FROM}
+    secure: false
+    caCert: ${NODE_EXTRA_CA_CERTS}

@@ -8,10 +8,10 @@ import {
 } from '@backstage/core-components';
 import {
   alertApiRef,
+  configApiRef,
   discoveryApiRef,
   fetchApiRef,
   useApi,
-  configApiRef,
 } from '@backstage/core-plugin-api';
 import {
   Box,
@@ -19,23 +19,20 @@ import {
   Chip,
   FormControl,
   Grid,
-  IconButton,
   InputLabel,
+  Link,
   MenuItem,
   Select,
-  Tooltip,
   Typography,
-  Link,
 } from '@material-ui/core';
 import Group from '@material-ui/icons/Group';
-import SettingsIcon from '@material-ui/icons/Settings';
 import React, { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+import { formatDisplayName } from '../AuditApplicationList/AuditApplicationList';
 import {
   AuditProgressStepper,
   AuditStep,
 } from '../AuditProgressStepper/AuditProgressStepper';
-import { formatDisplayName } from '../AuditApplicationList/AuditApplicationList';
 
 const getQuarterOptions = () => [
   { value: 'Q1', label: 'Q1 (Jan - Mar)' },
@@ -253,11 +250,6 @@ export const AuditInitiation = () => {
           }
         />
         <HeaderLabel label="Lifecycle" value="Alpha" />
-        <Tooltip title="Configuration">
-          <IconButton color="primary">
-            <SettingsIcon onClick={() => navigate('/audit/configurations')} />
-          </IconButton>
-        </Tooltip>
       </Header>
 
       <Content>
