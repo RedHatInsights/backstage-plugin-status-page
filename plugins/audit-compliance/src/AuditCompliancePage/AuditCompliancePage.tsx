@@ -1,18 +1,20 @@
-import { Breadcrumbs, Content, Header, HeaderLabel, Page } from '@backstage/core-components';
+import {
+  Breadcrumbs,
+  Content,
+  Header,
+  HeaderLabel,
+  Page,
+} from '@backstage/core-components';
 import { Box, Typography } from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import SettingsIcon from '@material-ui/icons/Settings';
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { AuditApplicationList } from './audit-components/AuditApplicationList';
+import Group from '@material-ui/icons/Group';
 
 export const AuditCompliancePage = () => {
-  const navigate = useNavigate();
   return (
     <Page themeId="tool">
       <Header
-      title=' Audit and Compliance'
+        title=" Audit and Compliance"
         subtitle={
           <Box>
             <Typography variant="subtitle1" style={{ marginBottom: '8px' }}>
@@ -24,17 +26,18 @@ export const AuditCompliancePage = () => {
           </Box>
         }
       >
-        <HeaderLabel label="Owner" value="Team X" />
+        <HeaderLabel
+          label="Owner"
+          value={
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Group fontSize="small" /> Appdev
+            </span>
+          }
+        />
         <HeaderLabel label="Lifecycle" value="Alpha" />
-        <Tooltip title="Configuration">
-          <IconButton color="primary">
-            <SettingsIcon onClick={() => navigate('/audit/configurations')} />
-          </IconButton>
-        </Tooltip>
       </Header>
 
       <Content>
-       
         <AuditApplicationList />
       </Content>
     </Page>

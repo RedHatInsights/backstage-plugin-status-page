@@ -4,6 +4,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import axios from 'axios';
 import { Knex } from 'knex';
+import { fetch } from 'undici';
 
 /**
  * Represents a GitLab user with their basic profile information.
@@ -40,6 +41,23 @@ interface GitLabMember {
   /** URL to the member's GitLab profile page */
   web_url: string;
 }
+
+/**
+ * Interface representing the response structure for user information from Rover API.
+ */
+interface UserInfoResponse {
+  /** User information result object */
+  result?: any;
+}
+
+/**
+ * Extracts user ID from a Distinguished Name (DN) string.
+ *
+ * @param dn - Distinguished Name string (e.g., 'uid=user123,dc=example,dc=com')
+ * @returns Extracted user ID or null if not found
+ */
+const extractUid = (dn: string): string | null =>
+  dn?.startsWith('uid=') ? dn.split(',')[0].split('=')[1] : null;
 
 /**
  * Standard headers used for GitLab API requests.
@@ -98,6 +116,9 @@ export class GitLabDatabase implements GitLabStore {
   private readonly db: Knex;
   private readonly gitlabToken: string;
   private readonly gitlabBaseUrl: string;
+  private readonly roverUsername: string;
+  private readonly roverPassword: string;
+  private readonly roverBaseUrl: string;
   private readonly logger: LoggerService;
 
   /**
@@ -119,6 +140,12 @@ export class GitLabDatabase implements GitLabStore {
       config.getOptionalString('auditCompliance.gitlabToken') || '';
     this.gitlabBaseUrl =
       config.getOptionalString('auditCompliance.gitlabBaseUrl') || '';
+    this.roverUsername =
+      config.getOptionalString('auditCompliance.roverUsername') || '';
+    this.roverPassword =
+      config.getOptionalString('auditCompliance.roverPassword') || '';
+    this.roverBaseUrl =
+      config.getOptionalString('auditCompliance.roverBaseUrl') || '';
   }
 
   /**
@@ -149,6 +176,45 @@ export class GitLabDatabase implements GitLabStore {
     return {
       'PRIVATE-TOKEN': this.gitlabToken,
     };
+  }
+
+  /**
+   * Generates the authentication header for Rover API requests.
+   * Uses Basic authentication with base64 encoded credentials.
+   *
+   * @returns Object containing the Authorization header
+   */
+  private getRoverAuthHeader(): { Authorization: string } {
+    return {
+      Authorization: `Basic ${Buffer.from(
+        `${this.roverUsername}:${this.roverPassword}`,
+      ).toString('base64')}`,
+    };
+  }
+
+  /**
+   * Fetches user information from the Rover API.
+   *
+   * @param uid - User ID to fetch information for
+   * @returns Promise resolving to user information object or null if not found
+   */
+  private async getRoverUserInfo(uid: string): Promise<any | null> {
+    const url = `${this.roverBaseUrl}/users/${uid}`;
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: { ...headers, ...this.getRoverAuthHeader() },
+      });
+      if (!response.ok) {
+        return null;
+      }
+
+      const data = (await response.json()) as UserInfoResponse;
+      return data.result ?? null;
+    } catch (e) {
+      this.logger.warn(`Failed to fetch Rover user info for UID ${uid}: ${e}`);
+      return null;
+    }
   }
 
   /**
@@ -248,12 +314,37 @@ export class GitLabDatabase implements GitLabStore {
       const userDetails = await this.getUserDetails(member.id);
       if (!userDetails) continue;
 
+      // Fetch manager information from Rover using GitLab username
+      let managerName = appEntry.app_owner || 'N/A';
+      let managerUid = '';
+
+      try {
+        const roverUserInfo = await this.getRoverUserInfo(userDetails.username);
+        if (roverUserInfo && roverUserInfo.manager) {
+          const managerUidFromRover = extractUid(roverUserInfo.manager);
+          if (managerUidFromRover) {
+            const managerInfo = await this.getRoverUserInfo(
+              managerUidFromRover,
+            );
+            if (managerInfo) {
+              managerName = managerInfo.cn || managerUidFromRover;
+              managerUid = managerUidFromRover;
+            }
+          }
+        }
+      } catch (error) {
+        this.logger.warn(
+          `Failed to fetch manager info for user ${userDetails.username}: ${error}`,
+        );
+      }
+
       const row = {
         environment: appEntry.environment || projectPath,
         full_name: userDetails.name,
         user_id: userDetails.username,
         user_role: this.getAccessLevelName(member.access_level),
-        manager: appEntry.app_owner || 'N/A',
+        manager: managerName,
+        manager_uid: managerUid,
         sign_off_status: 'pending',
         sign_off_by: 'N/A',
         sign_off_date: null,
@@ -353,12 +444,39 @@ export class GitLabDatabase implements GitLabStore {
             continue;
           }
 
+          // Fetch manager information from Rover using GitLab username
+          let managerName = app_owner || 'N/A';
+          let managerUid = '';
+
+          try {
+            const roverUserInfo = await this.getRoverUserInfo(
+              userDetails.username,
+            );
+            if (roverUserInfo && roverUserInfo.manager) {
+              const managerUidFromRover = extractUid(roverUserInfo.manager);
+              if (managerUidFromRover) {
+                const managerInfo = await this.getRoverUserInfo(
+                  managerUidFromRover,
+                );
+                if (managerInfo) {
+                  managerName = managerInfo.cn || managerUidFromRover;
+                  managerUid = managerUidFromRover;
+                }
+              }
+            }
+          } catch (error) {
+            this.logger.warn(
+              `Failed to fetch manager info for user ${userDetails.username}: ${error}`,
+            );
+          }
+
           const row = {
             environment,
             full_name: userDetails.name,
             user_id: userDetails.username,
             user_role: this.getAccessLevelName(member.access_level),
-            manager: app_owner || 'N/A',
+            manager: managerName,
+            manager_uid: managerUid,
             sign_off_status: 'pending',
             sign_off_by: 'N/A',
             sign_off_date: null,
@@ -470,12 +588,39 @@ export class GitLabDatabase implements GitLabStore {
             continue;
           }
 
+          // Fetch manager information from Rover using GitLab username
+          let managerName = app_owner || 'N/A';
+          let managerUid = '';
+
+          try {
+            const roverUserInfo = await this.getRoverUserInfo(
+              userDetails.username,
+            );
+            if (roverUserInfo && roverUserInfo.manager) {
+              const managerUidFromRover = extractUid(roverUserInfo.manager);
+              if (managerUidFromRover) {
+                const managerInfo = await this.getRoverUserInfo(
+                  managerUidFromRover,
+                );
+                if (managerInfo) {
+                  managerName = managerInfo.cn || managerUidFromRover;
+                  managerUid = managerUidFromRover;
+                }
+              }
+            }
+          } catch (error) {
+            this.logger.warn(
+              `Failed to fetch manager info for user ${userDetails.username}: ${error}`,
+            );
+          }
+
           const row = {
             environment,
             full_name: userDetails.name,
             user_id: userDetails.username,
             user_role: this.getAccessLevelName(member.access_level),
-            manager: app_owner || 'N/A',
+            manager: managerName,
+            manager_uid: managerUid,
             source: 'gitlab',
             account_name: account_name,
             app_name,
