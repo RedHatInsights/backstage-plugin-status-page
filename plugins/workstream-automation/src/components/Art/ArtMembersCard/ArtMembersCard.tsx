@@ -148,7 +148,7 @@ export const ArtMembersCard = (props: { variant: InfoCardVariants }) => {
             padding: 'dense',
             toolbar: true,
             draggable: false,
-            pageSize: 5,
+            pageSize: tableData.length > 4 ? 10 : 5,
             pageSizeOptions: [5, 10, 20, 30],
           }}
         />

@@ -1,7 +1,6 @@
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
-  DefaultEntityFilters,
   EntityDisplayName,
   EntityFilter,
   useEntityList,
@@ -17,8 +16,9 @@ import useAsync from 'react-use/esm/useAsync';
 import { PickerOption } from './components/PickerOption';
 import { Chip } from '@material-ui/core';
 import { ExtendedFilters } from './filters';
+import { isEqual } from 'lodash';
 
-type PickerProps = {
+export type PickerProps = {
   label: string;
   name: keyof ExtendedFilters;
   path: string;
@@ -26,7 +26,7 @@ type PickerProps = {
   showCounts?: boolean;
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
-  filtersForAvailableValues?: Array<keyof DefaultEntityFilters>;
+  filtersForAvailableValues?: Array<keyof ExtendedFilters>;
   isEntityRef?: boolean;
 };
 
@@ -39,6 +39,7 @@ export const AutocompletePicker = (props: PickerProps) => {
     showCounts,
     InputProps,
     initialSelectedOptions = [],
+    filtersForAvailableValues = ['kind'],
     isEntityRef = false,
   } = props;
 
@@ -49,28 +50,38 @@ export const AutocompletePicker = (props: PickerProps) => {
   } = useEntityList<ExtendedFilters>();
 
   const catalogApi = useApi(catalogApiRef);
+  const availableValuesFilters = filtersForAvailableValues.map(
+    f => filters[f] as EntityFilter | undefined,
+  );
+
   const { value: availableValues } = useAsync(async () => {
     const facet = path;
     const { facets } = await catalogApi.getEntityFacets({
       facets: [facet],
-      filter: [{ kind: ['Workstream'] }],
+      filter: availableValuesFilters.reduce((prevVal, curr) => {
+        return {
+          ...prevVal,
+          ...(curr && curr.getCatalogFilters ? curr.getCatalogFilters() : {}),
+        };
+      }, {} as Record<string, string | symbol | (string | symbol)[]>),
     });
-
     return Object.fromEntries(
       facets[facet].map(({ value, count }) => [value, count]),
     );
-  });
+  }, [...availableValuesFilters]);
 
   const queryParameters = useMemo(
     () => [queryParameter].flat().filter(Boolean) as string[],
     [queryParameter],
   );
 
+  const filteredOptions = (filters[name] as unknown as { values: string[] })
+    ?.values;
+
   const [selectedOptions, setSelectedOptions] = useState(
     queryParameters.length
       ? queryParameters
-      : (filters[name] as unknown as { values: string[] })?.values ??
-          initialSelectedOptions,
+      : filteredOptions ?? initialSelectedOptions,
   );
 
   // Set selected options on query parameter updates; this happens at initial page load and from
@@ -90,6 +101,15 @@ export const AutocompletePicker = (props: PickerProps) => {
     });
   }, [name, shouldAddFilter, selectedOptions, updateFilters, Filter]);
 
+  useEffect(() => {
+    if (!shouldAddFilter) return;
+    const newSelectedOptions = filteredOptions ?? [];
+    if (!isEqual(newSelectedOptions, selectedOptions)) {
+      setSelectedOptions(newSelectedOptions);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Don't re-set filter value when selectedOptions changes
+  }, [filteredOptions]);
+
   const filter = filters[name];
 
   if (
@@ -99,7 +119,7 @@ export const AutocompletePicker = (props: PickerProps) => {
     return null;
   }
 
-  return filters.kind?.value === 'workstream' ? (
+  return (
     <Box pb={1} pt={1}>
       <Typography variant="button" component="label">
         {label}
@@ -145,5 +165,5 @@ export const AutocompletePicker = (props: PickerProps) => {
         />
       </Typography>
     </Box>
-  ) : null;
+  );
 };
