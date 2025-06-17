@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-audit-compliance [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance@1.1.0...@appdev-platform/backstage-plugin-audit-compliance@1.2.0) (2025-06-17)
+
+
+### Features
+
+* **audit-compliance:** Fixes and Enhancements for Config, User Mapping, and Service Account Workflows ([a45e9ef](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/a45e9efb3ec3e63faa2c770cd474b8fc5ba3e641))
+
 ## @appdev-platform/backstage-plugin-audit-compliance [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance@1.0.0...@appdev-platform/backstage-plugin-audit-compliance@1.1.0) (2025-06-13)
 
 
