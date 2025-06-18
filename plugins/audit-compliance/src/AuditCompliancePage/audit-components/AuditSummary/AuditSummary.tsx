@@ -1,11 +1,11 @@
 import {
   Breadcrumbs,
   Content,
-  GroupIcon,
   Header,
   HeaderLabel,
   Page,
 } from '@backstage/core-components';
+import Group from '@material-ui/icons/Group';
 import {
   alertApiRef,
   discoveryApiRef,
@@ -193,7 +193,7 @@ export const AuditSummary: React.FC = () => {
           label="Owner"
           value={
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <GroupIcon fontSize="small" /> Appdev
+              <Group fontSize="small" /> Appdev
             </span>
           }
         />

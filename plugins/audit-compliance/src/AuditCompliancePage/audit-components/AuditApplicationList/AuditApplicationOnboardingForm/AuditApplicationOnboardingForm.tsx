@@ -230,11 +230,11 @@ export const AuditApplicationOnboardingForm = ({
                         }
                         required
                       >
-                        <MenuItem value="service-account">
-                          Service Account
-                        </MenuItem>
                         <MenuItem value="rover-group-name">
                           Rover Group
+                        </MenuItem>
+                        <MenuItem value="service-account">
+                          Service Account
                         </MenuItem>
                       </TextField>
                     </Grid>
