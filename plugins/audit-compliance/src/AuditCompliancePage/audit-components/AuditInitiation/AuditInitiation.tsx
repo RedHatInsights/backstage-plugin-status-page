@@ -23,7 +23,7 @@ import {
   Link,
   MenuItem,
   Select,
-  Typography,
+  Typography
 } from '@material-ui/core';
 import Group from '@material-ui/icons/Group';
 import React, { useEffect, useState } from 'react';

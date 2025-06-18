@@ -486,20 +486,6 @@ export class AuditComplianceDatabase {
   }
 
   /**
-   * Constructs manager email address from manager UID.
-   * Uses the format: managerUid@redhat.com
-   *
-   * @param managerUid - Manager's user ID
-   * @returns Manager's email address or null if managerUid is not provided
-   */
-  private constructManagerEmail(managerUid?: string): string | null {
-    if (!managerUid) {
-      return null;
-    }
-    return `${managerUid}@redhat.com`;
-  }
-
-  /**
    * Creates a Jira ticket for service account access review and updates the database.
    *
    * @param params - Parameters for ticket creation
@@ -563,12 +549,6 @@ export class AuditComplianceDatabase {
         period,
       );
 
-      // Construct manager email from manager_uid if available, otherwise use current user
-      let assigneeEmail = this.constructManagerEmail(manager_uid);
-      if (!assigneeEmail) {
-        assigneeEmail = this.constructManagerEmail(current_user_uid) || '';
-      }
-      this.logger.info(`Using assignee email: ${assigneeEmail}`);
 
       // Enhance description with manager information if available
       const enhancedDescription = manager_name
@@ -585,7 +565,6 @@ export class AuditComplianceDatabase {
             `${appName}-${period}-${frequency}-Service-Account-Review`,
             'audit-compliance-plugin',
           ],
-          assignee: { emailAddress: assigneeEmail },
         },
       };
       if (parentEpicKey?.trim()) {
@@ -974,31 +953,19 @@ export class AuditComplianceDatabase {
         period,
       );
 
-      // Construct manager email from manager_uid if available, otherwise use current user
-      let assigneeEmail = this.constructManagerEmail(manager_uid);
-      if (!assigneeEmail) {
-        assigneeEmail = this.constructManagerEmail(current_user_uid) || '';
-      }
-      this.logger.info(`Using assignee email: ${assigneeEmail}`);
-
-      // Enhance description with manager information if available
-      const enhancedDescription = manager_name
-        ? `${description}\n\n*Manager:* ${manager_name}`
-        : description;
-
       const requestBody: JiraRequestBody = {
         fields: {
           project: { key: jira_project },
           summary: title,
-          description: enhancedDescription,
+          description: description,
           issuetype: { name: 'Task' },
           labels: [
             `${app_name}-${period}-${frequency}`,
             'audit-compliance-plugin',
           ],
-          assignee: { emailAddress: assigneeEmail },
         },
       };
+
       if (parentEpicKey?.trim()) {
         requestBody.fields.customfield_12311140 = parentEpicKey.trim();
       }
@@ -1013,8 +980,9 @@ export class AuditComplianceDatabase {
         })
         .catch(error => {
           this.logger.error('Failed to create Jira ticket', {
-            error: error.response?.data || error.message,
-            status: error.response?.status,
+            error: error instanceof Error ? error.message : String(error),
+            status: (error as any)?.response?.status,
+            requestBody,
           });
           throw new Error(
             `Failed to create Jira ticket: ${
@@ -1149,9 +1117,6 @@ export class AuditComplianceDatabase {
       throw new Error(`Jira project not found for app_name: ${app_name}`);
     }
 
-    // Use app_owner_email if available, otherwise fallback to hardcoded email
-    const assigneeEmail = appDetails.app_owner_email || '';
-
     const requestBody: JiraRequestBody = {
       fields: {
         project: { key: appDetails.jira_project },
@@ -1162,10 +1127,10 @@ export class AuditComplianceDatabase {
           `${app_name}-${period}-${frequency}-Epic`,
           'audit-compliance-plugin',
         ],
-        assignee: { emailAddress: assigneeEmail },
         customfield_12311141: summary, // Epic Name (same as summary)
       },
     };
+
     this.logger.info('Jira ticket request body', { requestBody });
 
     const createResp = await axios.post(
@@ -1181,15 +1146,29 @@ export class AuditComplianceDatabase {
 
     const { key: issueKey, id: issueId } = createResp.data;
 
-    const detailsResp = await axios.get<JiraIssueStatusResponse>(
-      `${jiraUrl}/rest/api/latest/issue/APD-882`,
-      {
-        headers: {
-          Authorization: `Bearer ${jiraToken}`,
-          Accept: 'application/json',
+    const detailsResp = await axios
+      .get<JiraIssueStatusResponse>(
+        `${jiraUrl}/rest/api/latest/issue/${issueKey}`,
+        {
+          headers: {
+            Authorization: `Bearer ${jiraToken}`,
+            Accept: 'application/json',
+          },
         },
-      },
-    );
+      )
+      .catch(error => {
+        this.logger.error('Failed to get Jira ticket status', {
+          error: error.response?.data || error.message,
+          status: error.response?.status,
+        });
+        throw new Error(
+          `Failed to get Jira ticket status: ${
+            error.response?.data?.errorMessages?.join(', ') ||
+            error.response?.data?.errors?.join(', ') ||
+            error.message
+          }`,
+        );
+      });
 
     const status = detailsResp.data.fields.status.name;
 
@@ -1207,7 +1186,6 @@ export class AuditComplianceDatabase {
       key: issueKey,
       status,
       self: `${jiraUrl}/rest/api/latest/issue/${issueKey}`,
-      assignee: assigneeEmail,
     };
   }
 

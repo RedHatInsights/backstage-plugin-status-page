@@ -411,6 +411,16 @@ export class RoverDatabase implements RoverStore {
           }
         }
 
+        // Fetch source from applications table
+        const applicationData = await this.db('applications')
+          .select('source')
+          .where({
+            account_name: rover_group_name,
+            app_name: app_name,
+          })
+          .first();
+
+        const source = applicationData?.source || 'rover';
         const row = {
           app_name,
           environment,
@@ -430,6 +440,7 @@ export class RoverDatabase implements RoverStore {
           frequency,
           app_delegate,
           ticket_status: '',
+          source,
         };
 
         await this.db('service_account_access_review').insert(row);
@@ -549,6 +560,17 @@ export class RoverDatabase implements RoverStore {
           }
         }
 
+        // Fetch source from applications table
+        const applicationData = await this.db('applications')
+          .select('source')
+          .where({
+            account_name: rover_group_name,
+            app_name: app_name,
+          })
+          .first();
+
+        const source = applicationData?.source || 'rover'; // fallback to rover if not found
+
         const row = {
           app_name,
           environment,
@@ -556,7 +578,7 @@ export class RoverDatabase implements RoverStore {
           user_role: 'service-account',
           manager: managerName,
           manager_uid: managerUid,
-          source: 'rover',
+          source,
           account_name: rover_group_name,
           period,
           frequency,
