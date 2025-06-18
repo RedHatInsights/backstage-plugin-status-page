@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-audit-compliance [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance@1.2.0...@appdev-platform/backstage-plugin-audit-compliance@1.3.0) (2025-06-18)
+
+
+### Features
+
+* **APD-785:** Removing assignee field from jira creation ([3c9f279](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/3c9f27982b5c38dffae7263222d155580579fb87))
+
 ## @appdev-platform/backstage-plugin-audit-compliance [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance@1.1.0...@appdev-platform/backstage-plugin-audit-compliance@1.2.0) (2025-06-17)
 
 
