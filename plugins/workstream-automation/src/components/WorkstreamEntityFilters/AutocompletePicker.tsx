@@ -110,6 +110,18 @@ export const AutocompletePicker = (props: PickerProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Don't re-set filter value when selectedOptions changes
   }, [filteredOptions]);
 
+  // Remove any previously selected options that are no longer available in the current context
+  useEffect(() => {
+    if (availableOptions.length && selectedOptions.length) {
+      const validSelected = selectedOptions.filter(option =>
+        availableOptions.includes(option),
+      );
+      if (!isEqual(validSelected, selectedOptions)) {
+        setSelectedOptions(validSelected);
+      }
+    }
+  }, [availableOptions, selectedOptions]);
+
   const filter = filters[name];
 
   if (
