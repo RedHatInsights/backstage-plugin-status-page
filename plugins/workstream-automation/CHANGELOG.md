@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.15.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.15.2...@appdev-platform/backstage-plugin-workstream-automation@1.15.3) (2025-06-20)
+
+
+### Bug Fixes
+
+* **PULSE-625:** remove selected filters when not found in available options ([cbf37a3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/cbf37a302e8e2e4c89f4d8ec19d0ba8e0e8f39c1))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.15.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.15.1...@appdev-platform/backstage-plugin-workstream-automation@1.15.2) (2025-06-17)
 
 
