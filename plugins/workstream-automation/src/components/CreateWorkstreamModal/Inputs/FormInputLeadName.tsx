@@ -4,13 +4,16 @@ import {
   catalogApiRef,
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
+import { Box, Typography } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useDebounce } from 'react-use';
+import { Member } from '../../../types';
 
-export const FormInputLeadName = () => {
+export const FormInputLeadName = (props: { members?: Member[] }) => {
+  const { members = [] } = props;
   const catalogApi = useApi(catalogApiRef);
   const { control } = useFormContext<{
     lead: UserEntity | null;
@@ -63,6 +66,11 @@ export const FormInputLeadName = () => {
     } else setLeadName(undefined);
   };
 
+  const isDisabledOption = (option: UserEntity) =>
+    members.some(member => member.userRef === stringifyEntityRef(option))
+      ? true
+      : false;
+
   const getLeadOptionLabel = (leadOption: UserEntity) =>
     leadOption.spec.profile
       ? `${leadOption.spec.profile.displayName} (${leadOption.spec.profile.email})`
@@ -99,6 +107,25 @@ export const FormInputLeadName = () => {
               handleInput(val);
             }}
             onChange={(_e, val) => onChange(val)}
+            getOptionDisabled={isDisabledOption}
+            renderOption={option => {
+              const member = members.find(
+                m => m.userRef === stringifyEntityRef(option),
+              );
+              return (
+                <Box display="flex" width="100%" justifyContent="space-between">
+                  {getLeadOptionLabel(option)}
+                  {member && (
+                    <Typography
+                      style={{ fontStyle: 'italic' }}
+                      variant="subtitle1"
+                    >
+                      Added as {member?.role}
+                    </Typography>
+                  )}
+                </Box>
+              );
+            }}
             renderInput={params => (
               <TextField
                 {...params}

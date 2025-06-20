@@ -111,7 +111,6 @@ export const FormInputWorkstreams = (props: { currentEntity?: ArtEntity }) => {
               getOptionSelected={(option, val) =>
                 stringifyEntityRef(option) === stringifyEntityRef(val)
               }
-              groupBy={option => option.kind}
               getOptionLabel={option => {
                 return stringifyEntityRef(option);
               }}

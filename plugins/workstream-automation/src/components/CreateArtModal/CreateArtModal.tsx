@@ -317,7 +317,7 @@ export const CreateArtModal = () => {
       label: 'Art details',
       children: (
         <FormProvider {...form1}>
-          <ArtDetailsForm />
+          <ArtDetailsForm form2={form2} />
         </FormProvider>
       ),
     },

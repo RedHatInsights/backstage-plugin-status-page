@@ -377,7 +377,7 @@ export const CreateWorkstreamModal = () => {
       label: 'Workstream details',
       children: (
         <FormProvider {...form1}>
-          <WorkstreamDetailsForm />
+          <WorkstreamDetailsForm form2={form2} />
         </FormProvider>
       ),
     },

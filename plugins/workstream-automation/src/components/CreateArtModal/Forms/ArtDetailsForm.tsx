@@ -8,8 +8,19 @@ import {
 } from '../Inputs';
 
 import { FormInputTextField } from '../../CreateWorkstreamModal/Inputs';
+import { UseFormReturn } from 'react-hook-form';
+import { ARTForm2 } from '../types';
+import { Member } from '../../../types';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
-export const ArtDetailsForm = () => {
+export const ArtDetailsForm = (props: { form2: UseFormReturn<ARTForm2> }) => {
+  const { form2 } = props;
+
+  const members: Member[] = form2.getValues('selectedMembers').map(member => ({
+    userRef: stringifyEntityRef(member.user),
+    role: member.role ?? '',
+  }));
+
   return (
     <Grid container>
       <Grid item xs={12}>
@@ -27,7 +38,7 @@ export const ArtDetailsForm = () => {
         />
       </Grid>
       <Grid item xs={12}>
-        <FormInputRteName />
+        <FormInputRteName members={members} />
       </Grid>
       <Grid item xs={12}>
         <FormInputTextField
