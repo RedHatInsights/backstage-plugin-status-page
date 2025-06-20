@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-service-now-common [1.2.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-service-now-common@1.2.0...@appdev-platform/backstage-plugin-service-now-common@1.2.1) (2025-06-20)
+
+
+### Bug Fixes
+
+* **PULSE-753:** change `triggerId` to `applies` in ServiceNow API usage in servicenow-common-plugin ([956e297](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/956e29749e0bc08fa7ec9f5aba55ea188103f921))
+
 ## @appdev-platform/backstage-plugin-service-now-common [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-service-now-common@1.1.0...@appdev-platform/backstage-plugin-service-now-common@1.2.0) (2025-06-09)
 
 
