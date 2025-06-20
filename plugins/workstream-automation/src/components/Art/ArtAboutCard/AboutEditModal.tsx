@@ -80,7 +80,7 @@ export const AboutEditModal = (props: EditDialogProps) => {
               />
             </Grid>
             <Grid item xs={12}>
-              <FormInputRteName />
+              <FormInputRteName members={entity.spec.members} />
             </Grid>
             <Grid item xs={12}>
               <FormInputTextField

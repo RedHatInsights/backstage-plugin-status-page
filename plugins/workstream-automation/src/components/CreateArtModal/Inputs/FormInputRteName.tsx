@@ -9,8 +9,11 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useDebounce } from 'react-use';
+import { Member } from '../../../types';
+import { Box, Typography } from '@material-ui/core';
 
-export const FormInputRteName = () => {
+export const FormInputRteName = (props: { members?: Member[] }) => {
+  const { members = [] } = props;
   const catalogApi = useApi(catalogApiRef);
   const { control } = useFormContext<{
     rte: UserEntity | null;
@@ -63,6 +66,11 @@ export const FormInputRteName = () => {
     } else setRteName(undefined);
   };
 
+  const isDisabledOption = (option: UserEntity) =>
+    members.some(member => member.userRef === stringifyEntityRef(option))
+      ? true
+      : false;
+
   const getRteOptionLabel = (rteOption: UserEntity) =>
     rteOption.spec.profile
       ? `${rteOption.spec.profile.displayName} (${rteOption.spec.profile.email})`
@@ -97,6 +105,25 @@ export const FormInputRteName = () => {
               )
                 return;
               handleInput(val);
+            }}
+            getOptionDisabled={isDisabledOption}
+            renderOption={option => {
+              const member = members.find(
+                m => m.userRef === stringifyEntityRef(option),
+              );
+              return (
+                <Box display="flex" width="100%" justifyContent="space-between">
+                  {getRteOptionLabel(option)}
+                  {member && (
+                    <Typography
+                      style={{ fontStyle: 'italic' }}
+                      variant="subtitle1"
+                    >
+                      Added as {member?.role}
+                    </Typography>
+                  )}
+                </Box>
+              );
             }}
             onChange={(_e, val) => onChange(val)}
             renderInput={params => (
