@@ -51,6 +51,7 @@ export class ServiceNowClient {
     });
   }
 
+  /** @deprecated */
   async getComplianceControlsByTriggerId(
     triggerId: string,
     options?: CommonListOptions,
@@ -58,6 +59,19 @@ export class ServiceNowClient {
     const uri = `/api/now/table/${CMDB_PIA_TABLE_NAME}`;
 
     const sysparmQuery = `trigger_id=${triggerId}`;
+    return this.pagedRequest<ServiceNowPIAComplianceControlsResponse>(uri, {
+      ...options,
+      sysparm_query: sysparmQuery,
+    });
+  }
+
+  async getComplianceControlsByAppliesTo(
+    sysId: string,
+    options?: CommonListOptions,
+  ) {
+    const uri = `/api/now/table/${CMDB_PIA_TABLE_NAME}`;
+
+    const sysparmQuery = `applies_to=${sysId}`;
     return this.pagedRequest<ServiceNowPIAComplianceControlsResponse>(uri, {
       ...options,
       sysparm_query: sysparmQuery,
@@ -101,7 +115,8 @@ export class ServiceNowClient {
 
     if (!response.ok) {
       throw new Error(
-        `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${response.status
+        `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
+          response.status
         } - ${response.statusText}`,
       );
     }
