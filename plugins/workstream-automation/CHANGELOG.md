@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.15.4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.15.3...@appdev-platform/backstage-plugin-workstream-automation@1.15.4) (2025-06-20)
+
+
+### Bug Fixes
+
+* **PULSE-751:** disable entites added as member in lead/rte field ([644b414](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/644b4145f9a10db3dbba0cebd17e0801dc4a226a))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.15.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.15.2...@appdev-platform/backstage-plugin-workstream-automation@1.15.3) (2025-06-20)
 
 
