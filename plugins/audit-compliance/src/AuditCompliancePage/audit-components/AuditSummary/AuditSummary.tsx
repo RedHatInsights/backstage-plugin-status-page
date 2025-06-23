@@ -12,7 +12,13 @@ import {
   fetchApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
-import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
+import {
+  Box,
+  CircularProgress,
+  IconButton,
+  Tooltip,
+  Typography,
+} from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { AuditSummaryReport } from './AuditSummaryReport/AuditSummaryReport';
@@ -29,6 +35,7 @@ export const AuditSummary: React.FC = () => {
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [auditDetails, setAuditDetails] = useState<any>(null);
   const [summaryData, setSummaryData] = useState<AccessReviewSummary>({
@@ -107,6 +114,7 @@ export const AuditSummary: React.FC = () => {
             severity: 'info',
             display: 'transient',
           });
+          setIsSyncing(true);
 
           // Call the sync-fresh-data API
           const syncResponse = await fetchApi.fetch(
@@ -155,6 +163,7 @@ export const AuditSummary: React.FC = () => {
         console.error('Error fetching data:', err);
       } finally {
         setIsLoading(false);
+        setIsSyncing(false);
       }
     };
 
@@ -204,6 +213,14 @@ export const AuditSummary: React.FC = () => {
       </Header>
 
       <Content>
+        {isSyncing && (
+          <Box display="flex" justifyContent="center" alignItems="center" p={2}>
+            <CircularProgress />
+            <Box ml={2}>
+              <Typography>Syncing fresh data...</Typography>
+            </Box>
+          </Box>
+        )}
         <AuditSummaryReport
           data={summaryData}
           isLoading={isLoading}

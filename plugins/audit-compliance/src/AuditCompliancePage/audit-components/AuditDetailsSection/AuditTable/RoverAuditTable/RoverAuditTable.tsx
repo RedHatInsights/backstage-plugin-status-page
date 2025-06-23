@@ -88,6 +88,7 @@ export default function RoverAuditTable({
   const [currentUser, setCurrentUser] = useState('User');
   const [initialDescription, setInitialDescription] = useState('');
   const [initialTitle, setInitialTitle] = useState('');
+  const [ticketLoading, setTicketLoading] = useState(false);
 
   const getCurrentUser = async () => {
     try {
@@ -219,6 +220,7 @@ export default function RoverAuditTable({
   ) => {
     if (!selectedUser) return;
 
+    setTicketLoading(true);
     try {
       // Extract current user UID from userEntityRef (format: user:redhat/username)
       const currentUserUid = currentUser.split('/')[1] || '';
@@ -254,7 +256,8 @@ export default function RoverAuditTable({
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.message || `HTTP error! status: ${response.status}`,
+          errorData.message ||
+            'Failed to create Jira ticket while executing rejection.',
         );
       }
 
@@ -317,6 +320,12 @@ export default function RoverAuditTable({
         severity: 'error',
         display: 'transient',
       });
+      setDialogOpen(false);
+      setSelectedUser(null);
+      setInitialDescription('');
+      setInitialTitle('');
+    } finally {
+      setTicketLoading(false);
     }
   };
 
@@ -681,6 +690,7 @@ export default function RoverAuditTable({
           onSubmit={handleTicketSubmit}
           initialDescription={initialDescription}
           initialTitle={initialTitle}
+          loading={ticketLoading}
         />
         <EmailModal
           open={sendEmailModalOpen}
