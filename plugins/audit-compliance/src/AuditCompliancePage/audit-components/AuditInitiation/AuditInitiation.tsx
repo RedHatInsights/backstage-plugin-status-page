@@ -23,7 +23,7 @@ import {
   Link,
   MenuItem,
   Select,
-  Typography
+  Typography,
 } from '@material-ui/core';
 import Group from '@material-ui/icons/Group';
 import React, { useEffect, useState } from 'react';
@@ -187,9 +187,22 @@ export const AuditInitiation = () => {
         return;
       }
 
+      // Show alert if JIRA creation failed
+      if (auditResult.jira_creation_failed) {
+        alertApi.post({
+          message: 'Failed to create a JIRA epic',
+          severity: 'warning',
+          display: 'transient',
+        });
+      }
+
       // Show success message with Jira ticket and report information
       const successMessage = [
-        `Audit initiated successfully with Jira ticket ${auditResult.jira_ticket?.key}.`,
+        `Audit initiated successfully${
+          auditResult.jira_ticket?.key
+            ? ` with Jira ticket ${auditResult.jira_ticket.key}.`
+            : '.'
+        }`,
         auditResult.reports_generated > 0
           ? `Generated ${auditResult.reports_generated} reports from ${
               auditResult.sources?.join(' and ') || 'Rover and GitLab'
@@ -338,7 +351,12 @@ export const AuditInitiation = () => {
                     title: 'Jira Ticket',
                     field: 'jira_key',
                     render: (row: AuditHistoryItem) => {
-                      if (!row.jira_key) return 'N/A';
+                      if (
+                        !row.jira_key ||
+                        row.jira_key.toUpperCase() === 'N/A'
+                      ) {
+                        return 'N/A';
+                      }
                       return (
                         <Link
                           href={`${jiraUrl}/browse/${row.jira_key}`}

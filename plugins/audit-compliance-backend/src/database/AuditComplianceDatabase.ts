@@ -337,6 +337,7 @@ export class AuditComplianceDatabase {
    * @param frequency - Audit frequency
    * @param period - Audit period
    * @param progress - New progress value
+   * @param performed_by - User who performed the action
    * @returns Promise resolving to the number of updated rows
    * @throws Error if audit not found
    */
@@ -350,12 +351,14 @@ export class AuditComplianceDatabase {
       | 'summary_generated'
       | 'completed'
       | 'final_sign_off_done',
+    performed_by: string = 'system',
   ) {
     this.logger.debug('Updating audit progress', {
       app_name,
       frequency,
       period,
       progress,
+      performed_by,
     });
 
     // Get current audit details
@@ -393,7 +396,7 @@ export class AuditComplianceDatabase {
       app_name,
       frequency,
       period,
-      performed_by: 'system',
+      performed_by,
       metadata: {
         previous_progress: audit.progress,
         new_progress: progress,
@@ -548,7 +551,6 @@ export class AuditComplianceDatabase {
         frequency,
         period,
       );
-
 
       // Enhance description with manager information if available
       const enhancedDescription = manager_name

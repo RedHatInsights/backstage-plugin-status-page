@@ -138,28 +138,57 @@ export async function createAuditInitiationRouter(
       const reportResults = await Promise.all(reportPromises);
       const successfulReports = reportResults.filter(result => result !== null);
 
-      // Create Jira ticket for the audit (as an Epic)
-      const jiraTicket = await database.createAuditJiraTicket({
-        app_name: audit.app_name,
-        frequency: audit.frequency,
-        period: audit.period,
-      });
+      // Try to create Jira ticket for the audit (as an Epic)
+      let jiraTicket = null;
+      let jiraCreationFailed = false;
+      try {
+        jiraTicket = await database.createAuditJiraTicket({
+          app_name: audit.app_name,
+          frequency: audit.frequency,
+          period: audit.period,
+        });
+        // Update the audit record with the Jira ticket key
+        await database.updateAudit(
+          audit.app_name,
+          audit.frequency,
+          audit.period,
+          {
+            jira_key: jiraTicket.key,
+            jira_status: jiraTicket.status,
+          },
+        );
+      } catch (jiraError) {
+        logger.error('Failed to create JIRA epic', {
+          error:
+            jiraError instanceof Error ? jiraError.message : String(jiraError),
+        });
+        jiraCreationFailed = true;
+        // Update the audit record with jira_key: 'N/A'
+        await database.updateAudit(
+          audit.app_name,
+          audit.frequency,
+          audit.period,
+          {
+            jira_key: 'N/A',
+            jira_status: 'N/A',
+          },
+        );
+      }
 
-      // Update the audit record with the Jira ticket key
-      await database.updateAudit(
+      // Set progress to 'details_under_review' after data is fetched and JIRA is handled
+      await database.updateAuditProgress(
         audit.app_name,
         audit.frequency,
         audit.period,
-        {
-          jira_key: jiraTicket.key,
-          jira_status: jiraTicket.status,
-        },
+        'details_under_review',
       );
 
       return res.json({
         id: id.id,
         message: 'Audit initiated successfully',
         reports_generated: successfulReports.length,
+        jira_creation_failed: jiraCreationFailed,
+        jira_ticket: jiraTicket,
       });
     } catch (error) {
       const errorMessage =
@@ -234,7 +263,7 @@ export async function createAuditInitiationRouter(
    */
   auditInitiationRouter.put('/audits/progress', async (req, res) => {
     console.log('----------------->progress', req.body);
-    const { app_name, frequency, period, progress } = req.body;
+    const { app_name, frequency, period, progress, performed_by } = req.body;
 
     if (!app_name || !frequency || !period || !progress) {
       res.status(400).json({
@@ -262,7 +291,13 @@ export async function createAuditInitiationRouter(
     }
 
     try {
-      await database.updateAuditProgress(app_name, frequency, period, progress);
+      await database.updateAuditProgress(
+        app_name,
+        frequency,
+        period,
+        progress,
+        performed_by || 'system',
+      );
       res.json({ message: 'Progress updated successfully' });
     } catch (error) {
       res.status(500).json({

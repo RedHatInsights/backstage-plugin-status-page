@@ -8,6 +8,7 @@ import {
   TextField,
   Snackbar,
   Box,
+  CircularProgress,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab'; // <-- MUI v4 Alert
 
@@ -17,6 +18,7 @@ interface JiraModalProps {
   onSubmit: (ticketType: string, description: string, comments: string) => void;
   initialDescription: string;
   initialTitle?: string;
+  loading?: boolean;
 }
 
 const JiraModal: React.FC<JiraModalProps> = ({
@@ -25,6 +27,7 @@ const JiraModal: React.FC<JiraModalProps> = ({
   onSubmit,
   initialDescription,
   initialTitle,
+  loading = false,
 }) => {
   const [ticketType, setTicketType] = useState('task');
   const [jiraDescription, setJiraDescription] = useState(initialDescription);
@@ -43,6 +46,7 @@ const JiraModal: React.FC<JiraModalProps> = ({
     }
 
     onSubmit(ticketType, jiraDescription, comments);
+    onClose();
     setTicketType('task');
     setJiraDescription('');
     setComments('');
@@ -94,11 +98,20 @@ const JiraModal: React.FC<JiraModalProps> = ({
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={onClose} color="primary">
+          <Button onClick={onClose} color="primary" disabled={loading}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} color="primary" variant="contained">
-            Create Ticket
+          <Button
+            onClick={handleSubmit}
+            color="primary"
+            variant="contained"
+            disabled={loading}
+          >
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              'Create Ticket'
+            )}
           </Button>
         </DialogActions>
       </Dialog>

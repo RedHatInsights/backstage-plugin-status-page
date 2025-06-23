@@ -148,6 +148,8 @@ export const AuditDetailsSection = () => {
   const confirmFinalSignOff = async () => {
     try {
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+      const identity = await identityApi.getBackstageIdentity();
+      const user = identity.userEntityRef;
       const response = await fetchApi.fetch(`${baseUrl}/audits/progress`, {
         method: 'PUT',
         headers: {
@@ -158,6 +160,7 @@ export const AuditDetailsSection = () => {
           frequency,
           period,
           progress: 'final_sign_off_done',
+          performed_by: user,
         }),
       });
 
