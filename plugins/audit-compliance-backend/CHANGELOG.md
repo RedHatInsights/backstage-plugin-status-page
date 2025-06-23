@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-audit-compliance-backend [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance-backend@1.3.0...@appdev-platform/backstage-plugin-audit-compliance-backend@1.4.0) (2025-06-23)
+
+
+### Features
+
+* **APD-785:** Adding spinning wheel for data loading and modifying unique constraints on the DB table ([444dd89](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/444dd899e754b9f94fc77147787b239f698d42f1))
+
 ## @appdev-platform/backstage-plugin-audit-compliance-backend [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance-backend@1.2.0...@appdev-platform/backstage-plugin-audit-compliance-backend@1.3.0) (2025-06-18)
 
 
