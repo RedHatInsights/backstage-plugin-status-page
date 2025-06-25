@@ -14,5 +14,6 @@ export enum FactNames {
   MergeRequestApprovalRules = 'merge_request_approval_rules',
   RepositoryTree = 'repository_tree',
   SharedStages = 'shared_stages',
+  ProtectedBranches = 'protected_branches',
 
 }
