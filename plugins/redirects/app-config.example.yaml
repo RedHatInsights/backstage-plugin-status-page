@@ -1,0 +1,10 @@
+app:
+  redirects:
+    entities:
+      - from: component:default/test
+        to: component:default/example-website-for-redirects-plugin
+        message: Redirection test
+
+    urls:
+      - from: /test
+        to: /test2

@@ -1,0 +1,10 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: example-website-for-redirects-plugin
+spec:
+  type: website
+  lifecycle: experimental
+  owner: guests
+  system: examples
