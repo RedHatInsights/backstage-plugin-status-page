@@ -6,8 +6,22 @@ app:
       host: ${ANALYTICS_MATOMO_INSTANCE_URL}
       siteId: ${ANALYTICS_MATOMO_SITE_ID}
 
+  redirects:
+    rules:
+      - type: entity
+        from: component:default/dummy-component
+        to: component:default/example-website-for-redirects-plugin
+        message: Redirection test
+      - type: entity
+        from: component:default/dummy2
+        to: /
+        message: Redirection test
+      - type: url
+        from: /dummy-path
+        to: /
+
 organization:
-  name: My Company
+  name: Backstage Plugins
 
 backend:
   # Used for enabling authentication, secret is shared by all backend plugins
@@ -132,15 +146,15 @@ proxy:
       credentials: dangerously-allow-unauthenticated
       changeOrigin: true
       allowedMethods: ['GET']
-    '/mcp':
-      target: ${MCP_SERVER_BASE_URL}
-      headers:
-        PRIVATE-TOKEN: ${MCP_SERVER_TOKEN}
-        Content-Type: 'application/json'
-      credentials: dangerously-allow-unauthenticated
-      changeOrigin: true
-      allowedMethods: ['GET', 'OPTIONS', 'PUT']
-      secure: false
+    # '/mcp':
+    #   target: ${MCP_SERVER_BASE_URL}
+    #   headers:
+    #     PRIVATE-TOKEN: ${MCP_SERVER_TOKEN}
+    #     Content-Type: 'application/json'
+    #   credentials: dangerously-allow-unauthenticated
+    #   changeOrigin: true
+    #   allowedMethods: ['GET', 'OPTIONS', 'PUT']
+    #   secure: false
 
 jira:
   proxyPath: /jira
@@ -289,9 +303,9 @@ catalog:
     - type: file
       target: ../../examples/test-data/mcp-servers.yaml
 
-    - type: url
-      target: ${MCP_TEMPLATE}
-      allow: [Template]
+    # Local example redirection target component
+    - type: file
+      target: ../../examples/test-data/redirects-plugin.yaml
 
     ## Uncomment these lines to add more example data
     # - type: url

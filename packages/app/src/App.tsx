@@ -82,6 +82,10 @@ import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import { getThemes } from '@red-hat-developer-hub/backstage-plugin-theme';
 import { SoundcheckRoutingPage } from '@spotify/backstage-plugin-soundcheck';
 import { CatalogPage } from './components/CatalogPage/CatalogPage';
+import {
+  redirectsPlugin,
+  RedirectsProvider,
+} from '@appdev-platform/backstage-plugin-redirects';
 
 const app = createApp({
   apis,
@@ -101,6 +105,10 @@ const app = createApp({
     });
     bind(feedbackPlugin.externalRoutes, {
       viewDocs: techdocsPlugin.routes.root,
+    });
+    bind(redirectsPlugin.externalRoutes, {
+      techDocsDetails: techdocsPlugin.routes.docRoot,
+      catalogDetails: catalogPlugin.routes.catalogEntity,
     });
   },
   components: {
@@ -221,8 +229,10 @@ export default app.createRoot(
     <AlertDisplay />
     <OAuthRequestDialog />
     <AppRouter>
-      <Root>{routes}</Root>
-      <OpcFeedbackComponent />
+      <RedirectsProvider>
+        <Root>{routes}</Root>
+        <OpcFeedbackComponent />
+      </RedirectsProvider>
     </AppRouter>
   </>,
 );
