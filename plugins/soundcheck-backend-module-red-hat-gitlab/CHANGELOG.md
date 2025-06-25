@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.3.0...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.4.0) (2025-06-25)
+
+
+### Features
+
+* **PULSE-819:** add protected branches fact collector for redhat-gitlab ([41617e7](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/41617e746a831ac004c0eb9fe43531b8ec857756))
+
 ## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.2.0...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.3.0) (2025-05-07)
 
 
