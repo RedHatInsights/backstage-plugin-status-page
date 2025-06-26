@@ -273,7 +273,10 @@ export class RoverDatabase implements RoverStore {
       });
 
       const data = (await response.json()) as GroupApiResponse;
-      const groupInfo = data?.result?.result?.[0];
+      // Find the group whose cn matches groupCn exactly
+      const groups = data?.result?.result || [];
+      // If group objects do not have a 'cn' field, replace 'cn' with the correct field name
+      const groupInfo = groups.find((g: any) => g.cn === groupCn);
 
       if (!groupInfo) return { memberUids: [], ownerUids: [] };
 

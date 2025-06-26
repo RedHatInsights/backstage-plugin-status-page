@@ -4,7 +4,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import axios from 'axios';
 import { Knex } from 'knex';
-import { checkAndUpdateJiraStatuses } from './JiraIntegration';
+import { addJiraComment, checkAndUpdateJiraStatuses } from './JiraIntegration';
 import {
   JiraIssueStatusResponse,
   JiraRequestBody,
@@ -1570,5 +1570,32 @@ export class AuditComplianceDatabase {
       });
       throw error;
     }
+  }
+
+  /**
+   * Adds a comment to a Jira ticket and updates the comment in the local database.
+   *
+   * @param id - The ID of the access review record
+   * @param comments - The comment to add
+   * @param ticket_reference - The Jira ticket reference
+   */
+  async addJiraCommentAndUpdateDb(
+    id: number,
+    comments: string,
+    ticket_reference: string,
+  ) {
+    if (!comments || !ticket_reference) {
+      throw new Error('Missing comment or ticket reference.');
+    }
+
+    // Add comment to Jira
+    await addJiraComment(ticket_reference, comments, this.logger, this.config);
+
+    // Update comment in the database
+    await this.db('group_access_reports').where({ id }).update({ comments });
+
+    this.logger.info(
+      `Successfully added comment to Jira ticket ${ticket_reference} and updated database.`,
+    );
   }
 }

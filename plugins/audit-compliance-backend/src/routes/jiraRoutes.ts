@@ -80,5 +80,26 @@ export async function createJiraRouter(
     }
   });
 
+  /**
+   * POST /jira/comment
+   * Adds a comment to an existing Jira ticket and updates the local database.
+   *
+   * @route POST /jira/comment
+   * @param {Object} req.body - Request body containing id, comments, and ticket_reference
+   * @returns {Object} 200 - Success message
+   * @returns {Object} 500 - Error response
+   */
+  jiraRouter.post('/jira/comment', async (req, res) => {
+    const { id, comments, ticket_reference } = req.body;
+
+    try {
+      await database.addJiraCommentAndUpdateDb(id, comments, ticket_reference);
+      res.status(200).json({ message: 'Comment added successfully.' });
+    } catch (err: any) {
+      logger.error('Error adding Jira comment:', err.message);
+      res.status(500).json({ error: err.message || 'Unknown error occurred.' });
+    }
+  });
+
   return jiraRouter;
 }

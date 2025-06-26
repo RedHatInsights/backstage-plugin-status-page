@@ -60,11 +60,29 @@ export async function createDataSyncRouter(
       // Use a transaction to ensure atomicity
       const result: SyncFreshDataResult = await db.transaction(
         async (trx: Knex.Transaction) => {
-          // Fetch data from both sources using new functions that only return data without inserting
-          const [roverData, gitlabData] = await Promise.all([
-            roverStore.fetchRoverDataForFresh(appname, frequency, period),
-            gitlabStore.fetchGitLabDataForFresh(appname, frequency, period),
-          ]);
+          // Fetch data from both sources, but do not fail if one is missing
+          let roverData: RoverDataItem[] = [];
+          let gitlabData: GitLabDataItem[] = [];
+
+          try {
+            roverData = await roverStore.fetchRoverDataForFresh(
+              appname,
+              frequency,
+              period,
+            );
+          } catch (e: any) {
+            logger.warn(`Rover data not available: ${e.message || e}`);
+          }
+
+          try {
+            gitlabData = await gitlabStore.fetchGitLabDataForFresh(
+              appname,
+              frequency,
+              period,
+            );
+          } catch (e: any) {
+            logger.warn(`GitLab data not available: ${e.message || e}`);
+          }
 
           // Clear existing fresh data for this app/period combination
           await trx('service_account_access_review_fresh')
