@@ -21,6 +21,7 @@ import {
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import { isMatch } from 'matcher';
 
 export type RedirectsContextProps = {
   pathname?: string;
@@ -45,20 +46,17 @@ export const RedirectsProvider = (props: PropsWithChildren<{}>) => {
 
   const shouldRedirectUsingEntityRef = useCallback(
     (fromEntity: CompoundEntityRef) => {
-      const entityPath = catalogRoute(fromEntity);
-      const techDocsPath = techDocsRoute(fromEntity);
+      const entityPath = `${catalogRoute(fromEntity)}*`;
+      const techDocsPath = `${techDocsRoute(fromEntity)}*`;
 
-      return (
-        location.pathname?.startsWith(entityPath) ||
-        location.pathname?.startsWith(techDocsPath)
-      );
+      return isMatch(location.pathname ?? '', [entityPath, techDocsPath]);
     },
     [catalogRoute, techDocsRoute, location.pathname],
   );
 
   const shouldRedirectUsingUrl = useCallback(
     (from: string) => {
-      return RegExp(from, 'i').test(location.pathname ?? '');
+      return isMatch(location.pathname ?? '', from);
     },
     [location.pathname],
   );
@@ -74,11 +72,11 @@ export const RedirectsProvider = (props: PropsWithChildren<{}>) => {
   };
 
   const getNewPathForEntity = useCallback((currentPath: string | undefined, entity: CompoundEntityRef) => {
-    const route = currentPath?.startsWith('/catalog')
-      ? catalogRoute
-      : techDocsRoute;
+      const route = currentPath?.startsWith('/catalog')
+        ? catalogRoute
+        : techDocsRoute;
 
-    return getPath(route, entity);
+      return getPath(route, entity);
   }, [catalogRoute, techDocsRoute]);
 
   const validateEntityRef = (entityRef: string) => {
@@ -130,7 +128,7 @@ export const RedirectsProvider = (props: PropsWithChildren<{}>) => {
     }
 
     const fallbackMessage = applicableRule.type === 'entity' ? `The entity ${fromMessage} has been replaced with ${toMessage}`
-      : `The requested URL no longer exists, redirecting to ${toMessage}`;
+        : `The requested URL no longer exists, redirecting to ${toMessage}`;
 
     alertApi.post({
       message: `${
