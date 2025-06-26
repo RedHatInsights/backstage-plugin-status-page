@@ -125,3 +125,50 @@ export async function fetchJiraStatus(
     return null;
   }
 }
+
+/**
+ * Adds a comment to a Jira issue using the Jira API.
+ *
+ * @param issueKey - The Jira issue key
+ * @param comment - The comment to add
+ * @param logger - Logger service for logging operations
+ * @param config - Config object for accessing configuration
+ * @returns Promise that resolves when the comment is added
+ * @throws Throws an error if the API call fails
+ */
+export async function addJiraComment(
+  issueKey: string,
+  comment: string,
+  logger: LoggerService,
+  config: Config,
+): Promise<void> {
+  try {
+    const jiraUrl = config.getString('auditCompliance.jiraUrl');
+    const jiraToken = config.getString('auditCompliance.jiraToken');
+    const commentUrl = `${jiraUrl}/rest/api/latest/issue/${issueKey}/comment`;
+
+    await axios.post(
+      commentUrl,
+      { body: comment },
+      {
+        headers: {
+          Authorization: `Bearer ${jiraToken}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      },
+    );
+
+    logger.info(`Successfully added comment to Jira issue ${issueKey}`);
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      const errorMsg = `Axios error adding comment to ${issueKey}: ${err.response?.status} - ${err.message}`;
+      logger.error(errorMsg);
+      throw new Error(errorMsg);
+    } else {
+      const errorMsg = `Unknown error adding comment to ${issueKey}: ${err}`;
+      logger.error(errorMsg);
+      throw new Error(errorMsg);
+    }
+  }
+}

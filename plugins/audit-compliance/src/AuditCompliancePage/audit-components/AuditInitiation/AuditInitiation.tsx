@@ -274,13 +274,14 @@ export const AuditInitiation = () => {
           <Box mb={3}>
             <Grid container spacing={3}>
               <Grid item xs={12} sm={4}>
-                <FormControl fullWidth>
-                  <InputLabel>Audit Frequency</InputLabel>
+                <FormControl fullWidth required>
+                  <InputLabel required>Audit Frequency</InputLabel>
                   <Select
                     value={frequency}
                     onChange={e =>
                       setFrequency(e.target.value as 'quarterly' | 'yearly')
                     }
+                    required
                   >
                     <MenuItem value="quarterly">Quarterly</MenuItem>
                     <MenuItem value="yearly">Yearly</MenuItem>
@@ -290,13 +291,14 @@ export const AuditInitiation = () => {
 
               {frequency === 'quarterly' && (
                 <Grid item xs={12} sm={4}>
-                  <FormControl fullWidth>
-                    <InputLabel>Select Quarter</InputLabel>
+                  <FormControl fullWidth required>
+                    <InputLabel required>Select Quarter</InputLabel>
                     <Select
                       value={selectedQuarter}
                       onChange={e =>
                         setSelectedQuarter(e.target.value as string)
                       }
+                      required
                     >
                       {getQuarterOptions().map(q => (
                         <MenuItem key={q.value} value={q.value}>
@@ -310,11 +312,12 @@ export const AuditInitiation = () => {
 
               {(frequency === 'yearly' || frequency === 'quarterly') && (
                 <Grid item xs={12} sm={4}>
-                  <FormControl fullWidth>
-                    <InputLabel>Select Year</InputLabel>
+                  <FormControl fullWidth required>
+                    <InputLabel required>Select Year</InputLabel>
                     <Select
                       value={selectedYear}
                       onChange={e => setSelectedYear(Number(e.target.value))}
+                      required
                     >
                       {getYearOptions().map(year => (
                         <MenuItem key={year} value={year}>

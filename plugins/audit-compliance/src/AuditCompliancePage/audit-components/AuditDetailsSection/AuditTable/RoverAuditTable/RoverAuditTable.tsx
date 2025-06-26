@@ -89,6 +89,9 @@ export default function RoverAuditTable({
   const [initialDescription, setInitialDescription] = useState('');
   const [initialTitle, setInitialTitle] = useState('');
   const [ticketLoading, setTicketLoading] = useState(false);
+  const [commentUpdateLoading, setCommentUpdateLoading] = useState<
+    Record<number, boolean>
+  >({});
 
   const getCurrentUser = async () => {
     try {
@@ -205,8 +208,14 @@ export default function RoverAuditTable({
   const handleReject = (user: UserAccessData) => {
     const title = `[${user.app_name}-${period} AQR] : Rejection of access for ${
       user.full_name
-    } (${user.user_id}) for ${user.source} : ${user.account_name || 'N/A'}`;
-    const description = `This Jira ticket is created for ${frequency} ${period} AQR review for application ${user.app_name} for the removal of user: ${user.full_name} (${user.user_id}) from ${user.source}`;
+    } (${user.user_id}) for source - ${user.source} : ${
+      user.account_name || 'N/A'
+    }`;
+    const description = `This Jira ticket is created for ${frequency} ${period} AQR review for application ${
+      user.app_name
+    } for the removal of user: ${user.full_name} (${user.user_id}) from ${
+      user.source
+    } for account ${user.account_name || 'N/A'} `;
     setSelectedUser(user);
     setInitialTitle(title);
     setInitialDescription(description);
@@ -326,6 +335,46 @@ export default function RoverAuditTable({
       setInitialTitle('');
     } finally {
       setTicketLoading(false);
+    }
+  };
+
+  const handleCommentUpdate = async (user: UserAccessData) => {
+    setCommentUpdateLoading(prev => ({ ...prev, [user.id]: true }));
+    try {
+      const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+      const payload = {
+        id: user.id,
+        comments: user.comments,
+        ticket_reference: user.ticket_reference,
+      };
+
+      const response = await fetchApi.fetch(`${baseUrl}/jira/comment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to update Jira comment.');
+      }
+
+      alertApi.post({
+        message: 'Comment updated successfully in Jira.',
+        severity: 'success',
+        display: 'transient',
+      });
+    } catch (error) {
+      alertApi.post({
+        message:
+          error instanceof Error ? error.message : 'Failed to update comment.',
+        severity: 'error',
+        display: 'transient',
+      });
+    } finally {
+      setCommentUpdateLoading(prev => ({ ...prev, [user.id]: false }));
     }
   };
 
@@ -461,19 +510,37 @@ export default function RoverAuditTable({
       field: 'comments',
       hidden: !showDetails,
       render: rowData => (
-        <TextField
-          value={rowData.comments || ''}
-          onChange={e => {
-            const updated = userData.map(d =>
-              d.id === rowData.id ? { ...d, comments: e.target.value } : d,
-            );
-            setUserData(updated);
-          }}
-          multiline
-          variant="outlined"
-          size="small"
-          fullWidth
-        />
+        <Box>
+          <TextField
+            value={rowData.comments || ''}
+            onChange={e => {
+              const updated = userData.map(d =>
+                d.id === rowData.id ? { ...d, comments: e.target.value } : d,
+              );
+              setUserData(updated);
+            }}
+            multiline
+            variant="outlined"
+            size="small"
+            fullWidth
+          />
+          {rowData.sign_off_status === 'rejected' &&
+            rowData.ticket_reference && (
+              <Button
+                variant="contained"
+                size="small"
+                onClick={() => handleCommentUpdate(rowData)}
+                disabled={commentUpdateLoading[rowData.id]}
+                style={{ minWidth: '80px', marginTop: '8px' }}
+              >
+                {commentUpdateLoading[rowData.id] ? (
+                  <CircularProgress size={20} />
+                ) : (
+                  'Update'
+                )}
+              </Button>
+            )}
+        </Box>
       ),
     },
     {

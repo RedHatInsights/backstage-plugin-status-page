@@ -7,6 +7,9 @@ import {
 } from '@backstage/core-plugin-api';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import InfoIcon from '@material-ui/icons/Info';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 import {
   Button,
   Card,
@@ -16,7 +19,6 @@ import {
   IconButton,
   MenuItem,
   TextField,
-  Typography,
 } from '@material-ui/core';
 import React, { useState } from 'react';
 import {
@@ -24,6 +26,10 @@ import {
   ApplicationFormData,
   AuditApplicationOnboardingFormProps,
 } from './types';
+
+const RequiredAsterisk = () => (
+  <span style={{ color: 'red', marginLeft: 2 }}>*</span>
+);
 
 export const AuditApplicationOnboardingForm = ({
   onSuccess,
@@ -35,7 +41,7 @@ export const AuditApplicationOnboardingForm = ({
     app_owner: '',
     app_delegate: '',
     jira_project: '',
-    accounts: [{ type: 'service-account', source: 'rover', account_name: '' }],
+    accounts: [{ type: 'rover-group-name', source: 'rover', account_name: '' }],
   });
 
   const fetchApi = useApi(fetchApiRef);
@@ -56,7 +62,7 @@ export const AuditApplicationOnboardingForm = ({
       ...prev,
       accounts: [
         ...prev.accounts,
-        { type: 'service-account', source: 'rover', account_name: '' },
+        { type: 'rover-group-name', source: 'rover', account_name: '' },
       ],
     }));
   };
@@ -124,7 +130,7 @@ export const AuditApplicationOnboardingForm = ({
         app_delegate: '',
         jira_project: '',
         accounts: [
-          { type: 'service-account', source: 'rover', account_name: '' },
+          { type: 'rover-group-name', source: 'rover', account_name: '' },
         ],
       });
 
@@ -151,8 +157,17 @@ export const AuditApplicationOnboardingForm = ({
               </Typography>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" style={{ marginBottom: 4 }}>
+                    Application Name <RequiredAsterisk />
+                    <Tooltip title="Enter a unique name for your application.">
+                      <InfoIcon
+                        fontSize="small"
+                        style={{ marginLeft: 4, verticalAlign: 'middle' }}
+                      />
+                    </Tooltip>
+                  </Typography>
                   <TextField
-                    label="Application Name"
+                    label=""
                     fullWidth
                     value={formData.app_name}
                     onChange={handleMainFieldChange('app_name')}
@@ -160,8 +175,17 @@ export const AuditApplicationOnboardingForm = ({
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" style={{ marginBottom: 4 }}>
+                    CMDB ID <RequiredAsterisk />
+                    <Tooltip title="Enter the unique CMDB identifier for this application.">
+                      <InfoIcon
+                        fontSize="small"
+                        style={{ marginLeft: 4, verticalAlign: 'middle' }}
+                      />
+                    </Tooltip>
+                  </Typography>
                   <TextField
-                    label="CMDB ID"
+                    label=""
                     fullWidth
                     value={formData.cmdb_id}
                     onChange={handleMainFieldChange('cmdb_id')}
@@ -169,8 +193,17 @@ export const AuditApplicationOnboardingForm = ({
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" style={{ marginBottom: 4 }}>
+                    Environment <RequiredAsterisk />
+                    <Tooltip title="Specify the environment (e.g., production, staging) for this application.">
+                      <InfoIcon
+                        fontSize="small"
+                        style={{ marginLeft: 4, verticalAlign: 'middle' }}
+                      />
+                    </Tooltip>
+                  </Typography>
                   <TextField
-                    label="Environment"
+                    label=""
                     fullWidth
                     value={formData.environment}
                     onChange={handleMainFieldChange('environment')}
@@ -178,8 +211,17 @@ export const AuditApplicationOnboardingForm = ({
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" style={{ marginBottom: 4 }}>
+                    Application Owner <RequiredAsterisk />
+                    <Tooltip title="Enter the name or ID of the primary owner for this application.">
+                      <InfoIcon
+                        fontSize="small"
+                        style={{ marginLeft: 4, verticalAlign: 'middle' }}
+                      />
+                    </Tooltip>
+                  </Typography>
                   <TextField
-                    label="Application Owner"
+                    label=""
                     fullWidth
                     value={formData.app_owner}
                     onChange={handleMainFieldChange('app_owner')}
@@ -187,8 +229,17 @@ export const AuditApplicationOnboardingForm = ({
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" style={{ marginBottom: 4 }}>
+                    Application Delegate <RequiredAsterisk />
+                    <Tooltip title="Enter the name or ID of the backup/delegate owner for this application.">
+                      <InfoIcon
+                        fontSize="small"
+                        style={{ marginLeft: 4, verticalAlign: 'middle' }}
+                      />
+                    </Tooltip>
+                  </Typography>
                   <TextField
-                    label="Application Delegate"
+                    label=""
                     fullWidth
                     value={formData.app_delegate}
                     onChange={handleMainFieldChange('app_delegate')}
@@ -196,11 +247,21 @@ export const AuditApplicationOnboardingForm = ({
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" style={{ marginBottom: 4 }}>
+                    Jira Project <RequiredAsterisk />
+                    <Tooltip title="Jira Project should match exactly (case-sensitive) as it appears in the Jira board. Otherwise, the Epic will not be created.">
+                      <InfoIcon
+                        fontSize="small"
+                        style={{ marginLeft: 4, verticalAlign: 'middle' }}
+                      />
+                    </Tooltip>
+                  </Typography>
                   <TextField
-                    label="Jira Project"
+                    label=""
                     fullWidth
                     value={formData.jira_project}
                     onChange={handleMainFieldChange('jira_project')}
+                    required
                   />
                 </Grid>
               </Grid>
@@ -220,9 +281,21 @@ export const AuditApplicationOnboardingForm = ({
                   {index > 0 && <Divider style={{ margin: '16px 0' }} />}
                   <Grid container spacing={2} alignItems="center">
                     <Grid item xs={12} sm={3}>
+                      <Typography
+                        variant="subtitle2"
+                        style={{ marginBottom: 4 }}
+                      >
+                        Account Type <RequiredAsterisk />
+                        <Tooltip title="Select the type of account: User Accounts (Rover group) or Service Account.">
+                          <InfoIcon
+                            fontSize="small"
+                            style={{ marginLeft: 4, verticalAlign: 'middle' }}
+                          />
+                        </Tooltip>
+                      </Typography>
                       <TextField
                         select
-                        label="Type"
+                        label=""
                         fullWidth
                         value={entry.type}
                         onChange={e =>
@@ -231,7 +304,7 @@ export const AuditApplicationOnboardingForm = ({
                         required
                       >
                         <MenuItem value="rover-group-name">
-                          Rover Group
+                          User Accounts
                         </MenuItem>
                         <MenuItem value="service-account">
                           Service Account
@@ -239,9 +312,21 @@ export const AuditApplicationOnboardingForm = ({
                       </TextField>
                     </Grid>
                     <Grid item xs={12} sm={3}>
+                      <Typography
+                        variant="subtitle2"
+                        style={{ marginBottom: 4 }}
+                      >
+                        Source <RequiredAsterisk />
+                        <Tooltip title="Select the source system for this account (Rover or GitLab).">
+                          <InfoIcon
+                            fontSize="small"
+                            style={{ marginLeft: 4, verticalAlign: 'middle' }}
+                          />
+                        </Tooltip>
+                      </Typography>
                       <TextField
                         select
-                        label="Source"
+                        label=""
                         fullWidth
                         value={entry.source}
                         onChange={e =>
@@ -254,8 +339,20 @@ export const AuditApplicationOnboardingForm = ({
                       </TextField>
                     </Grid>
                     <Grid item xs={12} sm={5}>
+                      <Typography
+                        variant="subtitle2"
+                        style={{ marginBottom: 4 }}
+                      >
+                        Account Name <RequiredAsterisk />
+                        <Tooltip title="Enter the exact account name (group or service account) as it appears in the source system.">
+                          <InfoIcon
+                            fontSize="small"
+                            style={{ marginLeft: 4, verticalAlign: 'middle' }}
+                          />
+                        </Tooltip>
+                      </Typography>
                       <TextField
-                        label="Account Name"
+                        label=""
                         fullWidth
                         value={entry.account_name}
                         onChange={e =>

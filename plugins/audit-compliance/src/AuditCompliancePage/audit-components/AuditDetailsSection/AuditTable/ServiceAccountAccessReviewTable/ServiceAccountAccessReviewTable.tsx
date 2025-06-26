@@ -190,9 +190,7 @@ export default function ServiceAccountAccessReviewTable({
 
   const handleReject = (user: ServiceAccountData) => {
     const source = user.source || 'GITLAB';
-    const title = `[${user.app_name}-${period} AQR] : Rejection of access for ${
-      user.service_account
-    } for ${source}: ${user.account_name || 'N/A'}`;
+    const title = `[${user.app_name}-${period} AQR] : Rejection of access for Service Account: ${user.service_account} from Source: ${source}`;
     const description = `This Jira ticket is created for ${frequency} ${period} AQR review for application ${user.app_name} for the removal of service account: ${user.service_account} from ${source}`;
     setSelectedUser(user);
     setInitialTitle(title);
