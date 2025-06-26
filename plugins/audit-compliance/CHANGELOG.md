@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-audit-compliance [1.5.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance@1.4.0...@appdev-platform/backstage-plugin-audit-compliance@1.5.0) (2025-06-26)
+
+
+### Features
+
+* **APD-785:** Improve form validation and JIRA integration ([638a0a1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/638a0a1be493a74e724d6a5f06cfb3de0874df05))
+
 ## @appdev-platform/backstage-plugin-audit-compliance [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance@1.3.0...@appdev-platform/backstage-plugin-audit-compliance@1.4.0) (2025-06-23)
 
 
