@@ -133,16 +133,77 @@ export const AuditDetailsSection = () => {
   }, [app_name, frequency, period, discoveryApi, fetchApi, identityApi]);
 
   const handleFinalSignOff = async () => {
-    const totalPending = userCounts.pending + serviceCounts.pending;
-    if (totalPending > 0) {
+    try {
+      const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+      // Fetch user access reviews
+      const userRes = await fetchApi.fetch(
+        `${baseUrl}/access-reviews?app_name=${app_name}&frequency=${frequency}&period=${period}`,
+        {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+      const userData = await userRes.json();
+      const userApproved = userData.filter(
+        (d: any) => d.sign_off_status === 'approved',
+      ).length;
+      const userRejected = userData.filter(
+        (d: any) => d.sign_off_status === 'rejected',
+      ).length;
+      const userCompleted = userApproved + userRejected;
+      const userTotal = userData.length;
+      const userPending = userTotal - userCompleted;
+      const userCountsFresh = {
+        completed: userCompleted,
+        total: userTotal,
+        pending: userPending,
+        approved: userApproved,
+        rejected: userRejected,
+      };
+      setUserCounts(userCountsFresh);
+
+      // Fetch service account reviews
+      const serviceRes = await fetchApi.fetch(
+        `${baseUrl}/service_account_access_review?app_name=${app_name}&frequency=${frequency}&period=${period}`,
+        {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+      const serviceData = await serviceRes.json();
+      const serviceApproved = serviceData.filter(
+        (d: any) => d.sign_off_status === 'approved',
+      ).length;
+      const serviceRejected = serviceData.filter(
+        (d: any) => d.sign_off_status === 'rejected',
+      ).length;
+      const serviceCompleted = serviceApproved + serviceRejected;
+      const serviceTotal = serviceData.length;
+      const servicePending = serviceTotal - serviceCompleted;
+      const serviceCountsFresh = {
+        completed: serviceCompleted,
+        total: serviceTotal,
+        pending: servicePending,
+        approved: serviceApproved,
+        rejected: serviceRejected,
+      };
+      setServiceCounts(serviceCountsFresh);
+
+      const totalPending = userPending + servicePending;
+      if (totalPending > 0) {
+        alertApi.post({
+          message: `Cannot perform final sign-off. There are ${totalPending} pending reviews.`,
+          severity: 'error',
+        });
+        return;
+      }
+      setSignOffDialogOpen(true);
+    } catch (error) {
       alertApi.post({
-        message: `Cannot perform final sign-off. There are ${totalPending} pending reviews.`,
+        message: 'Failed to fetch review counts. Please try again.',
         severity: 'error',
       });
-      return;
     }
-
-    setSignOffDialogOpen(true);
   };
 
   const confirmFinalSignOff = async () => {
@@ -298,6 +359,16 @@ export const AuditDetailsSection = () => {
     return 'Perform final sign-off';
   };
 
+  const getSummaryTooltip = () => {
+    if (userCounts.pending > 0 || serviceCounts.pending > 0) {
+      return 'Complete all user and service account reviews to view the final summary.';
+    }
+    if (!isFinalSignedOff) {
+      return 'Summary is genetrated but in read only mode';
+    }
+    return 'View Final Summary';
+  };
+
   return (
     <Page themeId="tool">
       <Header
@@ -364,19 +435,14 @@ export const AuditDetailsSection = () => {
                 </Button>
               </span>
             </Tooltip>
-            <Tooltip
-              title={
-                !isFinalSignedOff
-                  ? 'Summary is genetrated but in read only mode'
-                  : 'View Final Summary'
-              }
-            >
+            <Tooltip title={getSummaryTooltip()}>
               <span>
                 <Button
                   variant="contained"
                   className={classes.summaryButton}
                   onClick={handleSummary}
                   startIcon={<AssessmentIcon />}
+                  disabled={userCounts.pending > 0 || serviceCounts.pending > 0}
                 >
                   View Final Summary
                 </Button>

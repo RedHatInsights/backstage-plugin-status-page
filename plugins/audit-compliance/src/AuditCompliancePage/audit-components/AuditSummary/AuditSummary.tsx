@@ -151,6 +151,23 @@ export const AuditSummary: React.FC = () => {
             severity: 'info',
           });
         }
+
+        // Always fetch statistics after sync or if already completed
+        const statsResponse = await fetchApi.fetch(
+          `${baseUrl}/audits/${app_name}/${frequency}/${period}/statistics`,
+          {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+          },
+        );
+        if (!statsResponse.ok) {
+          throw new Error('Failed to fetch statistics');
+        }
+        const statsData = await statsResponse.json();
+        setSummaryData(prev => ({
+          ...prev,
+          statistics: statsData.statistics,
+        }));
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : 'Failed to fetch data';
@@ -174,6 +191,14 @@ export const AuditSummary: React.FC = () => {
 
   const handleBack = async () => {
     navigate(`/audit-compliance/${app_name}/${frequency}/${period}/details`);
+  };
+
+  const handleAuditCompleted = () => {
+    setSummaryData(prev => ({
+      ...prev,
+      progress: 'completed',
+    }));
+    setIsAuditCompleted(true);
   };
 
   return (
@@ -228,6 +253,8 @@ export const AuditSummary: React.FC = () => {
           onGenerateSummary={handleBack}
           jira_key={auditDetails?.jira_key || ''}
           isAuditCompleted={isAuditCompleted}
+          isSyncing={isSyncing}
+          onAuditCompleted={handleAuditCompleted}
         />
       </Content>
     </Page>

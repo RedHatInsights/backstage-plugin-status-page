@@ -118,6 +118,8 @@ export interface SummaryReportProps {
   onGenerateSummary?: () => Promise<void>;
   jira_key?: string;
   isAuditCompleted?: boolean;
+  isSyncing?: boolean;
+  onAuditCompleted?: () => void;
 }
 
 export type StatusColor =
