@@ -7,7 +7,7 @@ import {
   makeStyles,
 } from '@material-ui/core';
 import { usePaginatedEntityList } from '../contexts/PaginatedEntityListProvider';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useDebounce } from 'react-use';
 import Search from '@material-ui/icons/Search';
 import Clear from '@material-ui/icons/Clear';

@@ -17,7 +17,7 @@ import {
   EntityRefLink,
   useAsyncEntity,
 } from '@backstage/plugin-catalog-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CustomUserEntity } from '../../types';
 import {
   Entity,

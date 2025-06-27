@@ -13,7 +13,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 import { Chip } from '@material-ui/core';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { PickerOption } from './components/PickerOption';
 import { ExtendedFilters, UserWorkstreamFilter } from './filters';

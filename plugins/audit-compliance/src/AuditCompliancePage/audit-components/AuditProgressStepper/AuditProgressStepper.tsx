@@ -12,7 +12,7 @@ import Stepper from '@material-ui/core/Stepper';
 
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import RadioButtonCheckedIcon from '@material-ui/icons/RadioButtonChecked';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useStyles } from './AuditProgressStepper.styles';
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Gauge } from '@mui/x-charts/Gauge';
 import { jiraApiRef } from '../../../api';
 import { useApi } from '@backstage/core-plugin-api';

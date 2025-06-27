@@ -1,6 +1,6 @@
 import { useApi } from '@backstage/core-plugin-api';
 import { InfraDetails, serviceNowApiRef } from '../apis';
-import React from 'react';
+import { useState, useEffect } from 'react';
 
 export function useInfraDetails(appCode: string): {
   loading: boolean;
@@ -8,10 +8,10 @@ export function useInfraDetails(appCode: string): {
 } {
   const serviceNowApi = useApi(serviceNowApiRef);
 
-  const [infraDetails, setInfraDetails] = React.useState<InfraDetails[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [infraDetails, setInfraDetails] = useState<InfraDetails[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setLoading(true);
 
     serviceNowApi.getInfraDetails(appCode).then(response => {

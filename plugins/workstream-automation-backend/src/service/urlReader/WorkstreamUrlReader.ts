@@ -10,9 +10,14 @@ import {
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadUrlOptions,
   UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
-import { NotFoundError, NotModifiedError } from '@backstage/errors';
+import {
+  assertError,
+  NotFoundError,
+  NotModifiedError,
+} from '@backstage/errors';
 import fetch, { Response } from 'node-fetch';
 
 export class WorkstreamUrlReader implements UrlReaderService {
@@ -92,8 +97,35 @@ export class WorkstreamUrlReader implements UrlReaderService {
     throw new Error(message);
   }
 
-  async search(): Promise<UrlReaderServiceSearchResponse> {
-    throw new Error('Not Implemented');
+  // Now by default catalog processor uses search method instead of readUrl method
+  async search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse> {
+    this.logger.debug(`Searching ${url}`);
+    try {
+      // since workstream plugin doesn't support glob urls, we'll just use readUrl here.
+      const data = await this.readUrl(url, options);
+      return {
+        files: [
+          {
+            url: url,
+            content: data.buffer,
+            lastModifiedAt: data.lastModifiedAt,
+          },
+        ],
+        etag: data.etag ?? '',
+      };
+    } catch (e) {
+      assertError(e);
+      if (e.name === 'NotFoundError') {
+        return {
+          files: [],
+          etag: '',
+        };
+      }
+      throw new Error(`Unable to search ${url}, ${e}`);
+    }
   }
 
   async readTree(): Promise<UrlReaderServiceReadTreeResponse> {

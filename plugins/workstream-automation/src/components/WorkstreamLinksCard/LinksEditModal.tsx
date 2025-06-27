@@ -25,7 +25,7 @@ import ExpandLessRounded from '@material-ui/icons/ExpandLessRounded';
 import RemoveCircleOutlineOutlinedIcon from '@material-ui/icons/RemoveCircleOutlineOutlined';
 import { Autocomplete } from '@material-ui/lab';
 import { capitalize } from 'lodash';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Control, Controller, useFieldArray, useForm } from 'react-hook-form';
 import { artApiRef, workstreamApiRef } from '../../api';
 import {

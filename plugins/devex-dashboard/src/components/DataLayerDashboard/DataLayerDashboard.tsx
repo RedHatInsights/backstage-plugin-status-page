@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
 import { LinearProgress } from '@material-ui/core';
 import { useApi } from '@backstage/core-plugin-api';

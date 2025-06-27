@@ -1,4 +1,3 @@
-import React from 'react';
 import { Chip, Grid } from '@material-ui/core';
 
 interface IProps {

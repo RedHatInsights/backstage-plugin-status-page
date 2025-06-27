@@ -2,7 +2,6 @@
  * reference: https://github.com/backstage/backstage/blob/master/plugins/catalog/src/components/CatalogTable/columns.tsx
  */
 
-import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { OverflowTooltip, TableColumn } from '@backstage/core-components';
 import { CatalogTableRow } from '@backstage/plugin-catalog';

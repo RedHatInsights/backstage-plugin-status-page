@@ -1,6 +1,6 @@
 import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
 import { Box, Button, Grid } from '@material-ui/core';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { RegistryComponent } from '../registry';
 import MCPServerForm from './MCPServerForm';
 

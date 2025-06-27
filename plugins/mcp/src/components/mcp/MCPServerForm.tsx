@@ -15,7 +15,7 @@ import {
   Stepper,
   TextField,
 } from '@material-ui/core';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 interface MCPServerFormProps {
   open: boolean;

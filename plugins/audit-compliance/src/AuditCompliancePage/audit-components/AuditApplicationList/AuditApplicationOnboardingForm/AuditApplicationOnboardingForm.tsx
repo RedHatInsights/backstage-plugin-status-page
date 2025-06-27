@@ -20,7 +20,7 @@ import {
   MenuItem,
   TextField,
 } from '@material-ui/core';
-import React, { useState } from 'react';
+import { Fragment, useState } from 'react';
 import {
   AccountEntry,
   ApplicationFormData,
@@ -277,7 +277,7 @@ export const AuditApplicationOnboardingForm = ({
                 Account Entries
               </Typography>
               {formData.accounts.map((entry, index) => (
-                <React.Fragment key={index}>
+                <Fragment key={index}>
                   {index > 0 && <Divider style={{ margin: '16px 0' }} />}
                   <Grid container spacing={2} alignItems="center">
                     <Grid item xs={12} sm={3}>
@@ -375,7 +375,7 @@ export const AuditApplicationOnboardingForm = ({
                       </IconButton>
                     </Grid>
                   </Grid>
-                </React.Fragment>
+                </Fragment>
               ))}
 
               <Button

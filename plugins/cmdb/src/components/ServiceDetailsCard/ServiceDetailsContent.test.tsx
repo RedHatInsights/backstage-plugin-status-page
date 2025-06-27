@@ -1,4 +1,3 @@
-import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { ServiceDetailsContent } from './ServiceDetailsContent';
 import { mockService, mockUser1, mockUser2 } from '../../mocks';

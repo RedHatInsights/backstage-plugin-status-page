@@ -1,5 +1,5 @@
 import { IconButton } from '@material-ui/core';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { DocsBotDrawer } from '../DocsBotDrawer';
 import { DocsBotIcon } from '../../../index';
 import { useAnalytics } from '@backstage/core-plugin-api';

@@ -19,7 +19,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
 import { workstreamApiRef } from '../../api';
 import { ErrorPanel, Table, TableColumn } from '@backstage/core-components';

@@ -3,7 +3,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import { Button, Grid, InputAdornment, TextField } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import LinearProgress from '@mui/material/LinearProgress';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { outageApiRef } from '../api';
 import DeleteIncident from './DeleteIncident';

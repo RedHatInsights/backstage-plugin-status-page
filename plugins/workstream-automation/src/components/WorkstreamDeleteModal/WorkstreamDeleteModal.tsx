@@ -11,7 +11,6 @@ import {
   DialogContent,
   Typography,
 } from '@material-ui/core';
-import React from 'react';
 import { artApiRef, workstreamApiRef } from '../../api';
 import { useNavigate } from 'react-router-dom';
 

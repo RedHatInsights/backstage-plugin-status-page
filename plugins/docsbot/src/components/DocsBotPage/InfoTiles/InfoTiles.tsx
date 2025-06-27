@@ -1,4 +1,3 @@
-import React from 'react';
 import { Typography, Grid } from '@material-ui/core';
 import FaqIcon from '../../../utils/faq.png';
 import DocsBotIcon from '../../../utils/docsbot.png';

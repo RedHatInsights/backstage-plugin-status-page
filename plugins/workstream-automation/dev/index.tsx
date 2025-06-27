@@ -1,4 +1,3 @@
-import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { getAllThemes } from '@redhat-developer/red-hat-developer-hub-theme';
 import { workstreamAutomationPlugin, WorkstreamsPage } from '../src/plugin';

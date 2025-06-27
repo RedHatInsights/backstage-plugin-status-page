@@ -1,6 +1,6 @@
 import { WorkstreamEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
 import { CustomUserEntity, TableRowDataType } from '../../types';
-import { GroupEntity } from '@backstage/catalog-model/index';
+import { GroupEntity } from '@backstage/catalog-model';
 
 export type ARTForm1 = {
   artName: string | undefined;

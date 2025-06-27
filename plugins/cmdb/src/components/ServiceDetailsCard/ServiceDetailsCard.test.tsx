@@ -1,4 +1,3 @@
-import React from 'react';
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { ServiceDetailsCard } from './ServiceDetailsCard';
 import { EntityProvider } from '@backstage/plugin-catalog-react';

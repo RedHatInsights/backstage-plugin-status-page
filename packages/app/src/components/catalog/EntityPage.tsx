@@ -56,7 +56,7 @@ import {
 } from '@backstage/plugin-org';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
 import { Button, Grid } from '@material-ui/core';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { MatomoPage } from '@backstage-community/plugin-matomo';
 import { SpashipPage } from '@appdev-platform/backstage-plugin-spaship';

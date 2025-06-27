@@ -15,7 +15,7 @@ import {
   lineElementClasses,
   markElementClasses,
 } from '@mui/x-charts';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RedHatErrorRedShades, SplunkTimePeriods } from '../Generic';
 import { devexApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';

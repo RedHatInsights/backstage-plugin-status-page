@@ -1,3 +1,8 @@
+import {
+  actionsRegistryServiceFactory,
+  actionsServiceFactory,
+} from '@backstage/backend-defaults/alpha';
+import { auditorServiceFactory } from '@backstage/backend-defaults/auditor';
 import { authServiceFactory } from '@backstage/backend-defaults/auth';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
@@ -7,13 +12,15 @@ import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
 import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
 import { permissionsServiceFactory } from '@backstage/backend-defaults/permissions';
+import { permissionsRegistryServiceFactory } from '@backstage/backend-defaults/permissionsRegistry';
 import { rootConfigServiceFactory } from '@backstage/backend-defaults/rootConfig';
+import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth';
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
 import { rootLoggerServiceFactory } from '@backstage/backend-defaults/rootLogger';
 import { schedulerServiceFactory } from '@backstage/backend-defaults/scheduler';
 import { userInfoServiceFactory } from '@backstage/backend-defaults/userInfo';
-import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth';
+
 import { eventsServiceFactory } from '@backstage/plugin-events-node';
 
 import { createSpecializedBackend } from '@backstage/backend-app-api';
@@ -25,32 +32,36 @@ import { urlReaderServiceFactory } from './service/urlReader';
 const defaultServiceFactories: Array<
   ServiceFactory<unknown, 'plugin' | 'root'>
 > = [
+  actionsRegistryServiceFactory,
+  actionsServiceFactory,
+  auditorServiceFactory,
   authServiceFactory,
   cacheServiceFactory,
-  rootConfigServiceFactory,
   databaseServiceFactory,
   discoveryServiceFactory,
+  eventsServiceFactory,
   httpAuthServiceFactory,
   httpRouterServiceFactory,
   lifecycleServiceFactory,
   loggerServiceFactory,
+  permissionsRegistryServiceFactory,
   permissionsServiceFactory,
+  rootConfigServiceFactory,
+  rootHealthServiceFactory,
   rootHttpRouterServiceFactory,
   rootLifecycleServiceFactory,
   rootLoggerServiceFactory,
   schedulerServiceFactory,
   userInfoServiceFactory,
-  eventsServiceFactory,
-  rootHealthServiceFactory,
   // Custom url reader
   urlReaderServiceFactory,
 ];
 
 const backend = createSpecializedBackend({ defaultServiceFactories });
 
-backend.add(import('@backstage/plugin-app-backend/alpha'));
-backend.add(import('@backstage/plugin-proxy-backend/alpha'));
-backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(import('@backstage/plugin-app-backend'));
+backend.add(import('@backstage/plugin-proxy-backend'));
+backend.add(import('@backstage/plugin-scaffolder-backend'));
 backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
 
 // auth plugin
@@ -64,7 +75,7 @@ backend.add(
   import('@appdev-platform/backstage-plugin-workstream-automation-backend'),
 );
 // catalog plugin
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
@@ -130,16 +141,26 @@ backend.add(
 // DevTools backend
 backend.add(import('@backstage/plugin-devtools-backend'));
 
-backend.add(import('@appdev-platform/backstage-plugin-catalog-backend-module-mcp-server'));
+backend.add(
+  import('@appdev-platform/backstage-plugin-catalog-backend-module-mcp-server'),
+);
 
 backend.add(
   import('@appdev-platform/backstage-plugin-devex-data-layer-backend'),
 );
-// backend.add(import('@appdev-platform/backstage-plugin-devex-data-layer-backend'));
 backend.add(
   import('@appdev-platform/backstage-plugin-audit-compliance-backend'),
 );
 
-backend.add(import('@appdev-platform/backstage-plugin-scaffolder-backend-module-custom-filters'));
+backend.add(
+  import(
+    '@appdev-platform/backstage-plugin-scaffolder-backend-module-custom-filters'
+  ),
+);
 
+// backend.add(
+//   import(
+//     '@appdev-platform/backstage-plugin-soundcheck-backend-module-google-spreadsheets'
+//   ),
+// );
 backend.start();

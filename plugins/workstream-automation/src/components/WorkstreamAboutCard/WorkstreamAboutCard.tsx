@@ -22,7 +22,7 @@ import {
 import CachedIcon from '@material-ui/icons/Cached';
 import EditTwoTone from '@material-ui/icons/EditTwoTone';
 import LinkTwoTone from '@material-ui/icons/LinkTwoTone';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { JiraIcon } from '../Icons/JiraIcon';
 import { LinkCard } from './LinkCard';
 import { AboutEditModal } from './AboutEditModal';
@@ -104,6 +104,13 @@ export const WorkstreamAboutCard = (props: { variant: InfoCardVariants }) => {
         </Grid>
         <Grid item xs={12}>
           <Box display="flex" flexDirection="row">
+            {entity.metadata.annotations['jira/project-key'] && (
+              <LinkCard
+                href={`https://issues.redhat.com/browse/${entity.metadata.annotations['jira/project-key']}`}
+                title="Jira"
+                Icon={<JiraIcon fontSize="large" />}
+              />
+            )}
             {entity.metadata.links.map(val => {
               return (
                 <LinkCard
@@ -114,13 +121,6 @@ export const WorkstreamAboutCard = (props: { variant: InfoCardVariants }) => {
                 />
               );
             })}
-            {entity.metadata.annotations['jira/project-key'] && (
-              <LinkCard
-                href={`https://issues.redhat.com/browse/${entity.metadata.annotations['jira/project-key']}`}
-                title="Jira"
-                Icon={<JiraIcon fontSize="large" />}
-              />
-            )}
           </Box>
         </Grid>
         <Grid item xs={12}>

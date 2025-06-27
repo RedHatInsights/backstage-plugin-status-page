@@ -1,4 +1,3 @@
-import React from 'react';
 import { useElementFilter } from '@backstage/core-plugin-api';
 import { Grid, Theme, Typography, makeStyles } from '@material-ui/core';
 

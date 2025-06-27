@@ -1,5 +1,4 @@
 import TextField, { TextFieldProps } from '@material-ui/core/TextField';
-import React from 'react';
 import { Controller, RegisterOptions, useFormContext } from 'react-hook-form';
 
 export const FormInputTextField = (props: {

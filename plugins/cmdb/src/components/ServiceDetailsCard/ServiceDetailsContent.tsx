@@ -1,4 +1,3 @@
-import React from 'react';
 import { Avatar, Chip, Grid, Typography } from '@material-ui/core';
 import { ServiceDetailsField } from './ServiceDetailsField';
 import { EntityPeekAheadPopover } from '@backstage/plugin-catalog-react';

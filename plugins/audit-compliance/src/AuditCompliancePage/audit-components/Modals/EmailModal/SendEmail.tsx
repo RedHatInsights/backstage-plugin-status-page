@@ -7,7 +7,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Box, Divider, Typography } from '@material-ui/core';
-import React, {
+import {
   forwardRef,
   useEffect,
   useImperativeHandle,

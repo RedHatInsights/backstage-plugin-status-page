@@ -1,12 +1,12 @@
 import { Entity } from '@backstage/catalog-model';
 import Chip from '@material-ui/core/Chip';
 import ExpandLess from '@material-ui/icons/ExpandLess';
-import React from 'react';
+import { useState } from 'react';
 
 export const Tags = (props: { entity: Entity }) => {
   const { entity } = props;
   const tags = entity.metadata.tags || [];
-  const [showAllTags, setShowAllTags] = React.useState(false);
+  const [showAllTags, setShowAllTags] = useState(false);
 
   const handleToggle = () => setShowAllTags(!showAllTags);
   const visibleTags = showAllTags ? tags : tags.slice(0, 2);

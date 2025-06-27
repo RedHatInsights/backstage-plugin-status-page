@@ -29,7 +29,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import html2canvas from 'html2canvas';
 import { jsPDF as JsPDF } from 'jspdf';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { formatDisplayName } from '../../AuditApplicationList/AuditApplicationList';
 import { useStyles } from './AuditSummaryReport.styles';
 import {

@@ -24,7 +24,7 @@ import InfoIcon from '@material-ui/icons/Info';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { disclaimer } from '../DocsBotDrawer/DocsBotDrawer';
 import DocsBotExpectationBanner from '../DocsBotDrawer/DocsBotExpectationBanner/DocsBotExpectationBanner';
 import DocsBotInput from '../DocsBotDrawer/DocsBotInput/DocsBotInput';
@@ -53,7 +53,7 @@ export const DocsBotPage = () => {
   const [previousQuestion, setPreviousQuestion] = useState<string | null>(null);
   const docsBotSlackUrl = config.getOptionalString('docsbot.slackUrl');
   const docsBotContactMail = config.getOptionalString('docsbot.contactMail');
-  const [baseUrl, setBaseUrl] = React.useState<string | undefined>();
+  const [baseUrl, setBaseUrl] = useState<string | undefined>();
   const discoveryApiRefDocsBot = useApi(discoveryApiRef);
   const alertApi = useApi(alertApiRef);
   const [isBannerOpen, setIsBannerOpen] = useState<boolean>(false);

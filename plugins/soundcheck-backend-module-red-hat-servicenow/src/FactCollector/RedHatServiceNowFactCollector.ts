@@ -27,7 +27,7 @@ import {
   readServiceNowIntegrationConfigs,
   ServiceNowComplianceControlItem,
 } from '@appdev-platform/backstage-plugin-service-now-common';
-import { JsonObject } from '@backstage/types/index';
+import { JsonObject } from '@backstage/types';
 
 /**
  * Fact collector for facts fetched from ServiceNow API.

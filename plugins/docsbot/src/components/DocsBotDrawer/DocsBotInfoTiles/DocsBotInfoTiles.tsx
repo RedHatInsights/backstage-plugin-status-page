@@ -1,5 +1,4 @@
 import { Grid, Typography, useTheme } from '@material-ui/core';
-import React from 'react';
 import DocsBotIcon from '../../../utils/docsbot.png';
 import FaqIcon from '../../../utils/faq.png';
 import FolderIcon from '../../../utils/folder.png';

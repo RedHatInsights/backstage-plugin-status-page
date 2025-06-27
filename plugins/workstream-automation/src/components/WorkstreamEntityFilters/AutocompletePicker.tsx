@@ -11,7 +11,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import TextField, { TextFieldProps } from '@material-ui/core/TextField';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { PickerOption } from './components/PickerOption';
 import { Chip } from '@material-ui/core';

@@ -28,7 +28,7 @@ import {
 } from '@material-ui/core';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import pluralize from 'pluralize';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import EditTwoTone from '@material-ui/icons/EditTwoTone';
 import { LinksEditModal } from './LinksEditModal';
 

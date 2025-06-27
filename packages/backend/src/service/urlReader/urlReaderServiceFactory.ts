@@ -11,13 +11,15 @@ export const urlReaderServiceFactory = createServiceFactory({
     config: coreServices.rootConfig,
     logger: coreServices.logger,
     auth: coreServices.auth,
-    discovery: coreServices.discovery
+    discovery: coreServices.discovery,
   },
   async factory(deps) {
     return UrlReaders.default({
       config: deps.config,
       logger: deps.logger,
-      factories: [await WorkstreamUrlReader.getFactory(deps.auth, deps.discovery)],
+      factories: [
+        await WorkstreamUrlReader.getFactory(deps.auth, deps.discovery),
+      ],
     });
   },
 });

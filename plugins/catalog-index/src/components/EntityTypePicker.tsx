@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Box } from '@material-ui/core';
 import { Select } from '@backstage/core-components';
 import { alertApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';

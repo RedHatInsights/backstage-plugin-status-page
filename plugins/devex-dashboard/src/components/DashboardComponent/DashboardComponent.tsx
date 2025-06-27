@@ -1,4 +1,3 @@
-import React from 'react';
 import { AppDevDashboard } from '../AppDevDashboard/AppDevDashboard';
 import { PulseDashboard } from '../PulseDashboard/PulseDashboard';
 import { DataLayerDashboard } from '../DataLayerDashboard/DataLayerDashboard';

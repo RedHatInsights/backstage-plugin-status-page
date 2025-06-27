@@ -1,5 +1,4 @@
 import { Header, HeaderLabel } from '@backstage/core-components';
-import React from 'react';
 
 interface PageWithHeaderProps {
     title: string;

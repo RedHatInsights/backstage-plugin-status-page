@@ -1,4 +1,4 @@
-import { SchedulerServiceTaskScheduleDefinitionConfig } from "@backstage/backend-plugin-api/index";
+import { SchedulerServiceTaskScheduleDefinitionConfig } from '@backstage/backend-plugin-api';
 
 export interface Config {
   dataLayer: {

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { usePaginatedEntityList } from '../contexts/PaginatedEntityListProvider';
 import { useEntityKinds } from '../hooks/useEntityKinds';
 import { EntityKindFilter } from '@backstage/plugin-catalog-react';
