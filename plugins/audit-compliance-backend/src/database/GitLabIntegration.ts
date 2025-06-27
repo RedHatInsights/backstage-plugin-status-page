@@ -411,103 +411,123 @@ export class GitLabDatabase implements GitLabStore {
         throw new Error(`No GitLab data found for appname: ${appname}`);
       }
 
+      // --- Optimization: Collect all unique manager usernames ---
+      const allManagerUids = new Set<string>();
+      const allUserDetails: Record<string, GitLabUser> = {};
+      const allRows: any[] = [];
+
       for (const app of appEntries) {
         const { environment, app_delegate, account_name, app_name, app_owner } =
           app;
-
         if (!account_name) {
           this.logger.warn(`No account_name found for app: ${app_name}`);
           continue;
         }
-
         this.logger.info(
           `Processing GitLab project: ${account_name} for app: ${app_name}`,
         );
-
         // Use account_name as the GitLab project path
         const members = await this.getProjectMembers(account_name);
         this.logger.info(
           `Found ${members.length} members for project: ${account_name}`,
         );
-
+        // Fetch all user details in parallel (cache)
+        await Promise.all(
+          members.map(async member => {
+            if (!allUserDetails[member.id]) {
+              const details = await this.getUserDetails(member.id);
+              if (details) {
+                allUserDetails[member.id] = details;
+              }
+            }
+          }),
+        );
         for (const member of members) {
           if (member.state !== 'active') {
             this.logger.debug(`Skipping inactive member: ${member.username}`);
             continue;
           }
-
-          const userDetails = await this.getUserDetails(member.id);
+          const userDetails = allUserDetails[member.id];
           if (!userDetails) {
             this.logger.warn(
               `Could not fetch details for user ID: ${member.id}`,
             );
             continue;
           }
-
           // Fetch manager information from Rover using GitLab username
-          let managerName = app_owner || 'N/A';
           let managerUid = '';
-
-          try {
-            const roverUserInfo = await this.getRoverUserInfo(
-              userDetails.username,
-            );
-            if (roverUserInfo && roverUserInfo.manager) {
-              const managerUidFromRover = extractUid(roverUserInfo.manager);
-              if (managerUidFromRover) {
-                const managerInfo = await this.getRoverUserInfo(
-                  managerUidFromRover,
-                );
-                if (managerInfo) {
-                  managerName = managerInfo.cn || managerUidFromRover;
+          if (userDetails.username) {
+            try {
+              const roverUserInfo = await this.getRoverUserInfo(
+                userDetails.username,
+              );
+              if (roverUserInfo && roverUserInfo.manager) {
+                const managerUidFromRover = extractUid(roverUserInfo.manager);
+                if (managerUidFromRover) {
                   managerUid = managerUidFromRover;
+                  allManagerUids.add(managerUidFromRover);
                 }
               }
+            } catch (error) {
+              this.logger.warn(
+                `Failed to fetch manager info for user ${userDetails.username}: ${error}`,
+              );
             }
-          } catch (error) {
-            this.logger.warn(
-              `Failed to fetch manager info for user ${userDetails.username}: ${error}`,
-            );
           }
-
-          const row = {
+          allRows.push({
             environment,
             full_name: userDetails.name,
             user_id: userDetails.username,
             user_role: this.getAccessLevelName(member.access_level),
-            manager: managerName,
-            manager_uid: managerUid,
-            sign_off_status: 'pending',
-            sign_off_by: 'N/A',
-            sign_off_date: null,
-            source: 'gitlab',
-            comments: '',
-            ticket_reference: '',
-            access_change_date: null,
-            created_at: new Date(),
-            account_name: account_name,
+            managerUid,
+            app_owner,
+            account_name,
             app_name,
             frequency,
             period,
             app_delegate,
-            ticket_status: 'pending',
-          };
-
-          try {
-            await this.db('group_access_reports').insert(row);
-            report.push(row);
-            this.logger.debug(
-              `Successfully inserted row for user: ${userDetails.username}`,
-            );
-          } catch (error) {
-            this.logger.error(
-              `Failed to insert row for user ${userDetails.username}: ${error}`,
-            );
-            // Continue processing other users even if one fails
-          }
+          });
         }
       }
-
+      // --- Optimization: Fetch all unique manager infos in parallel ---
+      const managerInfoCache: Record<string, any> = {};
+      await Promise.all(
+        Array.from(allManagerUids).map(async uid => {
+          managerInfoCache[uid] = await this.getRoverUserInfo(uid);
+        }),
+      );
+      // --- Build final rows and insert ---
+      for (const row of allRows) {
+        const managerInfo = row.managerUid
+          ? managerInfoCache[row.managerUid]
+          : null;
+        const managerName =
+          managerInfo?.cn || row.managerUid || row.app_owner || 'N/A';
+        const dbRow = {
+          environment: row.environment,
+          full_name: row.full_name,
+          user_id: row.user_id,
+          user_role: row.user_role,
+          manager: managerName,
+          manager_uid: row.managerUid,
+          sign_off_status: 'pending',
+          sign_off_by: 'N/A',
+          sign_off_date: null,
+          source: 'gitlab',
+          comments: '',
+          ticket_reference: '',
+          access_change_date: null,
+          created_at: new Date(),
+          account_name: row.account_name,
+          app_name: row.app_name,
+          frequency: row.frequency,
+          period: row.period,
+          app_delegate: row.app_delegate,
+          ticket_status: 'pending',
+        };
+        await this.db('group_access_reports').insert(dbRow);
+        report.push(dbRow);
+      }
       this.logger.info(
         `Successfully generated GitLab report with ${report.length} entries`,
       );

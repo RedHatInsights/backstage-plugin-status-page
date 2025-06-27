@@ -142,12 +142,13 @@ interface DataInconsistencyWarningProps {
     totalAccessReviewsBefore: number;
     difference: number;
   };
+  isSyncing?: boolean;
 }
 
 export const DataInconsistencyWarning: React.FC<
   DataInconsistencyWarningProps
-> = ({ validationResult }) => {
-  if (validationResult.isValid) return null;
+> = ({ validationResult, isSyncing }) => {
+  if (isSyncing || validationResult.isValid) return null;
 
   return (
     <Box mb={3}>

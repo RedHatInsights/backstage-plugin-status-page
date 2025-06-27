@@ -332,6 +332,11 @@ export class RoverDatabase implements RoverStore {
       throw new Error(`No rover data found for appname: ${appname}`);
     }
 
+    // --- Optimization: Collect all unique manager UIDs ---
+    const allManagerUids = new Set<string>();
+    const allUserInfos: Record<string, any> = {};
+    const allRows: any[] = [];
+
     for (const app of appEntries) {
       const {
         type,
@@ -348,89 +353,93 @@ export class RoverDatabase implements RoverStore {
         const { memberUids, ownerUids } = await this.getGroupMembersAndOwners(
           rover_group_name,
         );
-
         const allUids = Array.from(new Set([...memberUids, ...ownerUids]));
-
         if (allUids.length === 0) {
           this.logger.warn(
             `No members or owners found for group: ${rover_group_name}`,
           );
           continue;
         }
-
+        // Fetch all user info in parallel (cache)
+        await Promise.all(
+          allUids.map(async uid => {
+            if (!allUserInfos[uid]) {
+              allUserInfos[uid] = await this.getUserInfo(uid);
+            }
+          }),
+        );
         for (const uid of allUids) {
-          const user = await this.getUserInfo(uid);
+          const user = allUserInfos[uid];
           if (!user) continue;
-
           let role = 'N/A';
           if (memberUids.includes(uid) && ownerUids.includes(uid))
             role = 'owner, member';
           else if (memberUids.includes(uid)) role = 'member';
           else if (ownerUids.includes(uid)) role = 'owner';
-
           const managerUid = extractUid(user.manager || '');
-          const managerInfo = managerUid
-            ? await this.getUserInfo(managerUid)
-            : null;
-          const managerName = managerInfo?.cn || managerUid || app_owner || '';
-       
-          const row = {
+          if (managerUid) allManagerUids.add(managerUid);
+          allRows.push({
             environment,
             full_name: user.cn,
             user_id: user.uid,
             user_role: role,
-            manager: managerName,
-            manager_uid: managerUid || '',
-            sign_off_status: 'pending',
-            sign_off_by: 'N/A',
-            sign_off_date: null,
-            source: 'rover',
-            comments: '',
-            ticket_reference: '',
-            access_change_date: null,
-            created_at: new Date(),
-            account_name: rover_group_name,
+            managerUid,
+            app_owner,
+            rover_group_name,
             app_name,
             frequency,
             period,
             app_delegate,
-            ticket_status: 'pending',
-          };
-
-          await this.db('group_access_reports').insert(row);
-          report.push(row);
+          });
         }
       } else if (type === 'service-account') {
-        // For service accounts, fetch the service account info from Rover to get manager UID
         const serviceAccountInfo = await this.getUserInfo(rover_group_name);
         let managerUid = '';
-        let managerName = app_owner || '';
 
         if (serviceAccountInfo && serviceAccountInfo.manager) {
           managerUid = extractUid(serviceAccountInfo.manager) || '';
-          if (managerUid) {
-            const managerInfo = await this.getUserInfo(managerUid);
-            managerName = managerInfo?.cn || managerUid || app_owner || '';
-          }
+          if (managerUid) allManagerUids.add(managerUid);
         }
-
-        // Fetch source from applications table
-        const applicationData = await this.db('applications')
-          .select('source')
-          .where({
-            account_name: rover_group_name,
-            app_name: app_name,
-          })
-          .first();
-
-        const source = applicationData?.source || 'rover';
-        const row = {
-          app_name,
+        allRows.push({
           environment,
-          service_account: rover_group_name,
+          full_name: serviceAccountInfo?.cn || rover_group_name,
+          user_id: rover_group_name,
+          user_role: 'service-account',
+          managerUid,
+          app_owner,
+          rover_group_name,
+          app_name,
+          frequency,
+          period,
+          app_delegate,
+          isServiceAccount: true,
+        });
+      }
+    }
+
+    // --- Optimization: Fetch all unique manager infos in parallel ---
+    const managerInfoCache: Record<string, any> = {};
+    await Promise.all(
+      Array.from(allManagerUids).map(async uid => {
+        managerInfoCache[uid] = await this.getUserInfo(uid);
+      }),
+    );
+
+    // --- Build final rows and insert ---
+    for (const row of allRows) {
+      const managerInfo = row.managerUid
+        ? managerInfoCache[row.managerUid]
+        : null;
+      const managerName =
+        managerInfo?.cn || row.managerUid || row.app_owner || '';
+      if (row.isServiceAccount) {
+        const dbRow = {
+          app_name: row.app_name,
+          environment: row.environment,
+          service_account: row.rover_group_name,
           user_role: 'service-account',
           manager: managerName,
-          manager_uid: managerUid,
+          manager_uid: row.managerUid,
           sign_off_status: 'Pending',
           sign_off_by: 'N/A',
           sign_off_date: null,
@@ -439,18 +448,41 @@ export class RoverDatabase implements RoverStore {
           revoked_date: null,
           created_at: new Date(),
           updated_at: new Date(),
-          period,
-          frequency,
-          app_delegate,
+          period: row.period,
+          frequency: row.frequency,
+          app_delegate: row.app_delegate,
           ticket_status: '',
-          source,
+          source: 'rover',
         };
-
-        await this.db('service_account_access_review').insert(row);
-        report.push(row);
+        await this.db('service_account_access_review').insert(dbRow);
+        report.push(dbRow);
+      } else {
+        const dbRow = {
+          environment: row.environment,
+          full_name: row.full_name,
+          user_id: row.user_id,
+          user_role: row.user_role,
+          manager: managerName,
+          manager_uid: row.managerUid || '',
+          sign_off_status: 'pending',
+          sign_off_by: 'N/A',
+          sign_off_date: null,
+          source: 'rover',
+          comments: '',
+          ticket_reference: '',
+          access_change_date: null,
+          created_at: new Date(),
+          account_name: row.rover_group_name,
+          app_name: row.app_name,
+          frequency: row.frequency,
+          period: row.period,
+          app_delegate: row.app_delegate,
+          ticket_status: 'pending',
+        };
+        await this.db('group_access_reports').insert(dbRow);
+        report.push(dbRow);
       }
     }
-
     return report;
   }
 
@@ -490,6 +522,11 @@ export class RoverDatabase implements RoverStore {
       throw new Error(`No rover data found for appname: ${appname}`);
     }
 
+    // --- Optimization: Collect all unique manager UIDs ---
+    const allManagerUids = new Set<string>();
+    const allUserInfos: Record<string, any> = {};
+    const allRows: any[] = [];
+
     for (const app of appEntries) {
       const {
         type,
@@ -506,91 +543,115 @@ export class RoverDatabase implements RoverStore {
         const { memberUids, ownerUids } = await this.getGroupMembersAndOwners(
           rover_group_name,
         );
-
         const allUids = Array.from(new Set([...memberUids, ...ownerUids]));
-
         if (allUids.length === 0) {
           this.logger.warn(
             `No members or owners found for group: ${rover_group_name}`,
           );
           continue;
         }
-
+        // Fetch all user info in parallel (cache)
+        await Promise.all(
+          allUids.map(async uid => {
+            if (!allUserInfos[uid]) {
+              allUserInfos[uid] = await this.getUserInfo(uid);
+            }
+          }),
+        );
         for (const uid of allUids) {
-          const user = await this.getUserInfo(uid);
+          const user = allUserInfos[uid];
           if (!user) continue;
-
           let role = 'N/A';
           if (memberUids.includes(uid) && ownerUids.includes(uid))
             role = 'owner, member';
           else if (memberUids.includes(uid)) role = 'member';
           else if (ownerUids.includes(uid)) role = 'owner';
-
           const managerUid = extractUid(user.manager || '');
-          const managerInfo = managerUid
-            ? await this.getUserInfo(managerUid)
-            : null;
-          const managerName = managerInfo?.cn || managerUid || app_owner || '';
-
-          const row = {
+          if (managerUid) allManagerUids.add(managerUid);
+          allRows.push({
             environment,
             full_name: user.cn,
             user_id: user.uid,
             user_role: role,
-            manager: managerName,
-            manager_uid: managerUid || '',
-            source: 'rover',
-            account_name: rover_group_name,
+            managerUid,
+            app_owner,
+            rover_group_name,
             app_name,
             frequency,
             period,
             app_delegate,
-          };
-
-          report.push(row);
+          });
         }
       } else if (type === 'service-account') {
-        // For service accounts, fetch the service account info from Rover to get manager UID
         const serviceAccountInfo = await this.getUserInfo(rover_group_name);
         let managerUid = '';
-        let managerName = app_owner || '';
-
         if (serviceAccountInfo && serviceAccountInfo.manager) {
           managerUid = extractUid(serviceAccountInfo.manager) || '';
-          if (managerUid) {
-            const managerInfo = await this.getUserInfo(managerUid);
-            managerName = managerInfo?.cn || managerUid || app_owner || '';
-          }
+          if (managerUid) allManagerUids.add(managerUid);
         }
-
-        // Fetch source from applications table
-        const applicationData = await this.db('applications')
-          .select('source')
-          .where({
-            account_name: rover_group_name,
-            app_name: app_name,
-          })
-          .first();
-
-        const source = applicationData?.source || 'rover'; // fallback to rover if not found
-
-        const row = {
-          app_name,
+        allRows.push({
           environment,
-          service_account: rover_group_name,
+          full_name: serviceAccountInfo?.cn || rover_group_name,
+          user_id: rover_group_name,
           user_role: 'service-account',
-          manager: managerName,
-          manager_uid: managerUid,
-          source,
-          account_name: rover_group_name,
-          period,
+          managerUid,
+          app_owner,
+          rover_group_name,
+          app_name,
           frequency,
+          period,
           app_delegate,
-        };
-        report.push(row);
+          isServiceAccount: true,
+        });
       }
     }
 
+    // --- Optimization: Fetch all unique manager infos in parallel ---
+    const managerInfoCache: Record<string, any> = {};
+    await Promise.all(
+      Array.from(allManagerUids).map(async uid => {
+        managerInfoCache[uid] = await this.getUserInfo(uid);
+      }),
+    );
+
+    // --- Build final rows ---
+    for (const row of allRows) {
+      const managerInfo = row.managerUid
+        ? managerInfoCache[row.managerUid]
+        : null;
+      const managerName =
+        managerInfo?.cn || row.managerUid || row.app_owner || '';
+      if (row.isServiceAccount) {
+        report.push({
+          app_name: row.app_name,
+          environment: row.environment,
+          service_account: row.rover_group_name,
+          user_role: 'service-account',
+          manager: managerName,
+          manager_uid: row.managerUid,
+          source: 'rover',
+          account_name: row.rover_group_name,
+          period: row.period,
+          frequency: row.frequency,
+          app_delegate: row.app_delegate,
+        });
+      } else {
+        report.push({
+          environment: row.environment,
+          full_name: row.full_name,
+          user_id: row.user_id,
+          user_role: row.user_role,
+          manager: managerName,
+          manager_uid: row.managerUid || '',
+          source: 'rover',
+          account_name: row.rover_group_name,
+          app_name: row.app_name,
+          frequency: row.frequency,
+          period: row.period,
+          app_delegate: row.app_delegate,
+        });
+      }
+    }
     return report;
   }
 }

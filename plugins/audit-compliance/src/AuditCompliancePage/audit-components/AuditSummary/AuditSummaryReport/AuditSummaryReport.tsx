@@ -42,9 +42,10 @@ import { ReviewDataTable } from './ReviewDataTable';
 import { StatisticsData, SummaryReportProps } from './types';
 import { calculateTotals } from './utils';
 
-const StatisticsTable: React.FC<{ statistics: StatisticsData }> = ({
-  statistics,
-}) => {
+const StatisticsTable: React.FC<{
+  statistics: StatisticsData;
+  isSyncing?: boolean;
+}> = ({ statistics, isSyncing }) => {
   const classes = useStyles();
   const totals = calculateTotals(statistics);
 
@@ -102,7 +103,10 @@ const StatisticsTable: React.FC<{ statistics: StatisticsData }> = ({
 
   return (
     <>
-      <DataInconsistencyWarning validationResult={totals.validationResult} />
+      <DataInconsistencyWarning
+        validationResult={totals.validationResult}
+        isSyncing={isSyncing}
+      />
       <TableContainer component={Paper} className={classes.tableContainer}>
         <Table>
           <TableHead>
@@ -169,6 +173,8 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
   data,
   error,
   isAuditCompleted,
+  isSyncing,
+  onAuditCompleted,
 }): JSX.Element => {
   const classes = useStyles();
   const discoveryApi = useApi(discoveryApiRef);
@@ -403,6 +409,7 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
         message: 'Audit completed successfully',
         severity: 'success',
       });
+      if (onAuditCompleted) onAuditCompleted();
     } catch (auditCompleteError) {
       // eslint-disable-next-line no-console
       console.error('Failed to complete audit:', auditCompleteError);
@@ -440,7 +447,10 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
 
     return viewMode === 'cards' ? (
       <>
-        <DataInconsistencyWarning validationResult={totals.validationResult} />
+        <DataInconsistencyWarning
+          validationResult={totals.validationResult}
+          isSyncing={isSyncing}
+        />
         <Grid container spacing={2} style={{ marginBottom: '16px' }}>
           <Grid item xs={4}>
             <StatCard
@@ -527,7 +537,7 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
         </Grid>
       </>
     ) : (
-      <StatisticsTable statistics={statistics} />
+      <StatisticsTable statistics={statistics} isSyncing={isSyncing} />
     );
   };
 
@@ -667,6 +677,7 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
             startIcon={<CheckCircleIcon />}
             onClick={handleCompleteAudit}
             className={classes.completeButton}
+            disabled={isSyncing || isCompleting}
           >
             {isCompleting ? 'Completing Audit...' : 'Complete Audit'}
           </Button>
