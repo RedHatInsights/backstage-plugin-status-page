@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-devex-dashboard [1.8.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.7.0...@appdev-platform/backstage-plugin-devex-dashboard@1.8.0) (2025-06-27)
+
+
+### Features
+
+* **core:** upgrade backstage to v1.40.1 ([8d7884d](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/8d7884d3eb5c56ad12ad1007b1d8bd38e751c552))
+
 ## @appdev-platform/backstage-plugin-devex-dashboard [1.7.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-devex-dashboard@1.6.0...@appdev-platform/backstage-plugin-devex-dashboard@1.7.0) (2025-04-16)
 
 
