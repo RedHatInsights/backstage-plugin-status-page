@@ -1,14 +1,14 @@
 import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
 import { Box, Tab } from '@material-ui/core';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
-import React from 'react';
 import { SupportDashboard } from './SupportDashboard/SupportDashboard';
 import { AnalyticalDashboard } from './AnalyticalDashboard/AnalyticalDashboard';
+import { useState } from 'react';
 
 type Props = {};
 
 export const Dashboard = ({}: Props) => {
-  const [value, setValue] = React.useState('1');
+  const [value, setValue] = useState('1');
 
   const handleChange = (_event: any, newValue: string) => {
     setValue(newValue);

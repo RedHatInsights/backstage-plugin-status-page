@@ -9,7 +9,7 @@ import Drawer from '@material-ui/core/Drawer';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const useStyles = makeStyles(theme => ({
   box: {

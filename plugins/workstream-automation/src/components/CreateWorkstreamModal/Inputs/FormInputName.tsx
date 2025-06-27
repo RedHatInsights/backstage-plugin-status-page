@@ -4,7 +4,7 @@ import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import { kebabCase } from 'lodash';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useDebounce } from 'react-use';
 

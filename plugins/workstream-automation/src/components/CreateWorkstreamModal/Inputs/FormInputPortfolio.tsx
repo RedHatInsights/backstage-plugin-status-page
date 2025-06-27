@@ -10,7 +10,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { Checkbox, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useDebounce } from 'react-use';
 

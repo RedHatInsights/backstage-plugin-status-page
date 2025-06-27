@@ -9,7 +9,6 @@ import {
   DialogContent,
   DialogTitle,
 } from '@material-ui/core';
-import React from 'react';
 import { FormInputWorkstreams } from '../CreateArtModal/Inputs';
 import { FormProvider, useForm } from 'react-hook-form';
 import { stringifyEntityRef } from '@backstage/catalog-model';

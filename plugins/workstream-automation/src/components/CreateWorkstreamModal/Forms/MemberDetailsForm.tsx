@@ -19,7 +19,7 @@ import {
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import { Alert, Autocomplete } from '@material-ui/lab';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Controller,
   FieldArrayWithId,

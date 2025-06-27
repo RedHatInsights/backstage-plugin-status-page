@@ -1,4 +1,3 @@
-import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { hydraSupportDashboardPlugin, HydraSupportDashboardPage } from '../src/plugin';
 

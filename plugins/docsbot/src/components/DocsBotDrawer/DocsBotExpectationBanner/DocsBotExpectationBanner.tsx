@@ -7,7 +7,6 @@ import {
   Typography,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import React from 'react';
 import useStyles from './DocsBotExpectationBanner.styles';
 import CacheToggle from '../../../utils/cache_toggle.png';
 

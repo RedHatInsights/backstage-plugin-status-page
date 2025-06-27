@@ -26,7 +26,7 @@ import {
 } from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import PersonIcon from '@material-ui/icons/Person';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useStyles } from './AuditSummaryReport.styles';
 import { ReviewDataItem } from './types';
 

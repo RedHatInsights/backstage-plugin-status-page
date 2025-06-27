@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Tooltip, useTheme } from '@material-ui/core';
 import ThumbDownIcon from '@material-ui/icons/ThumbDown';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';

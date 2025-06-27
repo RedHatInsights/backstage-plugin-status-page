@@ -6,7 +6,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useDebounce } from 'react-use';
 import { Member } from '../../../types';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { cmdbPlugin, ServiceDetailsCard } from '../src/plugin';
 import { ServiceNowApi, serviceNowApiRef } from '../src/apis';

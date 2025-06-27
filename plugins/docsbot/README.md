@@ -51,7 +51,7 @@ And this is how you can you it.
 To include the DocsBot in your project, use the `DocsBotButton` and `DocsBotPanel` components. Here's a simplified example:
 
 ```jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   DocsBotButton,
   DocsBotPanel,

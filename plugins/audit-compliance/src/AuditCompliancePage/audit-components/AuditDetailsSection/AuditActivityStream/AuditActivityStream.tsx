@@ -9,7 +9,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import InfoIcon from '@material-ui/icons/Info';
 import { format } from 'date-fns';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useStyles } from './AuditActivityStream.styles';
 import { AuditEvent } from './types';
 

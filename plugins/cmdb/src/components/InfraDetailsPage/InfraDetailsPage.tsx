@@ -1,5 +1,4 @@
 import { useEntity } from '@backstage/plugin-catalog-react';
-import React from 'react';
 import { getAppCodeFromEntity } from '../../utils/getAppCodeFromEntity';
 import { useInfraDetails } from '../../hooks/useInfraDetails';
 import { Progress, Table, TableColumn } from '@backstage/core-components';

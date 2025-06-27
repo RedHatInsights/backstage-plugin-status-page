@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { LinearProgress, Box, CircularProgress } from '@material-ui/core';
 
 interface IProps {

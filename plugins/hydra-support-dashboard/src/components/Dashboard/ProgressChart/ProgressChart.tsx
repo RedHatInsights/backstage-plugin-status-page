@@ -1,14 +1,19 @@
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { Chip, Grid, LinearProgress, LinearProgressProps } from '@material-ui/core';
+import {
+  Chip,
+  Grid,
+  LinearProgress,
+  LinearProgressProps,
+} from '@material-ui/core';
 
 interface IProps {
   progressData: any;
 }
 
 export const ProgressChart = (props: IProps) => {
-  const [totalJiras, setTotalJiras] = React.useState(0);
+  const [totalJiras, setTotalJiras] = useState(0);
 
   useEffect(() => {
     if (props.progressData && Object.keys(props.progressData).length) {
@@ -26,7 +31,7 @@ export const ProgressChart = (props: IProps) => {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
         <Box sx={{ width: '100%', mr: 1 }}>
-          <LinearProgress variant="determinate" value={event.value}/>
+          <LinearProgress variant="determinate" value={event.value} />
         </Box>
         <Box sx={{ minWidth: 35 }}>
           <Typography
@@ -58,7 +63,7 @@ export const ProgressChart = (props: IProps) => {
               </Grid>
             </Grid>
           </div>
-          {Object.keys(props.progressData).map((status) => {
+          {Object.keys(props.progressData).map(status => {
             return (
               <div style={{ padding: '0.35rem' }}>
                 <Grid container spacing={2}>

@@ -1,6 +1,5 @@
 import { InfoCard } from '@backstage/core-components';
 import { Button, Chip, Divider, Grid, Typography } from '@material-ui/core';
-import React from 'react';
 import { KeyValue } from '../../Interfaces';
 
 type Props = {

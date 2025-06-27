@@ -16,7 +16,7 @@ import {
   SPASHIP_IMPORT_TAG,
 } from './constants';
 import { mapper } from './mapper';
-import { LoggerService } from '@backstage/backend-plugin-api/index';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export function generateSystemEntity(
   property: SPAship.Property,

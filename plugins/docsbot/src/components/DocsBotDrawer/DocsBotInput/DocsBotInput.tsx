@@ -1,6 +1,6 @@
 import { useAnalytics } from '@backstage/core-plugin-api';
 import { Button, Grid, TextField } from '@material-ui/core';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 interface DocsBotInputProps {
   onSendMessage: (message: string) => void;

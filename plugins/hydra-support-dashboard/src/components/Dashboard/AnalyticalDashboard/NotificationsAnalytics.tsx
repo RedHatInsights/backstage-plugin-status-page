@@ -12,7 +12,7 @@ import {
   Select,
   Typography,
 } from '@material-ui/core';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { dataLayerApiRef } from '../../../api';
 import {
   LineChart,

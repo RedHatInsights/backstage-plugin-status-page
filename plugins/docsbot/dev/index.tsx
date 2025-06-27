@@ -1,4 +1,3 @@
-import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { docsBotPlugin, DocsBotPage } from '../src/plugin';
 

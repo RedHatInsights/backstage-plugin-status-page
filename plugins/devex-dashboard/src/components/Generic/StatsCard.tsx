@@ -6,7 +6,6 @@ import {
   Typography,
   useTheme,
 } from '@material-ui/core';
-import React from 'react';
 import useStyles from '../DashboardComponent/Dashboard.styles';
 import { DataPoint } from '../../Interfaces/AppDev';
 

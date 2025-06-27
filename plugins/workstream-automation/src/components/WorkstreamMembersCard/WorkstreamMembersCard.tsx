@@ -18,7 +18,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { IconButton, makeStyles } from '@material-ui/core';
 import EditTwoTone from '@material-ui/icons/EditTwoTone';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CustomUserEntity, TableRowDataType } from '../../types';
 import { MembersEditModal } from './MembersEditModal';
 import { RequirePermission } from '@backstage/plugin-permission-react';

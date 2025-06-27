@@ -26,7 +26,7 @@ import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import LinearProgress from '@mui/material/LinearProgress';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { outageApiRef } from '../api';
 import { StatusPageHeader } from './Header';

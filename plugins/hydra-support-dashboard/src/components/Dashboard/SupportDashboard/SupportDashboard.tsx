@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, Grid, useTheme } from '@material-ui/core';
 
 import { useApi } from '@backstage/core-plugin-api';

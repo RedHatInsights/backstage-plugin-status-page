@@ -34,7 +34,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import { Alert } from '@material-ui/lab';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { AuditActivityStream } from './AuditActivityStream/AuditActivityStream';
 import { useStyles } from './AuditDetailsSection.styles';

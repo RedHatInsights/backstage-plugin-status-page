@@ -1,4 +1,3 @@
-import React from 'react';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import {
   bindPopover,

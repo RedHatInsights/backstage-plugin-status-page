@@ -1,5 +1,5 @@
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { devexApiRef } from '../../api';
 import { InfoCard, LinkButton } from '@backstage/core-components';
 import { MatomoPeriods, RedHatStandardColors } from '../Generic/Constants';

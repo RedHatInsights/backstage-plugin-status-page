@@ -6,7 +6,6 @@ import {
   Page,
 } from '@backstage/core-components';
 import { Box, Typography } from '@material-ui/core';
-import React from 'react';
 import { AuditApplicationList } from './audit-components/AuditApplicationList';
 import Group from '@material-ui/icons/Group';
 

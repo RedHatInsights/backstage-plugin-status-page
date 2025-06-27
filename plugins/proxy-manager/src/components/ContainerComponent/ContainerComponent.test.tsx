@@ -1,6 +1,5 @@
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { ContainerComponent } from './ContainerComponent';
-import React from 'react';
 import { OAuthApi } from '@backstage/core-plugin-api';
 import { oauth2ApiRef } from '../../plugin';
 

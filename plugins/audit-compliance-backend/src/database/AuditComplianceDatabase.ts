@@ -10,7 +10,7 @@ import {
   JiraRequestBody,
   ReviewData,
 } from './AuditComplianceDatabase.types';
-import { JsonObject } from '@backstage/types/index';
+import { JsonObject } from '@backstage/types';
 import { Config } from '@backstage/config';
 
 const migrationsDir = resolvePackagePath(

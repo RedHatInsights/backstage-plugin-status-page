@@ -5,7 +5,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
 export const FormInputJiraProject = () => {

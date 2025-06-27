@@ -15,7 +15,7 @@ import {
   lineElementClasses,
   markElementClasses,
 } from '@mui/x-charts';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RedHatStandardColors, SplunkTimePeriods } from '../Generic';
 import { KeyValue } from '../../Interfaces';
 

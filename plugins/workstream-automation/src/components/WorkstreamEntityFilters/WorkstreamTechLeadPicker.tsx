@@ -1,4 +1,3 @@
-import React from 'react';
 import { AutocompletePicker } from './AutocompletePicker';
 import { WorkstreamTechLeadFilter } from './filters';
 

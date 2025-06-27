@@ -1,4 +1,3 @@
-import React from 'react';
 import { NotificationsAnalytics } from './NotificationsAnalytics';
 import { AttachmentsAnalytics } from './AttachmentsAnalytics';
 import { CaseBotAnalytics } from './CaseBotAnalytics';

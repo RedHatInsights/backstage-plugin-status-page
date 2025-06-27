@@ -1,5 +1,4 @@
 /* eslint-disable no-nested-ternary */
-import React from 'react';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';

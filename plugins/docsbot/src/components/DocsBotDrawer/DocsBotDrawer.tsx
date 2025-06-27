@@ -26,7 +26,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { rootRouteRef } from '../../routes';
 import useStyles from './DocsBotDrawer.styles';
 import DocsBotExpectationBanner from './DocsBotExpectationBanner/DocsBotExpectationBanner';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Chip, Grid, Box } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check'
 import CubesIcon from '@material-ui/icons/Dialpad'

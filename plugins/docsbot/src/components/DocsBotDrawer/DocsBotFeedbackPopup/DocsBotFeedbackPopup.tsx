@@ -7,7 +7,7 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import useStyles from './DocsBotFeedbackPopup.styles';
 
 interface DocsBotFeedbackPopupProps {

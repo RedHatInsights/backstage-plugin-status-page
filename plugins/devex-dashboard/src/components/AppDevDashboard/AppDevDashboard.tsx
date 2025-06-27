@@ -1,4 +1,3 @@
-import React from 'react';
 import { Content, Header, HeaderLabel, Page } from '@backstage/core-components';
 import SpaShip from './SpaShip';
 import { Grid } from '@material-ui/core';

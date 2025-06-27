@@ -6,7 +6,6 @@ import {
 } from '@backstage/test-utils';
 import { ProxyList } from './ProxyList';
 import { oauth2ApiRef } from '../../plugin';
-import React from 'react';
 
 describe('ProxyList', () => {
   const mockOauth2Api: Partial<OAuthApi> = {

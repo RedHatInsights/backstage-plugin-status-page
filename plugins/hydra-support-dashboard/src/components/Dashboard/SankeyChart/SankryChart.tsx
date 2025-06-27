@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Chart, registerables } from 'chart.js';
 import { SankeyController, Flow } from 'chartjs-chart-sankey';
 import { useTheme } from '@material-ui/core';

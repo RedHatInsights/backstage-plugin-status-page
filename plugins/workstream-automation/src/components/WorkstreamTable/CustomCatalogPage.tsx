@@ -16,7 +16,6 @@ import {
   UserListPicker,
 } from '@backstage/plugin-catalog-react';
 import { usePermission } from '@backstage/plugin-permission-react';
-import React from 'react';
 import { CreateWorkstreamModal } from '../CreateWorkstreamModal/CreateWorkstreamModal';
 import { columnFactories } from './workstreamColumns';
 

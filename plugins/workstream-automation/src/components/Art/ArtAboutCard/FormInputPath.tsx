@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { kebabCase } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useDebounce } from 'react-use';
 import { Form } from './types';

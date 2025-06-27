@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Typography, makeStyles } from '@material-ui/core';
 import { EntityKindPicker } from './EntityKindPicker';
 import { EntityTypePicker } from './EntityTypePicker';

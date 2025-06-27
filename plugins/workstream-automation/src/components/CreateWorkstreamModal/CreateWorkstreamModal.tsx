@@ -26,7 +26,7 @@ import {
 import { Autocomplete, TabContext, TabList } from '@material-ui/lab';
 import TabPanel from '@material-ui/lab/TabPanel';
 import { kebabCase } from 'lodash';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
 import { workstreamApiRef } from '../../api';
 import {

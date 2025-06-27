@@ -23,7 +23,7 @@ import {
 } from '@material-ui/core';
 import CachedIcon from '@material-ui/icons/Cached';
 import EditTwoTone from '@material-ui/icons/EditTwoTone';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { AboutEditModal } from './AboutEditModal';
 
 const useStyles = makeStyles(theme => ({

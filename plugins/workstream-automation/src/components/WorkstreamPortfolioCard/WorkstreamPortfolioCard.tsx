@@ -20,7 +20,7 @@ import {
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { IconButton, makeStyles, Typography } from '@material-ui/core';
 import EditTwoTone from '@material-ui/icons/EditTwoTone';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PortfolioEditModal } from './PortfolioEditModal';
 
 const useStyles = makeStyles(theme => ({

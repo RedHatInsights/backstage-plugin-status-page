@@ -30,7 +30,7 @@ import {
 } from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import PersonIcon from '@material-ui/icons/Person';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import EmailModal from '../../../Modals/EmailModal/EmailModal';
 import JiraModal from '../../../Modals/JiraModal';
 import { AuditTablePropsWithCounts, ServiceAccountData } from './types';

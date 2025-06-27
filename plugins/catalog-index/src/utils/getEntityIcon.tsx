@@ -1,4 +1,3 @@
-import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import UserIcon from '@material-ui/icons/PersonOutline';
 import GroupIcon from '@material-ui/icons/PeopleOutline';

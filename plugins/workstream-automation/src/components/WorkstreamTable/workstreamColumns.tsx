@@ -14,7 +14,6 @@ import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import BookmarkBorderTwoTone from '@material-ui/icons/BookmarkBorderTwoTone';
 import BookmarkTwoTone from '@material-ui/icons/BookmarkTwoTone';
-import React from 'react';
 import { Member } from '../../types';
 import { MembersColumn } from './MembersColumn';
 

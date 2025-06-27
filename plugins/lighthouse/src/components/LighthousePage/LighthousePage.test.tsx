@@ -2,7 +2,6 @@ import { Entity } from '@backstage/catalog-model';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { LighthouseApiClient, lighthouseApiRef } from '../../api';
 import { CatalogApi, EntityProvider } from '@backstage/plugin-catalog-react';
-import React from 'react';
 import { LighthouseHomePage } from './LighthousePage';
 
 const entityComponent: Entity = {

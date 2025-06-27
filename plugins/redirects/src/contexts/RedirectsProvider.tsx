@@ -5,7 +5,7 @@ import {
   useApi,
   useRouteRef,
 } from '@backstage/core-plugin-api';
-import React, {
+import {
   createContext,
   PropsWithChildren,
   useCallback,
@@ -117,10 +117,16 @@ export const RedirectsProvider = (props: PropsWithChildren<{}>) => {
     const fromEntity = validateEntityRef(applicableRule.from);
     const toEntity = validateEntityRef(applicableRule.to);
 
-    const newPath = toEntity ? getNewPathForEntity(pathname, toEntity) : applicableRule.to;
+    const newPath = toEntity
+      ? getNewPathForEntity(pathname, toEntity)
+      : applicableRule.to;
 
-    const fromMessage = fromEntity ? stringifyEntityRef(fromEntity) : applicableRule.from;
-    const toMessage = toEntity ? stringifyEntityRef(toEntity) : applicableRule.to;
+    const fromMessage = fromEntity
+      ? stringifyEntityRef(fromEntity)
+      : applicableRule.from;
+    const toMessage = toEntity
+      ? stringifyEntityRef(toEntity)
+      : applicableRule.to;
 
     /* Don't redirect if newPath is null or the same as current path */
     if (!newPath || newPath === location.pathname) {

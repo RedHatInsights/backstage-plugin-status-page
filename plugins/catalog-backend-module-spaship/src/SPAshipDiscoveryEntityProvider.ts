@@ -25,7 +25,7 @@ import {
 import { Config } from '@backstage/config';
 import { SPAshipIntegration } from './integrations';
 import { isEmpty } from 'lodash';
-import { LoggerService } from '@backstage/backend-plugin-api/index';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export class SPAshipDiscoveryEntityProvider implements EntityProvider {
   private readonly provider: SPAshipDiscoveryEntityProviderConfig;

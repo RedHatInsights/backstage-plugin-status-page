@@ -6,7 +6,7 @@ import { Box, makeStyles, Tooltip } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import Skeleton from '@material-ui/lab/Skeleton';
 import AvatarGroup from '@material-ui/lab/AvatarGroup';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const useStyles = makeStyles(theme => ({
   root: {

@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useState } from 'react';
 import { Chip, Grid, makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExtensionIcon from '@material-ui/icons/Extension';
@@ -26,7 +26,7 @@ import {
   SidebarSpace,
   useSidebarOpenState,
   Link,
-  WarningIcon
+  WarningIcon,
 } from '@backstage/core-components';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
@@ -131,11 +131,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
               to="feedback"
               text="Feedback"
             />
-            <SidebarItem
-              icon={DoneAllIcon}
-              to="soundcheck"
-              text="Soundcheck"
-            />
+            <SidebarItem icon={DoneAllIcon} to="soundcheck" text="Soundcheck" />
           </SidebarScrollWrapper>
           <Grid container>
             <Grid item xs={8}>

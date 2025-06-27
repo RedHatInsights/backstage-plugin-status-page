@@ -15,7 +15,7 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 import { Autocomplete } from '@material-ui/lab';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useDebounce } from 'react-use';
 import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
