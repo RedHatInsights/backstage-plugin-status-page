@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-audit-compliance-backend [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance-backend@1.5.0...@appdev-platform/backstage-plugin-audit-compliance-backend@1.6.0) (2025-06-27)
+
+
+### Features
+
+* **audit-compliance:** Optimize data flow and enhance audit step integration ([2882636](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/2882636c2a02b6edc3fa7ded1a195fd49e3d5f7b))
+
 ## @appdev-platform/backstage-plugin-audit-compliance-backend [1.5.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance-backend@1.4.0...@appdev-platform/backstage-plugin-audit-compliance-backend@1.5.0) (2025-06-26)
 
 
