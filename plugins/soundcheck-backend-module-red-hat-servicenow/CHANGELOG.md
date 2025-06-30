@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.3.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.3.0...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.3.1) (2025-06-30)
+
+
+### Bug Fixes
+
+* **release:** update semantic release command ([46b4099](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/46b4099c9d5ef78990b732b81c0eac3545202f0a))
+
 ## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.2.1...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.3.0) (2025-06-27)
 
 
