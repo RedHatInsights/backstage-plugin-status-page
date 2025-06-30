@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation-common [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-common@1.3.2...@appdev-platform/backstage-plugin-workstream-automation-common@1.4.0) (2025-06-30)
+
+
+### Features
+
+* **core:** upgrade backstage to v1.40.1 ([8d7884d](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/8d7884d3eb5c56ad12ad1007b1d8bd38e751c552))
+
 ## @appdev-platform/backstage-plugin-workstream-automation-common [1.3.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-common@1.3.1...@appdev-platform/backstage-plugin-workstream-automation-common@1.3.2) (2025-06-12)
 
 
