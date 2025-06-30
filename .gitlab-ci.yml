@@ -101,7 +101,7 @@ publish_plugins:
     - git config --global http.sslVerify "false"
     - git config --global --add safe.directory /builds/app-dev-platform/backstage-plugins
   script:
-    - yarn release --ignore-private-packages
+    - yarn release --ignore-private-packages --deps.bump=satisfy
 
 .mpp_build:
   stage: image-build
