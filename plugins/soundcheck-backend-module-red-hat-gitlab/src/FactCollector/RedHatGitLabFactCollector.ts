@@ -1025,7 +1025,7 @@ export class RedHatGitLabFactCollector implements FactCollector {
 
       return undefined;
     }
-    console.log('rules', rules);
+
     return {
       factRef: factRef,
       entityRef: stringifyEntityRef(entity),
