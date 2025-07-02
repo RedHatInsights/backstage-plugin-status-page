@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-audit-compliance [1.9.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance@1.8.0...@appdev-platform/backstage-plugin-audit-compliance@1.9.0) (2025-07-02)
+
+
+### Features
+
+* **audit-compliance:** Adding update comment button for service accounts ([7b714f8](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/7b714f838c17c029ef5f359b54697e41a10111e5))
+
 ## @appdev-platform/backstage-plugin-audit-compliance [1.8.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance@1.7.0...@appdev-platform/backstage-plugin-audit-compliance@1.8.0) (2025-07-02)
 
 
