@@ -63,6 +63,9 @@ export default function ServiceAccountAccessReviewTable({
   const [currentUser, setCurrentUser] = useState<string>('');
   const jiraUrl = configApi.getString('auditCompliance.jiraUrl');
   const classes = useStyles();
+  const [commentUpdateLoading, setCommentUpdateLoading] = useState<
+    Record<number, boolean>
+  >({});
 
   const getCurrentUser = async () => {
     try {
@@ -378,6 +381,44 @@ export default function ServiceAccountAccessReviewTable({
     }
   };
 
+  const handleCommentUpdate = async (row: ServiceAccountData) => {
+    setCommentUpdateLoading(prev => ({ ...prev, [row.id]: true }));
+    try {
+      const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+      const payload = {
+        id: row.id,
+        comments: row.comments,
+        ticket_reference: row.ticket_reference,
+      };
+      const response = await fetchApi.fetch(
+        `${baseUrl}/jira/service-account/comment`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        },
+      );
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to update Jira comment.');
+      }
+      alertApi.post({
+        message: 'Comment updated successfully in Jira.',
+        severity: 'success',
+        display: 'transient',
+      });
+    } catch (error) {
+      alertApi.post({
+        message:
+          error instanceof Error ? error.message : 'Failed to update comment.',
+        severity: 'error',
+        display: 'transient',
+      });
+    } finally {
+      setCommentUpdateLoading(prev => ({ ...prev, [row.id]: false }));
+    }
+  };
+
   const columns: TableColumn<ServiceAccountData>[] = [
     { title: 'User ID', field: 'service_account' },
     { title: 'Application', field: 'app_name' },
@@ -446,17 +487,34 @@ export default function ServiceAccountAccessReviewTable({
       field: 'comments',
       hidden: !showDetails,
       render: row => (
-        <TextField
-          value={row.comments || ''}
-          onChange={e => {
-            const updated = data.map(d =>
-              d.id === row.id ? { ...d, comments: e.target.value } : d,
-            );
-            setData(updated);
-          }}
-          multiline
-          size="small"
-        />
+        <Box>
+          <TextField
+            value={row.comments || ''}
+            onChange={e => {
+              const updated = data.map(d =>
+                d.id === row.id ? { ...d, comments: e.target.value } : d,
+              );
+              setData(updated);
+            }}
+            multiline
+            size="small"
+          />
+          {row.sign_off_status === 'rejected' && row.ticket_reference && (
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => handleCommentUpdate(row)}
+              disabled={commentUpdateLoading[row.id]}
+              style={{ minWidth: '80px', marginTop: '8px' }}
+            >
+              {commentUpdateLoading[row.id] ? (
+                <CircularProgress size={20} />
+              ) : (
+                'Update'
+              )}
+            </Button>
+          )}
+        </Box>
       ),
     },
     {

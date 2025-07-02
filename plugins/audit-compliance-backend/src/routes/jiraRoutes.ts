@@ -101,5 +101,30 @@ export async function createJiraRouter(
     }
   });
 
+  /**
+   * POST /jira/service-account/comment
+   * Adds a comment to an existing Jira ticket for a service account and updates the local database.
+   *
+   * @route POST /jira/service-account/comment
+   * @param {Object} req.body - Request body containing id, comments, and ticket_reference
+   * @returns {Object} 200 - Success message
+   * @returns {Object} 500 - Error response
+   */
+  jiraRouter.post('/jira/service-account/comment', async (req, res) => {
+    const { id, comments, ticket_reference } = req.body;
+
+    try {
+      await database.addServiceAccountJiraCommentAndUpdateDb(
+        id,
+        comments,
+        ticket_reference,
+      );
+      res.status(200).json({ message: 'Comment added successfully.' });
+    } catch (err: any) {
+      logger.error('Error adding Jira comment (service account):', err.message);
+      res.status(500).json({ error: err.message || 'Unknown error occurred.' });
+    }
+  });
+
   return jiraRouter;
 }
