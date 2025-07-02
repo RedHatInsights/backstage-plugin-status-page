@@ -1622,4 +1622,33 @@ export class AuditComplianceDatabase {
       `Successfully added comment to Jira ticket ${ticket_reference} and updated database.`,
     );
   }
+
+  /**
+   * Adds a comment to a Jira ticket and updates the comment in the service_account_access_review table.
+   *
+   * @param id - The ID of the service account access review record
+   * @param comments - The comment to add
+   * @param ticket_reference - The Jira ticket reference
+   */
+  async addServiceAccountJiraCommentAndUpdateDb(
+    id: number,
+    comments: string,
+    ticket_reference: string,
+  ) {
+    if (!comments || !ticket_reference) {
+      throw new Error('Missing comment or ticket reference.');
+    }
+
+    // Add comment to Jira
+    await addJiraComment(ticket_reference, comments, this.logger, this.config);
+
+    // Update comment in the service_account_access_review table
+    await this.db('service_account_access_review')
+      .where({ id })
+      .update({ comments });
+
+    this.logger.info(
+      `Successfully added comment to Jira ticket ${ticket_reference} and updated service account database.`,
+    );
+  }
 }
