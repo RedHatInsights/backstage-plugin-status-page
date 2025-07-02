@@ -1,0 +1,198 @@
+openapi: 3.1.0
+info:
+  title: Access Management API
+  version: 1.0.0
+  description: API for managing access approvals, user roles, and workflow audit trails.
+  contact:
+    name: AppDev
+
+paths:
+  /access-requests:
+    get:
+      summary: List all access requests
+      responses:
+        '200':
+          description: List of access requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccessRequest'
+              example:
+                - id: "1"
+                  username: "test@redhat.com"
+                  timestamp: "2025-06-26T10:15:30Z"
+                  status: "pending"
+                  role: "member"
+                  reason: "Access to internal dashboard"
+                  reviewer: "Soumyadip Chowdhury"
+                  createdBy: "souchowd@redhat.com"
+                  updatedBy: "souchowd@redhat.com"
+                  createdAt: "2025-06-26T10:00:00Z"
+                  updatedAt: "2025-06-26T10:00:00Z"
+
+    post:
+      summary: Create a new access request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessRequestInput'
+      responses:
+        '201':
+          description: Created access request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessRequest'
+              example:
+                id: "2"
+                username: "test@redhat.com"
+                timestamp: "2025-06-26T11:00:00Z"
+                status: "pending"
+                role: "owner"
+                reason: "Owner access to deployment tools"
+                reviewer: "Soumyadip Chowdhury"
+                createdBy: "souchowd@redhat.com"
+                updatedBy: "souchowd@redhat.com"
+                createdAt: "2025-06-26T11:00:00Z"
+                updatedAt: "2025-06-26T11:00:00Z"
+
+  /access-requests/{id}:
+    get:
+      summary: Get a specific access request
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Single access request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessRequest'
+              example:
+                id: "1"
+                username: "test@redhat.com"
+                timestamp: "2025-06-26T10:15:30Z"
+                status: "pending"
+                role: "member"
+                reason: "Access to internal dashboard"
+                reviewer: "Soumyadip Chowdhury"
+                createdBy: "souchowd@redhat.com"
+                updatedBy: "souchowd@redhat.com"
+                createdAt: "2025-06-26T10:00:00Z"
+                updatedAt: "2025-06-26T10:00:00Z"
+
+    put:
+      summary: Update an existing access request
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessRequestInput'
+      responses:
+        '200':
+          description: Updated access request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessRequest'
+              example:
+                id: "1"
+                username: "test@redhat.com"
+                timestamp: "2025-06-26T10:15:30Z"
+                status: "approved"
+                role: "member"
+                reason: "Access to internal dashboard"
+                reviewer: "Soumyadip Chowdhury"
+                createdBy: "souchowd@redhat.com"
+                updatedBy: "souchowd@redhat.com"
+                createdAt: "2025-06-26T10:00:00Z"
+                updatedAt: "2025-06-26T12:30:00Z"
+
+    delete:
+      summary: Delete an access request
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Deleted successfully (No content)
+
+components:
+  schemas:
+    AccessRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [approved, rejected, pending]
+        role:
+          type: string
+          enum: [member, owner]
+        reason:
+          type: string
+        reviewer:
+          type: string
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    AccessRequestInput:
+      type: object
+      required:
+        - username
+        - status
+        - role
+        - reason
+        - reviewer
+        - createdBy
+        - updatedBy
+      properties:
+        username:
+          type: string
+        status:
+          type: string
+          enum: [approved, rejected, pending]
+        role:
+          type: string
+          enum: [member, owner]
+        reason:
+          type: string
+        reviewer:
+          type: string
+        createdBy:
+          type: string
+        updatedBy:
+          type: string
+
