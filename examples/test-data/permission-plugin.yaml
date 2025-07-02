@@ -1,0 +1,12 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: example-permission-access
+  annotations:
+    rover/email-id: "one-platform@redhat.com"
+spec:
+  type: website
+  lifecycle: experimental
+  owner: guests
+  system: examples

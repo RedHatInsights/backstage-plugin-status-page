@@ -63,6 +63,7 @@ backend:
   database:
     client: better-sqlite3
     connection: ':memory:'
+    
   cache:
     store: memory
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
@@ -393,6 +394,18 @@ auditCompliance:
   gitlabBaseUrl: ${GITLAB_BASE_URL}
   jiraUrl: ${JIRA_URL}
   jiraToken: ${JIRA_TOKEN}
+  email:
+    host: ${EMAIL_HOST}
+    port: ${EMAIL_PORT}
+    from: ${EMAIL_FROM}
+    secure: false
+    caCert: ${NODE_EXTRA_CA_CERTS}
+
+permissionManagement:
+  roverUsername: ${ROVER_USERNAME}
+  roverPassword: ${ROVER_PASSWORD}
+  roverBaseUrl: ${ROVER_BASE_URL}
+  roverBaseUrlV2: ${ROVER_BASE_URLV2}
   email:
     host: ${EMAIL_HOST}
     port: ${EMAIL_PORT}

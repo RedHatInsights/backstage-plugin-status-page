@@ -157,7 +157,11 @@ backend.add(
     '@appdev-platform/backstage-plugin-scaffolder-backend-module-custom-filters'
   ),
 );
-
+backend.add(
+  import(
+    '@appdev-platform/backstage-plugin-permission-management-backend'
+  ),
+);
 // backend.add(
 //   import(
 //     '@appdev-platform/backstage-plugin-soundcheck-backend-module-google-spreadsheets'
