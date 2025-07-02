@@ -39,6 +39,7 @@ export const AuditApplicationOnboardingForm = ({
     cmdb_id: '',
     environment: '',
     app_owner: '',
+    app_owner_email: '',
     app_delegate: '',
     jira_project: '',
     accounts: [{ type: 'rover-group-name', source: 'rover', account_name: '' }],
@@ -127,6 +128,7 @@ export const AuditApplicationOnboardingForm = ({
         cmdb_id: '',
         environment: '',
         app_owner: '',
+        app_owner_email: '',
         app_delegate: '',
         jira_project: '',
         accounts: [
@@ -226,6 +228,25 @@ export const AuditApplicationOnboardingForm = ({
                     value={formData.app_owner}
                     onChange={handleMainFieldChange('app_owner')}
                     required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" style={{ marginBottom: 4 }}>
+                    Application Owner Email <RequiredAsterisk />
+                    <Tooltip title="Enter the email address of the application owner.">
+                      <InfoIcon
+                        fontSize="small"
+                        style={{ marginLeft: 4, verticalAlign: 'middle' }}
+                      />
+                    </Tooltip>
+                  </Typography>
+                  <TextField
+                    label=""
+                    fullWidth
+                    value={formData.app_owner_email}
+                    onChange={handleMainFieldChange('app_owner_email')}
+                    required
+                    type="email"
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>

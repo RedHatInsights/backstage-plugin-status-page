@@ -9,6 +9,7 @@ export type ApplicationFormData = {
   cmdb_id: string;
   environment: string;
   app_owner: string;
+  app_owner_email: string;
   app_delegate: string;
   jira_project: string;
   accounts: AccountEntry[];

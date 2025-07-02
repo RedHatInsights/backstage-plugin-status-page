@@ -322,6 +322,7 @@ export class RoverDatabase implements RoverStore {
         'account_name',
         'app_name',
         'app_owner',
+        'app_owner_email',
       )
       .where({
         app_name: appname,
@@ -345,6 +346,7 @@ export class RoverDatabase implements RoverStore {
         account_name,
         app_name,
         app_owner,
+        app_owner_email,
       } = app;
 
       const rover_group_name = account_name;
@@ -399,6 +401,9 @@ export class RoverDatabase implements RoverStore {
         if (serviceAccountInfo && serviceAccountInfo.manager) {
           managerUid = extractUid(serviceAccountInfo.manager) || '';
           if (managerUid) allManagerUids.add(managerUid);
+        }
+        if (!managerUid && app_owner_email && app_owner_email.includes('@')) {
+          managerUid = app_owner_email.split('@')[0];
         }
         allRows.push({
           environment,
@@ -512,6 +517,7 @@ export class RoverDatabase implements RoverStore {
         'account_name',
         'app_name',
         'app_owner',
+        'app_owner_email',
       )
       .where({
         app_name: appname,
@@ -535,6 +541,7 @@ export class RoverDatabase implements RoverStore {
         account_name,
         app_name,
         app_owner,
+        app_owner_email,
       } = app;
 
       const rover_group_name = account_name;
@@ -588,6 +595,9 @@ export class RoverDatabase implements RoverStore {
         if (serviceAccountInfo && serviceAccountInfo.manager) {
           managerUid = extractUid(serviceAccountInfo.manager) || '';
           if (managerUid) allManagerUids.add(managerUid);
+        }
+        if (!managerUid && app_owner_email && app_owner_email.includes('@')) {
+          managerUid = app_owner_email.split('@')[0];
         }
         allRows.push({
           environment,
