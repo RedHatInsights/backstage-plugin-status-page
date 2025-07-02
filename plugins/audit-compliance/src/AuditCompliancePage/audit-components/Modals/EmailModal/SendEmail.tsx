@@ -29,7 +29,12 @@ export const Email = forwardRef<EmailRef, EmailProps>(
     ref,
   ) => {
     const [emailSections, setEmailSections] = useState<
-      { manager: string; body: string; users: UserAccessData[] }[]
+      {
+        manager: string;
+        body: string;
+        users: UserAccessData[];
+        recipientEmail: string;
+      }[]
     >([]);
     const discoveryApi = useApi(discoveryApiRef);
     const fetchApi = useApi(fetchApiRef);
@@ -75,11 +80,29 @@ export const Email = forwardRef<EmailRef, EmailProps>(
 
       const emails = Object.entries(groupedByManager).map(
         ([manager, users]) => {
+          // Try to get manager_uid from the first user in the group
+          const manager_uid = users[0].manager_uid;
+          // Fallback: try to get app_owner_email from the first user in the group (if available)
+          const app_owner_email = users[0].app_owner_email;
+          let recipientEmail = '';
+          if (manager_uid) {
+            recipientEmail = `${manager_uid}@redhat.com`;
+          } else if (app_owner_email) {
+            recipientEmail = app_owner_email;
+          } else {
+            recipientEmail = manager; // fallback to manager name (legacy)
+          }
+
           const userRows = users
             .map(
               user => `
         <tr>
-          <td>${user.full_name}</td>
+          <td>${
+            user.full_name ||
+            user.user_id ||
+            (user as any)?.service_account ||
+            ''
+          }</td>
           <td>${user.environment}</td>
           <td>${user.user_role}</td>
         </tr>
@@ -113,7 +136,7 @@ export const Email = forwardRef<EmailRef, EmailProps>(
   </p>
   <p>Best regards,<br/>${displayName}</p>
 `;
-          return { manager, body, users };
+          return { manager, body, users, recipientEmail };
         },
       );
 
@@ -131,11 +154,18 @@ export const Email = forwardRef<EmailRef, EmailProps>(
       sendEmails: async () => {
         try {
           for (const section of emailSections) {
+            if (!section.recipientEmail.includes('@')) {
+              alertApi.post({
+                message: `No valid recipient email found for manager: ${section.manager}`,
+                severity: 'error',
+              });
+              continue; // Skip sending this email
+            }
             const emailData = {
-              to: section.manager,
+              to: section.recipientEmail,
               subject: ` Access Review - ${appName} - ${auditPeriod} for ${section.manager}`,
               html: section.body,
-              replyTo: section.manager,
+              replyTo: section.recipientEmail,
             };
             const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
             const response = await fetchApi.fetch(`${baseUrl}/send-email`, {

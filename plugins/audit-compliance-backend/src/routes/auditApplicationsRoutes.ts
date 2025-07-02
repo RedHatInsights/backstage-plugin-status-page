@@ -29,6 +29,7 @@ function normalizeApplicationData(data: any) {
     'cmdb_id',
     'environment',
     'app_owner',
+    'app_owner_email',
     'app_delegate',
   ];
   fieldsToNormalize.forEach(field => {
@@ -244,6 +245,7 @@ export async function createAuditApplicationsRouter(
    * @param {string} req.body.cmdb_id - CMDB identifier
    * @param {string} req.body.environment - Environment
    * @param {string} req.body.app_owner - Application owner
+   * @param {string} req.body.app_owner_email - Application owner email
    * @param {string} req.body.app_delegate - Application delegate
    * @param {string} req.body.jira_project - Jira project key
    * @param {Array} req.body.accounts - Array of account entries
@@ -259,6 +261,7 @@ export async function createAuditApplicationsRouter(
         cmdb_id,
         environment,
         app_owner,
+        app_owner_email,
         app_delegate,
         accounts,
       } = normalizedData;
@@ -269,11 +272,12 @@ export async function createAuditApplicationsRouter(
         !cmdb_id ||
         !environment ||
         !app_owner ||
+        !app_owner_email ||
         !app_delegate
       ) {
         return res.status(400).json({
           error:
-            'Missing required fields: app_name, cmdb_id, environment, app_owner, and app_delegate are required',
+            'Missing required fields: app_name, cmdb_id, environment, app_owner, app_owner_email, and app_delegate are required',
         });
       }
 

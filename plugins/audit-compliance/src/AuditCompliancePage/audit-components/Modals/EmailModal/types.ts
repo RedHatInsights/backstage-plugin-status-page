@@ -13,6 +13,8 @@ export interface UserAccessData {
   ticket_id: string | null;
   date_of_access_revoked_added: string | null;
   ticket_status: string | null;
+  manager_uid?: string;
+  app_owner_email?: string;
 }
 
 export interface UserProfile {

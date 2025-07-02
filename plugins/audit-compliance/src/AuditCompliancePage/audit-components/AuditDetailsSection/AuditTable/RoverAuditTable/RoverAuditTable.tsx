@@ -222,6 +222,22 @@ export default function RoverAuditTable({
     setDialogOpen(true);
   };
 
+  const handleBulkReject = () => {
+    if (selectedRows.length > 0) {
+      const firstUser = selectedRows[0];
+      const title = `[${firstUser.app_name}-${period} AQR] : Bulk Rejection of access for ${selectedRows.length} users`;
+      const description = `This Jira ticket is created for ${frequency} ${period} AQR review for application ${
+        firstUser.app_name
+      } for the removal of multiple users: ${selectedRows
+        .map(row => `${row.full_name} (${row.source} - ${row.account_name})`)
+        .join(', ')}`;
+      setSelectedUser(firstUser);
+      setInitialTitle(title);
+      setInitialDescription(description);
+      setDialogOpen(true);
+    }
+  };
+
   const handleTicketSubmit = async (
     _ticketType: string,
     description: string,
@@ -240,11 +256,7 @@ export default function RoverAuditTable({
         app_name: selectedUser.app_name,
         period,
         frequency,
-        title: `[${
-          selectedUser.app_name
-        }-${period} AQR] : Rejection of access for ${selectedUser.full_name} (${
-          selectedUser.user_id
-        }) for ${selectedUser.source} : ${selectedUser.account_name || 'N/A'}`,
+        title: initialTitle,
         description,
         comments,
         manager_name: selectedUser.manager,
@@ -273,51 +285,47 @@ export default function RoverAuditTable({
       const result = await response.json();
       const { key: ticketId, status } = result;
 
-      // Clean the user data before updating
-      const { tableData, ...cleanUser } = selectedUser as any;
+      // Determine which users to update - if selectedRows has multiple users, update all of them
+      const usersToUpdate =
+        selectedRows.length > 1 ? selectedRows : [selectedUser];
 
-      // Update the user data with the ticket ID and status
-      const updatedUser = {
-        ...cleanUser,
-        sign_off_status: 'rejected',
-        sign_off_by: currentUser,
-        sign_off_date: new Date().toISOString(),
-        ticket_reference: ticketId,
-        ticket_status: status,
-        comments,
-        access_change_date: new Date().toISOString(),
-      };
-
-      // Update the database
-      const updateResponse = await fetchApi.fetch(`${baseUrl}/access-reviews`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedUser),
+      // Update all users with the same ticket information
+      const updatedUsers = usersToUpdate.map(user => {
+        const { tableData, ...cleanUser } = user as any;
+        return {
+          ...cleanUser,
+          sign_off_status: 'rejected',
+          sign_off_by: currentUser,
+          sign_off_date: new Date().toISOString(),
+          ticket_reference: ticketId,
+          ticket_status: status,
+          comments,
+          access_change_date: new Date().toISOString(),
+        };
       });
 
-      if (!updateResponse.ok) {
-        const errorData = await updateResponse.json().catch(() => ({}));
-        throw new Error(
-          errorData.message ||
-            `Failed to update database! status: ${updateResponse.status}`,
-        );
-      }
+      // Update the database for all users
+      await postAuditUpdate(updatedUsers, discoveryApi, fetchApi);
 
       alertApi.post({
-        message: 'Jira ticket created and database updated successfully',
+        message: `Jira ticket created and ${updatedUsers.length} user(s) rejected successfully`,
         severity: 'success',
         display: 'transient',
       });
 
+      // Update the local state for all users
       setUserData(prev =>
-        prev.map(d => (d.id === selectedUser.id ? updatedUser : d)),
+        prev.map(d => {
+          const updatedUser = updatedUsers.find(u => u.id === d.id);
+          return updatedUser || d;
+        }),
       );
+
       setDialogOpen(false);
       setSelectedUser(null);
       setInitialDescription('');
       setInitialTitle('');
+      setSelectedRows([]);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error in ticket creation:', error);
@@ -335,6 +343,42 @@ export default function RoverAuditTable({
       setInitialTitle('');
     } finally {
       setTicketLoading(false);
+    }
+  };
+
+  const handleBulkApprove = async () => {
+    const updated = userData.map(d =>
+      selectedRows.some(s => s.id === d.id)
+        ? {
+            ...d,
+            sign_off_status: 'approved',
+            sign_off_by: currentUser,
+            sign_off_date: new Date().toISOString(),
+            ticket_status: 'approved',
+            access_change_date: new Date().toISOString(),
+          }
+        : d,
+    );
+
+    const updatedUsers = updated.filter(d =>
+      selectedRows.some(s => s.id === d.id),
+    );
+
+    try {
+      await postAuditUpdate(updatedUsers, discoveryApi, fetchApi);
+      setUserData(updated);
+      setSelectedRows([]);
+      alertApi.post({
+        message: `Access approved for ${selectedRows.length} selected users`,
+        severity: 'success',
+        display: 'transient',
+      });
+    } catch (error) {
+      alertApi.post({
+        message: 'Failed to approve selected users.',
+        severity: 'error',
+        display: 'transient',
+      });
     }
   };
 
@@ -375,56 +419,6 @@ export default function RoverAuditTable({
       });
     } finally {
       setCommentUpdateLoading(prev => ({ ...prev, [user.id]: false }));
-    }
-  };
-
-  const handleBulkReject = () => {
-    if (selectedRows.length > 0) {
-      const firstUser = selectedRows[0];
-      const description = `This Jira ticket is created for ${frequency} ${period} AQR review for application ${
-        firstUser.app_name
-      } for the removal of multiple users: ${selectedRows
-        .map(row => `${row.full_name} (${row.source} - ${row.account_name})`)
-        .join(', ')}`;
-      setSelectedUser(firstUser);
-      setInitialDescription(description);
-      setDialogOpen(true);
-    }
-  };
-
-  const handleBulkApprove = async () => {
-    const updated = userData.map(d =>
-      selectedRows.some(s => s.id === d.id)
-        ? {
-            ...d,
-            sign_off_status: 'approved',
-            sign_off_by: currentUser,
-            sign_off_date: new Date().toISOString(),
-            ticket_status: 'approved',
-            access_change_date: new Date().toISOString(),
-          }
-        : d,
-    );
-
-    const updatedUsers = updated.filter(d =>
-      selectedRows.some(s => s.id === d.id),
-    );
-
-    try {
-      await postAuditUpdate(updatedUsers, discoveryApi, fetchApi);
-      setUserData(updated);
-      setSelectedRows([]);
-      alertApi.post({
-        message: `Access approved for ${selectedRows.length} selected users`,
-        severity: 'success',
-        display: 'transient',
-      });
-    } catch (error) {
-      alertApi.post({
-        message: 'Failed to approve selected users.',
-        severity: 'error',
-        display: 'transient',
-      });
     }
   };
 

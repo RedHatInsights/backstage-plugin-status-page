@@ -190,7 +190,7 @@ export default function ServiceAccountAccessReviewTable({
 
   const handleReject = (user: ServiceAccountData) => {
     const source = user.source || 'GITLAB';
-    const title = `[${user.app_name}-${period} AQR] : Rejection of access for Service Account: ${user.service_account} from Source: ${source}`;
+    const title = `[${user.app_name}-${period} AQR] : Rejection of access for Service Account: ${user.service_account}`;
     const description = `This Jira ticket is created for ${frequency} ${period} AQR review for application ${user.app_name} for the removal of service account: ${user.service_account} from ${source}`;
     setSelectedUser(user);
     setInitialTitle(title);
@@ -201,12 +201,14 @@ export default function ServiceAccountAccessReviewTable({
   const handleBulkReject = () => {
     if (selectedRows.length > 0) {
       const firstUser = selectedRows[0];
+      const title = `[${firstUser.app_name}-${period} AQR] : Bulk Rejection of access for ${selectedRows.length} service accounts`;
       const description = `This Jira ticket is created for ${frequency} ${period} AQR review for application ${
         firstUser.app_name
       } for the removal of multiple service accounts: ${selectedRows
         .map(row => row.service_account)
         .join(', ')}`;
       setSelectedUser(firstUser);
+      setInitialTitle(title);
       setInitialDescription(description);
       setDialogOpen(true);
     }
@@ -218,22 +220,17 @@ export default function ServiceAccountAccessReviewTable({
     comments: string,
   ) => {
     if (!selectedUser) return;
-
     try {
-      const source = selectedUser.source || 'GITLAB';
       // Extract current user UID from userEntityRef (format: user:redhat/username)
       const currentUserUid = currentUser.split('/')[1] || '';
 
+      // Prepare the data to be sent to the backend for Jira ticket creation
       const ticketData = {
         user_id: selectedUser.service_account,
         app_name: selectedUser.app_name,
         period,
         frequency,
-        title: `[${
-          selectedUser.app_name
-        }-${period} AQR] : Rejection of access for ${
-          selectedUser.service_account
-        } for ${source}: ${selectedUser.account_name || 'N/A'}`,
+        title: initialTitle,
         description,
         comments,
         manager_name: selectedUser.manager,
@@ -263,18 +260,22 @@ export default function ServiceAccountAccessReviewTable({
       const result = await response.json();
       const { key: ticketId, status } = result;
 
-      const { tableData, ...cleanUser } = selectedUser;
+      // Update all selected service accounts with the same ticket info
+      const updatedUsers: ServiceAccountData[] = selectedRows.map(user => {
+        const { tableData, ...cleanUser } = user;
+        return {
+          ...cleanUser,
+          sign_off_status: 'rejected' as const,
+          sign_off_by: currentUser,
+          sign_off_date: new Date().toISOString(),
+          ticket_reference: ticketId,
+          ticket_status: status,
+          comments,
+          revoked_date: new Date().toISOString(),
+        };
+      });
 
-      const updatedUser: ServiceAccountData = {
-        ...cleanUser,
-        sign_off_status: 'rejected' as const,
-        sign_off_by: currentUser,
-        sign_off_date: new Date().toISOString(),
-        ticket_reference: ticketId,
-        ticket_status: status,
-        comments,
-        revoked_date: new Date().toISOString(),
-      };
+      // Update the database for all users
       const updateResponse = await fetchApi.fetch(
         `${baseUrl}/service_account_access_review`,
         {
@@ -282,7 +283,7 @@ export default function ServiceAccountAccessReviewTable({
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(updatedUser),
+          body: JSON.stringify(updatedUsers),
         },
       );
 
@@ -295,18 +296,26 @@ export default function ServiceAccountAccessReviewTable({
       }
 
       alertApi.post({
-        message: 'Jira ticket created and database updated successfully',
+        message: `Jira ticket created and ${updatedUsers.length} service account(s) rejected successfully`,
         severity: 'success',
         display: 'transient',
       });
 
       // Refresh data after successful update to get latest Jira statuses
-      await fetchData();
+      // await fetchData();
+      // Instead, update local state for all selected rows
+      setData(prevData =>
+        prevData.map(d => {
+          const updatedUser = updatedUsers.find(u => u.id === d.id);
+          return updatedUser || d;
+        }),
+      );
 
       setDialogOpen(false);
       setSelectedUser(null);
       setInitialDescription('');
       setInitialTitle('');
+      setSelectedRows([]);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error in ticket creation:', error);
@@ -318,6 +327,10 @@ export default function ServiceAccountAccessReviewTable({
         severity: 'error',
         display: 'transient',
       });
+      setDialogOpen(false);
+      setSelectedUser(null);
+      setInitialDescription('');
+      setInitialTitle('');
     }
   };
 

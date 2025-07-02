@@ -1503,6 +1503,7 @@ export class AuditComplianceDatabase {
    * @param appData.cmdb_id - CMDB identifier
    * @param appData.environment - Environment (e.g., production)
    * @param appData.app_owner - Application owner
+   * @param appData.app_owner_email - Application owner email
    * @param appData.app_delegate - Application delegate
    * @param appData.jira_project - Jira project key
    * @param appData.accounts - Array of account entries
@@ -1513,6 +1514,7 @@ export class AuditComplianceDatabase {
     cmdb_id: string;
     environment: string;
     app_owner: string;
+    app_owner_email: string;
     app_delegate: string;
     jira_project: string;
     accounts: Array<{
@@ -1525,18 +1527,40 @@ export class AuditComplianceDatabase {
 
     try {
       // Insert all entries into applications table
-      const entries = appData.accounts.map(account => ({
-        app_name: appData.app_name,
-        cmdb_id: appData.cmdb_id,
-        environment: appData.environment,
-        app_owner: appData.app_owner,
-        app_delegate: appData.app_delegate,
-        jira_project: appData.jira_project,
-        type: account.type,
-        source: account.source,
-        account_name: account.account_name,
-        created_at: this.db.fn.now(),
-      }));
+      const entries = appData.accounts.map(account => {
+        const entry: any = {
+          app_name: appData.app_name,
+          cmdb_id: appData.cmdb_id,
+          environment: appData.environment,
+          app_owner: appData.app_owner,
+          app_owner_email: appData.app_owner_email,
+          app_delegate: appData.app_delegate,
+          jira_project: appData.jira_project,
+          type: account.type,
+          source: account.source,
+          account_name: account.account_name,
+          created_at: this.db.fn.now(),
+        };
+        // Fallback logic for all account types
+        let manager = (account as any).manager;
+        let manager_uid = (account as any).manager_uid;
+        if (!manager) {
+          manager = appData.app_owner;
+        }
+        if (!manager_uid || manager_uid.trim() === '') {
+          if (
+            appData.app_owner_email &&
+            appData.app_owner_email.includes('@')
+          ) {
+            manager_uid = `${appData.app_owner_email.split('@')[0]}@redhat.com`;
+          } else {
+            manager_uid = null;
+          }
+        }
+        entry.manager = manager;
+        entry.manager_uid = manager_uid;
+        return entry;
+      });
 
       // Insert all entries
       const insertedIds = await trx('applications')
