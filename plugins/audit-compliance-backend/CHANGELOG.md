@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-audit-compliance-backend [1.8.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance-backend@1.7.0...@appdev-platform/backstage-plugin-audit-compliance-backend@1.8.0) (2025-07-02)
+
+
+### Features
+
+* **APD-838:** Bulk rejection fix, email enhancements, onboarding updates, and data optimisation ([81fede8](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/81fede8f5a63f7498ff547010fbbcb37ba3f83bc))
+
 ## @appdev-platform/backstage-plugin-audit-compliance-backend [1.7.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance-backend@1.6.0...@appdev-platform/backstage-plugin-audit-compliance-backend@1.7.0) (2025-06-27)
 
 
