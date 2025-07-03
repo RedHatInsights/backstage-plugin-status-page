@@ -22,6 +22,12 @@ backend:
           subject: workstream-catalog-token
         accessRestrictions:
           - plugin: workstream
+      - type: static
+        options:
+          token: ${PERMISSION_PLUGIN_TOKEN}
+          subject: permission-management-token
+        accessRestrictions:
+          - plugin: permission-management    
     keys:
       - secret: ${BACKEND_SECRET}
 
