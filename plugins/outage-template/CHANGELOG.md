@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-outages [1.4.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-outages@1.4.0...@appdev-platform/backstage-plugin-outages@1.4.1) (2025-07-03)
+
+
+### Other changes
+
+* **APD-944:** Replaced switch with tabs for outage form ([1cb8555](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/1cb855590b6469bf9b825af42407fcd590bca3de))
+
 ## @appdev-platform/backstage-plugin-outages [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-outages@1.3.1...@appdev-platform/backstage-plugin-outages@1.4.0) (2025-06-27)
 
 
