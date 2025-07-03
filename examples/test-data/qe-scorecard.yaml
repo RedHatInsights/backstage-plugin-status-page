@@ -1,0 +1,147 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  tags:
+    - xe-dx
+    - qe-service
+  annotations:
+    servicenow.com/appcode: DXSP-001
+    jira/project-key: CPCORE
+  name: dxp-dxsp
+  title: DXP Security Platform
+  namespace: uxe
+  description: This platform is designed to serve CVE and vulnerability content for the Customer Portal.
+  links:
+    - title: Origin Production URL
+      url: https://dxp-dxsp-prod.apps.ext-waf.drop.prod.us-west-2.aws.paas.redhat.com
+      type: web
+spec:
+  type: website
+  lifecycle: experimental
+  owner: user:redhat/yoswal
+  system: examples
+  contacts:
+    - label: Developers
+      users:
+        - user:redhat/mbent
+        - user:redhat/dkolbas
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  tags:
+    - qe-service
+  annotations:
+    servicenow.com/appcode: DCP-001
+  name: dxp-commenting-platform
+  title: DXP Commenting Platform
+  namespace: uxe
+  description:
+    A platform dedicated to presenting an API and management interface
+    for a distributed commenting system.
+  links:
+    - title: Origin Production URL
+      url: https://dxp-dcp-prod.apps.ext-waf.drop.prod.us-west-2.aws.paas.redhat.com
+      type: web
+    - title: Production URL
+      url: https://dxp-dcp-prod.apps.ext-waf.drop.prod.us-west-2.aws.paas.redhat.com
+      type: web
+    - title: Rollback process
+      url: https://gitlab.cee.redhat.com/dxp/dat/droperator-platform/droperator-pipeline/-/blob/1.x/docs/rollback.md?ref_type=heads
+      type: web
+    - title: Confluence
+      url: https://docs.engineering.redhat.com/display/CPCORE/Customer+Portal+Core
+      type: web
+    - title: '#team-xe-dx-cp-core'
+      url: https://redhat.enterprise.slack.com/archives/C04HB4NK5U3
+      icon: chat
+spec:
+  type: website
+  lifecycle: production
+  owner: user:redhat/yoswal
+  system: examples
+  contacts:
+    - label: Developers
+      users:
+        - user:redhat/mbent
+        - user:redhat/dkolbas
+        - user:redhat/matsmit
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  tags:
+    - qe-service
+  annotations:
+    servicenow.com/appcode: DMCH-001
+  name: dxp-content
+  title: DXP Marketing Content Hub
+  namespace: uxe
+  description:
+    A Drupal application to support decoupled content authoring for the
+    Customer Portal home page's marketing blocks and Customer Portal, Developers
+    and Docs search onebox content, which are available through application
+    APIs.
+  links:
+    - title: Origin Production URL
+      url: https://dxp-dmch-prod.apps.ext-waf.drop.prod.us-west-2.aws.paas.redhat.com
+      type: web
+    - title: Rollback process
+      url: https://gitlab.cee.redhat.com/dxp/dat/droperator-platform/droperator-pipeline/-/blob/1.x/docs/rollback.md?ref_type=heads
+      type: web
+    - title: Confluence
+      url: https://spaces.redhat.com/x/iSuWJQ
+      type: web
+    - title: '#team-xe-uxe-cp-core'
+      url: https://redhat.enterprise.slack.com/archives/C04JAEWL0AJ
+      icon: chat
+spec:
+  type: website
+  lifecycle: production
+  owner: user:redhat/yoswal
+  system: examples
+  contacts:
+    - label: Maintainers
+      users:
+        - users:redhat/asides
+        - user:redhat/bhuntzbe
+        - user:redhat/krobinso
+    - label: Quality Engineers
+      users:
+        - user:redhat/veepatil
+    - label: Contributors
+      users:
+        - user:redhat/jwant
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  tags:
+    - qe-service
+  annotations:
+    servicenow.com/appcode: KBASE-001
+  name: customer-portal-kbase
+  title: DXP KBase Drupal 7 Platform
+  namespace: uxe
+  description: A legacy web application to support creation of editorial content
+    on the Customer Portal (Articles, Solutions, Security Bulletins, Pages,
+    etc).
+  links:
+    - title: Origin Production URL
+      url: https://dxp-kbase-prod.apps.ext-waf.spoke.prod.us-west-2.aws.paas.redhat.com
+      type: web
+    - title: Rollback process
+      url: https://gitlab.cee.redhat.com/dxp/dat/droperator-platform/droperator-pipeline/-/blob/1.x/docs/rollback.md?ref_type=heads
+      type: web
+    - title: Confluence
+      url: https://docs.engineering.redhat.com/display/CPCORE/Customer+Portal+Core
+      type: web
+    - title: '#team-xe-dx-cp-core'
+      url: https://redhat.enterprise.slack.com/archives/C04HB4NK5U3
+      icon: chat
+spec:
+  type: website
+  lifecycle: production
+  owner: user:redhat/yoswal
+  system: examples

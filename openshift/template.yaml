@@ -52,36 +52,36 @@ objects:
                   - configMap:
                       name: ${CA_CONFIG_MAP}
           containers:
-          - name: backstage
-            image: ${IMAGE}
-            env:
-              - name: APP_CONFIG_app_baseUrl
-                value: "https://${ROUTER_HOSTNAME}"
-              - name: APP_CONFIG_backend_baseUrl
-                value: "https://${ROUTER_HOSTNAME}"
-              - name: APP_CONFIG_cors_origin
-                value: "https://${ROUTER_HOSTNAME}"
-              - name: APP_CONFIG_companyname
-                value: "App Dev Plugins"
-              - name: APP_CONFIG_organization_name
-                value: "App Dev Platform"
-              - name: NODE_EXTRA_CA_CERTS
-                value: "/var/run/secrets/redhat/ca-bundle.crt"
-            envFrom:
-              - secretRef:
-                  name: ${SECRET_NAME}
-            volumeMounts:
-              - name: ca-certs
-                readOnly: true
-                mountPath: /var/run/secrets/redhat
-            resources:
-              limits:
-                memory: "512Mi"
-                cpu: "500m"
-            ports:
-            - name: http
-              containerPort: 7007
-              protocol: TCP
+            - name: backstage
+              image: ${IMAGE}
+              env:
+                - name: APP_CONFIG_app_baseUrl
+                  value: 'https://${ROUTER_HOSTNAME}'
+                - name: APP_CONFIG_backend_baseUrl
+                  value: 'https://${ROUTER_HOSTNAME}'
+                - name: APP_CONFIG_cors_origin
+                  value: 'https://${ROUTER_HOSTNAME}'
+                - name: APP_CONFIG_companyname
+                  value: 'App Dev Plugins'
+                - name: APP_CONFIG_organization_name
+                  value: 'App Dev Platform'
+                - name: NODE_EXTRA_CA_CERTS
+                  value: '/var/run/secrets/redhat/ca-bundle.crt'
+              envFrom:
+                - secretRef:
+                    name: ${SECRET_NAME}
+              volumeMounts:
+                - name: ca-certs
+                  readOnly: true
+                  mountPath: /var/run/secrets/redhat
+              resources:
+                limits:
+                  memory: '512Mi'
+                  cpu: '500m'
+              ports:
+                - name: http
+                  containerPort: 7007
+                  protocol: TCP
 
   - apiVersion: v1
     kind: Service
@@ -93,10 +93,10 @@ objects:
       selector:
         app: ${NAME}
       ports:
-      - name: http
-        protocol: TCP
-        port: 7007
-        targetPort: 7007
+        - name: http
+          protocol: TCP
+          port: 7007
+          targetPort: 7007
 
   - apiVersion: route.openshift.io/v1
     kind: Route
@@ -110,7 +110,7 @@ objects:
       to:
         kind: Service
         name: ${NAME}
-        port: 
+        port:
         weight: 100
       port:
         targetPort: http

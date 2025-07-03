@@ -211,6 +211,10 @@ catalog:
       rules:
         - allow: [User, Group]
 
+    # qe-scorecard catalog data
+    - type: file
+      target: ./examples/test-data/qe-scorecard.yaml
+
 # Report portal plugin
 reportPortal:
   supportEmail: ${REPORT_PORTAL_SUPPORT_EMAIL}

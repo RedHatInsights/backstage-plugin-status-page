@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "QEScorecardSchema",
+  "title": "QE Scorecards Schema",
+  "description": "Facts schema used for QE Scorecards",
+  "type": "object",
+  "properties": {
+    "qe-charter-adherence": {
+      "type": "string"
+    },
+    "qe-release-quality": {
+      "type": "string"
+    },
+    "qe-resource-alignment": {
+      "type": "string"
+    },
+    "qe-sonarqube-integration-rating": {
+      "type": "string"
+    },
+    "qe-application-monitoring": {
+      "type": "string"
+    },
+    "qe-automation-review": {
+      "type": "string"
+    },
+    "qe-nonfunctional-testing": {
+      "type": "string"
+    },
+    "qe-professional-development": {
+      "type": "string"
+    },
+    "qe-pipeline-ownership": {
+      "type": "string"
+    }
+  }
+}

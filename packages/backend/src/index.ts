@@ -137,7 +137,11 @@ backend.add(
     '@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet'
   ),
 );
-
+backend.add(
+  import(
+    '@appdev-platform/backstage-plugin-soundcheck-backend-module-google-spreadsheets'
+  ),
+);
 // DevTools backend
 backend.add(import('@backstage/plugin-devtools-backend'));
 
@@ -158,13 +162,6 @@ backend.add(
   ),
 );
 backend.add(
-  import(
-    '@appdev-platform/backstage-plugin-permission-management-backend'
-  ),
+  import('@appdev-platform/backstage-plugin-permission-management-backend'),
 );
-// backend.add(
-//   import(
-//     '@appdev-platform/backstage-plugin-soundcheck-backend-module-google-spreadsheets'
-//   ),
-// );
 backend.start();

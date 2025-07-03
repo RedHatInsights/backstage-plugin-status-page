@@ -1,0 +1,13 @@
+---
+googleCredentials: ${GOOGLE_APPLICATION_CREDENTIALS}
+frequency:
+  hours: 2
+initialDelay:
+  seconds: 5
+cache: false
+collects:
+  - type: 'qe_scorecard'
+    spreadsheetId: ${QE_SPREADSHEET_ID}
+    range: ${QE_SPREADSHEET_RANGE}
+    filter:
+      - metadata.tags: qe-service

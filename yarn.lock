@@ -853,6 +853,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@appdev-platform/backstage-plugin-soundcheck-backend-module-google-spreadsheets@npm:*, @appdev-platform/backstage-plugin-soundcheck-backend-module-google-spreadsheets@workspace:plugins/soundcheck-backend-module-google-spreadsheets":
+  version: 0.0.0-use.local
+  resolution: "@appdev-platform/backstage-plugin-soundcheck-backend-module-google-spreadsheets@workspace:plugins/soundcheck-backend-module-google-spreadsheets"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.4.0"
+    "@backstage/backend-test-utils": "npm:^1.6.0"
+    "@backstage/catalog-model": "npm:^1.7.4"
+    "@backstage/cli": "npm:^0.33.0"
+    "@backstage/config": "npm:^1.3.2"
+    "@backstage/types": "npm:^1.2.1"
+    "@google-cloud/local-auth": "npm:3.0.1"
+    "@spotify/backstage-plugin-soundcheck-common": "npm:^0.18.0"
+    "@spotify/backstage-plugin-soundcheck-node": "npm:^0.9.10"
+    "@types/luxon": "npm:^3"
+    google-auth-library: "npm:^10.1.0"
+    googleapis: "npm:^150.0.1"
+    luxon: "npm:^3.6.1"
+    zod: "npm:^3.25.67"
+  languageName: unknown
+  linkType: soft
+
 "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core@npm:*, @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core@workspace:plugins/soundcheck-backend-module-red-hat-core":
   version: 0.0.0-use.local
   resolution: "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core@workspace:plugins/soundcheck-backend-module-red-hat-core"
@@ -8596,6 +8617,18 @@ __metadata:
     google-gax: "npm:^4.3.3"
     protobufjs: "npm:^7.2.6"
   checksum: 10/679ccfb33c837a718f26a9cebb4cf08ba0bc451316824c16c9077998546353b011363983b9148232e22e939e216f88fb01fdabef2ba63d116d4afc3e48883cb8
+  languageName: node
+  linkType: hard
+
+"@google-cloud/local-auth@npm:3.0.1":
+  version: 3.0.1
+  resolution: "@google-cloud/local-auth@npm:3.0.1"
+  dependencies:
+    arrify: "npm:^2.0.1"
+    google-auth-library: "npm:^9.0.0"
+    open: "npm:^7.0.3"
+    server-destroy: "npm:^1.0.1"
+  checksum: 10/041f6d5e033c578f8cf92ace59c84624366fac88a10f18b21b69fc27865291c9c66cb4a13936577eb93bb82d771dfd1007e07f14a2452ccc67d0779fe038b935
   languageName: node
   linkType: hard
 
@@ -20732,7 +20765,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"arrify@npm:^2.0.0":
+"arrify@npm:^2.0.0, arrify@npm:^2.0.1":
   version: 2.0.1
   resolution: "arrify@npm:2.0.1"
   checksum: 10/067c4c1afd182806a82e4c1cb8acee16ab8b5284fbca1ce29408e6e91281c36bb5b612f6ddfbd40a0f7a7e0c75bf2696eb94c027f6e328d6e9c52465c98e4209
@@ -21206,6 +21239,7 @@ __metadata:
     "@appdev-platform/backstage-plugin-permission-management-backend": "npm:*"
     "@appdev-platform/backstage-plugin-scaffolder-backend-module-custom-filters": "npm:*"
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator": "npm:*"
+    "@appdev-platform/backstage-plugin-soundcheck-backend-module-google-spreadsheets": "npm:*"
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core": "npm:*"
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab": "npm:*"
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow": "npm:*"
@@ -24485,6 +24519,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"data-uri-to-buffer@npm:^4.0.0":
+  version: 4.0.1
+  resolution: "data-uri-to-buffer@npm:4.0.1"
+  checksum: 10/0d0790b67ffec5302f204c2ccca4494f70b4e2d940fea3d36b09f0bb2b8539c2e86690429eb1f1dc4bcc9e4df0644193073e63d9ee48ac9fce79ec1506e4aa4c
+  languageName: node
+  linkType: hard
+
 "data-uri-to-buffer@npm:^6.0.2":
   version: 6.0.2
   resolution: "data-uri-to-buffer@npm:6.0.2"
@@ -27318,6 +27359,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fetch-blob@npm:^3.1.2, fetch-blob@npm:^3.1.4":
+  version: 3.2.0
+  resolution: "fetch-blob@npm:3.2.0"
+  dependencies:
+    node-domexception: "npm:^1.0.0"
+    web-streams-polyfill: "npm:^3.0.3"
+  checksum: 10/5264ecceb5fdc19eb51d1d0359921f12730941e333019e673e71eb73921146dceabcb0b8f534582be4497312d656508a439ad0f5edeec2b29ab2e10c72a1f86b
+  languageName: node
+  linkType: hard
+
 "fflate@npm:^0.8.1":
   version: 0.8.2
   resolution: "fflate@npm:0.8.2"
@@ -27726,6 +27777,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"formdata-polyfill@npm:^4.0.10":
+  version: 4.0.10
+  resolution: "formdata-polyfill@npm:4.0.10"
+  dependencies:
+    fetch-blob: "npm:^3.1.2"
+  checksum: 10/9b5001d2edef3c9449ac3f48bd4f8cc92e7d0f2e7c1a5c8ba555ad4e77535cc5cf621fabe49e97f304067037282dd9093b9160a3cb533e46420b446c4e6bc06f
+  languageName: node
+  linkType: hard
+
 "formidable@npm:^2.1.2":
   version: 2.1.2
   resolution: "formidable@npm:2.1.2"
@@ -28008,6 +28068,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"gaxios@npm:^7.0.0, gaxios@npm:^7.0.0-rc.4":
+  version: 7.1.1
+  resolution: "gaxios@npm:7.1.1"
+  dependencies:
+    extend: "npm:^3.0.2"
+    https-proxy-agent: "npm:^7.0.1"
+    node-fetch: "npm:^3.3.2"
+  checksum: 10/9e5fa8b458c318a95d4dff0f6ac187a1b8933fb1de5b376b7098b27dfc5bf6025b62c87ed20bdae0496ae73a279834bc6b974c28849a674deed0089f2ba57b98
+  languageName: node
+  linkType: hard
+
 "gcp-metadata@npm:^6.1.0":
   version: 6.1.0
   resolution: "gcp-metadata@npm:6.1.0"
@@ -28015,6 +28086,17 @@ __metadata:
     gaxios: "npm:^6.0.0"
     json-bigint: "npm:^1.0.0"
   checksum: 10/a0d12a9cb7499fdb9de0fff5406aa220310c1326b80056be8d9b747aae26414f99d14bd795c0ec52ef7d0473eef9d61bb657b8cd3d8186c8a84c4ddbff025fe9
+  languageName: node
+  linkType: hard
+
+"gcp-metadata@npm:^7.0.0":
+  version: 7.0.1
+  resolution: "gcp-metadata@npm:7.0.1"
+  dependencies:
+    gaxios: "npm:^7.0.0"
+    google-logging-utils: "npm:^1.0.0"
+    json-bigint: "npm:^1.0.0"
+  checksum: 10/c82f20a4ce22278998fe033e668a66bff04d2b3e95e19f968adeac829e12274e07b453fcfcf34573a6d702b3570c5556cba6eb6b59d1c03757c866e3271972c1
   languageName: node
   linkType: hard
 
@@ -28479,6 +28561,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"google-auth-library@npm:^10.0.0-rc.1, google-auth-library@npm:^10.1.0":
+  version: 10.1.0
+  resolution: "google-auth-library@npm:10.1.0"
+  dependencies:
+    base64-js: "npm:^1.3.0"
+    ecdsa-sig-formatter: "npm:^1.0.11"
+    gaxios: "npm:^7.0.0"
+    gcp-metadata: "npm:^7.0.0"
+    google-logging-utils: "npm:^1.0.0"
+    gtoken: "npm:^8.0.0"
+    jws: "npm:^4.0.0"
+  checksum: 10/f3e2130d38fe12045dd20480b4ea5f78a6a058d918e56d4332858c287f9b010b6aca312058b9c032843396da0fbaded6e5475866895eed461c7a06e2dd646b61
+  languageName: node
+  linkType: hard
+
+"google-auth-library@npm:^9.0.0":
+  version: 9.15.1
+  resolution: "google-auth-library@npm:9.15.1"
+  dependencies:
+    base64-js: "npm:^1.3.0"
+    ecdsa-sig-formatter: "npm:^1.0.11"
+    gaxios: "npm:^6.1.1"
+    gcp-metadata: "npm:^6.1.0"
+    gtoken: "npm:^7.0.0"
+    jws: "npm:^4.0.0"
+  checksum: 10/6b977dd20f4f1ab6b2d2b78650d1e1c79ca84b951720b1064b85ebbb32af469547db7505a6609265e806be11c823bd6e07323b5073a98729b43b29fe34f05717
+  languageName: node
+  linkType: hard
+
 "google-auth-library@npm:^9.3.0, google-auth-library@npm:^9.6.3":
   version: 9.14.1
   resolution: "google-auth-library@npm:9.14.1"
@@ -28510,6 +28621,36 @@ __metadata:
     retry-request: "npm:^7.0.0"
     uuid: "npm:^9.0.1"
   checksum: 10/bc4e0d7c2cc7babf1a1b0b3c8ae602f73116de109074adf645df4b926f72644e7f58ef4cc7890acc29fb95aa3f16959c72a28bac9d36c4dbff8946d3b87664de
+  languageName: node
+  linkType: hard
+
+"google-logging-utils@npm:^1.0.0":
+  version: 1.1.1
+  resolution: "google-logging-utils@npm:1.1.1"
+  checksum: 10/51f915d97a812af9edeccf24d43bbec5f4d98dab4f874a08083e847d495fc94185d309f21ae7f590c9f7951bc25bc3095fa4ae73113aba47e86482f69860a806
+  languageName: node
+  linkType: hard
+
+"googleapis-common@npm:^8.0.2-rc.0":
+  version: 8.0.2-rc.0
+  resolution: "googleapis-common@npm:8.0.2-rc.0"
+  dependencies:
+    extend: "npm:^3.0.2"
+    gaxios: "npm:^7.0.0-rc.4"
+    google-auth-library: "npm:^10.0.0-rc.1"
+    qs: "npm:^6.7.0"
+    url-template: "npm:^2.0.8"
+  checksum: 10/f630e8f37b2baa4980e3a66fb7736caa2a47f1f915bc6082ef844aa24be776ad2fbff39631346dcccc01c99dd5707fca02c786c6ba23ae459bcb23b125b4fb63
+  languageName: node
+  linkType: hard
+
+"googleapis@npm:^150.0.1":
+  version: 150.0.1
+  resolution: "googleapis@npm:150.0.1"
+  dependencies:
+    google-auth-library: "npm:^10.0.0-rc.1"
+    googleapis-common: "npm:^8.0.2-rc.0"
+  checksum: 10/824f1507c36459873c730ab6db60e7f9d015e38283a6b340a5d26531398bfde0d65ce217d316ceb8bd1555592c13034c60c365cf4a0578dfd93db197219d8e18
   languageName: node
   linkType: hard
 
@@ -28720,6 +28861,16 @@ __metadata:
     gaxios: "npm:^6.0.0"
     jws: "npm:^4.0.0"
   checksum: 10/640392261e55c9242137a81a4af8feb053b57061762cedddcbb6a0d62c2314316161808ac2529eea67d06d69fdc56d82361af50f2d840a04a87ea29e124d7382
+  languageName: node
+  linkType: hard
+
+"gtoken@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "gtoken@npm:8.0.0"
+  dependencies:
+    gaxios: "npm:^7.0.0"
+    jws: "npm:^4.0.0"
+  checksum: 10/b921430395dcd06ee63c3fc5a5e339ca4d6dcb38b6d618beb0f260bae1088d53d130f86029a9d578f1601c64685f49a65dba57bbd617c4b14039180b67b6c5ce
   languageName: node
   linkType: hard
 
@@ -33620,6 +33771,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"luxon@npm:^3.6.1":
+  version: 3.6.1
+  resolution: "luxon@npm:3.6.1"
+  checksum: 10/35aad425607708c87af110a52c949190bc35b987770079ec8007ef2365cd29639413db3360d2883777aa01cb3ca5bdb37f42ee3e8e5a0dd277fe22e90cc8a786
+  languageName: node
+  linkType: hard
+
 "luxon@npm:~3.4.0":
   version: 3.4.4
   resolution: "luxon@npm:3.4.4"
@@ -36098,6 +36256,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-fetch@npm:^3.3.2":
+  version: 3.3.2
+  resolution: "node-fetch@npm:3.3.2"
+  dependencies:
+    data-uri-to-buffer: "npm:^4.0.0"
+    fetch-blob: "npm:^3.1.4"
+    formdata-polyfill: "npm:^4.0.10"
+  checksum: 10/24207ca8c81231c7c59151840e3fded461d67a31cf3e3b3968e12201a42f89ce4a0b5fb7079b1fa0a4655957b1ca9257553200f03a9f668b45ebad265ca5593d
+  languageName: node
+  linkType: hard
+
 "node-forge@npm:^1, node-forge@npm:^1.2.1, node-forge@npm:^1.3.1":
   version: 1.3.1
   resolution: "node-forge@npm:1.3.1"
@@ -36876,7 +37045,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"open@npm:^7.4.2":
+"open@npm:^7.0.3, open@npm:^7.4.2":
   version: 7.4.2
   resolution: "open@npm:7.4.2"
   dependencies:
@@ -38991,7 +39160,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:^6.10.1, qs@npm:^6.10.3, qs@npm:^6.11.0, qs@npm:^6.11.2, qs@npm:^6.12.2, qs@npm:^6.12.3, qs@npm:^6.9.4":
+"qs@npm:^6.10.1, qs@npm:^6.10.3, qs@npm:^6.11.0, qs@npm:^6.11.2, qs@npm:^6.12.2, qs@npm:^6.12.3, qs@npm:^6.7.0, qs@npm:^6.9.4":
   version: 6.14.0
   resolution: "qs@npm:6.14.0"
   dependencies:
@@ -41855,6 +42024,13 @@ __metadata:
     parseurl: "npm:^1.3.3"
     send: "npm:^1.0.0"
   checksum: 10/ecb5969b66520e6546721454e72ee3fbe827fee16224a563d258d71ab68d9316991c81910b94bd2a7b75112669ef887068ab0ef66a4bf524ed8ed9c919a01de0
+  languageName: node
+  linkType: hard
+
+"server-destroy@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "server-destroy@npm:1.0.1"
+  checksum: 10/cbc19d4f92d25a0a34430c6a09faccbea77d1a69563560eefe883feb67c14c3fb3a1c5af1affae0e82d537886ea0f91d317e39e46b5d6425de3acf57a3ab13e3
   languageName: node
   linkType: hard
 
@@ -46697,6 +46873,13 @@ __metadata:
   version: 3.24.1
   resolution: "zod@npm:3.24.1"
   checksum: 10/54e25956495dec22acb9399c168c6ba657ff279801a7fcd0530c414d867f1dcca279335e160af9b138dd70c332e17d548be4bc4d2f7eaf627dead50d914fec27
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.25.67":
+  version: 3.25.67
+  resolution: "zod@npm:3.25.67"
+  checksum: 10/0e35432dcca7f053e63f5dd491a87c78abe0d981817547252c3b6d05f0f58788695d1a69724759c6501dff3fd62929be24c9f314a3625179bee889150f7a61fa
   languageName: node
   linkType: hard
 

@@ -1,0 +1,20 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: soundcheck-backend-module-google-spreadsheets
+  title: Google Spreadsheets Backend Module for Soundcheck Plugin
+  description: Module to fetch facts from google spreadsheets
+  namespace: uxe
+  annotations:
+    servicenow.com/appcode: SNDC-001
+  tags:
+    - soundcheck
+    - fact-collector
+spec:
+  type: service
+  lifecycle: experimental
+  owner: group:redhat/xe-compass-devs
+  system: uxe/xe-compass
+  dependsOn:
+    - component:uxe/sndc-001-soundcheck-1
