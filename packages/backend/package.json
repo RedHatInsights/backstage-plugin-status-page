@@ -1,6 +1,6 @@
 {
   "name": "backend",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "private": true,
@@ -25,6 +25,7 @@
     "@appdev-platform/backstage-plugin-permission-management-backend": "*",
     "@appdev-platform/backstage-plugin-scaffolder-backend-module-custom-filters": "*",
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator": "*",
+    "@appdev-platform/backstage-plugin-soundcheck-backend-module-google-spreadsheets": "*",
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core": "*",
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab": "*",
     "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow": "*",

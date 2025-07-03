@@ -262,7 +262,6 @@ export async function createAuditInitiationRouter(
    * @returns {Object} 500 - Error response
    */
   auditInitiationRouter.put('/audits/progress', async (req, res) => {
-    console.log('----------------->progress', req.body);
     const { app_name, frequency, period, progress, performed_by } = req.body;
 
     if (!app_name || !frequency || !period || !progress) {

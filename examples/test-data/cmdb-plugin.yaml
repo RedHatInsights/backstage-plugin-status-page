@@ -22,6 +22,7 @@ metadata:
   tags:
     - drupal
     - drupal-platform
+    - qe-service
   annotations:
     servicenow.com/appcode: ADDS-001
     gitlab.com/project-slug: 'dxp/dat/dxp-adds'

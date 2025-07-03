@@ -294,11 +294,15 @@ catalog:
       rules:
         - allow: [Template]
 
-    # Local example workstream users data
+    # Local example organizational data
     - type: file
-      target: ../../examples/test-data/workstream-plugin.yaml
+      target: ../../examples/org.yaml
       rules:
         - allow: [User, Group]
+
+    # qe-scorecard catalog data
+    - type: file
+      target: ../../examples/test-data/qe-scorecard.yaml
 
     # Local example mcp server
     - type: file
@@ -367,6 +371,8 @@ soundcheck:
       $include: ./soundcheck/collectors/redHatServiceNow.yaml
     redHatSmartsheet:
       $include: ./soundcheck/collectors/redHatSmartsheet.yaml
+    googleSpreadsheets:
+      $include: ./soundcheck/collectors/googleSpreadsheets.yaml
   checks:
     $include: ./soundcheck/checks/preprod.yaml
   programs:
