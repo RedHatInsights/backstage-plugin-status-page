@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab [1.5.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.5.0...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.5.1) (2025-07-07)
+
+
+### Bug Fixes
+
+* **PULSE-836:** fixed console.log in gitlab factcollector ([507e43e](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/507e43ef7ba8845976a69f5a48c0f9b4142af113))
+
 ## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab [1.5.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.4.0...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.5.0) (2025-06-27)
 
 
