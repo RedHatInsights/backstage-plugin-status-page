@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-audit-compliance-backend [1.12.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance-backend@1.11.0...@appdev-platform/backstage-plugin-audit-compliance-backend@1.12.0) (2025-07-07)
+
+
+### Features
+
+* **audit-compliance:** Updating minor versions for pipelines ([bc84763](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/bc84763c3db466c3cb8ec0a64826cfcd93dd994e))
+
 ## @appdev-platform/backstage-plugin-audit-compliance-backend [1.11.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance-backend@1.10.1...@appdev-platform/backstage-plugin-audit-compliance-backend@1.11.0) (2025-07-07)
 
 
