@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-audit-compliance-backend [1.11.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance-backend@1.10.1...@appdev-platform/backstage-plugin-audit-compliance-backend@1.11.0) (2025-07-07)
+
+
+### Features
+
+* **audit-compliance:** Removing unnecessary code from the file ([cc83745](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/cc83745ffa7ccc8d1b8a498ef440cb245eb11163))
+
 ## @appdev-platform/backstage-plugin-audit-compliance-backend [1.10.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance-backend@1.10.0...@appdev-platform/backstage-plugin-audit-compliance-backend@1.10.1) (2025-07-07)
 
 
