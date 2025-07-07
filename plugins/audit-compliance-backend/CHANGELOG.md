@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-audit-compliance-backend [1.10.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance-backend@1.10.0...@appdev-platform/backstage-plugin-audit-compliance-backend@1.10.1) (2025-07-07)
+
+
+### Bug Fixes
+
+* **audit-compliance:** Changing migrations file name ([05eed0b](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/05eed0b528a58a0a772e596d3647240c869ff873))
+
 ## @appdev-platform/backstage-plugin-audit-compliance-backend [1.10.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance-backend@1.9.0...@appdev-platform/backstage-plugin-audit-compliance-backend@1.10.0) (2025-07-03)
 
 
