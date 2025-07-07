@@ -107,84 +107,171 @@ export const ReviewDataTable: React.FC<ReviewDataTableProps> = ({
     fetchData();
   }, [app_name, frequency, period, type, discoveryApi, fetchApi]);
 
-  const columns: TableColumn<any>[] = [
-    // Essential columns (always visible)
-    { title: 'Full Name', field: 'full_name' },
-    { title: 'App Name', field: 'app_name' },
-    { title: 'Environment', field: 'environment' },
-    { title: 'User Role', field: 'user_role' },
-    {
-      title: 'Status',
-      field: 'sign_off_status',
-      render: rowData => {
-        let chipStyle = {};
-        if (rowData.sign_off_status === 'approved') {
-          chipStyle = { backgroundColor: '#d1f1bb' };
-        } else if (rowData.sign_off_status === 'rejected') {
-          chipStyle = { backgroundColor: '#fbc5c5' };
-        } else {
-          chipStyle = { backgroundColor: '#cbc9c9' };
-        }
-        return (
-          <Chip
-            label={rowData.sign_off_status}
-            style={{ textTransform: 'capitalize', ...chipStyle }}
-          />
-        );
-      },
-    },
-
-    // Detailed columns (hidden by default)
-    { title: 'User ID', field: 'user_id', hidden: !showDetails },
-    { title: 'Period', field: 'period', hidden: !showDetails },
-    { title: 'Frequency', field: 'frequency', hidden: !showDetails },
-    { title: 'Manager', field: 'manager', hidden: !showDetails },
-    { title: 'Custom Reviewer', field: 'app_delegate', hidden: !showDetails },
-    {
-      title: 'Account Source',
-      field: 'source',
-      render: rowData => {
-        const source = rowData.source?.toLowerCase();
-        const icon = source === 'gitlab' ? <GitHubIcon /> : <PersonIcon />;
-        return (
-          <Chip
-            icon={icon}
-            label={rowData.source}
-            variant="outlined"
-            size="small"
-            className={classes.sourceChip}
-          />
-        );
-      },
-    },
-    { title: 'Account Name', field: 'account_name' },
-    {
-      title: 'Ticket ID',
-      field: 'ticket_reference',
-      render: rowData => {
-        if (!rowData.ticket_reference) return null;
-        return (
-          <Link
-            href={`${jiraUrl}/browse/${rowData.ticket_reference}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {rowData.ticket_reference}
-          </Link>
-        );
-      },
-    },
-    { title: 'Ticket Status', field: 'ticket_status' },
-    { title: 'Comments', field: 'comments' },
-    {
-      title: 'Date of Access Revoked or Added',
-      field: 'access_change_date',
-      hidden: !showDetails,
-    },
-    { title: 'Created At', field: 'created_at', hidden: !showDetails },
-    { title: 'Approval Date', field: 'sign_off_date' },
-    { title: 'Approved By', field: 'sign_off_by' },
-  ];
+  // Define columns based on type
+  const columns: TableColumn<any>[] =
+    type === 'service_account'
+      ? [
+          { title: 'Service Account', field: 'service_account' },
+          { title: 'App Name', field: 'app_name' },
+          { title: 'Environment', field: 'environment' },
+          { title: 'User Role', field: 'user_role' },
+          {
+            title: 'Status',
+            field: 'sign_off_status',
+            render: rowData => {
+              let chipStyle = {};
+              if (rowData.sign_off_status === 'approved') {
+                chipStyle = { backgroundColor: '#d1f1bb' };
+              } else if (rowData.sign_off_status === 'rejected') {
+                chipStyle = { backgroundColor: '#fbc5c5' };
+              } else {
+                chipStyle = { backgroundColor: '#cbc9c9' };
+              }
+              return (
+                <Chip
+                  label={rowData.sign_off_status}
+                  style={{ textTransform: 'capitalize', ...chipStyle }}
+                />
+              );
+            },
+          },
+          // Detailed columns (hidden by default)
+          { title: 'User ID', field: 'user_id', hidden: !showDetails },
+          { title: 'Period', field: 'period', hidden: !showDetails },
+          { title: 'Frequency', field: 'frequency', hidden: !showDetails },
+          { title: 'Manager', field: 'manager', hidden: !showDetails },
+          {
+            title: 'Custom Reviewer',
+            field: 'app_delegate',
+            hidden: !showDetails,
+          },
+          {
+            title: 'Account Source',
+            field: 'source',
+            render: rowData => {
+              const source = rowData.source?.toLowerCase();
+              const icon =
+                source === 'gitlab' ? <GitHubIcon /> : <PersonIcon />;
+              return (
+                <Chip
+                  icon={icon}
+                  label={rowData.source}
+                  variant="outlined"
+                  size="small"
+                  className={classes.sourceChip}
+                />
+              );
+            },
+          },
+          { title: 'Account Name', field: 'account_name' },
+          {
+            title: 'Ticket ID',
+            field: 'ticket_reference',
+            render: rowData => {
+              if (!rowData.ticket_reference) return null;
+              return (
+                <Link
+                  href={`${jiraUrl}/browse/${rowData.ticket_reference}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {rowData.ticket_reference}
+                </Link>
+              );
+            },
+          },
+          { title: 'Ticket Status', field: 'ticket_status' },
+          { title: 'Comments', field: 'comments' },
+          {
+            title: 'Date of Access Revoked or Added',
+            field: 'access_change_date',
+            hidden: !showDetails,
+          },
+          { title: 'Created At', field: 'created_at', hidden: !showDetails },
+          { title: 'Approval Date', field: 'sign_off_date' },
+          { title: 'Approved By', field: 'sign_off_by' },
+        ]
+      : [
+          { title: 'Full Name', field: 'full_name' },
+          { title: 'App Name', field: 'app_name' },
+          { title: 'Environment', field: 'environment' },
+          { title: 'User Role', field: 'user_role' },
+          {
+            title: 'Status',
+            field: 'sign_off_status',
+            render: rowData => {
+              let chipStyle = {};
+              if (rowData.sign_off_status === 'approved') {
+                chipStyle = { backgroundColor: '#d1f1bb' };
+              } else if (rowData.sign_off_status === 'rejected') {
+                chipStyle = { backgroundColor: '#fbc5c5' };
+              } else {
+                chipStyle = { backgroundColor: '#cbc9c9' };
+              }
+              return (
+                <Chip
+                  label={rowData.sign_off_status}
+                  style={{ textTransform: 'capitalize', ...chipStyle }}
+                />
+              );
+            },
+          },
+          // Detailed columns (hidden by default)
+          { title: 'User ID', field: 'user_id', hidden: !showDetails },
+          { title: 'Period', field: 'period', hidden: !showDetails },
+          { title: 'Frequency', field: 'frequency', hidden: !showDetails },
+          { title: 'Manager', field: 'manager', hidden: !showDetails },
+          {
+            title: 'Custom Reviewer',
+            field: 'app_delegate',
+            hidden: !showDetails,
+          },
+          {
+            title: 'Account Source',
+            field: 'source',
+            render: rowData => {
+              const source = rowData.source?.toLowerCase();
+              const icon =
+                source === 'gitlab' ? <GitHubIcon /> : <PersonIcon />;
+              return (
+                <Chip
+                  icon={icon}
+                  label={rowData.source}
+                  variant="outlined"
+                  size="small"
+                  className={classes.sourceChip}
+                />
+              );
+            },
+          },
+          { title: 'Account Name', field: 'account_name' },
+          {
+            title: 'Ticket ID',
+            field: 'ticket_reference',
+            render: rowData => {
+              if (!rowData.ticket_reference) return null;
+              return (
+                <Link
+                  href={`${jiraUrl}/browse/${rowData.ticket_reference}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {rowData.ticket_reference}
+                </Link>
+              );
+            },
+          },
+          { title: 'Ticket Status', field: 'ticket_status' },
+          { title: 'Comments', field: 'comments' },
+          {
+            title: 'Date of Access Revoked or Added',
+            field: 'access_change_date',
+            hidden: !showDetails,
+          },
+          { title: 'Created At', field: 'created_at', hidden: !showDetails },
+          { title: 'Approval Date', field: 'sign_off_date' },
+          { title: 'Approved By', field: 'sign_off_by' },
+        ];
 
   return (
     <Page themeId="tool">

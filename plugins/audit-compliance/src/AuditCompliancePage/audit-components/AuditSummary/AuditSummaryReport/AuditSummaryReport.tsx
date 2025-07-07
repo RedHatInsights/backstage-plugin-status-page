@@ -339,6 +339,14 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, discoveryApi, fetchApi, alertApi, isAuditCompleted]);
 
+  useEffect(() => {
+    // If sync just finished, refetch statistics
+    if (!isSyncing) {
+      fetchStatistics();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSyncing]);
+
   const handleTabChange = (_event: React.ChangeEvent<{}>, newValue: number) => {
     setTabValue(newValue);
   };
@@ -423,12 +431,12 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
   };
 
   const renderStatisticsContent = () => {
-    if (isLoadingStats) {
+    if (isSyncing || isLoadingStats) {
       return (
         <div className={classes.loadingOverlay}>
           <CircularProgress />
           <Typography variant="h6" style={{ marginTop: '16px' }}>
-            Loading statistics...
+            {isSyncing ? 'Syncing data...' : 'Loading statistics...'}
           </Typography>
         </div>
       );

@@ -216,6 +216,7 @@ export async function createAuditApplicationsRouter(
           app_owner: appOwners.join(', '),
           app_delegate: appDelegates.join(', '),
           jira_project: appDetails.jira_project,
+          app_owner_email: appDetails.app_owner_email,
           accounts: {
             rover: roverAccounts,
             gitlab: gitlabAccounts,

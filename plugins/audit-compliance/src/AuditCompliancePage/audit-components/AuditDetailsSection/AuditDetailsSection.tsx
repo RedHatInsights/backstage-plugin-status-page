@@ -68,7 +68,6 @@ export const AuditDetailsSection = () => {
   const [isAppOwnerOrDelegate, setIsAppOwnerOrDelegate] = useState(false);
   const [currentUser, setCurrentUser] = useState('');
   const [appOwners, setAppOwners] = useState<string[]>([]);
-  const [appDelegates, setAppDelegates] = useState<string[]>([]);
   const [signOffDialogOpen, setSignOffDialogOpen] = useState(false);
   const [isAuditCompleted, setIsAuditCompleted] = useState(false);
   const discoveryApi = useApi(discoveryApiRef);
@@ -102,24 +101,24 @@ export const AuditDetailsSection = () => {
           `${baseUrl}/application-details/${app_name}`,
         );
         const data = await response.json();
-
         const owners = data.app_owner
           .split(',')
           .map((owner: string) => owner.trim());
-        const delegates = data.app_delegate
-          .split(',')
-          .map((delegate: string) => delegate.trim());
+
 
         setAppOwners(owners);
-        setAppDelegates(delegates);
 
         const identity = await identityApi.getBackstageIdentity();
         const user = identity.userEntityRef;
         setCurrentUser(user);
 
-        setIsAppOwnerOrDelegate(
-          owners.includes(user) || delegates.includes(user),
-        );
+        // Enable final signoff if username from identity ref matches username from app_owner_email
+        const appOwnerEmail = data.app_owner_email || '';
+        const ownerEmailUserId =
+          appOwnerEmail.split('@')[0]?.trim().toLowerCase() || '';
+        const normalizedUser =
+          user.split('/').pop()?.trim().toLowerCase() || '';
+        setIsAppOwnerOrDelegate(normalizedUser === ownerEmailUserId);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Error checking app owner/delegate:', error);
@@ -130,6 +129,7 @@ export const AuditDetailsSection = () => {
       fetchAuditStatus();
       checkAppOwnerOrDelegate();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [app_name, frequency, period, discoveryApi, fetchApi, identityApi]);
 
   const handleFinalSignOff = async () => {
@@ -352,9 +352,9 @@ export const AuditDetailsSection = () => {
       return 'Audit has been finally signed off';
     }
     if (!isAppOwnerOrDelegate) {
-      return `Only app owners (${appOwners.join(
+      return `Only application owner (${appOwners.join(
         ', ',
-      )}) or delegates (${appDelegates.join(', ')}) can perform final sign-off`;
+      )}) can perform the final sign off`;
     }
     return 'Perform final sign-off';
   };
