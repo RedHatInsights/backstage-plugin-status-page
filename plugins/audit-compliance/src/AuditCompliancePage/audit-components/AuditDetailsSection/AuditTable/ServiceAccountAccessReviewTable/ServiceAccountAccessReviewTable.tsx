@@ -168,6 +168,8 @@ export default function ServiceAccountAccessReviewTable({
     const { tableData, ...cleanUser } = user;
     const updatedUser: ServiceAccountData = {
       ...cleanUser,
+      user_id: user.user_id || user.service_account,
+      source: user.source,
       sign_off_status: 'approved' as const,
       sign_off_by: currentUser,
       sign_off_date: new Date().toISOString(),
@@ -264,7 +266,9 @@ export default function ServiceAccountAccessReviewTable({
       const { key: ticketId, status } = result;
 
       // Update all selected service accounts with the same ticket info
-      const updatedUsers: ServiceAccountData[] = selectedRows.map(user => {
+      const usersToUpdate =
+        selectedRows.length > 0 ? selectedRows : [selectedUser];
+      const updatedUsers: ServiceAccountData[] = usersToUpdate.map(user => {
         const { tableData, ...cleanUser } = user;
         return {
           ...cleanUser,
@@ -342,6 +346,8 @@ export default function ServiceAccountAccessReviewTable({
       const { tableData, ...cleanUser } = user;
       return {
         ...cleanUser,
+        user_id: user.user_id || user.service_account,
+        source: user.source,
         sign_off_status: 'approved' as const,
         sign_off_by: currentUser,
         sign_off_date: new Date().toISOString(),

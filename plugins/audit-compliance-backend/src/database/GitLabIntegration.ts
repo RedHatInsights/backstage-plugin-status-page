@@ -400,6 +400,7 @@ export class GitLabDatabase implements GitLabStore {
           'account_name',
           'app_name',
           'app_owner',
+          'app_owner_email',
         )
         .where({
           app_name: appname,
@@ -417,8 +418,14 @@ export class GitLabDatabase implements GitLabStore {
       const allRows: any[] = [];
 
       for (const app of appEntries) {
-        const { environment, app_delegate, account_name, app_name, app_owner } =
-          app;
+        const {
+          environment,
+          app_delegate,
+          account_name,
+          app_name,
+          app_owner,
+          app_owner_email,
+        } = app;
         if (!account_name) {
           this.logger.warn(`No account_name found for app: ${app_name}`);
           continue;
@@ -481,6 +488,7 @@ export class GitLabDatabase implements GitLabStore {
             user_role: this.getAccessLevelName(member.access_level),
             managerUid,
             app_owner,
+            app_owner_email,
             account_name,
             app_name,
             frequency,
@@ -503,13 +511,22 @@ export class GitLabDatabase implements GitLabStore {
           : null;
         const managerName =
           managerInfo?.cn || row.managerUid || row.app_owner || 'N/A';
+        let managerUidFinal = row.managerUid || '';
+        if (
+          !managerInfo &&
+          !row.managerUid &&
+          row.app_owner_email &&
+          row.app_owner_email.includes('@')
+        ) {
+          managerUidFinal = row.app_owner_email.split('@')[0];
+        }
         const dbRow = {
           environment: row.environment,
           full_name: row.full_name,
           user_id: row.user_id,
           user_role: row.user_role,
           manager: managerName,
-          manager_uid: row.managerUid,
+          manager_uid: managerUidFinal,
           sign_off_status: 'pending',
           sign_off_by: 'N/A',
           sign_off_date: null,
@@ -564,6 +581,7 @@ export class GitLabDatabase implements GitLabStore {
           'account_name',
           'app_name',
           'app_owner',
+          'app_owner_email',
         )
         .where({
           app_name: appname,
@@ -576,8 +594,14 @@ export class GitLabDatabase implements GitLabStore {
       }
 
       for (const app of appEntries) {
-        const { environment, app_delegate, account_name, app_name, app_owner } =
-          app;
+        const {
+          environment,
+          app_delegate,
+          account_name,
+          app_name,
+          app_owner,
+          app_owner_email,
+        } = app;
 
         if (!account_name) {
           this.logger.warn(`No account_name found for app: ${app_name}`);
@@ -647,6 +671,7 @@ export class GitLabDatabase implements GitLabStore {
             frequency,
             period,
             app_delegate,
+            app_owner_email,
           };
 
           report.push(row);

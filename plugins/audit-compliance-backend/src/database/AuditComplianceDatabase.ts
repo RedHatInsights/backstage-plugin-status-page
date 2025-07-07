@@ -156,22 +156,40 @@ export class AuditComplianceDatabase {
     for (const item of data) {
       const {
         full_name,
+        user_id,
         app_name,
         frequency,
         period,
         sign_off_status,
         sign_off_by,
+        source,
       } = item;
 
-      if (!full_name || !app_name || !frequency || !period) {
+      if (
+        !full_name ||
+        !user_id ||
+        !app_name ||
+        !frequency ||
+        !period ||
+        !source
+      ) {
         results.push({
-          error: 'full_name, app_name, frequency, and period are required',
+          error:
+            'full_name, user_id, app_name, frequency, period, and source are required',
           data: item,
         });
         continue;
       }
 
-      const matchConditions = { full_name, app_name, frequency, period };
+      // Match must include user_id and source
+      const matchConditions = {
+        full_name,
+        user_id,
+        app_name,
+        frequency,
+        period,
+        source,
+      };
       const existing = await this.db('group_access_reports')
         .where(matchConditions)
         .first();
@@ -213,18 +231,22 @@ export class AuditComplianceDatabase {
         results.push({
           type: 'update',
           full_name,
+          user_id,
           app_name,
           period,
           frequency,
+          source,
         });
       } else {
         await this.db('group_access_reports').insert(recordData);
         results.push({
           type: 'insert',
           full_name,
+          user_id,
           app_name,
           period,
           frequency,
+          source,
         });
       }
     }
@@ -1205,6 +1227,7 @@ export class AuditComplianceDatabase {
         'environment',
         'cmdb_id',
         'jira_project',
+        'app_owner_email',
       )
       .where({ app_name: appName })
       .first();
@@ -1585,11 +1608,15 @@ export class AuditComplianceDatabase {
    * @param id - The ID of the access review record
    * @param comments - The comment to add
    * @param ticket_reference - The Jira ticket reference
+   * @param table - The table to update ('group_access_reports' or 'service_account_access_review')
    */
   async addJiraCommentAndUpdateDb(
     id: number,
     comments: string,
     ticket_reference: string,
+    table:
+      | 'group_access_reports'
+      | 'service_account_access_review' = 'group_access_reports',
   ) {
     if (!comments || !ticket_reference) {
       throw new Error('Missing comment or ticket reference.');
@@ -1598,11 +1625,11 @@ export class AuditComplianceDatabase {
     // Add comment to Jira
     await addJiraComment(ticket_reference, comments, this.logger, this.config);
 
-    // Update comment in the database
-    await this.db('group_access_reports').where({ id }).update({ comments });
+    // Update comment in the correct database table
+    await this.db(table).where({ id }).update({ comments });
 
     this.logger.info(
-      `Successfully added comment to Jira ticket ${ticket_reference} and updated database.`,
+      `Successfully added comment to Jira ticket ${ticket_reference} and updated database (${table}).`,
     );
   }
 

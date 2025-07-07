@@ -178,6 +178,8 @@ export default function RoverAuditTable({
 
     const updatedUser = {
       ...cleanUser,
+      user_id: user.user_id,
+      source: user.source,
       sign_off_status: 'approved',
       sign_off_by: currentUser,
       sign_off_date: new Date().toISOString(),
@@ -351,6 +353,8 @@ export default function RoverAuditTable({
       selectedRows.some(s => s.id === d.id)
         ? {
             ...d,
+            user_id: d.user_id,
+            source: d.source,
             sign_off_status: 'approved',
             sign_off_by: currentUser,
             sign_off_date: new Date().toISOString(),

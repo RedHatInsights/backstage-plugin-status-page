@@ -229,7 +229,12 @@ export class RoverDatabase implements RoverStore {
       const managerInfo = managerUid
         ? await this.getUserInfo(managerUid)
         : null;
-      const managerName = managerInfo?.cn || managerUid || '';
+      const managerName =
+        managerInfo?.cn ||
+        managerUid ||
+        user.app_owner_email ||
+        user.app_owner ||
+        '';
 
       const row = {
         environment: groupCn,
@@ -437,6 +442,15 @@ export class RoverDatabase implements RoverStore {
         : null;
       const managerName =
         managerInfo?.cn || row.managerUid || row.app_owner || '';
+      let managerUidFinal = row.managerUid || '';
+      if (
+        !managerInfo &&
+        !row.managerUid &&
+        row.app_owner_email &&
+        row.app_owner_email.includes('@')
+      ) {
+        managerUidFinal = row.app_owner_email.split('@')[0];
+      }
       if (row.isServiceAccount) {
         const dbRow = {
           app_name: row.app_name,
@@ -444,7 +458,7 @@ export class RoverDatabase implements RoverStore {
           service_account: row.rover_group_name,
           user_role: 'service-account',
           manager: managerName,
-          manager_uid: row.managerUid,
+          manager_uid: managerUidFinal,
           sign_off_status: 'Pending',
           sign_off_by: 'N/A',
           sign_off_date: null,
@@ -468,7 +482,7 @@ export class RoverDatabase implements RoverStore {
           user_id: row.user_id,
           user_role: row.user_role,
           manager: managerName,
-          manager_uid: row.managerUid || '',
+          manager_uid: managerUidFinal,
           sign_off_status: 'pending',
           sign_off_by: 'N/A',
           sign_off_date: null,
@@ -631,6 +645,15 @@ export class RoverDatabase implements RoverStore {
         : null;
       const managerName =
         managerInfo?.cn || row.managerUid || row.app_owner || '';
+      let managerUidFinal = row.managerUid || '';
+      if (
+        !managerInfo &&
+        !row.managerUid &&
+        row.app_owner_email &&
+        row.app_owner_email.includes('@')
+      ) {
+        managerUidFinal = row.app_owner_email.split('@')[0];
+      }
       if (row.isServiceAccount) {
         report.push({
           app_name: row.app_name,
@@ -638,7 +661,7 @@ export class RoverDatabase implements RoverStore {
           service_account: row.rover_group_name,
           user_role: 'service-account',
           manager: managerName,
-          manager_uid: row.managerUid,
+          manager_uid: managerUidFinal,
           source: 'rover',
           account_name: row.rover_group_name,
           period: row.period,
@@ -652,7 +675,7 @@ export class RoverDatabase implements RoverStore {
           user_id: row.user_id,
           user_role: row.user_role,
           manager: managerName,
-          manager_uid: row.managerUid || '',
+          manager_uid: managerUidFinal,
           source: 'rover',
           account_name: row.rover_group_name,
           app_name: row.app_name,
