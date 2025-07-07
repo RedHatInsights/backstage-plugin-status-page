@@ -1541,24 +1541,7 @@ export class AuditComplianceDatabase {
           account_name: account.account_name,
           created_at: this.db.fn.now(),
         };
-        // Fallback logic for all account types
-        let manager = (account as any).manager;
-        let manager_uid = (account as any).manager_uid;
-        if (!manager) {
-          manager = appData.app_owner;
-        }
-        if (!manager_uid || manager_uid.trim() === '') {
-          if (
-            appData.app_owner_email &&
-            appData.app_owner_email.includes('@')
-          ) {
-            manager_uid = `${appData.app_owner_email.split('@')[0]}@redhat.com`;
-          } else {
-            manager_uid = null;
-          }
-        }
-        entry.manager = manager;
-        entry.manager_uid = manager_uid;
+
         return entry;
       });
 
