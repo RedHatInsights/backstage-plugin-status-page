@@ -774,8 +774,12 @@ export class AuditComplianceDatabase {
           });
         }
 
-        // If this is a new review (no ticket_reference), create a Jira ticket
-        if (!existing.ticket_reference) {
+        // If this is a new review (no ticket_reference) and status is 'rejected', create a Jira ticket
+        if (
+          sign_off_status &&
+          sign_off_status.toLowerCase() === 'rejected' &&
+          !existing.ticket_reference
+        ) {
           try {
             const jiraTicket = await this.createServiceAccountJiraTicket({
               service_account,

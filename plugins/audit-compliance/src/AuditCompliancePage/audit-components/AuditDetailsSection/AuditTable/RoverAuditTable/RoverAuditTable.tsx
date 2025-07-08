@@ -122,7 +122,11 @@ export default function RoverAuditTable({
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
 
       const response = await fetchApi.fetch(
-        `${baseUrl}/access-reviews?app_name=${app_name}&frequency=${frequency}&period=${period}`,
+        `${baseUrl}/access-reviews?app_name=${encodeURIComponent(
+          app_name,
+        )}&frequency=${encodeURIComponent(
+          frequency,
+        )}&period=${encodeURIComponent(period)}`,
         {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
@@ -184,6 +188,8 @@ export default function RoverAuditTable({
       sign_off_by: currentUser,
       sign_off_date: new Date().toISOString(),
       access_change_date: new Date().toISOString(),
+      ticket_reference: '', // Clear ticket info on approval
+      ticket_status: '',
     };
 
     const updatedUserData = userData.map(d =>
@@ -358,8 +364,9 @@ export default function RoverAuditTable({
             sign_off_status: 'approved',
             sign_off_by: currentUser,
             sign_off_date: new Date().toISOString(),
-            ticket_status: 'approved',
             access_change_date: new Date().toISOString(),
+            ticket_reference: '', // Clear ticket info on approval
+            ticket_status: '',
           }
         : d,
     );

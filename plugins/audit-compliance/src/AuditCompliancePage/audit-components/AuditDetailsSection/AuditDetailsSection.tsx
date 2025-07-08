@@ -70,27 +70,39 @@ export const AuditDetailsSection = () => {
   const [appOwners, setAppOwners] = useState<string[]>([]);
   const [signOffDialogOpen, setSignOffDialogOpen] = useState(false);
   const [isAuditCompleted, setIsAuditCompleted] = useState(false);
+  const [statusChecked, setStatusChecked] = useState(false);
+  const [ownerChecked, setOwnerChecked] = useState(false);
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
   const alertApi = useApi(alertApiRef);
   const identityApi = useApi(identityApiRef);
 
   useEffect(() => {
+    setStatusChecked(false);
+    setOwnerChecked(false);
     const fetchAuditStatus = async () => {
       try {
         const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
-        const response = await fetchApi.fetch(
-          `${baseUrl}/audits?app_name=${app_name}&frequency=${frequency}&period=${period}`,
-        );
+        const url = `${baseUrl}/audits?app_name=${encodeURIComponent(
+          app_name || '',
+        )}&frequency=${encodeURIComponent(
+          frequency || '',
+        )}&period=${encodeURIComponent(period || '')}`;
+        const response = await fetchApi.fetch(url);
         const data = await response.json();
         if (data && data.length > 0) {
           const audit = data[0];
           setIsFinalSignedOff(audit.status === 'access_review_complete');
           setIsAuditCompleted(audit.progress === 'completed');
+        } else {
+          setIsFinalSignedOff(false);
+          setIsAuditCompleted(false);
         }
+        setStatusChecked(true);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Error fetching audit status:', error);
+        setStatusChecked(true);
       }
     };
 
@@ -98,13 +110,14 @@ export const AuditDetailsSection = () => {
       try {
         const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
         const response = await fetchApi.fetch(
-          `${baseUrl}/application-details/${app_name}`,
+          `${baseUrl}/application-details/${encodeURIComponent(
+            app_name || '',
+          )}`,
         );
         const data = await response.json();
         const owners = data.app_owner
           .split(',')
           .map((owner: string) => owner.trim());
-
 
         setAppOwners(owners);
 
@@ -118,10 +131,13 @@ export const AuditDetailsSection = () => {
           appOwnerEmail.split('@')[0]?.trim().toLowerCase() || '';
         const normalizedUser =
           user.split('/').pop()?.trim().toLowerCase() || '';
-        setIsAppOwnerOrDelegate(normalizedUser === ownerEmailUserId);
+        const isOwnerOrDelegate = normalizedUser === ownerEmailUserId;
+        setIsAppOwnerOrDelegate(isOwnerOrDelegate);
+        setOwnerChecked(true);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Error checking app owner/delegate:', error);
+        setOwnerChecked(true);
       }
     };
 
@@ -137,7 +153,11 @@ export const AuditDetailsSection = () => {
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
       // Fetch user access reviews
       const userRes = await fetchApi.fetch(
-        `${baseUrl}/access-reviews?app_name=${app_name}&frequency=${frequency}&period=${period}`,
+        `${baseUrl}/access-reviews?app_name=${encodeURIComponent(
+          app_name || '',
+        )}&frequency=${encodeURIComponent(
+          frequency || '',
+        )}&period=${encodeURIComponent(period || '')}`,
         {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
@@ -164,7 +184,11 @@ export const AuditDetailsSection = () => {
 
       // Fetch service account reviews
       const serviceRes = await fetchApi.fetch(
-        `${baseUrl}/service_account_access_review?app_name=${app_name}&frequency=${frequency}&period=${period}`,
+        `${baseUrl}/service_account_access_review?app_name=${encodeURIComponent(
+          app_name || '',
+        )}&frequency=${encodeURIComponent(
+          frequency || '',
+        )}&period=${encodeURIComponent(period || '')}`,
         {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
@@ -250,6 +274,11 @@ export const AuditDetailsSection = () => {
   };
 
   const handleSummary = async () => {
+    if (isAuditCompleted) {
+      // If already completed, just navigate to summary page
+      navigate(`/audit-compliance/${app_name}/${frequency}/${period}/summary`);
+      return;
+    }
     try {
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
 
@@ -369,6 +398,14 @@ export const AuditDetailsSection = () => {
     return 'View Final Summary';
   };
 
+  // Add debug log for button state
+  const isButtonReady = statusChecked && ownerChecked;
+  const isFinalSignOffButtonDisabled =
+    !isButtonReady ||
+    !isAppOwnerOrDelegate ||
+    isFinalSignedOff ||
+    isAuditCompleted;
+
   return (
     <Page themeId="tool">
       <Header
@@ -424,11 +461,7 @@ export const AuditDetailsSection = () => {
                   variant="contained"
                   className={classes.finalSignOffButton}
                   onClick={handleFinalSignOff}
-                  disabled={
-                    !isAppOwnerOrDelegate ||
-                    isFinalSignedOff ||
-                    isAuditCompleted
-                  }
+                  disabled={isFinalSignOffButtonDisabled}
                 >
                   Final Sign Off
                   {isFinalSignedOff && ' (Completed)'}

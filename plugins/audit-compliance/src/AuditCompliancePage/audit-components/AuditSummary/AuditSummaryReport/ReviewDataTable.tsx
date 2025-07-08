@@ -61,7 +61,11 @@ export const ReviewDataTable: React.FC<ReviewDataTableProps> = ({
         if (type === 'user_access') {
           // Fetch user access reviews
           const response = await fetchApi.fetch(
-            `${baseUrl}/access-reviews?app_name=${app_name}&frequency=${frequency}&period=${period}`,
+            `${baseUrl}/access-reviews?app_name=${encodeURIComponent(
+              app_name || '',
+            )}&frequency=${encodeURIComponent(
+              frequency || '',
+            )}&period=${encodeURIComponent(period || '')}`,
             {
               method: 'GET',
               headers: { 'Content-Type': 'application/json' },
@@ -82,7 +86,11 @@ export const ReviewDataTable: React.FC<ReviewDataTableProps> = ({
         } else {
           // Fetch service account reviews
           const response = await fetchApi.fetch(
-            `${baseUrl}/service_account_access_review?app_name=${app_name}&frequency=${frequency}&period=${period}`,
+            `${baseUrl}/service_account_access_review?app_name=${encodeURIComponent(
+              app_name || '',
+            )}&frequency=${encodeURIComponent(
+              frequency || '',
+            )}&period=${encodeURIComponent(period || '')}`,
             {
               method: 'GET',
               headers: { 'Content-Type': 'application/json' },
