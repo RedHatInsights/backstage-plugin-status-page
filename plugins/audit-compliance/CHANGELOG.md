@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-audit-compliance [1.11.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance@1.10.0...@appdev-platform/backstage-plugin-audit-compliance@1.11.0) (2025-07-08)
+
+
+### Features
+
+* **APD-838): feat(audit-compliance:** Fix ticket creation logic, app name encoding, and audit status updates ([e4e4032](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/e4e4032ea0f282294d75718be6dce4dbc08635ce))
+
 ## @appdev-platform/backstage-plugin-audit-compliance [1.10.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance@1.9.0...@appdev-platform/backstage-plugin-audit-compliance@1.10.0) (2025-07-07)
 
 
