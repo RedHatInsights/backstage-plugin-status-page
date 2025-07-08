@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-workstream-automation [1.17.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.16.0...@appdev-platform/backstage-plugin-workstream-automation@1.17.0) (2025-07-08)
+
+
+### Features
+
+* **PULSE-834:** show last updated info on AboutCard ([dc15290](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/dc1529068111dd71294c25fa439511bd90639493))
+
 ## @appdev-platform/backstage-plugin-workstream-automation [1.16.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation@1.15.4...@appdev-platform/backstage-plugin-workstream-automation@1.16.0) (2025-06-30)
 
 
