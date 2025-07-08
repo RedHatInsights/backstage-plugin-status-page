@@ -876,7 +876,7 @@ __metadata:
     google-auth-library: "npm:^10.1.0"
     googleapis: "npm:^150.0.1"
     luxon: "npm:^3.6.1"
-    zod: "npm:^3.25.67"
+    zod: "npm:^3.20.0"
   languageName: unknown
   linkType: soft
 
@@ -47224,13 +47224,6 @@ __metadata:
   version: 3.24.1
   resolution: "zod@npm:3.24.1"
   checksum: 10/54e25956495dec22acb9399c168c6ba657ff279801a7fcd0530c414d867f1dcca279335e160af9b138dd70c332e17d548be4bc4d2f7eaf627dead50d914fec27
-  languageName: node
-  linkType: hard
-
-"zod@npm:^3.25.67":
-  version: 3.25.67
-  resolution: "zod@npm:3.25.67"
-  checksum: 10/0e35432dcca7f053e63f5dd491a87c78abe0d981817547252c3b6d05f0f58788695d1a69724759c6501dff3fd62929be24c9f314a3625179bee889150f7a61fa
   languageName: node
   linkType: hard
 

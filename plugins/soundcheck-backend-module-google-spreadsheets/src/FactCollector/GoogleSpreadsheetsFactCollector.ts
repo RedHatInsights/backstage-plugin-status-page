@@ -151,6 +151,7 @@ export class GoogleSpreadsheetsFactCollector implements FactCollector {
               timestamp: DateTime.utc().toISO(),
             };
           }
+          return undefined;
         }
       }
 
