@@ -19,7 +19,7 @@
     "@appdev-platform/backstage-plugin-audit-compliance-backend": "*",
     "@appdev-platform/backstage-plugin-catalog-backend-module-cmdb": "*",
     "@appdev-platform/backstage-plugin-catalog-backend-module-enrichment": "*",
-    "@appdev-platform/backstage-plugin-catalog-backend-module-mcp-server": "*",
+    "@appdev-platform/backstage-plugin-catalog-backend-module-mcp": "*",
     "@appdev-platform/backstage-plugin-catalog-backend-module-spaship": "*",
     "@appdev-platform/backstage-plugin-devex-data-layer-backend": "*",
     "@appdev-platform/backstage-plugin-permission-management-backend": "*",

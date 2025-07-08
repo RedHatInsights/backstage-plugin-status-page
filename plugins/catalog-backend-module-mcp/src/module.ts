@@ -3,7 +3,8 @@ import {
   createBackendModule,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { MCPEntityProcessor } from './modules';
+import { MCPServerProcessor } from './MCPServerProcessor';
+import { MCPRegistryProvider } from './MCPServerProvider';
 
 export const catalogModuleMcp = createBackendModule({
   pluginId: 'catalog',
@@ -11,18 +12,24 @@ export const catalogModuleMcp = createBackendModule({
   register(reg) {
     reg.registerInit({
       deps: {
+        config: coreServices.rootConfig,
         catalog: catalogProcessingExtensionPoint,
         logger: coreServices.logger,
+        scheduler: coreServices.scheduler,
       },
-      async init({ catalog,  logger  }) {
+      async init({ catalog, config, logger, scheduler }) {
         logger.info('MCP Server Plugin!');
-        const catalogProcessor = new MCPEntityProcessor({
-          logger
+        const catalogProcessor = new MCPServerProcessor({
+          logger,
         });
         catalog.addProcessor(catalogProcessor);
+        catalog.addEntityProvider(
+          MCPRegistryProvider.fromConfig(config, {
+            logger,
+            scheduler,
+          }),
+        );
       },
     });
   },
 });
-
-
