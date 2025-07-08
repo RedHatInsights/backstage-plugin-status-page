@@ -1,0 +1,213 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "MCPServerV1beta1",
+  "description": "MCPServer adds support for a new entity kind for describing MCP Servers",
+  "examples": [
+    {
+      "apiVersion": "mcp/v1beta1",
+      "kind": "MCPServer",
+      "metadata": {
+        "name": "compass-mcp-server",
+        "namespace": "com.redhat.one.console",
+        "title": "Compass MCP Server",
+        "tags": ["mcp", "backstage", "catalog"],
+        "annotations": {
+          "gitlab.com/project-slug": "app-dev-platform/backstage-mcp-server",
+          "backstage.io/techdocs-ref": "dir:."
+        }
+      },
+      "spec": {
+        "type": "local",
+        "lifecycle": "beta",
+        "owner": "user:redhat/mdeshmuk",
+        "primitives": [
+          {
+            "type": "tool",
+            "name": "list_entities"
+          },
+          {
+            "type": "tool",
+            "name": "get_entities"
+          },
+          {
+            "type": "tool",
+            "name": "register_entities"
+          },
+          {
+            "type": "resource",
+            "name": "entity_documentation"
+          },
+          {
+            "type": "prompt",
+            "name": "entity_schema_prompt"
+          }
+        ],
+        "packages": [
+          {
+            "type": "npm",
+            "registry": "nexus.corp.redhat.com",
+            "name": "@compass/backstage-mcp-server",
+            "version": "1.0.0",
+            "args": [
+              {
+                "description": "specify services and permissions",
+                "required": true,
+                "value": "-s"
+              }
+            ],
+            "env": [
+              {
+                "description": "API Key to access the server",
+                "name": "API_KEY"
+              }
+            ]
+          }
+        ],
+        "remotes": [
+          {
+            "type": "sse",
+            "url": "https://console.one.redhat.com/api/mcp"
+          }
+        ]
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": ["apiVersion", "kind", "spec"],
+      "properties": {
+        "apiVersion": {
+          "enum": ["mcp/v1beta1"]
+        },
+        "kind": {
+          "enum": ["MCPServer"]
+        },
+        "spec": {
+          "type": "object",
+          "required": ["type", "lifecycle", "owner"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Type of the MCP Server. remote / local."
+            },
+            "lifecycle": {
+              "type": "string",
+              "description": "The software lifecycle phase of the MCP Server"
+            },
+            "owner": {
+              "type": "string",
+              "description": "Entity ref to a user or group"
+            },
+            "primitives": {
+              "type": "array",
+              "description": "The primitives offered by the MCP Server",
+              "items": {
+                "type": "object",
+                "required": ["type", "name"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "The type of primitive",
+                    "enum": ["tool", "resource", "prompt"]
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "The name of the primitive"
+                  }
+                }
+              }
+            },
+            "packages": {
+              "type": "array",
+              "description": "Available packages of the MCP Server",
+              "items": {
+                "type": "object",
+                "required": ["type", "name", "version"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Type of package. Can be npm, docker, python, etc."
+                  },
+                  "registry": {
+                    "type": "string",
+                    "description": "Package registry"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the package"
+                  },
+                  "version": {
+                    "type": "string",
+                    "description": "Active / stable package version"
+                  },
+                  "args": {
+                    "type": "array",
+                    "description": "Package arguments required for running the package",
+                    "items": {
+                      "type": "object",
+                      "required": ["required", "value"],
+                      "properties": {
+                        "description": {
+                          "type": "string",
+                          "description": "Description of the argument"
+                        },
+                        "required": {
+                          "type": "boolean",
+                          "description": "Whether the argument is required or not"
+                        },
+                        "value": {
+                          "type": "string",
+                          "description": "The argument or flag for package execution"
+                        }
+                      }
+                    }
+                  },
+                  "env": {
+                    "type": "array",
+                    "description": "Environment variables used by the package",
+                    "items": {
+                      "type": "object",
+                      "required": ["name"],
+                      "properties": {
+                        "description": {
+                          "type": "string",
+                          "description": "The description of the environment variable"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "The variable name"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "remotes": {
+              "type": "array",
+              "description": "List of remote instances of the MCP Server",
+              "items": {
+                "type": "object",
+                "required": ["type", "url"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "The protocol type supported by the MCP Server"
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "The Server URL of the MCP Server"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

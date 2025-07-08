@@ -142,6 +142,19 @@ catalog:
             hours: 3
           timeout:
             minutes: 5
+    mcp:
+      - host: mcp-registry-poc
+        apiBaseUrl: https://mcp-registry-poc.devshift.net/v0/
+        headers:
+          Content-Type: application/json
+        overrides:
+          metadata:
+            namespace: example
+        schedule:
+          frequency:
+            minutes: 5
+          timeout:
+            seconds: 15
 
   rules:
     - allow:

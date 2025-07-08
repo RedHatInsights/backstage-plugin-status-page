@@ -1,1 +1,0 @@
-export { MCPEntityProcessor } from './MCPEntityProcessor';

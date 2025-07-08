@@ -145,9 +145,7 @@ backend.add(
 // DevTools backend
 backend.add(import('@backstage/plugin-devtools-backend'));
 
-backend.add(
-  import('@appdev-platform/backstage-plugin-catalog-backend-module-mcp-server'),
-);
+backend.add(import('@appdev-platform/backstage-plugin-catalog-backend-module-mcp'));
 
 backend.add(
   import('@appdev-platform/backstage-plugin-devex-data-layer-backend'),
