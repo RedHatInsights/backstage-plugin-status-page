@@ -237,7 +237,7 @@ export class RedHatSmartsheetFactCollector implements FactCollector {
 
     const smartsheetClient = createClient({
       accessToken: token,
-      logLevel: 'debug',
+      logLevel: 'info',
     });
 
     try {
