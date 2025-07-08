@@ -94,7 +94,11 @@ export default function ServiceAccountAccessReviewTable({
       setLoading(true);
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
       const response = await fetchApi.fetch(
-        `${baseUrl}/service_account_access_review?app_name=${app_name}&frequency=${frequency}&period=${period}`,
+        `${baseUrl}/service_account_access_review?app_name=${encodeURIComponent(
+          app_name || '',
+        )}&frequency=${encodeURIComponent(
+          frequency || '',
+        )}&period=${encodeURIComponent(period || '')}`,
         {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
@@ -173,6 +177,8 @@ export default function ServiceAccountAccessReviewTable({
       sign_off_status: 'approved' as const,
       sign_off_by: currentUser,
       sign_off_date: new Date().toISOString(),
+      ticket_reference: '', // Clear ticket info on approval
+      ticket_status: '',
     };
 
     try {
@@ -351,6 +357,8 @@ export default function ServiceAccountAccessReviewTable({
         sign_off_status: 'approved' as const,
         sign_off_by: currentUser,
         sign_off_date: new Date().toISOString(),
+        ticket_reference: '', // Clear ticket info on approval
+        ticket_status: '',
       };
     });
 

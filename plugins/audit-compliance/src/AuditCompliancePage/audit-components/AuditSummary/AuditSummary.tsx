@@ -71,7 +71,11 @@ export const AuditSummary: React.FC = () => {
         // First check if audit is completed
         const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
         const auditResponse = await fetchApi.fetch(
-          `${baseUrl}/audits?app_name=${app_name}&frequency=${frequency}&period=${period}`,
+          `${baseUrl}/audits?app_name=${encodeURIComponent(
+            app_name || '',
+          )}&frequency=${encodeURIComponent(
+            frequency || '',
+          )}&period=${encodeURIComponent(period || '')}`,
           {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },

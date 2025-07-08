@@ -139,7 +139,13 @@ export const AuditActivityStream: React.FC<Props> = ({
       setLoading(true);
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
       const response = await fetchApi.fetch(
-        `${baseUrl}/activity-stream?app_name=${app_name}&frequency=${frequency}&period=${period}&limit=10&offset=${currentOffset}`,
+        `${baseUrl}/activity-stream?app_name=${encodeURIComponent(
+          app_name,
+        )}&frequency=${encodeURIComponent(
+          frequency,
+        )}&period=${encodeURIComponent(
+          period,
+        )}&limit=10&offset=${currentOffset}`,
       );
 
       if (!response.ok) {

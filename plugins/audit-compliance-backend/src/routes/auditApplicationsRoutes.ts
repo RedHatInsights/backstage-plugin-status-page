@@ -17,7 +17,7 @@ interface AccountEntry {
 function normalizeApplicationData(data: any) {
   const normalized = { ...data };
 
-  // Normalize app_name: lowercase and replace spaces with hyphens
+  // Restore normalization: lowercase and replace spaces with hyphens, preserve special characters
   if (normalized.app_name) {
     normalized.app_name = normalized.app_name
       .toLowerCase()
@@ -84,7 +84,7 @@ export async function createAuditApplicationsRouter(
     const { app_name } = req.query;
 
     if (app_name) {
-      // Normalize the app_name query parameter
+      // Restore normalization for app_name in query param
       const normalizedAppName = (app_name as string)
         .toLowerCase()
         .replace(/\s+/g, '-');
@@ -151,6 +151,7 @@ export async function createAuditApplicationsRouter(
   auditApplicationsRouter.get(
     '/application-details/:app_name',
     async (req, res) => {
+      // Restore normalization for app_name in path param
       const normalizedAppName = req.params.app_name
         .toLowerCase()
         .replace(/\s+/g, '-');
