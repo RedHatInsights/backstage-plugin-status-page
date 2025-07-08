@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet@1.2.0...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet@1.3.0) (2025-07-08)
+
+
+### Features
+
+* **PULSE-834:** show last updated info on AboutCard ([dc15290](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/dc1529068111dd71294c25fa439511bd90639493))
+
 ## @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet@1.1.0...@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet@1.2.0) (2025-06-27)
 
 
