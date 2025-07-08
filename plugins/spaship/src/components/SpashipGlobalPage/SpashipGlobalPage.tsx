@@ -138,6 +138,7 @@ export const SpashipGlobal = () => {
             style={{
               display: 'flex',
               alignItems: 'center',
+              width: "fit-content"
             }}
             href={spashipManagerUrl}
           >
