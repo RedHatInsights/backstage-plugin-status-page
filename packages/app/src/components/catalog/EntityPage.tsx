@@ -55,7 +55,7 @@ import {
   EntityUserProfileCard,
 } from '@backstage/plugin-org';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
-import { Button, Grid } from '@material-ui/core';
+import { Button, Container, Grid } from '@material-ui/core';
 import { useState } from 'react';
 
 import { MatomoPage } from '@backstage-community/plugin-matomo';
@@ -570,24 +570,37 @@ const WorkstreamEntityPage = () => {
         })}
       >
         <EntityLayout.Route path="/overview" title="Overview">
-          <Grid container spacing={3} alignItems="stretch">
-            {entityWarningContent}
-            <Grid item xs={12} lg={6} xl={7}>
-              <WorkstreamAboutCard variant="gridItem" />
+          <Container maxWidth="xl">
+            <Grid container spacing={2} alignItems="flex-start">
+              {entityWarningContent}
+              {/* Col 1 */}
+              <Grid container spacing={2} item md={12} lg={6}>
+                <Grid item xs={12}>
+                  <WorkstreamAboutCard variant="flex" />
+                </Grid>
+                <Grid item xs={12}>
+                  <WorkstreamMembersCard variant="flex" />
+                </Grid>
+              </Grid>
+              {/* Col 2 */}
+              <Grid container spacing={2} item md={12} lg={6}>
+                <Grid item xs={12}>
+                  <WorkstreamLinksCard variant="flex" />
+                </Grid>
+                <Grid item xs={12}>
+                  <WorkstreamPortfolioCard variant="flex" />
+                </Grid>
+                <Grid item xs={12}>
+                  <EntityCatalogGraphCard
+                    height={400}
+                    showArrowHeads
+                    maxDepth={1}
+                    relationPairs={[['leadOf', 'leadBy']]}
+                  />
+                </Grid>
+              </Grid>
             </Grid>
-            <Grid item xs={12} lg={6} xl={5}>
-              <WorkstreamLinksCard variant="flex" />
-            </Grid>
-            <Grid item xs={12} md={6} xl={6}>
-              <WorkstreamPortfolioCard variant="flex" />
-            </Grid>
-            <Grid item xs={12} lg={6} xl={6}>
-              <WorkstreamMembersCard variant="flex" />
-            </Grid>
-            <Grid item xs={12} lg={6} xl={6}>
-              <EntityCatalogGraphCard height={350} />
-            </Grid>
-          </Grid>
+          </Container>
         </EntityLayout.Route>
       </EntityLayout>
     </>
@@ -723,21 +736,29 @@ const ArtEntityPage = () => {
         })}
       >
         <EntityLayout.Route path="/overview" title="Overview">
-          <Grid container spacing={3} alignItems="stretch">
-            {entityWarningContent}
-            <Grid item xs={12} lg={6} xl={6}>
-              <ArtAboutCard variant="gridItem" />
+          <Container maxWidth="xl">
+            <Grid container spacing={2} alignItems="flex-start">
+              {entityWarningContent}
+              {/* Col 1 */}
+              <Grid container item spacing={2} md={12} lg={6}>
+                <Grid item xs={12}>
+                  <ArtAboutCard variant="flex" />
+                </Grid>
+                <Grid item xs={12}>
+                  <ArtMembersCard variant="flex" />
+                </Grid>
+              </Grid>
+              {/* Col 2 */}
+              <Grid container item spacing={2} md={12} lg={6}>
+                <Grid item xs={12}>
+                  <WorkstreamLinksCard variant="flex" />
+                </Grid>
+                <Grid item xs={12}>
+                  <EntityWorkstreamCard variant="flex" />
+                </Grid>
+              </Grid>
             </Grid>
-            <Grid item xs={12} lg={6} xl={6}>
-              <WorkstreamLinksCard variant="gridItem" />
-            </Grid>
-            <Grid item xs={12} lg={6} xl={6}>
-              <ArtMembersCard variant="gridItem" />
-            </Grid>
-            <Grid item xs={12} lg={6} xl={6}>
-              <EntityWorkstreamCard variant="gridItem" />
-            </Grid>
-          </Grid>
+          </Container>
         </EntityLayout.Route>
         <EntityLayout.Route path="/diagram" title="Diagram">
           <EntityCatalogGraphCard

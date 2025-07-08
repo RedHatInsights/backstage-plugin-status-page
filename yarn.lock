@@ -1046,7 +1046,9 @@ __metadata:
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^14.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
+    "@types/luxon": "npm:^3"
     lodash: "npm:^4.17.21"
+    luxon: "npm:^3.6.1"
     material-table: "npm:^2.0.5"
     material-ui-popup-state: "npm:^5.3.3"
     msw: "npm:^1.0.0"
@@ -22209,9 +22211,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001688":
-  version: 1.0.30001695
-  resolution: "caniuse-lite@npm:1.0.30001695"
-  checksum: 10/8107c5e89b86c7a2fd506b93c658ff945c98c6518260c3b28af9f02bd83bf83939696241f0b413545c5b9895c86bcae64c9370388576440e74e9b848f04170d3
+  version: 1.0.30001726
+  resolution: "caniuse-lite@npm:1.0.30001726"
+  checksum: 10/04d4bd6be8e426199aace9b4d26402bbb043358b590136417b8a1b3888c43301256bff007b30276c37c3d56e3e97aa8f547d80ffb9ac3644937b2ba4a3f9b156
   languageName: node
   linkType: hard
 

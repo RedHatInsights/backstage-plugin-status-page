@@ -15,14 +15,18 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import {
+  Divider,
   Grid,
   IconButton,
   makeStyles,
+  Tooltip,
   Typography,
   withStyles,
 } from '@material-ui/core';
 import CachedIcon from '@material-ui/icons/Cached';
 import EditTwoTone from '@material-ui/icons/EditTwoTone';
+import UpdateIcon from '@material-ui/icons/UpdateTwoTone';
+import { DateTime } from 'luxon';
 import { useState } from 'react';
 import { AboutEditModal } from './AboutEditModal';
 
@@ -31,6 +35,9 @@ const useStyles = makeStyles(theme => ({
     '& $button $span': {
       color: theme.palette.text.primary,
     },
+  },
+  cardContent: {
+    padding: '16px',
   },
 }));
 
@@ -50,6 +57,7 @@ export const ArtAboutCard = (props: { variant: InfoCardVariants }) => {
     <InfoCard
       {...props}
       title="About"
+      noPadding
       headerProps={{
         classes: { action: classes.action },
         action: (
@@ -80,7 +88,7 @@ export const ArtAboutCard = (props: { variant: InfoCardVariants }) => {
           open={editModalOpen}
         />
       )}
-      <Grid container>
+      <Grid container className={classes.cardContent}>
         <Grid item xs={12}>
           <Typography variant="body1" color="textSecondary">
             Description
@@ -118,6 +126,23 @@ export const ArtAboutCard = (props: { variant: InfoCardVariants }) => {
           <StyledGrid xs={12}>{entity.spec.pillar}</StyledGrid>
         </Grid>
       </Grid>
+      <Divider />
+      <Tooltip
+        title={DateTime.fromISO(entity.metadata.updatedAt).toLocaleString({
+          timeStyle: 'long',
+          dateStyle: 'long',
+        })}
+      >
+        <Typography
+          variant="caption"
+          color="textSecondary"
+          style={{ padding: '8px', float: 'right', display: 'flex' }}
+        >
+          Last updated:&nbsp;
+          {DateTime.fromISO(entity.metadata.updatedAt).toRelative()}
+          <UpdateIcon fontSize="small" style={{ marginLeft: '4px' }} />
+        </Typography>
+      </Tooltip>
     </InfoCard>
   ) : (
     <Progress />
