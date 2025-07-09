@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-audit-compliance [1.12.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance@1.11.0...@appdev-platform/backstage-plugin-audit-compliance@1.12.0) (2025-07-09)
+
+
+### Features
+
+* **audit-compliance:** Adding docs for audit and compliance plugin ([c939d3a](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/c939d3a46c0468a9c18bd9527cc325737fa8351f))
+
 ## @appdev-platform/backstage-plugin-audit-compliance [1.11.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance@1.10.0...@appdev-platform/backstage-plugin-audit-compliance@1.11.0) (2025-07-08)
 
 
