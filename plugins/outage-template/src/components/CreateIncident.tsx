@@ -29,10 +29,11 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import LinearProgress from '@mui/material/LinearProgress';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { outageApiRef } from '../api';
 import templateData from './../template.json';
 import { StatusPageHeader } from './Header';
+import { StatusPageUserGuideConfluenceUrl } from '../constants/Constants';
 
 export const CreateIncident = () => {
   const outageApi = useApi(outageApiRef);
@@ -297,6 +298,7 @@ export const CreateIncident = () => {
                 borderRadius: 2,
                 border: '1px solid',
                 borderColor: 'divider',
+                paddingBottom: '3rem',
               }}
             >
               <Grid container spacing={3} direction="column">
@@ -549,8 +551,22 @@ export const CreateIncident = () => {
                           </FormControl>
                         </Grid>
                         <Grid item>
+                          <div style={{ display: 'flex' }}>
+                            <InputLabel shrink>Description *</InputLabel>
+                            <Link
+                              to={StatusPageUserGuideConfluenceUrl}
+                              target="_blank"
+                              style={{
+                                marginTop: '-0.1rem',
+                                marginLeft: '-0.5rem',
+                                fontSize: '0.8rem',
+                              }}
+                            >
+                              Learn more
+                            </Link>
+                          </div>
                           <TextField
-                            label="Description"
+                            label=" "
                             fullWidth
                             multiline
                             rows={4}
@@ -558,7 +574,6 @@ export const CreateIncident = () => {
                             onChange={e =>
                               setMaintenanceDescription(e.target.value)
                             }
-                            required
                           />
                         </Grid>
 
@@ -799,14 +814,30 @@ export const CreateIncident = () => {
                           </FormControl>
                         </Grid>
                         <Grid item>
-                          <TextField
-                            label="Description"
-                            fullWidth
-                            multiline
-                            rows={5}
-                            value={body}
-                            onChange={e => setBody(e.target.value)}
-                          />
+                          <div style={{ display: 'flex' }}>
+                            <InputLabel shrink>Description *</InputLabel>
+                            <Link
+                              to={StatusPageUserGuideConfluenceUrl}
+                              target="_blank"
+                              style={{
+                                marginTop: '-0.1rem',
+                                marginLeft: '-0.5rem',
+                                fontSize: '0.8rem',
+                              }}
+                            >
+                              Learn more
+                            </Link>
+                          </div>
+                          <FormControl fullWidth required>
+                            <TextField
+                              label=" "
+                              fullWidth
+                              multiline
+                              rows={5}
+                              value={body}
+                              onChange={e => setBody(e.target.value)}
+                            />
+                          </FormControl>
                         </Grid>
                       </Grid>
 
