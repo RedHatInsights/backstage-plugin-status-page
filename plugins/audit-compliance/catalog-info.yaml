@@ -1,0 +1,31 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: audit-compliance-plugin
+  title: Audit Compliance Plugin Compass
+  description: Backstage Plugin for Audit Compliance
+  namespace: devex
+  tags:
+    - compass
+    - idp
+    - developers
+    - audit-compliance
+    - audit
+    - compliance
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-audit-compliance
+      title: Backstage Audit Compliance Plugin NPM
+    - url: https://console.one.redhat.com/audit-compliance
+      title: Try Audit Compliance
+      icon: externallink
+
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-audit-compliance
+spec:
+  type: backstage-frontend-plugin
+  lifecycle: production
+  owner: group:redhat/xe-compass-devs
+  system: devex/redhat-experience-platform
+  subcomponentOf: devex/backstage-console-frontend
