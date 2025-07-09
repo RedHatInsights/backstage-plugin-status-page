@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-outages [1.5.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-outages@1.4.1...@appdev-platform/backstage-plugin-outages@1.5.0) (2025-07-09)
+
+
+### Features
+
+* **APD-943:** Added a learn more link to the user guide confluence on Description field ([c0b00e5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/c0b00e5d9554131592d1a51a7324f46fd4da7993))
+
 ## @appdev-platform/backstage-plugin-outages [1.4.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-outages@1.4.0...@appdev-platform/backstage-plugin-outages@1.4.1) (2025-07-03)
 
 
