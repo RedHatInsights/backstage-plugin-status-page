@@ -14,6 +14,7 @@ spec:
     - ./plugins/devex-dashboard/catalog-info.yaml
     - ./plugins/devex-data-layer-backend/catalog-info.yaml
     - ./plugins/docsbot/catalog-info.yaml
+    - ./plugins/audit-compliance/catalog-info.yaml
     - ./plugins/hydra-support-dashboard/catalog-info.yaml
     - ./plugins/lighthouse/catalog-info.yaml
     - ./plugins/matomo/catalog-info.yaml
@@ -29,3 +30,4 @@ spec:
     - ./plugins/workstream-automation/catalog-info.yaml
     - ./plugins/workstream-automation-backend/catalog-info.yaml
     - ./plugins/workstream-automation-common/catalog-info.yaml
+    - ./plugins/soundcheck-backend-module-google-spreadsheets/catalog-info.yaml
