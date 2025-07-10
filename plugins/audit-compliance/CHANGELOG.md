@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-audit-compliance [1.12.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance@1.12.0...@appdev-platform/backstage-plugin-audit-compliance@1.12.1) (2025-07-10)
+
+
+### Bug Fixes
+
+* **docs:** fix docs folder structure ([c568b84](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/c568b840116ef8555dfebc31680f6cf4fe7eab55))
+
 ## @appdev-platform/backstage-plugin-audit-compliance [1.12.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-audit-compliance@1.11.0...@appdev-platform/backstage-plugin-audit-compliance@1.12.0) (2025-07-09)
 
 
