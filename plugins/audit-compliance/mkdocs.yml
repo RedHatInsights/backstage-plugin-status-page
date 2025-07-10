@@ -3,7 +3,7 @@ repo_url: https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/
 site_description: A Plugin that displays audit compliance in panel and main component for audit compliance plugin.
 
 nav:
-  - Introduction: introduction.md
+  - Introduction: index.md
   - Installation & Setup: installation.md
   - Usage Guide: usage_guide.md
   - FAQs: faq.md
