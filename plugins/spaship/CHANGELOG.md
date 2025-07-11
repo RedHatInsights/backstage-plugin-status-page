@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev-platform/backstage-plugin-spaship [1.2.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-spaship@1.2.0...@appdev-platform/backstage-plugin-spaship@1.2.1) (2025-07-11)
+
+
+### Bug Fixes
+
+* **PULSE-489:** limit the lenght of the link  in the spaship page ([4272d82](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/4272d8220345ef2019b42f79a0ba6cd3d6437bf6))
+
 ## @appdev-platform/backstage-plugin-spaship [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-spaship@1.1.1...@appdev-platform/backstage-plugin-spaship@1.2.0) (2025-06-27)
 
 
