@@ -25,10 +25,10 @@ This plugin exposes a card component for the Contact Details of an entity. The c
 
 ```bash
 # Yarn 1.x
-yarn add --cwd packages/app @appdev-platform/backstage-plugin-contact-details
+yarn add --cwd packages/app @compass/backstage-plugin-contact-details
 
 # Yarn 2.x or 3.x
-yarn workspaces app add @appdev-platform/backstage-plugin-contact-details
+yarn workspaces app add @compass/backstage-plugin-contact-details
 ```
 
 2. Add the `ContactDetailsCard` to the overview tab of the Catalog Entity Page.
@@ -38,7 +38,7 @@ yarn workspaces app add @appdev-platform/backstage-plugin-contact-details
 import {
   ContactDetailsCard,
   isContactDetailsAvailable,
-} from '@appdev-platform/backstage-plugin-contact-details';
+} from '@compass/backstage-plugin-contact-details';
 
 
 

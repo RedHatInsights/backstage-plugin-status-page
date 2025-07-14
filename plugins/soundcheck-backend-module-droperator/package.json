@@ -1,5 +1,5 @@
 {
-  "name": "@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator",
+  "name": "@compass/backstage-plugin-soundcheck-backend-module-droperator",
   "description": "The droperator backend module for the soundcheck plugin.",
   "version": "1.1.0",
   "main": "src/index.ts",

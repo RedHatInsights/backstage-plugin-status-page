@@ -38,7 +38,7 @@ interface GroupApiResponse {
  * Path to database migrations directory.
  */
 const migrationsDir = resolvePackagePath(
-  '@appdev-platform/backstage-plugin-audit-compliance-backend',
+  '@compass/backstage-plugin-audit-compliance-backend',
   'migrations',
 );
 

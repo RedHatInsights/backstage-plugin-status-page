@@ -16,7 +16,7 @@ The **catalog-backend-module-mcp** is a Backstage backend plugin module that ext
 1. Add the plugin to your Backstage backend:
 
    ```sh
-   yarn workspace backend add @appdev-platform/backstage-plugin-catalog-backend-module-mcp
+   yarn workspace backend add @compass/backstage-plugin-catalog-backend-module-mcp
    ```
 
 2. Register the module in your Backstage backend in `packages/backend/src/index.ts`:
@@ -24,7 +24,7 @@ The **catalog-backend-module-mcp** is a Backstage backend plugin module that ext
    ```ts
    const backend = createBackend();
 
-   backend.add(import('@appdev-platform/backstage-plugin-catalog-backend-module-mcp'));
+   backend.add(import('@compass/backstage-plugin-catalog-backend-module-mcp'));
    ```
 
 ## Configuration

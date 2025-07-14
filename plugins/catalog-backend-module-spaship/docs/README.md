@@ -8,10 +8,10 @@ This is an extension module to the catalog-backend plugin, providing a SPAshipDi
 
 ## Installation
 
-The provider is not installed by default, therefore you need to add a dependency to `@appdev-platform/backstage-plugin-catalog-backend-module-spaship` to your backend pacakge
+The provider is not installed by default, therefore you need to add a dependency to `@compass/backstage-plugin-catalog-backend-module-spaship` to your backend pacakge
 ```
 # From you backstage root directory
-yarn workspace backend add @appdev-platform/backstage-plugin-catalog-backend-module-spaship
+yarn workspace backend add @compass/backstage-plugin-catalog-backend-module-spaship
 ```
 
 Update the catalog plugin initialization in your backend to add the provider and schedule it:

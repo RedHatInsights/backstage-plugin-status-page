@@ -1,4 +1,4 @@
-import { ArtEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { ArtEntity } from '@compass/backstage-plugin-workstream-automation-common';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import {

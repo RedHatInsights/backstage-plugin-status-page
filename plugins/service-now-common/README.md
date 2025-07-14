@@ -1,4 +1,4 @@
-# @appdev-platform/backstage-plugin-service-now-common
+# @compass/backstage-plugin-service-now-common
 
 Welcome to the common package for the service-now plugin!
 

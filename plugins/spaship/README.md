@@ -11,7 +11,7 @@ The SPAship plugin shows the various [SPAship](https://spaship.redhat.com) deplo
 1. Install the plugin
 
 ```bash
-yarn add @appdev-platform/backstage-plugin-spaship
+yarn add @compass/backstage-plugin-spaship
 ```
 
 2. Add the SPAship proxy
@@ -43,7 +43,7 @@ spaship:
 
 ```ts
 // In packages/app/src/components/catalog/EntityPage.tsx
-import { SpashipPage } from '@appdev-platform/backstage-plugin-spaship';
+import { SpashipPage } from '@compass/backstage-plugin-spaship';
 
 const websiteEntityPage = (
   <EntityLayout>
@@ -58,7 +58,7 @@ const websiteEntityPage = (
 
 ```ts
 // In packages/app/src/App.tsx
-import { SpashipGlobalPage } from '@appdev-platform/backstage-plugin-spaship';
+import { SpashipGlobalPage } from '@compass/backstage-plugin-spaship';
 
 const routes = (
   <FlatRoutes>

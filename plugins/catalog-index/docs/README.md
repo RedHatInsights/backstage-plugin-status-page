@@ -25,16 +25,16 @@ This plugin provides a React component that acts as a replacement for the defaul
 
 ```bash
 # Yarn 1.x
-yarn add --cwd packages/app @appdev-platform/backstage-plugin-catalog-index
+yarn add --cwd packages/app @compass/backstage-plugin-catalog-index
 
 # Yarn 2.x or 3.x
-yarn workspace app add @appdev-platform/backstage-plugin-catalog-index
+yarn workspace app add @compass/backstage-plugin-catalog-index
 ```
 
 2. Add the `CatalogPage` component as a child to the CatalogIndexPage route
 
 ```tsx
-import { CatalogPage } from '@appdev-platform/backstage-plugin-catalog-index';
+import { CatalogPage } from '@compass/backstage-plugin-catalog-index';
 
 const routes = (
   {/* other routes */}

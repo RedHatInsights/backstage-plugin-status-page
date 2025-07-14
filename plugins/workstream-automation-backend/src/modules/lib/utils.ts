@@ -9,7 +9,7 @@ import { ANNOTATION_JIRA_PROJECT_KEY } from './constants';
 import {
   ArtEntity,
   WorkstreamEntity,
-} from '@appdev-platform/backstage-plugin-workstream-automation-common';
+} from '@compass/backstage-plugin-workstream-automation-common';
 
 export function ajvCompiledJsonSchemaValidator(schema: unknown): KindValidator {
   let validator: undefined | ((data: unknown) => any);

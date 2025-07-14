@@ -1,7 +1,7 @@
 import {
   WorkstreamEntity,
   workstreamUpdatePermission,
-} from '@appdev-platform/backstage-plugin-workstream-automation-common';
+} from '@compass/backstage-plugin-workstream-automation-common';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   ErrorPanel,

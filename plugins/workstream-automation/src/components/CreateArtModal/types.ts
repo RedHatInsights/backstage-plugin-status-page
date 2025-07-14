@@ -1,4 +1,4 @@
-import { WorkstreamEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { WorkstreamEntity } from '@compass/backstage-plugin-workstream-automation-common';
 import { CustomUserEntity, TableRowDataType } from '../../types';
 import { GroupEntity } from '@backstage/catalog-model';
 

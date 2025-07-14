@@ -3,7 +3,7 @@ import {
   artUpdatePermission,
   WorkstreamEntity,
   workstreamUpdatePermission,
-} from '@appdev-platform/backstage-plugin-workstream-automation-common';
+} from '@compass/backstage-plugin-workstream-automation-common';
 import { EntityLink, stringifyEntityRef } from '@backstage/catalog-model';
 import {
   AppIcon,

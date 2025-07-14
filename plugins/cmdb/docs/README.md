@@ -19,7 +19,7 @@ To get started, you need a running ServiceNow instance with [CMDB (Configuration
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @appdev-platform/backstage-plugin-cmdb
+yarn add --cwd packages/app @compass/backstage-plugin-cmdb
 ```
 
 2. Update the `app-config.yaml` and add ServiceNow host under the `proxy` section, and a separate `cmdb` field:
@@ -46,7 +46,7 @@ cmdb:
 import {
   ServiceDetailsCard,
   isAppCodeAvailable,
-} from '@appdev-platform/backstage-plugin-cmdb';
+} from '@compass/backstage-plugin-cmdb';
 
 const overviewContent = (
   <Grid container spacing={3} alignItems="stretch">
@@ -83,7 +83,7 @@ To add the infra details page, add the following piece of code to the EntityPage
 import {
   isAppCodeAvailable,
   InfraDetailsPage,
-} from '@appdev-platform/backstage-plugin-cmdb';
+} from '@compass/backstage-plugin-cmdb';
 
 const infraDetailsContent = (
   <EntitySwitch>

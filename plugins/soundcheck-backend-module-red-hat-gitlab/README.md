@@ -36,7 +36,7 @@ integrations:
 In the root directory of your Backstage project, run:
 
 ```shell
-yarn workspace backend add @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab
+yarn workspace backend add @compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab
 ```
 
 Add the module to the backend:
@@ -48,7 +48,7 @@ const backend = createBackend();
 
 // ...
 
-backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab'));
+backend.add(import('@compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab'));
 ```
 
 ## Examples

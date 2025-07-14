@@ -1,4 +1,4 @@
-import { workstreamCreatePermission } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { workstreamCreatePermission } from '@compass/backstage-plugin-workstream-automation-common';
 import {
   Content,
   ContentHeader,

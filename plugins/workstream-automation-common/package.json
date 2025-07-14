@@ -1,5 +1,5 @@
 {
-  "name": "@appdev-platform/backstage-plugin-workstream-automation-common",
+  "name": "@compass/backstage-plugin-workstream-automation-common",
   "description": "Common functionalities for the workstream-automation plugin",
   "version": "1.4.0",
   "main": "src/index.ts",
@@ -15,9 +15,9 @@
     "role": "common-library",
     "pluginId": "workstream-automation",
     "pluginPackages": [
-      "@appdev-platform/backstage-plugin-workstream-automation",
-      "@appdev-platform/backstage-plugin-workstream-automation-backend",
-      "@appdev-platform/backstage-plugin-workstream-automation-common"
+      "@compass/backstage-plugin-workstream-automation",
+      "@compass/backstage-plugin-workstream-automation-backend",
+      "@compass/backstage-plugin-workstream-automation-common"
     ]
   },
   "sideEffects": false,

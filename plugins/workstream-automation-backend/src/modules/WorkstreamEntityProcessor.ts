@@ -3,7 +3,7 @@ import {
   RELATION_LEAD_BY,
   RELATION_LEAD_OF,
   WorkstreamEntity,
-} from '@appdev-platform/backstage-plugin-workstream-automation-common';
+} from '@compass/backstage-plugin-workstream-automation-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   Entity,

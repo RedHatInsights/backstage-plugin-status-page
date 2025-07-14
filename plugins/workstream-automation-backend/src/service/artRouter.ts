@@ -13,7 +13,7 @@ import {
   workstreamCreatePermission,
   workstreamDeletePermission,
   workstreamUpdatePermission,
-} from '@appdev-platform/backstage-plugin-workstream-automation-common';
+} from '@compass/backstage-plugin-workstream-automation-common';
 import { ConflictError, NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { v4 } from 'uuid';

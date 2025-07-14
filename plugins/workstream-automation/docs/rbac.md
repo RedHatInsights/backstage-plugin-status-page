@@ -12,7 +12,7 @@ RBAC uses backstage permission plugin which is used to create policies to author
 import {
   isWorkstreamPermission,
   WorkstreamPolicy,
-} from '@appdev-platform/backstage-plugin-workstream-automation-backend';
+} from '@compass/backstage-plugin-workstream-automation-backend';
 import {
   AuthService,
   CacheService,

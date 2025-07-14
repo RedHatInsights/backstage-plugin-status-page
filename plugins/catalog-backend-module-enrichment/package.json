@@ -1,5 +1,5 @@
 {
-  "name": "@appdev-platform/backstage-plugin-catalog-backend-module-enrichment",
+  "name": "@compass/backstage-plugin-catalog-backend-module-enrichment",
   "description": "The enrichment backend module for the catalog plugin.",
   "version": "1.5.0",
   "main": "src/index.ts",

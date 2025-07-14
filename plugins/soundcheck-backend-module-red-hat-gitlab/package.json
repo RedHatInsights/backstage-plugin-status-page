@@ -1,5 +1,5 @@
 {
-  "name": "@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab",
+  "name": "@compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab",
   "description": "The red-hat-gitlab backend module for the soundcheck plugin.",
   "version": "1.5.1",
   "main": "src/index.ts",

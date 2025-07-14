@@ -1,4 +1,4 @@
-import { RESOURCE_TYPE_WORKSTREAM_ENTITY } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { RESOURCE_TYPE_WORKSTREAM_ENTITY } from '@compass/backstage-plugin-workstream-automation-common';
 import { createConditionExports } from '@backstage/plugin-permission-node';
 import { workstreamPermissionRules } from '../rules';
 

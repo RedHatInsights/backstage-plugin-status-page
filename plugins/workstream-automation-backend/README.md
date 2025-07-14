@@ -9,7 +9,7 @@ The backend plugin provides api to store workstream data directly in backstage, 
 - Install the backend plugin by running following command.
 
 ```sh
-yarn workspace backend add @appdev-platform/backstage-plugin-workstream-automation-backend
+yarn workspace backend add @compass/backstage-plugin-workstream-automation-backend
 ```
 
 - Add the following configuration in your `app-config.yaml`.
@@ -36,7 +36,7 @@ integrations:
 - Now in the backend folder of backstage, create this file `packages/backend/src/service/urlReader/urlReaderServiceFactory.ts` and add following content.
 
 ```ts
-import { WorkstreamUrlReader } from '@appdev-platform/backstage-plugin-workstream-automation-backend';
+import { WorkstreamUrlReader } from '@compass/backstage-plugin-workstream-automation-backend';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 import {
   coreServices,
@@ -86,7 +86,7 @@ export const urlReaderServiceFactory = createServiceFactory({
 +   tokenManagerServiceFactory,
 + } from '@backstage/backend-app-api';
 +
-+ import { workstreamCatalogModule } from '@appdev-platform/backstage-plugin-workstream-automation-backend';
++ import { workstreamCatalogModule } from '@compass/backstage-plugin-workstream-automation-backend';
 + import { createSpecializedBackend } from '@backstage/backend-app-api';
 + import { ServiceFactory } from '@backstage/backend-plugin-api';
 +
@@ -128,7 +128,7 @@ backend.add(import('@backstage/plugin-auth-backend'));
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 
 + // workstream-automation-plugin
-+ backend.add(import('@appdev-platform/backstage-plugin-workstream-automation-backend'));
++ backend.add(import('@compass/backstage-plugin-workstream-automation-backend'));
 
 // catalog plugin
 backend.add(import('@backstage/plugin-catalog-backend/alpha'));

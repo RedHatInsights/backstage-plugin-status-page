@@ -18,7 +18,7 @@ metadata:
 
   annotations:
     nexus-repository-manager/repository: appdev-platform
-    nexus-repository-manager/name: '@appdev-platform/backstage-plugin-mcp'
+    nexus-repository-manager/name: '@compass/backstage-plugin-mcp'
 spec:
   type: backstage-frontend-plugin
   lifecycle: production

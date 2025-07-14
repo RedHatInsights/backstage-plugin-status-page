@@ -1,4 +1,4 @@
-# @appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-service-now
+# @compass/backstage-plugin-soundcheck-backend-module-red-hat-service-now
 
 The red-hat-service-now backend module for the soundcheck plugin.
 

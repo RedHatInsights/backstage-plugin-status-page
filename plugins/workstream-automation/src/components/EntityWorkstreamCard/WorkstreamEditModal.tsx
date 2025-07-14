@@ -1,7 +1,7 @@
 import {
   ArtEntity,
   WorkstreamEntity,
-} from '@appdev-platform/backstage-plugin-workstream-automation-common';
+} from '@compass/backstage-plugin-workstream-automation-common';
 import {
   Button,
   Dialog,

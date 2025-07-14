@@ -1,4 +1,4 @@
-import { ArtEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { ArtEntity } from '@compass/backstage-plugin-workstream-automation-common';
 import {
   GroupEntity,
   RELATION_HAS_MEMBER,
