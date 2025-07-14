@@ -49,11 +49,37 @@ export class AccessRequestBackendDatabase implements AccessRequestBackendStore {
     return this.mapDatabaseModelToAccessRequest(dbResult);
   }
 
+  async getAccessRequests(filters: Partial<AccessRequest>): Promise<AccessRequest[]> {
+    const query = this.db<AccessRequestDatabaseModel>(this.ACCESS_REQUEST_TABLE);
+
+    const allowedFilters: (keyof AccessRequestDatabaseModel)[] = [
+      'userId',
+      'group',
+      'status',
+      'role',
+      'reviewer',
+      'createdBy',
+      'updatedBy',
+    ];
+
+    for (const key of allowedFilters) {
+      const value = filters[key];
+      if (value !== undefined) {
+        query.where(key, value);
+      }
+    }
+
+    const dbResults = await query;
+
+    return dbResults.map(this.mapDatabaseModelToAccessRequest);
+  }
+
+
   async listAccessRequests(): Promise<AccessRequest[]> {
     const dbResult = await this.db<AccessRequestDatabaseModel>(
       this.ACCESS_REQUEST_TABLE,
     ).select();
-    return dbResult.map(row => this.mapDatabaseModelToAccessRequest(row));
+    return dbResult.map((row: AccessRequestDatabaseModel) => this.mapDatabaseModelToAccessRequest(row));
   }
 
   async updateAccessRequest(
@@ -89,7 +115,8 @@ export class AccessRequestBackendDatabase implements AccessRequestBackendStore {
   ): AccessRequestDatabaseModel {
     return {
       id: request.id,
-      username: request.username,
+      userName: request.userName,
+      userEmail: request.userEmail,
       userId: request.userId,
       timestamp: request.timestamp,
       status: request.status,
@@ -110,7 +137,8 @@ export class AccessRequestBackendDatabase implements AccessRequestBackendStore {
   ): AccessRequest {
     return {
       id: dbModel.id,
-      username: dbModel.username,
+      userName: dbModel.userName,
+      userEmail: dbModel.userEmail,
       userId: dbModel.userId,
       timestamp: dbModel.timestamp,
       status: dbModel.status,

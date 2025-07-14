@@ -6,7 +6,8 @@
 exports.up = async function (knex) {
   return await knex.schema.createTable('access_requests', table => {
     table.text('id').primary().notNullable().comment('Unique ID for the access request');
-    table.text('username').notNullable().comment('Email/username of requester');
+    table.text('userName').notNullable().comment('Name of requester');
+    table.text('userEmail').notNullable().comment('Email of requester');
     table.text('userId').notNullable().comment('Unique user identifier');
     table.text('timestamp').notNullable().comment('Timestamp when request was made');
     table.text('status').notNullable().comment('Status of request (e.g., approved, rejected)');

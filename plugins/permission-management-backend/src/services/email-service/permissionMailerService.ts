@@ -58,15 +58,19 @@ export class PermissionEmailService {
   }
   async processEmail(to: string | Array<string>, type: string, data: any) {
     try {
-      const subject = 'Permission Request Approved for Sentiment Analysis [Test Email]';
-
+        
+      const subject =
+        type === 'owners'
+          ? 'Permission request received for Escalation Forecaster.'
+          : 'Permission request update for Escalation Forecaster.';
+          
       const ownersTemplatePath = path.join(
         resolvePackagePath('@appdev-platform/backstage-plugin-permission-management-backend'),
         'templates/owners-request.html',
       );
       let ownersTemplate = fs.readFileSync(ownersTemplatePath, 'utf-8');
       ownersTemplate = ownersTemplate.replace(
-        '{{requestor}}', data.userId,
+        '{{requestor}}', data.userName,
       ).replace('{{role}}', data.role);
 
       const userTemplatePath = path.join(
@@ -74,7 +78,7 @@ export class PermissionEmailService {
         'templates/member-ack.html',
       );
       let userTemplate = fs.readFileSync(userTemplatePath, 'utf-8');
-      userTemplate = userTemplate.replace('{{requestor}}', data.userId);
+      userTemplate = userTemplate.replace('{{requestor}}', data.userName);
 
       const htmlContent = type === 'owners' ? ownersTemplate : userTemplate;
 
@@ -84,6 +88,4 @@ export class PermissionEmailService {
       throw error;
     }
   }
-
-
 }

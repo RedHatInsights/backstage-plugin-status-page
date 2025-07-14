@@ -1,7 +1,8 @@
 export type AccessRequestDatabaseModel = {
   id: string;
-  username: string;
+  userName: string;
   userId: string;
+  userEmail: string;
   timestamp: string;
   status: 'pending' | 'approved' | 'rejected';
   group: string;
