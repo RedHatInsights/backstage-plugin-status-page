@@ -40,11 +40,12 @@ export function createAccessRequestRoutes(
    * @returns {Object} 404 - Access request not found
    */
   router.get('/:id', async (req, res) => {
-    const { id } = req.params;
+    const { id: userId } = req.params;
     try {
-      const request = await accessRequestDb.getAccessRequestById(id);
-      if (request) {
-        return res.json(request);
+      const filters: Partial<AccessRequest> = { userId };
+      const requests = await accessRequestDb.getAccessRequests(filters);
+      if (requests.length > 0) {
+        return res.json(requests);
       }
       return res.status(404).json({ error: 'Access request not found' });
     } catch (e: any) {
@@ -67,33 +68,73 @@ export function createAccessRequestRoutes(
 
     const existingRequests = await accessRequestDb.listAccessRequests();
     const validRequests: AccessRequest[] = [];
+    const updatedRequests: AccessRequest[] = [];
     const errors: any[] = [];
 
     for (const [index, reqItem] of requests.entries()) {
-      const { username, userId, group, role, updatedBy } = reqItem;
+      const { userName, userId, userEmail, group, role, updatedBy } = reqItem;
 
-      if (!username || !userId || !group) {
-        errors.push({ index, error: 'Missing required fields', username, group });
+      if (!userName || !userId || !group) {
+        errors.push({ index, error: 'Missing required fields', userName, group });
         continue;
       }
 
-      const isDuplicate = existingRequests.some(
-        r => r.username === username && r.group === group && r.status === 'pending',
+      const existing = existingRequests.find(
+        r => r.userId === userId && r.group === group
       );
 
-      if (isDuplicate) {
-        errors.push({
-          index,
-          error: `Access request for username '${username}' in group '${group}' already exists in 'pending' state.`,
-          username,
-          group,
-        });
-        continue;
+      if (existing) {
+        if (existing.status === 'pending') {
+          errors.push({
+            index,
+            error: `Access request for '${userName}' in group '${group}' is already in 'pending' state.`,
+            userName,
+            group,
+          });
+          continue;
+        }
+
+        if (existing.status === 'rejected') {
+          try {
+            const updatedRequest: AccessRequest = {
+              ...existing,
+              status: 'pending',
+              rejectionReason: '',
+              updatedBy: updatedBy ?? userName,
+              updatedAt: now,
+              timestamp: now,
+            };
+
+            const result = await accessRequestDb.updateAccessRequest(existing.id, updatedRequest);
+            if (result) {
+              updatedRequests.push(result);
+            } else {
+              errors.push({
+                index,
+                error: `Failed to update rejected request for '${userName}'`,
+                userName,
+                group,
+              });
+            }
+          } catch (e) {
+            const error = e as Error;
+            errors.push({
+              index,
+              error: `Exception while updating rejected request for '${userName}'`,
+              userName,
+              group,
+              details: error.message,
+            });
+          }
+          continue;
+        }
       }
 
+      // Insert as new request
       validRequests.push({
         id: uuidv4(),
-        username,
+        userName,
+        userEmail,
         userId,
         group,
         role: role ?? 'member',
@@ -102,42 +143,50 @@ export function createAccessRequestRoutes(
         reason: 'N/A',
         reviewer: 'N/A',
         rejectionReason: '',
-        createdBy: username,
-        updatedBy: updatedBy ?? username,
+        createdBy: userName,
+        updatedBy: updatedBy ?? userName,
         createdAt: now,
         updatedAt: now,
       });
     }
 
-    let insertedResults: any[] = [];
+    let insertedResults: AccessRequest[] = [];
     if (validRequests.length > 0) {
       insertedResults = await accessRequestDb.insertAccessRequests(validRequests);
+    }
 
-      // Send emails to group owners for each request
-      for (const [i, request] of requests.entries()) {
-        const groupOwners = request.groupOwners?.filter((owner: string) => !!owner.trim()) ?? [];
-        if (groupOwners.length > 0) {
-          try {
-            await emailService.processEmail(groupOwners, 'owners', { userId : request.userId, role : request.role});
-          } catch (e) {
-            errors.push({ index: i, error: 'Failed to send email to group owners', groupOwners });
-          }
-        }
+    const allProcessed = [...insertedResults, ...updatedRequests];
+
+    // Send emails to owners and members
+    for (const [i, request] of allProcessed.entries()) {
+      const originalRequest = requests[i];
+      const groupOwners = originalRequest.groupOwners?.filter((owner: string) => !!owner.trim()) ?? [];
+      if (groupOwners.length > 0) {
         try {
-          await emailService.processEmail(request.username, 'member', { userId : request.userId});
+          await emailService.processEmail(groupOwners, 'owners', { userName: request.userName, role: request.role });
         } catch (e) {
-          errors.push({ index: i, error: 'Failed to send email to member', username: request.username });
+          errors.push({ index: i, error: 'Failed to send email to group owners', groupOwners });
         }
+      }
+
+      try {
+        await emailService.processEmail(request.userEmail, 'member', { userName: request.userName });
+      } catch (e) {
+        errors.push({ index: i, error: 'Failed to send email to member', userName: request.userName });
       }
     }
 
     return res.status(errors.length ? 207 : 201).json({
-      successCount: insertedResults.length,
+      successCount: allProcessed.length,
+      insertedCount: insertedResults.length,
+      updatedCount: updatedRequests.length,
       errorCount: errors.length,
       inserted: insertedResults,
+      updated: updatedRequests,
       errors,
     });
   });
+
 
   /**
    * PUT /:id
@@ -150,31 +199,55 @@ export function createAccessRequestRoutes(
    * @returns {Object} 404 - Access request not found
    * @returns {Object} 500 - Update failure
    */
-  router.put('/:id', async (req, res) => {
-    const { id } = req.params;
+  router.put('/', async (req, res) => {
+    const updates = req.body;
+
+    if (!Array.isArray(updates) || updates.length === 0) {
+      return res.status(400).json({ error: 'Request body must be a non-empty array of access requests' });
+    }
+
     try {
-      const existing = await accessRequestDb.getAccessRequestById(id);
-      if (!existing) {
-        return res.status(404).json({ error: 'Access request not found' });
+      const results = [];
+
+      for (const update of updates) {
+        const { userId, group } = update;
+
+        if (!userId || !group || typeof group !== 'string') {
+          results.push({ success: false, error: 'Missing or invalid userId/group', update });
+          continue;
+        }
+
+        const existingList = await accessRequestDb.getAccessRequests({ userId, group });
+
+        if (existingList.length === 0) {
+          results.push({ success: false, error: 'Access request not found', update });
+          continue;
+        }
+
+        const existing = existingList[0];
+        const updated: AccessRequest = {
+          ...existing,
+          ...update,
+          id: existing.id,
+          updatedAt: new Date().toISOString(),
+        };
+
+        const result = await accessRequestDb.updateAccessRequest(existing.id, updated);
+
+        if (!result) {
+          results.push({ success: false, error: 'Update failed', update });
+          continue;
+        }
+
+        results.push({ success: true, data: result });
       }
 
-      const updated: AccessRequest = {
-        ...existing,
-        ...req.body.data,
-        id,
-        updatedAt: new Date().toISOString(),
-      };
-
-      const result = await accessRequestDb.updateAccessRequest(id, updated);
-      if (!result) {
-        return res.status(500).json({ error: 'Update failed' });
-      }
-
-      return res.status(200).json({ data: result });
+      return res.status(200).json({ results });
     } catch (e: any) {
       return res.status(500).json({ error: e.message });
     }
   });
+
 
   /**
    * DELETE /:id
