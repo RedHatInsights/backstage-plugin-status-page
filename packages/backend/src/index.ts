@@ -148,10 +148,10 @@ backend.add(import('@backstage/plugin-devtools-backend'));
 backend.add(import('@compass/backstage-plugin-catalog-backend-module-mcp'));
 
 backend.add(
-  import('@compass/backstage-plugin-devex-data-layer-backend'),
+  import('@appdev/backstage-plugin-devex-data-layer-backend'),
 );
 backend.add(
-  import('@compass/backstage-plugin-audit-compliance-backend'),
+  import('@appdev/backstage-plugin-audit-compliance-backend'),
 );
 
 backend.add(
@@ -160,6 +160,6 @@ backend.add(
   ),
 );
 backend.add(
-  import('@compass/backstage-plugin-permission-management-backend'),
+  import('@appdev/backstage-plugin-permission-management-backend'),
 );
 backend.start();

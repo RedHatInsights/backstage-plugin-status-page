@@ -1,5 +1,5 @@
 {
-  "name": "@compass/backstage-plugin-proxy-manager",
+  "name": "@appdev/backstage-plugin-proxy-manager",
   "version": "1.2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -13,7 +13,7 @@
     "role": "frontend-plugin",
     "pluginId": "proxy-manager",
     "pluginPackages": [
-      "@compass/backstage-plugin-proxy-manager"
+      "@appdev/backstage-plugin-proxy-manager"
     ]
   },
   "sideEffects": false,

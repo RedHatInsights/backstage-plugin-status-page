@@ -18,7 +18,7 @@ To get started, you need to install the plugin and configure the as follows:
 
    ```bash
    # From your backstage root directory
-   yarn add --cwd packages/app @compass/backstage-plugin-proxy-manager
+   yarn add --cwd packages/app @appdev/backstage-plugin-proxy-manager
    ```
 
 2. Update the app-config.yaml and add proxyManager config
@@ -47,7 +47,7 @@ To get started, you need to install the plugin and configure the as follows:
 
    ```tsx
    // In packages/app/src/App.tsx
-   import { ProxyManagerPage } from '@compass/backstage-plugin-proxy-manager';
+   import { ProxyManagerPage } from '@appdev/backstage-plugin-proxy-manager';
 
    const routes = (
      <FlatRoutes>
@@ -62,7 +62,7 @@ To get started, you need to install the plugin and configure the as follows:
 
    ```tsx
    // In packages/app/src/components/Root/Root.tsx
-   import { HydraProxyIcon } from '@compass/backstage-plugin-proxy-manager';
+   import { HydraProxyIcon } from '@appdev/backstage-plugin-proxy-manager';
 
    export const Root = ({ children }: PropsWithChildren<{}>) => (
      <SidebarPage>

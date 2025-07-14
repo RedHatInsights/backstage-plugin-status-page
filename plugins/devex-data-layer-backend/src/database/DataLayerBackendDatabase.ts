@@ -8,7 +8,7 @@ import {
 } from '../types/database';
 
 const migrationsDir = resolvePackagePath(
-  '@compass/backstage-plugin-devex-data-layer-backend',
+  '@appdev/backstage-plugin-devex-data-layer-backend',
   'migrations',
 );
 

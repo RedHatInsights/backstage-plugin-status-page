@@ -59,7 +59,7 @@ import { Button, Container, Grid } from '@material-ui/core';
 import { useState } from 'react';
 
 import { MatomoPage } from '@backstage-community/plugin-matomo';
-import { SpashipPage } from '@compass/backstage-plugin-spaship';
+import { SpashipPage } from '@appdev/backstage-plugin-spaship';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import {

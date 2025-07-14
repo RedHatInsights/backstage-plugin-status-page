@@ -30,7 +30,7 @@ import {
 } from '@backstage/core-components';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
-import { HydraProxyIcon } from '@compass/backstage-plugin-proxy-manager';
+import { HydraProxyIcon } from '@appdev/backstage-plugin-proxy-manager';
 import { ReportPortalIcon } from '@backstage-community/plugin-report-portal';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { FeedbackIcon } from '@janus-idp/backstage-plugin-feedback';
@@ -38,7 +38,7 @@ import {
   DocsBotPanel,
   DocsBotButton,
   DocsBotIcon,
-} from '@compass/backstage-plugin-docsbot';
+} from '@appdev/backstage-plugin-docsbot';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import BuildIcon from '@material-ui/icons/Build';
 

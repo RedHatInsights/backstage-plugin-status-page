@@ -38,13 +38,13 @@ The plugin supports different user roles:
 #### Frontend Plugin
 ```bash
 # From your Backstage root directory
-yarn add @compass/backstage-plugin-audit-compliance
+yarn add @appdev/backstage-plugin-audit-compliance
 ```
 
 #### Backend Plugin
 ```bash
 # From your Backstage root directory
-yarn --cwd packages/backend add @compass/backstage-plugin-audit-compliance-backend
+yarn --cwd packages/backend add @appdev/backstage-plugin-audit-compliance-backend
 ```
 
 ### What configuration is required?

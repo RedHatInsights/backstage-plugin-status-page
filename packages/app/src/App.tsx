@@ -31,22 +31,22 @@ import {
   AuditDetailsSection,
   AuditInitiation,
   AuditSummary,
-} from '@compass/backstage-plugin-audit-compliance';
+} from '@appdev/backstage-plugin-audit-compliance';
 import {
   AppDevDashboardPage,
   DataLayerDashboardPage,
   PulseDashboardPage,
-} from '@compass/backstage-plugin-devex-dashboard';
-import { DocsBotPage } from '@compass/backstage-plugin-docsbot';
-import { HydraSupportDashboardPage } from '@compass/backstage-plugin-hydra-support-dashboard';
+} from '@appdev/backstage-plugin-devex-dashboard';
+import { DocsBotPage } from '@appdev/backstage-plugin-docsbot';
+import { HydraSupportDashboardPage } from '@appdev/backstage-plugin-hydra-support-dashboard';
 import { McpPage } from '@compass/backstage-plugin-mcp';
 import {
   CreateIncident,
   OutageTemplatePage,
   UpdateIncident,
-} from '@compass/backstage-plugin-outages';
-import { ProxyManagerPage } from '@compass/backstage-plugin-proxy-manager';
-import { SpashipGlobalPage } from '@compass/backstage-plugin-spaship';
+} from '@appdev/backstage-plugin-outages';
+import { ProxyManagerPage } from '@appdev/backstage-plugin-proxy-manager';
+import { SpashipGlobalPage } from '@appdev/backstage-plugin-spaship';
 import {
   JiraIcon,
   SlackIcon,
