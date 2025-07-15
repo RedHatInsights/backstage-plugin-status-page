@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets@1.0.1...@compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets@1.1.0) (2025-07-15)
+
+
+### Features
+
+* change plugins scope to compass ([ff2b035](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/ff2b0351849d04d24a4326428082b1d6b09bd9cd))
+
 ## @appdev-platform/backstage-plugin-soundcheck-backend-module-google-spreadsheets [1.0.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-soundcheck-backend-module-google-spreadsheets@1.0.0...@appdev-platform/backstage-plugin-soundcheck-backend-module-google-spreadsheets@1.0.1) (2025-07-08)
 
 
