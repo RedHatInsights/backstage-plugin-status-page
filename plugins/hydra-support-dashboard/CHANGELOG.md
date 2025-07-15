@@ -1,5 +1,13 @@
 # Changelog
 
+## @appdev/backstage-plugin-hydra-support-dashboard [1.7.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-hydra-support-dashboard@1.6.0...@appdev/backstage-plugin-hydra-support-dashboard@1.7.0) (2025-07-15)
+
+
+### Features
+
+* add appdev scopes for plugins maintained by AppDev ([1e24372](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/1e24372ec4ba4a783b8df46d6bd8cc9ba82367dc))
+* change plugins scope to compass ([ff2b035](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/ff2b0351849d04d24a4326428082b1d6b09bd9cd))
+
 ## @appdev-platform/backstage-plugin-hydra-support-dashboard [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-hydra-support-dashboard@1.5.0...@appdev-platform/backstage-plugin-hydra-support-dashboard@1.6.0) (2025-06-27)
 
 
