@@ -1,6 +1,6 @@
 {
   "name": "@compass/backstage-plugin-workstream-automation",
-  "version": "1.17.0",
+  "version": "1.18.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",
