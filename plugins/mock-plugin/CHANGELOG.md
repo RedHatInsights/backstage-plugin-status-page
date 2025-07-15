@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/plugin-mock-plugin [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/plugin-mock-plugin@1.3.0...@compass/plugin-mock-plugin@1.4.0) (2025-07-15)
+
+
+### Features
+
+* change plugins scope to compass ([ff2b035](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/ff2b0351849d04d24a4326428082b1d6b09bd9cd))
+
 ## @appdev-platform/plugin-mock-plugin [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/plugin-mock-plugin@1.2.0...@appdev-platform/plugin-mock-plugin@1.3.0) (2025-06-27)
 
 
