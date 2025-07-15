@@ -1,5 +1,13 @@
 # Changelog
 
+## @compass/backstage-plugin-workstream-automation-backend [1.12.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation-backend@1.11.0...@compass/backstage-plugin-workstream-automation-backend@1.12.0) (2025-07-15)
+
+
+### Features
+
+* add appdev scopes for plugins maintained by AppDev ([1e24372](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/1e24372ec4ba4a783b8df46d6bd8cc9ba82367dc))
+* change plugins scope to compass ([ff2b035](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/ff2b0351849d04d24a4326428082b1d6b09bd9cd))
+
 ## @appdev-platform/backstage-plugin-workstream-automation-backend [1.11.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-workstream-automation-backend@1.10.0...@appdev-platform/backstage-plugin-workstream-automation-backend@1.11.0) (2025-06-30)
 
 
