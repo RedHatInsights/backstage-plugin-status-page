@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-catalog-index [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-catalog-index@1.2.0...@compass/backstage-plugin-catalog-index@1.3.0) (2025-07-15)
+
+
+### Features
+
+* change plugins scope to compass ([ff2b035](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/ff2b0351849d04d24a4326428082b1d6b09bd9cd))
+
 ## @appdev-platform/backstage-plugin-catalog-index [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev-platform/backstage-plugin-catalog-index@1.1.2...@appdev-platform/backstage-plugin-catalog-index@1.2.0) (2025-06-27)
 
 
