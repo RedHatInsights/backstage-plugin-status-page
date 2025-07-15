@@ -9,7 +9,7 @@ The Lighthouse plugin shows your lighthouse build scores. It also helps to inspe
 1. Install the plugin
 
 ```bash
-yarn add @appdev-platform/backstage-plugin-lighthouse
+yarn add @compass/backstage-plugin-lighthouse
 ```
 
 2. Add the Lighthouse proxy
@@ -36,7 +36,7 @@ lighthouse:
 
 ```ts
 // In packages/app/src/components/catalog/EntityPage.tsx
-import { LighthousePage } from '@appdev-platform/backstage-plugin-lighthouse';
+import { LighthousePage } from '@compass/backstage-plugin-lighthouse';
 
 const websiteEntityPage = (
   <EntityLayout>

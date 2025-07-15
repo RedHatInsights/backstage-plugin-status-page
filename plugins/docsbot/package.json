@@ -1,5 +1,5 @@
 {
-  "name": "@appdev-platform/backstage-plugin-docsbot",
+  "name": "@appdev/backstage-plugin-docsbot",
   "version": "1.10.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -13,7 +13,7 @@
     "role": "frontend-plugin",
     "pluginId": "docsbot",
     "pluginPackages": [
-      "@appdev-platform/backstage-plugin-docsbot"
+      "@appdev/backstage-plugin-docsbot"
     ]
   },
   "sideEffects": false,

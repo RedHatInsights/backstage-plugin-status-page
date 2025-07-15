@@ -72,7 +72,7 @@ backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 
 // Initialize plugin before catalog module
 backend.add(
-  import('@appdev-platform/backstage-plugin-workstream-automation-backend'),
+  import('@compass/backstage-plugin-workstream-automation-backend'),
 );
 // catalog plugin
 backend.add(import('@backstage/plugin-catalog-backend'));
@@ -82,19 +82,19 @@ backend.add(
 backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
 backend.add(
   import(
-    '@appdev-platform/backstage-plugin-workstream-automation-backend/module'
+    '@compass/backstage-plugin-workstream-automation-backend/module'
   ),
 );
 backend.add(
-  import('@appdev-platform/backstage-plugin-catalog-backend-module-cmdb'),
+  import('@compass/backstage-plugin-catalog-backend-module-cmdb'),
 );
 backend.add(
   import(
-    '@appdev-platform/backstage-plugin-catalog-backend-module-spaship/alpha'
+    '@compass/backstage-plugin-catalog-backend-module-spaship/alpha'
   ),
 );
 backend.add(
-  import('@appdev-platform/backstage-plugin-catalog-backend-module-enrichment'),
+  import('@compass/backstage-plugin-catalog-backend-module-enrichment'),
 );
 
 // permission plugin
@@ -114,52 +114,52 @@ backend.add(import('@backstage-community/plugin-report-portal-backend'));
 backend.add(import('@spotify/backstage-plugin-soundcheck-backend'));
 backend.add(
   import(
-    '@appdev-platform/backstage-plugin-soundcheck-backend-module-droperator'
+    '@compass/backstage-plugin-soundcheck-backend-module-droperator'
   ),
 );
 backend.add(
   import(
-    '@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-core'
+    '@compass/backstage-plugin-soundcheck-backend-module-red-hat-core'
   ),
 );
 backend.add(
   import(
-    '@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-gitlab'
+    '@compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab'
   ),
 );
 backend.add(
   import(
-    '@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-servicenow'
+    '@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow'
   ),
 );
 backend.add(
   import(
-    '@appdev-platform/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet'
+    '@compass/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet'
   ),
 );
 backend.add(
   import(
-    '@appdev-platform/backstage-plugin-soundcheck-backend-module-google-spreadsheets'
+    '@compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets'
   ),
 );
 // DevTools backend
 backend.add(import('@backstage/plugin-devtools-backend'));
 
-backend.add(import('@appdev-platform/backstage-plugin-catalog-backend-module-mcp'));
+backend.add(import('@compass/backstage-plugin-catalog-backend-module-mcp'));
 
 backend.add(
-  import('@appdev-platform/backstage-plugin-devex-data-layer-backend'),
+  import('@appdev/backstage-plugin-devex-data-layer-backend'),
 );
 backend.add(
-  import('@appdev-platform/backstage-plugin-audit-compliance-backend'),
+  import('@appdev/backstage-plugin-audit-compliance-backend'),
 );
 
 backend.add(
   import(
-    '@appdev-platform/backstage-plugin-scaffolder-backend-module-custom-filters'
+    '@compass/backstage-plugin-scaffolder-backend-module-custom-filters'
   ),
 );
 backend.add(
-  import('@appdev-platform/backstage-plugin-permission-management-backend'),
+  import('@appdev/backstage-plugin-permission-management-backend'),
 );
 backend.start();

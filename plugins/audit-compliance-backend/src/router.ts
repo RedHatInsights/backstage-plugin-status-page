@@ -10,7 +10,7 @@ import { createCombinedRouter } from './routes';
 import { Knex } from 'knex';
 
 const migrationsDir = resolvePackagePath(
-  '@appdev-platform/backstage-plugin-audit-compliance-backend',
+  '@appdev/backstage-plugin-audit-compliance-backend',
   'migrations',
 );
 

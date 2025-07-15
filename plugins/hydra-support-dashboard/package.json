@@ -1,5 +1,5 @@
 {
-  "name": "@appdev-platform/backstage-plugin-hydra-support-dashboard",
+  "name": "@appdev/backstage-plugin-hydra-support-dashboard",
   "version": "1.6.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -13,7 +13,7 @@
     "role": "frontend-plugin",
     "pluginId": "hydra-support-dashboard",
     "pluginPackages": [
-      "@appdev-platform/backstage-plugin-hydra-support-dashboard"
+      "@appdev/backstage-plugin-hydra-support-dashboard"
     ]
   },
   "sideEffects": false,

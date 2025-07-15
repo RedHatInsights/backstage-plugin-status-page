@@ -5,7 +5,7 @@ import {
   workstreamDeletePermission,
   workstreamPermissions,
   workstreamUpdatePermission,
-} from '@appdev-platform/backstage-plugin-workstream-automation-common';
+} from '@compass/backstage-plugin-workstream-automation-common';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import {
   AuthService,
@@ -43,7 +43,7 @@ export interface RouterOptions {
 }
 
 const migrationsDir = resolvePackagePath(
-  '@appdev-platform/backstage-plugin-workstream-automation-backend',
+  '@compass/backstage-plugin-workstream-automation-backend',
   'migrations',
 );
 

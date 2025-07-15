@@ -1,4 +1,4 @@
-import { WorkstreamEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { WorkstreamEntity } from '@compass/backstage-plugin-workstream-automation-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   alertApiRef,

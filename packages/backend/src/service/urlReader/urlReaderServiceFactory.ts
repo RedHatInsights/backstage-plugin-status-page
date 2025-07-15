@@ -1,4 +1,4 @@
-import { WorkstreamUrlReader } from '@appdev-platform/backstage-plugin-workstream-automation-backend';
+import { WorkstreamUrlReader } from '@compass/backstage-plugin-workstream-automation-backend';
 import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 import {
   coreServices,

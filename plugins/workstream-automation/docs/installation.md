@@ -7,7 +7,7 @@
 Add the workstream automation backend plugin to your Backstage backend app:
 
 ```shell
-yarn workspace backend add @appdev-platform/backstage-plugin-workstream-automation-backend
+yarn workspace backend add @compass/backstage-plugin-workstream-automation-backend
 ```
 
 After installing the plugin enable it from `app-config.yaml`
@@ -22,7 +22,7 @@ workstream:
 - First create a custom url reader service factory, To allow reading catalog entites from `/api/workstream/:workstream-name` location:
 
   ```ts title="packages/backend/src/service/urlReader/index.ts"
-  import { WorkstreamUrlReader } from '@appdev-platform/backstage-plugin-workstream-automation-backend';
+  import { WorkstreamUrlReader } from '@compass/backstage-plugin-workstream-automation-backend';
   import { UrlReaders } from '@backstage/backend-defaults/urlReader';
   import {
     coreServices,
@@ -100,7 +100,7 @@ workstream:
 
   // Add workstream automation plugin here
   backend.add(
-    import('@appdev-platform/backstage-plugin-workstream-automation-backend'),
+    import('@compass/backstage-plugin-workstream-automation-backend'),
   );
 
   // Catalog plugin
@@ -109,7 +109,7 @@ workstream:
   // Add workstream automation plugin module after catalog plugin
   backend.add(
     import(
-      '@appdev-platform/backstage-plugin-workstream-automation-backend/module'
+      '@compass/backstage-plugin-workstream-automation-backend/module'
     ),
   );
   // all other plugins and modules
@@ -132,8 +132,8 @@ yarn start-backend
 Add the workstream automation plugin to your Backstage frontend app by running this command:
 
 ```sh
-yarn workspace app add @appdev-platform/backstage-plugin-workstream-automation
-yarn workspace app add @appdev-platform/backstage-plugin-workstream-automation-common
+yarn workspace app add @compass/backstage-plugin-workstream-automation
+yarn workspace app add @compass/backstage-plugin-workstream-automation-common
 ```
 
 ### Set up the frontend plugin
@@ -149,7 +149,7 @@ import { EmailIcon } from '@backstage/core-components';
 import {
   JiraIcon,
   SlackIcon,
-} from '@appdev-platform/backstage-plugin-workstream-automation';
+} from '@compass/backstage-plugin-workstream-automation';
 
 const app = createApp({
   // Add these icons
@@ -170,7 +170,7 @@ import {
   ALL_RELATION_PAIRS,
   CatalogGraphPage,
 } from '@backstage/plugin-catalog-graph';
-import { WORKSTREAM_RELATION_PAIR } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { WORKSTREAM_RELATION_PAIR } from '@compass/backstage-plugin-workstream-automation-common';
 
 const routes = (
   <FlatRoutes>
@@ -198,12 +198,12 @@ import {
   WorkstreamLinksCard,
   WorkstreamMembersCard,
   WorkstreamPortfolioCard,
-} from '@appdev-platform/backstage-plugin-workstream-automation';
+} from '@compass/backstage-plugin-workstream-automation';
 
 import {
   WORKSTREAM_RELATION_PAIR,
   workstreamDeletePermission,
-} from '@appdev-platform/backstage-plugin-workstream-automation-common';
+} from '@compass/backstage-plugin-workstream-automation-common';
 
 const WorkstreamEntityPage = () => {
   const { allowed } = usePermission({
@@ -294,7 +294,7 @@ export const entityPage = (
 Add workstreams card on users page
 
 ```jsx title="packages/app/src/components/catalog/EntityPage.tsx"
-import { UserWorkstreamCard } from '@appdev-platform/backstage-plugin-workstream-automation';
+import { UserWorkstreamCard } from '@compass/backstage-plugin-workstream-automation';
 
 const userPage = (
   <EntityLayoutWrapper>
@@ -320,7 +320,7 @@ import {
   CatalogTable,
   CatalogTableColumnsFunc,
 } from '@backstage/plugin-catalog';
-import { workstreamColumns } from '@appdev-platform/backstage-plugin-workstream-automation';
+import { workstreamColumns } from '@compass/backstage-plugin-workstream-automation';
 
 const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
   if (entityListContext.filters.kind?.value === 'Workstream') {
@@ -356,8 +356,8 @@ import {
   WorkstreamLeadPicker,
   WorkstreamPillarPicker,
   WorkstreamPortfolioPicker,
-} from '@appdev-platform/backstage-plugin-workstream-automation';
-import { workstreamCreatePermission } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+} from '@compass/backstage-plugin-workstream-automation';
+import { workstreamCreatePermission } from '@compass/backstage-plugin-workstream-automation-common';
 
 const HeaderButtons = () => {
   const createComponentLink = useRouteRef(

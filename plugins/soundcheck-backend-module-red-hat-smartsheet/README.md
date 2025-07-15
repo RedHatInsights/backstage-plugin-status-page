@@ -1,4 +1,4 @@
-# @appdev-platform/backstage-plugin-soundcheck-backend-module-smartsheet
+# @compass/backstage-plugin-soundcheck-backend-module-smartsheet
 
 The smartsheet backend module for the soundcheck plugin.
 

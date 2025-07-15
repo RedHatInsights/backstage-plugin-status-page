@@ -31,28 +31,28 @@ import {
   AuditDetailsSection,
   AuditInitiation,
   AuditSummary,
-} from '@appdev-platform/backstage-plugin-audit-compliance';
+} from '@appdev/backstage-plugin-audit-compliance';
 import {
   AppDevDashboardPage,
   DataLayerDashboardPage,
   PulseDashboardPage,
-} from '@appdev-platform/backstage-plugin-devex-dashboard';
-import { DocsBotPage } from '@appdev-platform/backstage-plugin-docsbot';
-import { HydraSupportDashboardPage } from '@appdev-platform/backstage-plugin-hydra-support-dashboard';
-import { McpPage } from '@appdev-platform/backstage-plugin-mcp';
+} from '@appdev/backstage-plugin-devex-dashboard';
+import { DocsBotPage } from '@appdev/backstage-plugin-docsbot';
+import { HydraSupportDashboardPage } from '@appdev/backstage-plugin-hydra-support-dashboard';
+import { McpPage } from '@compass/backstage-plugin-mcp';
 import {
   CreateIncident,
   OutageTemplatePage,
   UpdateIncident,
-} from '@appdev-platform/backstage-plugin-outages';
-import { ProxyManagerPage } from '@appdev-platform/backstage-plugin-proxy-manager';
-import { SpashipGlobalPage } from '@appdev-platform/backstage-plugin-spaship';
+} from '@appdev/backstage-plugin-outages';
+import { ProxyManagerPage } from '@appdev/backstage-plugin-proxy-manager';
+import { SpashipGlobalPage } from '@appdev/backstage-plugin-spaship';
 import {
   JiraIcon,
   SlackIcon,
-} from '@appdev-platform/backstage-plugin-workstream-automation';
-import { WORKSTREAM_RELATION_PAIR } from '@appdev-platform/backstage-plugin-workstream-automation-common';
-import { MockPluginPage } from '@appdev-platform/plugin-mock-plugin';
+} from '@compass/backstage-plugin-workstream-automation';
+import { WORKSTREAM_RELATION_PAIR } from '@compass/backstage-plugin-workstream-automation-common';
+import { MockPluginPage } from '@compass/plugin-mock-plugin';
 import { ReportPortalGlobalPage } from '@backstage-community/plugin-report-portal';
 import { createApp } from '@backstage/app-defaults';
 import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
@@ -84,7 +84,7 @@ import { CatalogPage } from './components/CatalogPage/CatalogPage';
 import {
   redirectsPlugin,
   RedirectsProvider,
-} from '@appdev-platform/backstage-plugin-redirects';
+} from '@compass/backstage-plugin-redirects';
 
 const app = createApp({
   apis,

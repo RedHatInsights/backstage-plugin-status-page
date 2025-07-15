@@ -12,7 +12,7 @@ The **Redirects** plugin provides a way to manage and configure URL redirects wi
 
 1. Add the plugin to your Backstage project:
    ```sh
-   yarn workspace app add @appdev-platform/backstage-plugin-redirects
+   yarn workspace app add @compass/backstage-plugin-redirects
    ```
 
 2. Add the plugin to your Backstage app:
@@ -23,7 +23,7 @@ The **Redirects** plugin provides a way to manage and configure URL redirects wi
 + import {
 +   redirectsPlugin,
 +   RedirectsProvider,
-+ } from '@appdev-platform/backstage-plugin-redirects';
++ } from '@compass/backstage-plugin-redirects';
 
 // ...
 

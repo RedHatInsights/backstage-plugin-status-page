@@ -26,7 +26,7 @@ import {
   CMDBMeta,
   readServiceNowIntegrationConfigs,
   ServiceNowComplianceControlItem,
-} from '@appdev-platform/backstage-plugin-service-now-common';
+} from '@compass/backstage-plugin-service-now-common';
 import { JsonObject } from '@backstage/types';
 
 /**

@@ -9,7 +9,7 @@ The matomo plugin shows the basic analytics from [Matomo](https://matomo.org/)
 1. Install the plugin
 
 ```bash
-yarn add @appdev-platform/backstage-plugin-matomo
+yarn add @compass/backstage-plugin-matomo
 ```
 
 2. Make sure the [Matomo backend plugin](../matomo-backend/README.md) is installed and configured
@@ -20,7 +20,7 @@ yarn add @appdev-platform/backstage-plugin-matomo
 
 ```ts
 // In packages/app/src/components/catalog/EntityPage.tsx
-import { MatomoPage } from '@appdev-platform/backstage-plugin-matomo';
+import { MatomoPage } from '@compass/backstage-plugin-matomo';
 
 const websiteEntityPage = (
   <EntityLayout>

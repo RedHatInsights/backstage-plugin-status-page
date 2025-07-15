@@ -25,7 +25,7 @@ To use DocsBot in your Backstage application, you need to import and integrate i
 First, ensure you have the necessary dependencies installed:
 
 ```bash
-npm install @appdev-platform/backstage-plugin-docsbot
+npm install @appdev/backstage-plugin-docsbot
 ```
 
 ### Import and Use DocsBot
@@ -55,7 +55,7 @@ import { useState } from 'react';
 import {
   DocsBotButton,
   DocsBotPanel,
-} from '@appdev-platform/backstage-plugin-docsbot';
+} from '@appdev/backstage-plugin-docsbot';
 
 const MyComponent = () => {
   const [isDocsBotPanelOpen, setIsDocsBotPanelOpen] = useState(false);

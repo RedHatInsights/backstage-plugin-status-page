@@ -14,7 +14,7 @@ import { JsonObject } from '@backstage/types';
 import { Config } from '@backstage/config';
 
 const migrationsDir = resolvePackagePath(
-  '@appdev-platform/backstage-plugin-audit-compliance-backend',
+  '@appdev/backstage-plugin-audit-compliance-backend',
   'migrations',
 );
 

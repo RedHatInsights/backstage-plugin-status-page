@@ -4,7 +4,7 @@ import {
   CatalogTableRow,
 } from '@backstage/plugin-catalog';
 import { columnFactories } from './columns';
-import { workstreamColumns } from '@appdev-platform/backstage-plugin-workstream-automation';
+import { workstreamColumns } from '@compass/backstage-plugin-workstream-automation';
 
 export const createTableColumnsFunc: CatalogTableColumnsFunc = options => {
   if (options.filters.kind?.value === 'workstream') {

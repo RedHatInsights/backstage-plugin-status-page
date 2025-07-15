@@ -1,5 +1,5 @@
 {
-  "name": "@appdev-platform/backstage-plugin-catalog-backend-module-mcp",
+  "name": "@compass/backstage-plugin-catalog-backend-module-mcp",
   "description": "The mcp backend module for the catalog plugin.",
   "version": "1.0.0",
   "main": "src/index.ts",

@@ -65,7 +65,7 @@ export class PermissionEmailService {
           : 'Permission request update for Escalation Forecaster.';
           
       const ownersTemplatePath = path.join(
-        resolvePackagePath('@appdev-platform/backstage-plugin-permission-management-backend'),
+        resolvePackagePath('@appdev/backstage-plugin-permission-management-backend'),
         'templates/owners-request.html',
       );
       let ownersTemplate = fs.readFileSync(ownersTemplatePath, 'utf-8');
@@ -74,7 +74,7 @@ export class PermissionEmailService {
       ).replace('{{role}}', data.role);
 
       const userTemplatePath = path.join(
-        resolvePackagePath('@appdev-platform/backstage-plugin-permission-management-backend'),
+        resolvePackagePath('@appdev/backstage-plugin-permission-management-backend'),
         'templates/member-ack.html',
       );
       let userTemplate = fs.readFileSync(userTemplatePath, 'utf-8');

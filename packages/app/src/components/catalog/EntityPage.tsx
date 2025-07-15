@@ -59,7 +59,7 @@ import { Button, Container, Grid } from '@material-ui/core';
 import { useState } from 'react';
 
 import { MatomoPage } from '@backstage-community/plugin-matomo';
-import { SpashipPage } from '@appdev-platform/backstage-plugin-spaship';
+import { SpashipPage } from '@appdev/backstage-plugin-spaship';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import {
@@ -71,13 +71,13 @@ import {
   InfraDetailsPage,
   ServiceDetailsCard,
   isAppCodeAvailable,
-} from '@appdev-platform/backstage-plugin-cmdb';
-import { LighthousePage } from '@appdev-platform/backstage-plugin-lighthouse';
+} from '@compass/backstage-plugin-cmdb';
+import { LighthousePage } from '@compass/backstage-plugin-lighthouse';
 
 import {
   ContactDetailsCard,
   isContactDetailsAvailable,
-} from '@appdev-platform/backstage-plugin-contact-details';
+} from '@compass/backstage-plugin-contact-details';
 import {
   ArtAboutCard,
   ArtMembersCard,
@@ -87,8 +87,8 @@ import {
   WorkstreamLinksCard,
   WorkstreamMembersCard,
   WorkstreamPortfolioCard,
-} from '@appdev-platform/backstage-plugin-workstream-automation';
-import { workstreamDeletePermission } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+} from '@compass/backstage-plugin-workstream-automation';
+import { workstreamDeletePermission } from '@compass/backstage-plugin-workstream-automation-common';
 import {
   ReportPortalOverviewCard,
   isReportPortalAvailable,

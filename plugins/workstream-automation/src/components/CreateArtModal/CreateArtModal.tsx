@@ -34,7 +34,7 @@ import { ART, CustomUserEntity, Member, TableRowDataType } from '../../types';
 import { MemberDetailsForm } from './Forms/MemberDetailsForm';
 import { ArtDetailsForm } from './Forms/ArtDetailsForm';
 import { ARTForm1, ARTForm2 } from './types';
-import { WorkstreamEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { WorkstreamEntity } from '@compass/backstage-plugin-workstream-automation-common';
 
 const useStyles = makeStyles((theme: Theme) => ({
   fullHeightDialog: {

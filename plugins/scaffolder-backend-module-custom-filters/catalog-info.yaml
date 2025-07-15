@@ -18,7 +18,7 @@ metadata:
   annotations:
     backstage.io/techdocs-ref: dir:.
     npm/registry: nexus.corp.redhat.com
-    npm/package: '@appdev-platform/backstage-plugin-scaffolder-backend-module-custom-filters'
+    npm/package: '@compass/backstage-plugin-scaffolder-backend-module-custom-filters'
 
 spec:
   type: backstage-backend-plugin-module

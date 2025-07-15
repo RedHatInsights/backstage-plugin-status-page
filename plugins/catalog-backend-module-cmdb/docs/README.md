@@ -9,10 +9,10 @@ This is an extension module to the plugin-catalog-backend plugin, providing a CM
 
 ## Installation
 
-The provider is not installed by default, therefore you need to add a dependency to `@appdev-platform/backstage-plugin-catalog-backend-module-cmdb` to your backend package
+The provider is not installed by default, therefore you need to add a dependency to `@compass/backstage-plugin-catalog-backend-module-cmdb` to your backend package
 ```
 # From your backstage root directory
-yarn workspace backend add @appdev-platform/backstage-plugin-catalog-backend-module-cmdb
+yarn workspace backend add @compass/backstage-plugin-catalog-backend-module-cmdb
 ```
 
 ### New Backend System
@@ -22,7 +22,7 @@ Add the module to the backend:
 ```ts
 const backend = createBackend();
 // ...
-backend.add(import('@appdev-platform/backstage-plugin-catalog-backend-module-cmdb/alpha'));
+backend.add(import('@compass/backstage-plugin-catalog-backend-module-cmdb/alpha'));
 ```
 
 ### Legacy Backend System

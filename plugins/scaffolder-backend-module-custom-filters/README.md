@@ -1,4 +1,4 @@
-# @appdev-platform/backstage-plugin-scaffolder-backend-module-custom-actions
+# @compass/backstage-plugin-scaffolder-backend-module-custom-actions
 
 The custom-actions backend module for the scaffolder plugin.
 

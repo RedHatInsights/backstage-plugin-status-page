@@ -1,4 +1,4 @@
-import { ArtEntity } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { ArtEntity } from '@compass/backstage-plugin-workstream-automation-common';
 import { ARTForm1 } from '../../CreateArtModal/types';
 
 export type Form = ARTForm1 & {

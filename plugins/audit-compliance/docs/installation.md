@@ -23,10 +23,10 @@ The frontend plugin is typically already included in the example app. To verify 
 cd /path/to/your/backstage-app
 
 # Check if the plugin is already installed
-yarn list @appdev-platform/backstage-plugin-audit-compliance
+yarn list @appdev/backstage-plugin-audit-compliance
 
 # If not installed, add it to your app
-yarn add @appdev-platform/backstage-plugin-audit-compliance
+yarn add @appdev/backstage-plugin-audit-compliance
 ```
 
 ### Step 2: Install Backend Plugin
@@ -35,7 +35,7 @@ Install the backend plugin in your backend package:
 
 ```bash
 # From your Backstage root directory
-yarn --cwd packages/backend add @appdev-platform/backstage-plugin-audit-compliance-backend
+yarn --cwd packages/backend add @appdev/backstage-plugin-audit-compliance-backend
 ```
 
 ### Step 3: Register the Backend Plugin
@@ -51,7 +51,7 @@ const backend = createBackend();
 // ... other plugins ...
 
 // Add the audit compliance backend plugin
-backend.add(import('@appdev-platform/backstage-plugin-audit-compliance-backend'));
+backend.add(import('@appdev/backstage-plugin-audit-compliance-backend'));
 
 // ... rest of your backend configuration ...
 ```
@@ -62,7 +62,7 @@ Add the frontend plugin to your app:
 
 ```typescript
 // packages/app/src/App.tsx
-import { AuditCompliancePage } from '@appdev-platform/backstage-plugin-audit-compliance';
+import { AuditCompliancePage } from '@appdev/backstage-plugin-audit-compliance';
 
 // In your app's routing configuration
 <Route path="/audit-compliance" element={<AuditCompliancePage />} />

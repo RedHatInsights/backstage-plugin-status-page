@@ -254,6 +254,7 @@ permission:
 devTools:
   info:
     packagePrefixes:
-      - '@appdev-platform/'
+      - '@compass/'
+      - '@appdev'
       - '@janus-idp/'
       - '@redhat-developer/'

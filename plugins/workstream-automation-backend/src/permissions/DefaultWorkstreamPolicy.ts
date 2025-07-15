@@ -1,7 +1,7 @@
 import {
   RESOURCE_TYPE_WORKSTREAM_ENTITY,
   workstreamPermissions,
-} from '@appdev-platform/backstage-plugin-workstream-automation-common';
+} from '@compass/backstage-plugin-workstream-automation-common';
 import {
   AuthorizeResult,
   isPermission,

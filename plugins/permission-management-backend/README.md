@@ -4,11 +4,11 @@ This plugin backend was templated using the Backstage CLI. You should replace th
 
 ## Installation
 
-This plugin is installed via the `@appdev-platform/backstage-plugin-permission-management-backend` package. To install it to your backend package, run the following command:
+This plugin is installed via the `@appdev/backstage-plugin-permission-management-backend` package. To install it to your backend package, run the following command:
 
 ```bash
 # From your root directory
-yarn --cwd packages/backend add @appdev-platform/backstage-plugin-permission-management-backend
+yarn --cwd packages/backend add @appdev/backstage-plugin-permission-management-backend
 ```
 
 Then add the plugin to your backend in `packages/backend/src/index.ts`:
@@ -16,7 +16,7 @@ Then add the plugin to your backend in `packages/backend/src/index.ts`:
 ```ts
 const backend = createBackend();
 // ...
-backend.add(import('@appdev-platform/backstage-plugin-permission-management-backend'));
+backend.add(import('@appdev/backstage-plugin-permission-management-backend'));
 ```
 
 ## Development

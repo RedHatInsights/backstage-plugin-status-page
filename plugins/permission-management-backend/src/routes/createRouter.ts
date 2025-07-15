@@ -13,7 +13,7 @@ import { createRoverRoutes } from './roverRoutes';
  * Path to the migrations directory for database schema management.
  */
 const migrationsDir = resolvePackagePath(
-  '@appdev-platform/backstage-plugin-permission-management-backend',
+  '@appdev/backstage-plugin-permission-management-backend',
   'migrations',
 );
 

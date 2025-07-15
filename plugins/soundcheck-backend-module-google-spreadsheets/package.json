@@ -1,5 +1,5 @@
 {
-  "name": "@appdev-platform/backstage-plugin-soundcheck-backend-module-google-spreadsheets",
+  "name": "@compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets",
   "description": "The google-spreadsheet backend module for the soundcheck plugin.",
   "version": "1.0.1",
   "main": "src/index.ts",

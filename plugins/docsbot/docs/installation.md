@@ -13,7 +13,7 @@ This guide provides steps to install and integrate DocsBot into your Backstage f
 Add the DocsBot frontend plugin to your Backstage app by running the following command:
 
 ```sh
-yarn workspace app add @appdev-platform/backstage-plugin-docsbot
+yarn workspace app add @appdev/backstage-plugin-docsbot
 ```
 
 Set Up the Plugin

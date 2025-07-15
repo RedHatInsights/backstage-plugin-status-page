@@ -28,9 +28,9 @@ import {
   WorkstreamPortfolioPicker,
   WorkstreamTechLeadPicker,
   CreateArtModal,
-} from '@appdev-platform/backstage-plugin-workstream-automation';
+} from '@compass/backstage-plugin-workstream-automation';
 import { usePermission } from '@backstage/plugin-permission-react';
-import { workstreamCreatePermission } from '@appdev-platform/backstage-plugin-workstream-automation-common';
+import { workstreamCreatePermission } from '@compass/backstage-plugin-workstream-automation-common';
 import { createTableColumnsFunc } from './createCatalogTableFunc';
 import {
   ExportCsv as exportCsv,

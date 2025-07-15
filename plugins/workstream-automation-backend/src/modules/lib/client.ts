@@ -3,7 +3,7 @@ import { Workstream } from '../../types';
 import {
   ArtEntity,
   WorkstreamEntity,
-} from '@appdev-platform/backstage-plugin-workstream-automation-common';
+} from '@compass/backstage-plugin-workstream-automation-common';
 
 export interface WorkstreamBackendApi {
   getAllWorkstreams(): Promise<Workstream[]>;

@@ -1,5 +1,5 @@
 {
-  "name": "@appdev-platform/backstage-plugin-audit-compliance",
+  "name": "@appdev/backstage-plugin-audit-compliance",
   "version": "1.12.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -13,8 +13,8 @@
     "role": "frontend-plugin",
     "pluginId": "audit-compliance",
     "pluginPackages": [
-      "@appdev-platform/backstage-plugin-audit-compliance",
-      "@appdev-platform/backstage-plugin-audit-compliance-backend"
+      "@appdev/backstage-plugin-audit-compliance",
+      "@appdev/backstage-plugin-audit-compliance-backend"
     ]
   },
   "sideEffects": false,

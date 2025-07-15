@@ -1,5 +1,5 @@
 {
-  "name": "@appdev-platform/backstage-plugin-contact-details",
+  "name": "@compass/backstage-plugin-contact-details",
   "version": "0.4.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -13,7 +13,7 @@
     "role": "frontend-plugin",
     "pluginId": "contact-details",
     "pluginPackages": [
-      "@appdev-platform/backstage-plugin-contact-details"
+      "@compass/backstage-plugin-contact-details"
     ]
   },
   "sideEffects": false,

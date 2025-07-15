@@ -1,7 +1,7 @@
 import {
   isWorkstreamPermission,
   WorkstreamPolicy,
-} from '@appdev-platform/backstage-plugin-workstream-automation-backend';
+} from '@compass/backstage-plugin-workstream-automation-backend';
 import {
   AuthService,
   CacheService,

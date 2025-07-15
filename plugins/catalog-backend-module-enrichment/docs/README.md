@@ -8,7 +8,7 @@ The processor is not available in Backstage out of box, so you need to install i
 
 ```bash
 # From your backstage root directory
-yarn workspace backend add @appdev-platform/backstage-plugin-catalog-backend-enrichment
+yarn workspace backend add @compass/backstage-plugin-catalog-backend-enrichment
 ```
 
 ### Adding the module to the backend
@@ -19,7 +19,7 @@ yarn workspace backend add @appdev-platform/backstage-plugin-catalog-backend-enr
 const backend = createBackend();
 
 // ...
-backend.add(import('@appdev-platform/backstage-plugin-catalog-backend-module-enrichment'));
+backend.add(import('@compass/backstage-plugin-catalog-backend-module-enrichment'));
 ```
 
 #### Note:

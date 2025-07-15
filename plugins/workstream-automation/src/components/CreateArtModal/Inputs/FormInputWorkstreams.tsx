@@ -1,7 +1,7 @@
 import {
   ArtEntity,
   WorkstreamEntity,
-} from '@appdev-platform/backstage-plugin-workstream-automation-common';
+} from '@compass/backstage-plugin-workstream-automation-common';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import {

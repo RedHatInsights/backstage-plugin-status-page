@@ -2,7 +2,7 @@ import {
   ArtEntity,
   artUpdatePermission,
   WorkstreamEntity,
-} from '@appdev-platform/backstage-plugin-workstream-automation-common';
+} from '@compass/backstage-plugin-workstream-automation-common';
 import {
   ErrorPanel,
   InfoCard,

@@ -1,5 +1,5 @@
 {
-  "name": "@appdev-platform/backstage-plugin-catalog-backend-module-cmdb",
+  "name": "@compass/backstage-plugin-catalog-backend-module-cmdb",
   "description": "The cmdb backend module for the catalog plugin.",
   "version": "1.8.0",
   "main": "src/index.ts",

@@ -6,12 +6,12 @@ This module will help to use google spreadsheet as a fact collector for backstag
 
 1. Installing plugin
     ```bash
-    yarn workspace backend add @appdev-platform/backstage-plugin-soundcheck-backend-module-google-spreadsheets 
+    yarn workspace backend add @compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets 
     ```
 
 2. Adding module to backend
     ```ts title=backend/src/index.ts
-    backend.add(import('@appdev-platform/backstage-plugin-soundcheck-backend-module-google-spreadsheets'));
+    backend.add(import('@compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets'));
     backend.start();
     ```
 
