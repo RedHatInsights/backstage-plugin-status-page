@@ -18,7 +18,8 @@
     "lint": "backstage-cli repo lint --since origin/main",
     "lint:all": "backstage-cli repo lint",
     "prettier:check": "prettier --check .",
-    "new": "backstage-cli new --scope compass",
+    "new:compass": "backstage-cli new --scope compass",
+    "new:appdev": "backstage-cli new --scope appdev",
     "allure:report": "allure generate allure-results --clean -o allure-report",
     "release": "multi-semantic-release"
   },
