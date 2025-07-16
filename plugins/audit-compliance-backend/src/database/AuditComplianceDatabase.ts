@@ -1546,7 +1546,7 @@ export class AuditComplianceDatabase {
     jira_project: string;
     accounts: Array<{
       type: 'service-account' | 'rover-group-name';
-      source: 'rover' | 'gitlab';
+      source: 'rover' | 'gitlab' | 'ldap';
       account_name: string;
     }>;
   }) {
@@ -1599,6 +1599,94 @@ export class AuditComplianceDatabase {
     } catch (error) {
       await trx.rollback();
       this.logger.error('Error creating application with accounts', {
+        error: error instanceof Error ? error.message : String(error),
+        app_name: appData.app_name,
+      });
+      throw error;
+    }
+  }
+
+  /**
+   * Updates an existing application with multiple account entries.
+   * Handles the deletion of existing entries and insertion of new ones.
+   *
+   * @param appData - Application data including main details and account entries
+   * @param appData.app_name - Name of the application
+   * @param appData.cmdb_id - CMDB identifier
+   * @param appData.environment - Environment (e.g., production)
+   * @param appData.app_owner - Application owner
+   * @param appData.app_owner_email - Application owner email
+   * @param appData.app_delegate - Application delegate
+   * @param appData.jira_project - Jira project key
+   * @param appData.accounts - Array of account entries
+   * @returns Promise resolving to the updated application data
+   */
+  async updateApplicationWithAccounts(appData: {
+    app_name: string;
+    cmdb_id: string;
+    environment: string;
+    app_owner: string;
+    app_owner_email: string;
+    app_delegate: string;
+    jira_project: string;
+    accounts: Array<{
+      type: 'service-account' | 'rover-group-name';
+      source: 'rover' | 'gitlab' | 'ldap';
+      account_name: string;
+    }>;
+  }) {
+    const trx = await this.db.transaction();
+
+    try {
+      // Delete existing entries for this application
+      await trx('applications').where({ app_name: appData.app_name }).del();
+
+      // Insert new entries into applications table
+      const entries = appData.accounts.map(account => {
+        const entry: any = {
+          app_name: appData.app_name,
+          cmdb_id: appData.cmdb_id,
+          environment: appData.environment,
+          app_owner: appData.app_owner,
+          app_owner_email: appData.app_owner_email,
+          app_delegate: appData.app_delegate,
+          jira_project: appData.jira_project,
+          type: account.type,
+          source: account.source,
+          account_name: account.account_name,
+          created_at: this.db.fn.now(),
+        };
+
+        return entry;
+      });
+
+      // Insert all new entries
+      const insertedIds = await trx('applications')
+        .insert(entries)
+        .returning('id');
+
+      await trx.commit();
+
+      // Create activity event for application update
+      await this.createActivityEvent({
+        event_type: 'APPLICATION_UPDATED',
+        app_name: appData.app_name,
+        performed_by: 'system',
+        metadata: {
+          cmdb_id: appData.cmdb_id,
+          environment: appData.environment,
+          account_count: appData.accounts.length,
+        },
+      });
+
+      return {
+        ids: insertedIds,
+        app_name: appData.app_name,
+        accounts: appData.accounts,
+      };
+    } catch (error) {
+      await trx.rollback();
+      this.logger.error('Error updating application with accounts', {
         error: error instanceof Error ? error.message : String(error),
         app_name: appData.app_name,
       });

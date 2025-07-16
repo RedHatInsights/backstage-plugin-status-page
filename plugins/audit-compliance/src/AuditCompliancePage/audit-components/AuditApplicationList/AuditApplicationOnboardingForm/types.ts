@@ -1,6 +1,6 @@
 export type AccountEntry = {
   type: 'service-account' | 'rover-group-name';
-  source: 'rover' | 'gitlab';
+  source: 'rover' | 'gitlab' | 'ldap';
   account_name: string;
 };
 
@@ -17,4 +17,6 @@ export type ApplicationFormData = {
 
 export interface AuditApplicationOnboardingFormProps {
   onSuccess?: () => void;
+  initialData?: ApplicationFormData;
+  isEditMode?: boolean;
 }
