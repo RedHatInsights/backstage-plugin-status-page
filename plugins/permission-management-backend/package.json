@@ -13,6 +13,7 @@
     "role": "backend-plugin",
     "pluginId": "permission-management",
     "pluginPackages": [
+      "@appdev/backstage-plugin-permission-management",
       "@appdev/backstage-plugin-permission-management-backend"
     ]
   },

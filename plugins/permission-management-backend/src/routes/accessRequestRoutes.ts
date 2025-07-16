@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AccessRequest } from '../types';
 import { AccessRequestBackendDatabase } from '../databse/AccessRequestBackendDatabase';
 import { PermissionEmailService } from '../services/email-service/permissionMailerService';
+import { RoverClient } from '../services/rover-service/roverService';
 
 /**
  * Creates access request routes for the plugin backend.
@@ -12,7 +13,8 @@ import { PermissionEmailService } from '../services/email-service/permissionMail
  */
 export function createAccessRequestRoutes(
   accessRequestDb: AccessRequestBackendDatabase,
-  emailService: PermissionEmailService
+  emailService: PermissionEmailService,
+  roverClient: RoverClient
 ): express.Router {
   const router = express.Router();
 
@@ -100,6 +102,7 @@ export function createAccessRequestRoutes(
               ...existing,
               status: 'pending',
               rejectionReason: '',
+              role,
               updatedBy: updatedBy ?? userName,
               updatedAt: now,
               timestamp: now,
@@ -163,14 +166,14 @@ export function createAccessRequestRoutes(
       const groupOwners = originalRequest.groupOwners?.filter((owner: string) => !!owner.trim()) ?? [];
       if (groupOwners.length > 0) {
         try {
-          await emailService.processEmail(groupOwners, 'owners', { userName: request.userName, role: request.role });
+          await emailService.processEmail(groupOwners, 'owners-request', { userName: request.userName, role: request.role });
         } catch (e) {
           errors.push({ index: i, error: 'Failed to send email to group owners', groupOwners });
         }
       }
 
       try {
-        await emailService.processEmail(request.userEmail, 'member', { userName: request.userName });
+        await emailService.processEmail(request.userEmail, 'member-ack', { userName: request.userName });
       } catch (e) {
         errors.push({ index: i, error: 'Failed to send email to member', userName: request.userName });
       }
@@ -206,11 +209,20 @@ export function createAccessRequestRoutes(
       return res.status(400).json({ error: 'Request body must be a non-empty array of access requests' });
     }
 
+    const authHeader = req.headers.authorization || '';
+    const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+
+    if (!bearerToken) {
+      return res.status(401).json({ error: 'Missing or invalid Authorization Bearer token' });
+    }
+
     try {
-      const results = [];
+      const results: any[] = [];
+      const groupRoleMap = new Map<string, { members: string[], owners: string[] }>();
+      const updateMap = new Map<string, AccessRequest>(); // key: group-userId
 
       for (const update of updates) {
-        const { userId, group } = update;
+        const { userId, group, role, status } = update;
 
         if (!userId || !group || typeof group !== 'string') {
           results.push({ success: false, error: 'Missing or invalid userId/group', update });
@@ -218,7 +230,6 @@ export function createAccessRequestRoutes(
         }
 
         const existingList = await accessRequestDb.getAccessRequests({ userId, group });
-
         if (existingList.length === 0) {
           results.push({ success: false, error: 'Access request not found', update });
           continue;
@@ -232,14 +243,104 @@ export function createAccessRequestRoutes(
           updatedAt: new Date().toISOString(),
         };
 
-        const result = await accessRequestDb.updateAccessRequest(existing.id, updated);
+        if (status === 'approved') {
+          const key = `${group}`;
+          if (!groupRoleMap.has(key)) {
+            groupRoleMap.set(key, { members: [], owners: [] });
+          }
 
-        if (!result) {
-          results.push({ success: false, error: 'Update failed', update });
-          continue;
+          if (role === 'owner') {
+            groupRoleMap.get(key)!.owners.push(userId);
+          } else if (role === 'member') {
+            groupRoleMap.get(key)!.members.push(userId);
+          } else {
+            results.push({ success: false, error: `Invalid role: ${role}`, update });
+            continue;
+          }
         }
 
-        results.push({ success: true, data: result });
+        updateMap.set(`${group}-${userId}`, updated);
+      }
+
+      const roverSuccessSet = new Set<string>();
+
+      for (const [group, { members, owners }] of groupRoleMap.entries()) {
+        if (owners.length > 0) {
+          const success = await roverClient.addUsersToGroupOwners(group, owners, bearerToken);
+          if (success) {
+            owners.forEach(uid => roverSuccessSet.add(`${group}-${uid}`));
+          } else {
+            owners.forEach(uid =>
+              results.push({
+                success: false,
+                error: `Rover failed to add ${uid} as owner to group ${group}`,
+                update: updateMap.get(`${group}-${uid}`),
+              }),
+            );
+          }
+        }
+
+        if (members.length > 0) {
+          const success = await roverClient.addUsersToGroupMember(group, members, bearerToken);
+          if (success) {
+            members.forEach(uid => roverSuccessSet.add(`${group}-${uid}`));
+          } else {
+            members.forEach(uid =>
+              results.push({
+                success: false,
+                error: `Rover failed to add ${uid} as member to group ${group}`,
+                update: updateMap.get(`${group}-${uid}`),
+              }),
+            );
+          }
+        }
+      }
+
+      for (const update of updates) {
+        const key = `${update.group}-${update.userId}`;
+        const updated = updateMap.get(key);
+        if (!updated) continue;
+
+        const shouldUpdate = updated.status === 'approved' ? roverSuccessSet.has(key) : true;
+
+        if (shouldUpdate) {
+          const result = await accessRequestDb.updateAccessRequest(updated.id, updated);
+          if (!result) {
+            results.push({ success: false, error: 'Database update failed', update });
+          } else {
+            results.push({ success: true, data: result });
+
+            try {
+              if (updated.status === 'approved') {
+                await emailService.processEmail(
+                  updated.userEmail,
+                  'member-approved',
+                  {
+                    userName: updated.userName,
+                    role: updated.role,
+                  }
+                );
+              } else if (updated.status === 'rejected') {
+                await emailService.processEmail(
+                  updated.userEmail,
+                  'member-rejected',
+                  {
+                    userName: updated.userName,
+                    role: updated.role,
+                    rejectionReason: updated.rejectionReason,
+                  }
+                );
+              }
+            } catch (e: any) {
+              results.push({
+                success: false,
+                warning: 'Update saved, but email failed to send',
+                userEmail: updated.userEmail,
+                error: e.message,
+              });
+            }
+          }
+        }
       }
 
       return res.status(200).json({ results });
@@ -247,6 +348,9 @@ export function createAccessRequestRoutes(
       return res.status(500).json({ error: e.message });
     }
   });
+
+
+
 
 
   /**
@@ -327,6 +431,33 @@ export function createAccessRequestRoutes(
       updated: results,
       errors,
     });
+  });
+
+
+  /**
+ * GET /check/:groupCn/user/:userId
+ * Check if the user is a member or owner of the group.
+ *
+ * @route GET /check/:groupCn/user/:userId
+ * @queryParam {string} role - Optional filter (e.g., "member" or "owner")
+ * @returns {Object} 200 - Result indicating membership status
+ */
+  router.get('/check/:groupCn/user/:userId', async (req, res) => {
+    const { groupCn, userId } = req.params;
+    const roleQuery = req.query.role as string | undefined;
+    try {
+      const { memberUids, ownerUids } = await roverClient.getGroupMembersAndOwners(groupCn);
+      const isMember = memberUids.includes(userId);
+      const isOwner = ownerUids.includes(userId);
+      if (roleQuery === 'member') {
+        return res.status(200).json({ isMember });
+      } else if (roleQuery === 'owner') {
+        return res.status(200).json({ isOwner });
+      }
+      return res.status(200).json({ isMember, isOwner });
+    } catch (e: any) {
+      return res.status(500).json({ error: e.message });
+    }
   });
 
   return router;

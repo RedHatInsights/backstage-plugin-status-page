@@ -26,6 +26,11 @@ import { Root } from './components/Root';
 import { entityPage } from './components/catalog/EntityPage';
 import { searchPage } from './components/search/SearchPage';
 
+import { PermissionManagementPage } from '@appdev/backstage-plugin-permission-management';
+import {
+  RedirectsProvider,
+  redirectsPlugin,
+} from '@compass/backstage-plugin-redirects';
 import {
   AuditCompliancePage,
   AuditDetailsSection,
@@ -39,7 +44,6 @@ import {
 } from '@appdev/backstage-plugin-devex-dashboard';
 import { DocsBotPage } from '@appdev/backstage-plugin-docsbot';
 import { HydraSupportDashboardPage } from '@appdev/backstage-plugin-hydra-support-dashboard';
-import { McpPage } from '@compass/backstage-plugin-mcp';
 import {
   CreateIncident,
   OutageTemplatePage,
@@ -47,12 +51,6 @@ import {
 } from '@appdev/backstage-plugin-outages';
 import { ProxyManagerPage } from '@appdev/backstage-plugin-proxy-manager';
 import { SpashipGlobalPage } from '@appdev/backstage-plugin-spaship';
-import {
-  JiraIcon,
-  SlackIcon,
-} from '@compass/backstage-plugin-workstream-automation';
-import { WORKSTREAM_RELATION_PAIR } from '@compass/backstage-plugin-workstream-automation-common';
-import { MockPluginPage } from '@compass/plugin-mock-plugin';
 import { ReportPortalGlobalPage } from '@backstage-community/plugin-report-portal';
 import { createApp } from '@backstage/app-defaults';
 import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
@@ -70,21 +68,24 @@ import {
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { RequirePermission } from '@backstage/plugin-permission-react';
+import { McpPage } from '@compass/backstage-plugin-mcp';
+import {
+  JiraIcon,
+  SlackIcon,
+} from '@compass/backstage-plugin-workstream-automation';
+import { WORKSTREAM_RELATION_PAIR } from '@compass/backstage-plugin-workstream-automation-common';
+import { MockPluginPage } from '@compass/plugin-mock-plugin';
 import {
   GlobalFeedbackPage,
   OpcFeedbackComponent,
   feedbackPlugin,
 } from '@janus-idp/backstage-plugin-feedback';
 import AdbIcon from '@material-ui/icons/Adb';
-import WebLinkIcon from '@material-ui/icons/Language';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
+import WebLinkIcon from '@material-ui/icons/Language';
 import { getThemes } from '@red-hat-developer-hub/backstage-plugin-theme';
 import { SoundcheckRoutingPage } from '@spotify/backstage-plugin-soundcheck';
 import { CatalogPage } from './components/CatalogPage/CatalogPage';
-import {
-  redirectsPlugin,
-  RedirectsProvider,
-} from '@compass/backstage-plugin-redirects';
 
 const app = createApp({
   apis,
@@ -220,6 +221,7 @@ const routes = (
       path="/audit-compliance/:app_name/:frequency/:period/summary"
       element={<AuditSummary />}
     />
+    <Route path="/permission-management" element={<PermissionManagementPage />} />
   </FlatRoutes>
 );
 

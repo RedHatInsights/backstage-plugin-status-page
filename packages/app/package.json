@@ -23,6 +23,7 @@
     "@appdev/backstage-plugin-docsbot": "*",
     "@appdev/backstage-plugin-hydra-support-dashboard": "*",
     "@appdev/backstage-plugin-outages": "*",
+    "@appdev/backstage-plugin-permission-management": "*",
     "@appdev/backstage-plugin-proxy-manager": "*",
     "@appdev/backstage-plugin-spaship": "*",
     "@backstage-community/plugin-github-actions": "^0.7.1",

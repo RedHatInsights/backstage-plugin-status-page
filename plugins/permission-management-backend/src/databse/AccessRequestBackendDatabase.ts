@@ -104,9 +104,8 @@ export class AccessRequestBackendDatabase implements AccessRequestBackendStore {
     const result = await this.db<AccessRequestDatabaseModel>(
       this.ACCESS_REQUEST_TABLE,
     )
-      .where('id', id)
+      .where('userId', id)
       .del();
-
     return result === 1 ? result : null;
   }
 
