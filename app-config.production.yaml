@@ -27,7 +27,7 @@ backend:
           token: ${PERMISSION_PLUGIN_TOKEN}
           subject: permission-management-token
         accessRestrictions:
-          - plugin: permission-management    
+          - plugin: permission-management
     keys:
       - secret: ${BACKEND_SECRET}
 
@@ -79,7 +79,7 @@ catalog:
       appdevPlatform:
         host: ${SERVICE_NOW_HOST}
         querySize: 1
-        sysparmQuery: 'u_application_id=ONEP-003'
+        sysparmQuery: "u_application_id=ONEP-003"
         schedule:
           frequency:
             hours: 3
@@ -89,25 +89,25 @@ catalog:
           metadata:
             namespace: redhat
         customMappings:
-          'metadata.name': '{{ u_application_id }}'
+          "metadata.name": "{{ u_application_id }}"
           # CMDB Mappings
-          'metadata.cmdb.appcode': '{{ u_application_id }}'
-          'metadata.cmdb.delegate': '{{ u_delegate.user_name }}'
-          'metadata.cmdb.delegateActive': '{{ u_delegate.active }}'
-          'metadata.cmdb.actualItRpo': '{{ u_actual_it_rpo }}'
-          'metadata.cmdb.actualRto': '{{ u_actual_rto }}'
-          'metadata.cmdb.applicationRetirementDate': '{{ u_application_retirement_date }}'
-          'metadata.cmdb.businessMtd': '{{ u_business_mtd }}'
-          'metadata.cmdb.investmentObjective': '{{ u_investment_objective }}'
-          'metadata.cmdb.onCallNotificationProcess': '{{ u_oncall_notification_process }}'
-          'metadata.cmdb.supportContactEmail': '{{ u_support_contact_email }}'
-          'metadata.cmdb.rwi': '{{ u_rwi }}'
-          'metadata.cmdb.urls.ess': '{{ u_ess_url }}'
-          'metadata.cmdb.urls.pia': '{{ u_pia_url }}'
-          'metadata.cmdb.urls.piaRemediations': '{{ u_pia_remediations_url }}'
-          'metadata.cmdb.urls.risk': '{{ u_risk_url }}'
-          'metadata.cmdb.urls.sia': '{{ u_sia_url }}'
-          'metadata.cmdb.aliasName': '{{ u_alias_name }}'
+          "metadata.cmdb.appcode": "{{ u_application_id }}"
+          "metadata.cmdb.delegate": "{{ u_delegate.user_name }}"
+          "metadata.cmdb.delegateActive": "{{ u_delegate.active }}"
+          "metadata.cmdb.actualItRpo": "{{ u_actual_it_rpo }}"
+          "metadata.cmdb.actualRto": "{{ u_actual_rto }}"
+          "metadata.cmdb.applicationRetirementDate": "{{ u_application_retirement_date }}"
+          "metadata.cmdb.businessMtd": "{{ u_business_mtd }}"
+          "metadata.cmdb.investmentObjective": "{{ u_investment_objective }}"
+          "metadata.cmdb.onCallNotificationProcess": "{{ u_oncall_notification_process }}"
+          "metadata.cmdb.supportContactEmail": "{{ u_support_contact_email }}"
+          "metadata.cmdb.rwi": "{{ u_rwi }}"
+          "metadata.cmdb.urls.ess": "{{ u_ess_url }}"
+          "metadata.cmdb.urls.pia": "{{ u_pia_url }}"
+          "metadata.cmdb.urls.piaRemediations": "{{ u_pia_remediations_url }}"
+          "metadata.cmdb.urls.risk": "{{ u_risk_url }}"
+          "metadata.cmdb.urls.sia": "{{ u_sia_url }}"
+          "metadata.cmdb.aliasName": "{{ u_alias_name }}"
         additionalQueryFields:
           - u_application_id
           - owned_by.active
@@ -130,13 +130,13 @@ catalog:
     spaship:
       example:
         host: ${SPASHIP_HOST}
-        defaultOwnerNamespace: 'redhat'
+        defaultOwnerNamespace: "redhat"
         properties:
           - customer-portal
           - one-platform
         overrides:
           metadata:
-            namespace: 'dx'
+            namespace: "dx"
         schedule:
           frequency:
             hours: 3
@@ -228,6 +228,12 @@ catalog:
     - type: file
       target: ./examples/test-data/qe-scorecard.yaml
 
+    # Local example redirection target component
+    - type: file
+      target: ./examples/test-data/permission-plugin.yaml
+      rules:
+        - allow: [Component, Group]
+
 # Report portal plugin
 reportPortal:
   supportEmail: ${REPORT_PORTAL_SUPPORT_EMAIL}
@@ -235,7 +241,7 @@ reportPortal:
     - host: ${REPORT_PORTAL_HOST}
       baseUrl: ${REPORT_PORTAL_BASE_URL}
       token: ${REPORT_PORTAL_TOKEN}
-      filterType: 'INTERNAL'
+      filterType: "INTERNAL"
 
 auth:
   # see https://backstage.io/docs/auth/ to learn about auth providers
@@ -254,7 +260,7 @@ permission:
 devTools:
   info:
     packagePrefixes:
-      - '@compass/'
-      - '@appdev'
-      - '@janus-idp/'
-      - '@redhat-developer/'
+      - "@compass/"
+      - "@appdev"
+      - "@janus-idp/"
+      - "@redhat-developer/"

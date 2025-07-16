@@ -216,7 +216,7 @@ export class RoverClient {
         const body = {
             additions: userIds.map(id => ({ type: 'user', id })),
         };
-
+        
         try {
             const response = await fetch(url, {
                 method: 'POST',

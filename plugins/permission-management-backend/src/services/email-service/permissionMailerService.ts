@@ -56,33 +56,32 @@ export class PermissionEmailService {
       throw error;
     }
   }
+
   async processEmail(to: string | Array<string>, type: string, data: any) {
     try {
-        
-      const subject =
-        type === 'owners'
-          ? 'Permission request received for Escalation Forecaster.'
-          : 'Permission request update for Escalation Forecaster.';
-          
-      const ownersTemplatePath = path.join(
+      const subjectMap: Record<string, string> = {
+        'owners-request': 'Permission request received for Escalation Forecaster.',
+        'member- ack': 'Permission request update for Escalation Forecaster.',
+        'member-approved': 'Your permission request has been approved.',
+        'member-rejected': 'Your permission request has been rejected.',
+      };
+
+      const subject = subjectMap[type] || 'Permission request update';
+
+      const templatePath = path.join(
         resolvePackagePath('@appdev/backstage-plugin-permission-management-backend'),
-        'templates/owners-request.html',
+        `templates/${type}.html`,
       );
-      let ownersTemplate = fs.readFileSync(ownersTemplatePath, 'utf-8');
-      ownersTemplate = ownersTemplate.replace(
-        '{{requestor}}', data.userName,
-      ).replace('{{role}}', data.role);
 
-      const userTemplatePath = path.join(
-        resolvePackagePath('@appdev/backstage-plugin-permission-management-backend'),
-        'templates/member-ack.html',
-      );
-      let userTemplate = fs.readFileSync(userTemplatePath, 'utf-8');
-      userTemplate = userTemplate.replace('{{requestor}}', data.userName);
+      let template = fs.readFileSync(templatePath, 'utf-8');
 
-      const htmlContent = type === 'owners' ? ownersTemplate : userTemplate;
+      template = template
+        .replace(/{{requestor}}/gi, data.userName || '')
+        .replace(/{{role}}/gi, data.role || '')
+        .replace(/{{year}}/gi, new Date().getFullYear().toString())
+        .replace(/{{rejectionReason}}/gi, data.rejectionReason || '');
 
-      await this.sendMail({ to, subject, html: htmlContent });
+      await this.sendMail({ to, subject, html: template });
     } catch (error: any) {
       this.logger.error(`Email send failed: ${error.message}`);
       throw error;

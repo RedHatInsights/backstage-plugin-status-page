@@ -185,6 +185,15 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
               />
             </Grid>
           </Grid>
+           <Grid container>
+            <Grid item xs={8}>
+              <SidebarItem
+                icon={Report as IconComponent}
+                to="permission-management"
+                text="Permission Management"
+              />
+            </Grid>
+          </Grid>
           <Grid container>
             <Grid item xs={8}>
               <SidebarItem

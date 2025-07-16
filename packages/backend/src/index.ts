@@ -55,7 +55,7 @@ const defaultServiceFactories: Array<
   userInfoServiceFactory,
   // Custom url reader
   urlReaderServiceFactory,
-];
+  ];
 
 const backend = createSpecializedBackend({ defaultServiceFactories });
 
@@ -69,6 +69,8 @@ backend.add(import('@backstage/plugin-auth-backend'));
 // See https://backstage.io/docs/backend-system/building-backends/migrating#the-auth-plugin
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 // See https://backstage.io/docs/auth/guest/provider
+
+backend.add(import('@backstage/plugin-auth-backend-module-oauth2-provider'));
 
 // Initialize plugin before catalog module
 backend.add(

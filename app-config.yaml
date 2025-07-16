@@ -215,6 +215,7 @@ techdocs:
 
 auth:
   # see https://backstage.io/docs/auth/ to learn about auth providers
+  dangerouslyAllowSignInWithoutUserInCatalog: true
   environment: development
   providers:
     guest: {}
@@ -224,6 +225,7 @@ auth:
         tokenUrl: ${AUTH_SSO_TOKEN_URL}
         clientId: ${AUTH_SSO_CLIENT_ID}
         clientSecret: ${AUTH_SSO_CLIENT_SECRET}
+    
 
 scaffolder:
   {}
@@ -311,6 +313,12 @@ catalog:
     # Local example redirection target component
     - type: file
       target: ../../examples/test-data/redirects-plugin.yaml
+
+    # Local example redirection target component
+    - type: file
+      target: ../../examples/test-data/permission-plugin.yaml
+      rules:
+        - allow: [Component, Group]
 
     ## Uncomment these lines to add more example data
     # - type: url

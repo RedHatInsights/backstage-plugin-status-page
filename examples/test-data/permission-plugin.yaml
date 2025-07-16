@@ -10,3 +10,14 @@ spec:
   lifecycle: experimental
   owner: guests
   system: examples
+---
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-group
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: hydra-notifications-escalation-forecaster
+  namespace: redhat
+spec:
+  type: team
+  children: []
+---
