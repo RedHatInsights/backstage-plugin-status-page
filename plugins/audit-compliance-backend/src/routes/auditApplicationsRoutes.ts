@@ -138,6 +138,106 @@ export async function createAuditApplicationsRouter(
   });
 
   /**
+   * PUT /applications/onboarding/:app_name
+   * Updates an existing application with multiple account entries.
+   *
+   * @route PUT /applications/onboarding/:app_name
+   * @param {string} req.params.app_name - Application name
+   * @param {Object} req.body - Updated application details with account entries
+   * @returns {void} 204 - Success response
+   * @returns {Object} 400 - Invalid request data
+   * @returns {Object} 404 - Application not found
+   * @returns {Object} 500 - Server error
+   */
+  auditApplicationsRouter.put(
+    '/applications/onboarding/:app_name',
+    async (req, res) => {
+      try {
+        const normalizedAppName = req.params.app_name
+          .toLowerCase()
+          .replace(/\s+/g, '-');
+
+        const normalizedData = normalizeApplicationData(req.body);
+        const {
+          app_name,
+          cmdb_id,
+          environment,
+          app_owner,
+          app_owner_email,
+          app_delegate,
+          accounts,
+        } = normalizedData;
+
+        // Validate required fields
+        if (
+          !app_name ||
+          !cmdb_id ||
+          !environment ||
+          !app_owner ||
+          !app_owner_email ||
+          !app_delegate
+        ) {
+          return res.status(400).json({
+            error:
+              'Missing required fields: app_name, cmdb_id, environment, app_owner, app_owner_email, and app_delegate are required',
+          });
+        }
+
+        // Validate accounts array
+        if (!Array.isArray(accounts) || accounts.length === 0) {
+          return res.status(400).json({
+            error: 'At least one account entry is required',
+          });
+        }
+
+        // Validate each account entry
+        for (const account of accounts) {
+          if (!account.type || !account.source || !account.account_name) {
+            return res.status(400).json({
+              error:
+                'Each account entry must have type, source, and account_name',
+            });
+          }
+          if (!['service-account', 'rover-group-name'].includes(account.type)) {
+            return res.status(400).json({
+              error:
+                'Account type must be either service-account or rover-group-name',
+            });
+          }
+          if (!['rover', 'gitlab', 'ldap'].includes(account.source)) {
+            return res.status(400).json({
+              error: 'Account source must be either rover, gitlab, or ldap',
+            });
+          }
+        }
+
+        // Check if application exists
+        const existingApp = await database.getApplicationDetails(
+          normalizedAppName,
+        );
+        if (!existingApp) {
+          return res.status(404).json({
+            error: `Application with name ${normalizedAppName} not found`,
+          });
+        }
+
+        // Update application with accounts
+        await database.updateApplicationWithAccounts(normalizedData);
+
+        return res.sendStatus(204);
+      } catch (error) {
+        logger.error('Failed to update application with accounts', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+        return res.status(500).json({
+          error: 'Failed to update application with accounts',
+          details: error instanceof Error ? error.message : String(error),
+        });
+      }
+    },
+  );
+
+  /**
    * GET /application-details/:app_name
    * Retrieves detailed information about an application.
    *
@@ -166,63 +266,35 @@ export async function createAuditApplicationsRouter(
         // Use the shared knex client for all queries
         const db = knex;
 
-        // Get application details using normalized app name
-        const appDetails = await database.getApplicationDetails(
+        // Get all application entries for this app from the applications table
+        const appRows = await db('applications').where(
+          'app_name',
           normalizedAppName,
         );
-        if (!appDetails) {
+        if (!appRows || appRows.length === 0) {
           return res.status(404).json({ error: 'Application not found' });
         }
 
-        // Get distinct app owners using normalized app name
-        const appOwners = await database.getDistinctAppOwners(
-          normalizedAppName,
-        );
+        // Use the first row for main details
+        const appDetails = appRows[0];
 
-        // Get distinct app delegates using normalized app name
-        const appDelegates = await db('applications')
-          .where('app_name', normalizedAppName)
-          .distinct('app_delegate')
-          .pluck('app_delegate')
-          .then(delegates => delegates.filter(Boolean));
+        // Build accounts as a flat array of objects
+        const accounts = appRows.map(row => ({
+          type: row.type,
+          source: row.source,
+          account_name: row.account_name,
+        }));
 
-        // Get Rover accounts using normalized app name
-        const roverAccounts = await db('group_access_reports')
-          .where({
-            app_name: normalizedAppName,
-            source: 'rover',
-          })
-          .distinct('account_name')
-          .pluck('account_name');
-
-        // Get GitLab accounts using normalized app name
-        const gitlabAccounts = await db('group_access_reports')
-          .where({
-            app_name: normalizedAppName,
-            source: 'gitlab',
-          })
-          .distinct('account_name')
-          .pluck('account_name');
-
-        // Get service accounts using normalized app name
-        const serviceAccounts = await db('service_account_access_review')
-          .where('app_name', normalizedAppName)
-          .distinct('service_account')
-          .pluck('service_account');
-
+        res.set('Cache-Control', 'no-store'); // Disable caching
         return res.json({
-          app_name: appDetails.app_name,
+          app_name: appDetails.app_name || normalizedAppName,
           cmdb_id: appDetails.cmdb_id,
           environment: appDetails.environment,
-          app_owner: appOwners.join(', '),
-          app_delegate: appDelegates.join(', '),
+          app_owner: appDetails.app_owner,
+          app_delegate: appDetails.app_delegate,
           jira_project: appDetails.jira_project,
           app_owner_email: appDetails.app_owner_email,
-          accounts: {
-            rover: roverAccounts,
-            gitlab: gitlabAccounts,
-            service_accounts: serviceAccounts,
-          },
+          accounts,
         });
       } catch (error) {
         const errorMessage =
@@ -304,9 +376,9 @@ export async function createAuditApplicationsRouter(
               'Account type must be either service-account or rover-group-name',
           });
         }
-        if (!['rover', 'gitlab'].includes(account.source)) {
+        if (!['rover', 'gitlab', 'ldap'].includes(account.source)) {
           return res.status(400).json({
-            error: 'Account source must be either rover or gitlab',
+            error: 'Account source must be either rover, gitlab, or ldap',
           });
         }
       }

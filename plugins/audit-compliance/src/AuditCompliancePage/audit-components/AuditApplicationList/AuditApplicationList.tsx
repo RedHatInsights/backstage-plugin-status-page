@@ -19,16 +19,26 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
+  Box,
+  CircularProgress,
 } from '@material-ui/core';
 import Group from '@material-ui/icons/Group';
 import AddIcon from '@material-ui/icons/Add';
 import CloseIcon from '@material-ui/icons/Close';
+import InfoIcon from '@material-ui/icons/Info';
+import EditIcon from '@material-ui/icons/Edit';
 import { useStyles } from './AuditApplicationList.styles';
 import { useApi } from '@backstage/core-plugin-api';
 import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 import { Application } from './types';
 import { capitalize } from 'lodash';
 import { AuditApplicationOnboardingForm } from './AuditApplicationOnboardingForm/AuditApplicationOnboardingForm';
+import { ApplicationFormData } from './AuditApplicationOnboardingForm/types';
 
 // Utility to convert hyphen-case to title case with 'and' capitalized
 export function formatDisplayName(name: string) {
@@ -44,6 +54,23 @@ export function formatDisplayName(name: string) {
     .replace(/\bAnd\b/g, 'and'); // ensure 'and' is not capitalized
 }
 
+interface AccountEntry {
+  type: 'service-account' | 'rover-group-name';
+  source: 'rover' | 'gitlab' | 'ldap';
+  account_name: string;
+}
+
+interface ApplicationDetails {
+  app_name: string;
+  cmdb_id: string;
+  environment: string;
+  app_owner: string;
+  app_delegate: string;
+  jira_project: string;
+  app_owner_email: string;
+  accounts: AccountEntry[];
+}
+
 export function AuditApplicationList() {
   const classes = useStyles();
   const navigate = useNavigate();
@@ -51,6 +78,14 @@ export function AuditApplicationList() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | undefined>(undefined);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+  const [selectedAppDetails, setSelectedAppDetails] =
+    useState<ApplicationDetails | null>(null);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState<ApplicationFormData | null>(
+    null,
+  );
 
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
@@ -77,6 +112,234 @@ export function AuditApplicationList() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchApplicationDetails = async (appName: string) => {
+    try {
+      setDetailsLoading(true);
+      const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+      const response = await fetchApi.fetch(
+        `${baseUrl}/application-details/${appName}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Error fetching application details: ${response.statusText}`,
+        );
+      }
+
+      const data = await response.json();
+      setSelectedAppDetails(data);
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
+  const handleViewDetails = (appName: string) => {
+    setSelectedAppDetails(null); // Clear old data before fetching
+    fetchApplicationDetails(appName);
+    setIsSidePanelOpen(true);
+  };
+
+  const handleCloseSidePanel = () => {
+    setIsSidePanelOpen(false);
+    setSelectedAppDetails(null);
+  };
+
+  const getAccountDisplayText = (accounts: string[], type: string) => {
+    if (accounts.length > 0) {
+      return accounts.join(', ');
+    }
+    return `No ${type} accounts`;
+  };
+
+  const convertApiDataToFormData = (
+    apiData: ApplicationDetails,
+  ): ApplicationFormData => {
+    // Use the accounts array as-is from the backend
+    return {
+      app_name: apiData.app_name,
+      cmdb_id: apiData.cmdb_id,
+      environment: apiData.environment,
+      app_owner: apiData.app_owner,
+      app_owner_email: apiData.app_owner_email,
+      app_delegate: apiData.app_delegate,
+      jira_project: apiData.jira_project,
+      accounts:
+        apiData.accounts && apiData.accounts.length > 0
+          ? apiData.accounts
+          : [{ type: 'rover-group-name', source: 'rover', account_name: '' }],
+    };
+  };
+
+  const handleEditApplication = async () => {
+    if (!selectedAppDetails?.app_name) return;
+    setEditFormData(null); // Clear old form data
+    setDetailsLoading(true);
+    try {
+      const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+      const response = await fetchApi.fetch(
+        `${baseUrl}/application-details/${selectedAppDetails.app_name}`,
+        {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+      if (!response.ok)
+        throw new Error('Failed to fetch latest application details');
+      const data = await response.json();
+      setEditFormData(convertApiDataToFormData(data));
+      setIsEditModalOpen(true);
+      setIsSidePanelOpen(false);
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
+  const handleEditSuccess = () => {
+    setIsEditModalOpen(false);
+    setEditFormData(null);
+    fetchApplications(); // Refresh the applications list
+  };
+
+  const renderDrawerContent = () => {
+    if (detailsLoading) {
+      return (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="200px"
+        >
+          <CircularProgress />
+        </Box>
+      );
+    }
+
+    if (!selectedAppDetails) {
+      return (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="200px"
+        >
+          <Typography color="textSecondary">No details available</Typography>
+        </Box>
+      );
+    }
+
+    return (
+      <List>
+        <ListItem>
+          <ListItemText
+            primary="Application Name"
+            secondary={formatDisplayName(selectedAppDetails.app_name)}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemText
+            primary="CMDB ID"
+            secondary={selectedAppDetails.cmdb_id}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemText
+            primary="Environment"
+            secondary={capitalize(selectedAppDetails.environment)}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemText
+            primary="Application Owner"
+            secondary={selectedAppDetails.app_owner}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemText
+            primary="Application Delegate"
+            secondary={selectedAppDetails.app_delegate}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemText
+            primary="Jira Project"
+            secondary={selectedAppDetails.jira_project}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemText
+            primary="Owner Email"
+            secondary={selectedAppDetails.app_owner_email}
+          />
+        </ListItem>
+        <Divider />
+        <ListItem>
+          <ListItemText
+            primary="Rover Accounts"
+            secondary={getAccountDisplayText(
+              selectedAppDetails.accounts
+                .filter(
+                  acc =>
+                    acc.type === 'rover-group-name' && acc.source === 'rover',
+                )
+                .map(acc => acc.account_name),
+              'Rover',
+            )}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemText
+            primary="GitLab Accounts"
+            secondary={getAccountDisplayText(
+              selectedAppDetails.accounts
+                .filter(
+                  acc =>
+                    acc.type === 'rover-group-name' && acc.source === 'gitlab',
+                )
+                .map(acc => acc.account_name),
+              'GitLab',
+            )}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemText
+            primary="LDAP Accounts"
+            secondary={getAccountDisplayText(
+              selectedAppDetails.accounts
+                .filter(
+                  acc =>
+                    acc.type === 'service-account' && acc.source === 'ldap',
+                )
+                .map(acc => acc.account_name),
+              'LDAP',
+            )}
+          />
+        </ListItem>
+        <ListItem>
+          <ListItemText
+            primary="Service Accounts"
+            secondary={getAccountDisplayText(
+              selectedAppDetails.accounts
+                .filter(
+                  acc =>
+                    acc.type === 'service-account' && acc.source !== 'ldap',
+                )
+                .map(acc => acc.account_name),
+              'Service',
+            )}
+          />
+        </ListItem>
+      </List>
+    );
   };
 
   useEffect(() => {
@@ -166,6 +429,14 @@ export function AuditApplicationList() {
                         >
                           More Details
                         </Button>
+                        <IconButton
+                          color="primary"
+                          size="small"
+                          onClick={() => handleViewDetails(app.app_name)}
+                          title="View Onboarded Details"
+                        >
+                          <InfoIcon />
+                        </IconButton>
                       </div>
                     </CardContent>
                   </Card>
@@ -193,6 +464,72 @@ export function AuditApplicationList() {
           </DialogTitle>
           <DialogContent>
             <AuditApplicationOnboardingForm onSuccess={handleFormSuccess} />
+          </DialogContent>
+        </Dialog>
+
+        <Drawer
+          anchor="right"
+          open={isSidePanelOpen}
+          onClose={handleCloseSidePanel}
+          classes={{
+            paper: classes.drawerPaper,
+          }}
+        >
+          <Box className={classes.drawerHeader}>
+            <Typography variant="h6">Application Details</Typography>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <IconButton
+                onClick={handleEditApplication}
+                title="Edit Application"
+                color="primary"
+              >
+                <EditIcon />
+              </IconButton>
+              <IconButton onClick={handleCloseSidePanel}>
+                <CloseIcon />
+              </IconButton>
+            </div>
+          </Box>
+          <Divider />
+          <Box className={classes.drawerContent}>
+            {selectedAppDetails && (
+              <Typography
+                variant="h5"
+                style={{ marginBottom: 16, fontWeight: 600 }}
+              >
+                {formatDisplayName(selectedAppDetails.app_name)}
+              </Typography>
+            )}
+            {renderDrawerContent()}
+          </Box>
+        </Drawer>
+
+        {/* Edit Application Modal */}
+        <Dialog
+          open={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle>
+            Edit Application
+            {editFormData?.app_name ? `: ${editFormData.app_name}` : ''}
+            <IconButton
+              aria-label="close"
+              onClick={() => setIsEditModalOpen(false)}
+              style={{ position: 'absolute', right: 8, top: 8 }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+          <DialogContent>
+            {editFormData && (
+              <AuditApplicationOnboardingForm
+                onSuccess={handleEditSuccess}
+                initialData={editFormData}
+                isEditMode
+              />
+            )}
           </DialogContent>
         </Dialog>
       </Content>

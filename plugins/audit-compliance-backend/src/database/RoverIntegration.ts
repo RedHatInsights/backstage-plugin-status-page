@@ -687,4 +687,55 @@ export class RoverDatabase implements RoverStore {
     }
     return report;
   }
+
+  /**
+   * Searches for Rover groups by partial or full name.
+   * @param query - The search string for group name (partial or full)
+   * @returns Promise resolving to array of group info objects
+   */
+  public async searchGroups(query: string): Promise<
+    Array<{
+      cn: string;
+      name: string;
+      description: string;
+      ownerUids: string[];
+      memberUids: string[];
+      memberCount: number;
+    }>
+  > {
+    const url = `${this.roverBaseUrl}/groups?criteria=${encodeURIComponent(
+      query,
+    )}`;
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: { ...headers, ...this.getAuthHeader() },
+      });
+      if (!response.ok) {
+        this.logger.warn(`Rover group search failed: ${response.status}`);
+        return [];
+      }
+      const data = (await response.json()) as GroupApiResponse;
+      const groups = data?.result?.result || [];
+      return groups.map((g: any) => {
+        const memberUids = (g.memberUids || [])
+          .map(extractUid)
+          .filter(Boolean) as string[];
+        const ownerUids = (g.ownerUids || [])
+          .map(extractUid)
+          .filter(Boolean) as string[];
+        return {
+          cn: g.cn || '',
+          name: g.name || g.cn || '',
+          description: g.description || '',
+          ownerUids,
+          memberUids,
+          memberCount: memberUids.length,
+        };
+      });
+    } catch (e) {
+      this.logger.warn(`Failed to search groups in Rover: ${e}`);
+      return [];
+    }
+  }
 }

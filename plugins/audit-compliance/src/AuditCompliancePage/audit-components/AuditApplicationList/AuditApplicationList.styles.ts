@@ -43,8 +43,27 @@ export const useStyles = makeStyles(theme => ({
   buttonContainer: {
     display: 'flex',
     justifyContent: 'flex-end',
+    gap: theme.spacing(1),
   },
   button: {
     alignSelf: 'flex-end',
+  },
+  drawerPaper: {
+    width: 400,
+    [theme.breakpoints.down('sm')]: {
+      width: '100%',
+    },
+  },
+  drawerHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: theme.spacing(2),
+    backgroundColor: theme.palette.background.paper,
+  },
+  drawerContent: {
+    padding: theme.spacing(2),
+    flex: 1,
+    overflow: 'auto',
   },
 }));

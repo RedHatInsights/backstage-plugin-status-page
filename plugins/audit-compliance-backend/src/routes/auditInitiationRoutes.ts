@@ -42,6 +42,35 @@ export async function createAuditInitiationRouter(
   });
 
   /**
+   * GET /search/groups
+   * Searches for Rover groups by partial or full name.
+   * @route GET /search/groups
+   * @query {string} q - Search string for group name
+   * @returns {Array} 200 - List of matching groups
+   * @returns {Object} 400 - Missing query parameter
+   * @returns {Object} 500 - Error response
+   */
+  auditInitiationRouter.get('/search/groups', async (req, res) => {
+    const q = req.query.q as string;
+    if (!q) {
+      return res
+        .status(400)
+        .json({ error: 'Missing required query parameter: q' });
+    }
+    try {
+      const groups = await roverStore.searchGroups(q);
+      // Return only the CNs as an array of strings
+      const groupCns = Array.isArray(groups)
+        ? groups.map(g => g.cn).filter(Boolean)
+        : [];
+      return res.json(groupCns);
+    } catch (error) {
+      logger.error('Failed to search groups', { error: String(error) });
+      return res.status(500).json({ error: 'Failed to search groups' });
+    }
+  });
+
+  /**
    * GET /audits
    * Retrieves all application audits.
    * Optionally filters by app_name, frequency, and period.
