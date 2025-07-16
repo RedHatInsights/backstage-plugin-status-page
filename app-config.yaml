@@ -137,11 +137,6 @@ proxy:
       target: ${DOCSBOT_STATS_URL}
       changeOrigin: true
       allowedMethods: ['GET']
-    '/statuspage':
-      target: ${STATUSPAGE_URL}
-      headers:
-        Authorization: ${STATUSPAGE_AUTH}
-        Content-Type: 'application/json'
     '/hydrasupport':
       target: ${HYDRA_SUPPORT_DASHBOARD_CONFIG_URL}
       credentials: dangerously-allow-unauthenticated
@@ -391,6 +386,10 @@ dataLayer:
       hour: 6
     timeout:
       hours: 12
+
+outageService:
+  statusPageUrl: ${STATUSPAGE_URL}
+  statusPageAuthToken: ${STATUSPAGE_AUTH}
 
 auditCompliance:
   roverUsername: ${ROVER_USERNAME}

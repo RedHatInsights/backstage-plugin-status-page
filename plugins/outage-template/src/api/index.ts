@@ -25,13 +25,13 @@ export class StatuspageApi {
   }
 
   private async getBaseUrl(): Promise<string> {
-    return `${await this.discoveryApi.getBaseUrl('proxy')}/statuspage`;
+    return `${await this.discoveryApi.getBaseUrl('outage-template-backend')}`;
   }
 
   async fetchIncidents() {
     try {
       const baseUrl = await this.getBaseUrl();
-      const response = await this.fetchApi.fetch(`${baseUrl}/incidents.json`, {
+      const response = await this.fetchApi.fetch(`${baseUrl}/incidents`, {
         method: 'GET',
       });
       if (!response.ok) {
@@ -104,41 +104,41 @@ export class StatuspageApi {
       };
       formattedIncident.components = Array.isArray(incident.components)
         ? incident.components.map((comp: any) => ({
-          id: comp.id,
-          name: comp.name,
-          status: comp.status,
-          groupId: comp.group_id,
-          updatedAt: comp.updated_at,
-          createdAt: comp.created_at,
-          startDate: comp.start_date,
-        }))
+            id: comp.id,
+            name: comp.name,
+            status: comp.status,
+            groupId: comp.group_id,
+            updatedAt: comp.updated_at,
+            createdAt: comp.created_at,
+            startDate: comp.start_date,
+          }))
         : [];
-      formattedIncident.incidentUpdates = Array.isArray(incident.incident_updates)
+      formattedIncident.incidentUpdates = Array.isArray(
+        incident.incident_updates,
+      )
         ? incident.incident_updates.map((update: any) => ({
-          id: update.id,
-          status: update.status,
-          body: update.body ?? '',
-          createdAt: update.created_at,
-          updatedAt: update.updated_at,
-          affectedComponents: Array.isArray(update.affected_components)
-            ? update.affected_components.map((ac: any) => ({
-              code: ac.code,
-              name: ac.name,
-              oldStatus: ac.old_status,
-              newStatus: ac.new_status,
-            }))
-            : [],
-        }))
+            id: update.id,
+            status: update.status,
+            body: update.body ?? '',
+            createdAt: update.created_at,
+            updatedAt: update.updated_at,
+            affectedComponents: Array.isArray(update.affected_components)
+              ? update.affected_components.map((ac: any) => ({
+                  code: ac.code,
+                  name: ac.name,
+                  oldStatus: ac.old_status,
+                  newStatus: ac.new_status,
+                }))
+              : [],
+          }))
         : [];
       return formattedIncident;
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error fetching incident:', error);
-      throw new Error(`Failed to fetch incident`,);
-
+      throw new Error(`Failed to fetch incident`);
     }
   }
-
 
   async fetchComponents() {
     try {
@@ -232,7 +232,7 @@ export class StatuspageApi {
   async deleteIncident(incidentId: string) {
     try {
       const baseUrl = await this.getBaseUrl();
-      await this.fetchApi.fetch(`${baseUrl}/incidents/${incidentId}.json`, {
+      await this.fetchApi.fetch(`${baseUrl}/incidents/${incidentId}`, {
         method: 'DELETE',
       });
       this.alertApi.post({
@@ -251,7 +251,6 @@ export class StatuspageApi {
     }
   }
 
-
   async listComponentsWithinGroups(data: any) {
     const groups: any = {};
     const groupIdToName: any = {};
@@ -264,12 +263,12 @@ export class StatuspageApi {
     for (const item of data) {
       if (item.group === false) {
         const groupName = item.group_id ? groupIdToName[item.group_id] : null;
-        const targetGroup = groupName || "Others";
+        const targetGroup = groupName || 'Others';
 
         if (!groups[targetGroup]) {
           groups[targetGroup] = [];
         }
-        groups[targetGroup].push(item); 
+        groups[targetGroup].push(item);
       }
     }
     return groups;
