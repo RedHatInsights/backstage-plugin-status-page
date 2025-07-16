@@ -164,4 +164,5 @@ backend.add(
 backend.add(
   import('@appdev/backstage-plugin-permission-management-backend'),
 );
+backend.add(import('@appdev/backstage-plugin-outage-template-backend'));
 backend.start();
