@@ -341,6 +341,9 @@ permission:
           - workstream.art.create
           - workstream.art.update
           - workstream.art.delete
+          - workstream.user.note.create
+          - workstream.user.note.update
+          - workstream.user.note.delete
         users:
           - name: group:development/guests
     admins:

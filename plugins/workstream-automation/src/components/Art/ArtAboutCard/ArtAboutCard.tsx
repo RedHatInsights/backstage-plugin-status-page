@@ -15,6 +15,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import {
+  Box,
   Divider,
   Grid,
   IconButton,
@@ -29,6 +30,9 @@ import UpdateIcon from '@material-ui/icons/UpdateTwoTone';
 import { DateTime } from 'luxon';
 import { useState } from 'react';
 import { AboutEditModal } from './AboutEditModal';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { JiraIcon } from '../../Icons';
+import { LinkCard, LinkIcon } from '../../WorkstreamAboutCard/LinkCard';
 
 const useStyles = makeStyles(theme => ({
   action: {
@@ -58,10 +62,37 @@ export const ArtAboutCard = (props: { variant: InfoCardVariants }) => {
       {...props}
       title="About"
       noPadding
+      subheader={
+        <Box display="flex" flexDirection="row">
+          {entity.metadata.links
+            .filter(p => p.type?.match(/Contact|Email/g))
+            .map(val => {
+              return (
+                <LinkCard
+                  key={val.title}
+                  href={val.url}
+                  title={val.title}
+                  Icon={<LinkIcon val={val.icon} />}
+                />
+              );
+            })}
+          {entity.metadata.annotations['jira/project-key'] && (
+            <LinkCard
+              href={`https://issues.redhat.com/browse/${entity.metadata.annotations['jira/project-key']}`}
+              title="Jira"
+              Icon={<JiraIcon fontSize="large" />}
+            />
+          )}
+        </Box>
+      }
       headerProps={{
         classes: { action: classes.action },
         action: (
-          <RequirePermission permission={artUpdatePermission} errorPage={<></>}>
+          <RequirePermission
+            permission={artUpdatePermission}
+            resourceRef={stringifyEntityRef(entity)}
+            errorPage={<></>}
+          >
             <IconButton
               onClick={() => {
                 alertApi.post({

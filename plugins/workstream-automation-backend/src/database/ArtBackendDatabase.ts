@@ -1,5 +1,7 @@
 import { Knex } from 'knex';
 import { ART } from '../types';
+import { knexNow } from '../utils/knexNow';
+import { normalizeEmail } from '../utils/normalizeEmail';
 import { ArtDatabaseModel } from './types';
 
 export interface ArtDatabaseStore {
@@ -44,7 +46,7 @@ export class ArtBackendDatabase implements ArtDatabaseStore {
       .select('*')
       .where('name', id)
       .first()
-      .update({ ...updatedData, updated_at: this.db.fn.now() }, '*');
+      .update({ ...updatedData, updated_at: knexNow() }, '*');
     if (dbResult.length < 1) {
       return null;
     }
@@ -78,7 +80,7 @@ export class ArtBackendDatabase implements ArtDatabaseStore {
         art.links.map(link => ({
           ...link,
           ...(link.type?.toLowerCase() === 'email' && {
-            url: `mailto://${link.url}`,
+            url: normalizeEmail(link.url),
           }),
         })),
       ),

@@ -1,5 +1,10 @@
 import { EntityLink, UserEntity } from '@backstage/catalog-model';
 
+export interface TJiraProject {
+  key: string;
+  name: string;
+}
+
 export type Member = {
   userRef: string;
   role: string;

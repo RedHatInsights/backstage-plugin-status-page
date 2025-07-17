@@ -1,46 +1,25 @@
-import {
-  RESOURCE_TYPE_WORKSTREAM_ENTITY,
-  workstreamCreatePermission,
-  WorkstreamEntity,
-  workstreamDeletePermission,
-  workstreamPermissions,
-  workstreamUpdatePermission,
-} from '@compass/backstage-plugin-workstream-automation-common';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
-import {
-  AuthService,
-  DatabaseService,
-  DiscoveryService,
-  HttpAuthService,
-  LoggerService,
-  PermissionsService,
-  resolvePackagePath,
-  RootConfigService,
-} from '@backstage/backend-plugin-api';
-import { CatalogClient } from '@backstage/catalog-client';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { ConflictError, NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+import {
+  workstreamCreatePermission,
+  workstreamDeletePermission,
+  WorkstreamEntity,
+  workstreamUpdatePermission,
+} from '@compass/backstage-plugin-workstream-automation-common';
 import express from 'express';
+import { Knex } from 'knex';
+import { v4 } from 'uuid';
 import { WorkstreamBackendDatabase } from '../database';
 import { DEFAULT_WORKSTREAM_NAMESPACE } from '../modules/lib/constants';
 import { workstreamToEntityKind } from '../modules/lib/utils';
-import { workstreamPermissionRules } from '../permissions/rules';
+import { workstreamPermissionResourceRef } from '../permissions/resources';
+import { isWorkstreamLead } from '../permissions/rules';
 import { Workstream } from '../types';
-import { v4 } from 'uuid';
 import artRouter from './artRouter';
-import { Knex } from 'knex';
-import { ArtBackendDatabase } from '../database/ArtBackendDatabase';
-
-export interface RouterOptions {
-  logger: LoggerService;
-  config: RootConfigService;
-  database: DatabaseService;
-  auth: AuthService;
-  discovery: DiscoveryService;
-  permissions: PermissionsService;
-  httpAuth: HttpAuthService;
-}
+import { noteRouter } from './noteRouter';
+import { RouterOptions } from './types';
 
 const migrationsDir = resolvePackagePath(
   '@compass/backstage-plugin-workstream-automation-backend',
@@ -62,7 +41,16 @@ async function createDatabaseSchema(options: {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, config, auth, discovery, permissions, httpAuth } = options;
+  const {
+    logger,
+    config,
+    auth,
+    discovery,
+    permissions,
+    httpAuth,
+    catalog: catalogApi,
+    permissionsRegistry,
+  } = options;
 
   const router = express.Router();
   const dbClient = await options.database.getClient();
@@ -73,26 +61,22 @@ export async function createRouter(
   });
 
   const workstreamDatabaseClient = new WorkstreamBackendDatabase(dbClient);
-  const artDatabaseClient = new ArtBackendDatabase(dbClient);
 
-  const catalogApi = new CatalogClient({ discoveryApi: discovery });
   const apiBaseUrl = await discovery.getBaseUrl('workstream');
 
-  const permissionIntegrationRouter = createPermissionIntegrationRouter({
-    permissions: workstreamPermissions,
-    resourceType: RESOURCE_TYPE_WORKSTREAM_ENTITY,
-    rules: Object.values(workstreamPermissionRules),
-    getResources: async resourceRefs => {
-      const credentials = await auth.getPluginRequestToken({
-        onBehalfOf: await auth.getOwnServiceCredentials(),
-        targetPluginId: 'catalog',
-      });
+  permissionsRegistry.addResourceType({
+    resourceRef: workstreamPermissionResourceRef,
+    rules: [isWorkstreamLead],
+    permissions: [workstreamUpdatePermission],
+    getResources: async entityRefs => {
       const resp = await catalogApi.getEntitiesByRefs(
         {
-          entityRefs: resourceRefs,
+          entityRefs: entityRefs,
           filter: [{ kind: 'Workstream' }],
         },
-        credentials,
+        {
+          credentials: await auth.getOwnServiceCredentials(),
+        },
       );
       const { items: workstreamEntities } = resp;
       return workstreamEntities as WorkstreamEntity[];
@@ -106,16 +90,9 @@ export async function createRouter(
     response.json({ status: 'ok' });
   });
 
-  router.use(permissionIntegrationRouter);
+  router.use('/art', await artRouter(options));
 
-  router.use(
-    '/art',
-    await artRouter({
-      ...options,
-      artDatabaseClient,
-      catalogApi,
-    }),
-  );
+  router.use('/note', await noteRouter(options));
 
   // TODO create filters for member, pillar, lead, jira_project
   router.get('/', async (_req, res) => {
@@ -152,16 +129,12 @@ export async function createRouter(
     );
 
     const workstreamLocation = `${apiBaseUrl}/${result.name}`;
-    const { token: catalogServiceToken } = await auth.getPluginRequestToken({
-      targetPluginId: 'catalog',
-      onBehalfOf: await auth.getOwnServiceCredentials(),
-    });
     await catalogApi.addLocation(
       {
         target: workstreamLocation,
         type: 'url',
       },
-      { token: catalogServiceToken },
+      { credentials: await auth.getOwnServiceCredentials() },
     );
 
     res.status(200).json({ data: result });
@@ -213,19 +186,18 @@ export async function createRouter(
         error: 'Something went wrong',
       });
     }
-    const catalogServiceToken = await auth.getPluginRequestToken({
-      targetPluginId: 'catalog',
-      onBehalfOf: await auth.getOwnServiceCredentials(),
-    });
+    const catalogServiceCredentials = {
+      credentials: await auth.getOwnServiceCredentials(),
+    };
     if (workstreamName !== updatedData.name) {
       // remove original location
       const currLoc = await catalogApi.getLocationByEntity(
         `workstream:${DEFAULT_WORKSTREAM_NAMESPACE}/${workstreamName}`,
-        catalogServiceToken,
+        catalogServiceCredentials,
       );
       await catalogApi.removeLocationById(
         currLoc?.id ?? '',
-        catalogServiceToken,
+        catalogServiceCredentials,
       );
 
       // add new location with updated target name
@@ -234,7 +206,7 @@ export async function createRouter(
           type: 'url',
           target: `${apiBaseUrl}/${updatedData.name}`,
         },
-        catalogServiceToken,
+        catalogServiceCredentials,
       );
       return res.status(200).json({
         data: result,
@@ -245,7 +217,7 @@ export async function createRouter(
 
     await catalogApi.refreshEntity(
       `workstream:${DEFAULT_WORKSTREAM_NAMESPACE}/${workstreamName}`,
-      catalogServiceToken,
+      catalogServiceCredentials,
     );
 
     return res.status(200).json({
@@ -287,19 +259,16 @@ export async function createRouter(
     const result = await workstreamDatabaseClient.getWorkstreamById(name);
 
     if (result) {
-      const { token: catalogServiceToken } = await auth.getPluginRequestToken({
-        targetPluginId: 'catalog',
-        onBehalfOf: await auth.getOwnServiceCredentials(),
-      });
+      const catalogServiceCredentials = {
+        credentials: await auth.getOwnServiceCredentials(),
+      };
 
       const resp = await catalogApi.getLocationByRef(
         `url:${apiBaseUrl}/${result.name}`,
-        { token: catalogServiceToken },
+        catalogServiceCredentials,
       );
       if (resp)
-        await catalogApi.removeLocationById(resp.id, {
-          token: catalogServiceToken,
-        });
+        await catalogApi.removeLocationById(resp.id, catalogServiceCredentials);
       await workstreamDatabaseClient.deleteWorkstream(name);
       return res.status(200).json({ message: 'Deleted successfully' });
     }

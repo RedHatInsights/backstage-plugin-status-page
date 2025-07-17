@@ -1,5 +1,10 @@
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  alertApiRef,
+  discoveryApiRef,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 import {
   Button,
@@ -16,7 +21,10 @@ import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
 import { artApiRef } from '../../../api';
 import { CustomUserEntity } from '../../../types';
-import { FormInputTextField } from '../../CreateWorkstreamModal/Inputs';
+import {
+  FormInputJiraProject,
+  FormInputTextField,
+} from '../../CreateWorkstreamModal/Inputs';
 import { FormInputName, FormInputRteName } from '../../CreateArtModal/Inputs';
 import { FormInputPath } from './FormInputPath';
 import { EditDialogProps, Form } from './types';
@@ -27,6 +35,7 @@ export const AboutEditModal = (props: EditDialogProps) => {
   const artApi = useApi(artApiRef);
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
+  const discoveryApi = useApi(discoveryApiRef);
   const navigate = useNavigate();
   const entityRoute = useRouteRef(entityRouteRef);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -38,6 +47,17 @@ export const AboutEditModal = (props: EditDialogProps) => {
     }
     return undefined;
   }, []);
+  const jiraProjKey = entity.metadata.annotations['jira/project-key'];
+  const { value: jiraOptions, loading: isJiraLoading } = useAsync(async () => {
+    const proxy = await discoveryApi.getBaseUrl('proxy');
+    const base = `${proxy}/jira/rest/api/2/project/${jiraProjKey}`;
+    const resp = await fetch(base);
+    const respd = await resp.json();
+    return {
+      key: respd.key,
+      name: respd.name,
+    };
+  }, []);
 
   const form = useForm<Form>({
     values: {
@@ -46,6 +66,9 @@ export const AboutEditModal = (props: EditDialogProps) => {
       rte: !rteEntityFetch ? rteEntity : undefined,
       pillar: entity.spec.pillar,
       description: entity.metadata.description,
+      jiraProject: !isJiraLoading
+        ? jiraOptions
+        : { key: jiraProjKey, name: '' },
       workstreams: [],
     },
     mode: 'all',
@@ -83,6 +106,9 @@ export const AboutEditModal = (props: EditDialogProps) => {
               <FormInputRteName members={entity.spec.members} />
             </Grid>
             <Grid item xs={12}>
+              <FormInputJiraProject required={false} />
+            </Grid>
+            <Grid item xs={12}>
               <FormInputTextField
                 name="pillar"
                 rules={{ required: 'Pillar name is required' }}
@@ -113,6 +139,7 @@ export const AboutEditModal = (props: EditDialogProps) => {
                 rte: data.rte && stringifyEntityRef(data.rte),
                 pillar: data.pillar,
                 description: data.description,
+                jiraProject: data.jiraProject && data.jiraProject.key,
               })
               .then(resp => {
                 alertApi.post({

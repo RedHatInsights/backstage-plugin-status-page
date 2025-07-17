@@ -56,9 +56,11 @@ export const AboutEditModal = (props: EditDialogProps) => {
     return undefined;
   }, []);
 
+  const jiraProjKey = entity.metadata.annotations['jira/project-key'];
+
   const { value: jiraOptions, loading: isJiraLoading } = useAsync(async () => {
     const proxy = await discoveryApi.getBaseUrl('proxy');
-    const base = `${proxy}/jira/rest/api/2/project/${entity.metadata.annotations['jira/project-key']}`;
+    const base = `${proxy}/jira/rest/api/2/project/${jiraProjKey}`;
     const resp = await fetch(base);
     const respd = await resp.json();
     return {
@@ -74,7 +76,9 @@ export const AboutEditModal = (props: EditDialogProps) => {
       lead: !leadEntityFetch ? leadEntity : undefined,
       pillar: entity.spec.pillar,
       description: entity.metadata.description,
-      jiraProject: !isJiraLoading ? jiraOptions : undefined,
+      jiraProject: !isJiraLoading
+        ? jiraOptions
+        : { key: jiraProjKey, name: '' },
       portfolio: [],
     },
     mode: 'all',

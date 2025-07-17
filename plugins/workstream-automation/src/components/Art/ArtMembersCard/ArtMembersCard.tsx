@@ -1,6 +1,7 @@
 import {
   ArtEntity,
   artUpdatePermission,
+  UserNote,
 } from '@compass/backstage-plugin-workstream-automation-common';
 import {
   InfoCard,
@@ -23,6 +24,9 @@ import { CustomUserEntity, TableRowDataType } from '../../../types';
 import { MembersEditModal } from './MemberEditModal';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { MemberWarningChip } from '../../MemberWarningChip/MemberWarningChip';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { noteApiRef } from '../../../api';
+import { ViewUserNote } from '../../UserNotes';
 
 const useStyles = makeStyles(theme => ({
   action: {
@@ -33,7 +37,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const ArtMembersCard = (props: { variant: InfoCardVariants }) => {
-  const { entity, loading: isLoading } = useAsyncEntity<ArtEntity>();
+  const { entity, loading: isLoading, refresh } = useAsyncEntity<ArtEntity>();
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const members = entity?.spec.members;
@@ -73,6 +77,34 @@ export const ArtMembersCard = (props: { variant: InfoCardVariants }) => {
     }
   }, [isLoading]);
 
+  const noteApi = useApi(noteApiRef);
+  const [notes, setNotes] = useState<Record<string, UserNote>>({});
+  useEffect(() => {
+    if (rteEntity && tableData.length) {
+      const totalData = [
+        ...(rteEntity
+          ? [
+              {
+                user: rteEntity,
+                role: 'Workstream Lead',
+              },
+            ]
+          : []),
+        ...tableData,
+      ];
+      noteApi
+        .getNotes(totalData.map(d => stringifyEntityRef(d.user)))
+        .then((res: UserNote[] | undefined) => {
+          const noteMap = Object.fromEntries(
+            res ? res.map(note => [note.userRef, note]) : [],
+          );
+          setNotes(noteMap);
+        });
+    }
+    // removed `rteEntity` from deps as it is already updated with tableData
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tableData, noteApi]);
+
   const columns: TableColumn<TableRowDataType>[] = [
     {
       title: 'Name',
@@ -98,7 +130,20 @@ export const ArtMembersCard = (props: { variant: InfoCardVariants }) => {
     },
     {
       sorting: false,
-      width: '5%',
+      width: '2%',
+      cellStyle: { padding: '2px 6px' },
+      render: data => (
+        <ViewUserNote
+          user={data.user}
+          note={notes[stringifyEntityRef(data.user)]}
+          refresh={refresh}
+        />
+      ),
+    },
+
+    {
+      sorting: false,
+      width: '2%',
       render: data => <MemberWarningChip user={data.user} />,
     },
   ];
@@ -112,7 +157,11 @@ export const ArtMembersCard = (props: { variant: InfoCardVariants }) => {
       headerProps={{
         classes: { action: classes.action },
         action: (
-          <RequirePermission permission={artUpdatePermission} errorPage={<></>}>
+          <RequirePermission
+            permission={artUpdatePermission}
+            resourceRef={entity ? stringifyEntityRef(entity) : ''}
+            errorPage={<></>}
+          >
             <IconButton onClick={() => setOpenEditModal(true)}>
               <EditTwoTone />
             </IconButton>

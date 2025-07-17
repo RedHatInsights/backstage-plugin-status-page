@@ -193,6 +193,19 @@ const ReviewDetailsContent = (props: {
         <TextField
           variant="outlined"
           fullWidth
+          label="JIRA Project"
+          value={
+            artDetails.jiraProject
+              ? `${artDetails.jiraProject.name} (${artDetails.jiraProject.key})`
+              : '-'
+          }
+          InputProps={{ readOnly: true }}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          fullWidth
           label="Pillar"
           value={artDetails.pillar}
           InputProps={{ readOnly: true }}
@@ -366,6 +379,7 @@ export const CreateArtModal = () => {
         workstreams: artDetails.workstreams.map<string>(val =>
           stringifyEntityRef(val),
         ),
+        jiraProject: artDetails.jiraProject && artDetails.jiraProject.key,
         links: [
           ...(artDetails.slackChannelUrl
             ? [

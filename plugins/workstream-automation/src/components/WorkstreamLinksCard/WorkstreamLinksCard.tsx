@@ -96,6 +96,7 @@ export const WorkstreamLinksCard = (props: { variant: InfoCardVariants }) => {
             {entity.kind === 'ART' && (
               <RequirePermission
                 permission={artUpdatePermission}
+                resourceRef={stringifyEntityRef(entity)}
                 errorPage={<></>}
               >
                 <IconButton onClick={() => setOpen(true)}>

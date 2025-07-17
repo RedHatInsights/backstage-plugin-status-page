@@ -167,7 +167,7 @@ export const LinksEditModal = (props: {
       links: [
         ...links.map(link => ({
           type: link.type,
-          url: link.url.replace('mailto://', ''),
+          url: link.url.replace('mailto:', ''),
           title: link.title,
           icon: link.icon,
         })),

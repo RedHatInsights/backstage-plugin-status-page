@@ -88,7 +88,10 @@ import {
   WorkstreamMembersCard,
   WorkstreamPortfolioCard,
 } from '@compass/backstage-plugin-workstream-automation';
-import { workstreamDeletePermission } from '@compass/backstage-plugin-workstream-automation-common';
+import {
+  artDeletePermission,
+  workstreamDeletePermission,
+} from '@compass/backstage-plugin-workstream-automation-common';
 import {
   ReportPortalOverviewCard,
   isReportPortalAvailable,
@@ -712,7 +715,7 @@ const MCPEntityPage = (
 );
 
 const ArtEntityPage = () => {
-  const { allowed } = usePermission({ permission: workstreamDeletePermission });
+  const { allowed } = usePermission({ permission: artDeletePermission });
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   return (

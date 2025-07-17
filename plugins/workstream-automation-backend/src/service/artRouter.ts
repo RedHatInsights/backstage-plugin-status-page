@@ -1,48 +1,56 @@
-import express from 'express';
-import {
-  AuthService,
-  DiscoveryService,
-  HttpAuthService,
-  LoggerService,
-  PermissionsService,
-  RootConfigService,
-} from '@backstage/backend-plugin-api';
-import { ArtDatabaseStore } from '../database/ArtBackendDatabase';
-import { CatalogApi } from '@backstage/catalog-client';
-import {
-  workstreamCreatePermission,
-  workstreamDeletePermission,
-  workstreamUpdatePermission,
-} from '@compass/backstage-plugin-workstream-automation-common';
 import { ConflictError, NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  artCreatePermission,
+  artDeletePermission,
+  ArtEntity,
+  artUpdatePermission
+} from '@compass/backstage-plugin-workstream-automation-common';
+import express from 'express';
 import { v4 } from 'uuid';
-import { ART } from '../types';
-import { artToEntityKind } from '../modules/lib/utils';
+import {
+  ArtBackendDatabase
+} from '../database/ArtBackendDatabase';
 import { DEFAULT_WORKSTREAM_NAMESPACE } from '../modules/lib/constants';
+import { artToEntityKind } from '../modules/lib/utils';
+import { artPermissionResourceRef } from '../permissions/resources';
+import { isArtOwner } from '../permissions/rules';
+import { ART } from '../types';
+import { RouterOptions } from './types';
 
-type ArtRouterOptions = {
-  logger: LoggerService;
-  config: RootConfigService;
-  auth: AuthService;
-  discovery: DiscoveryService;
-  permissions: PermissionsService;
-  httpAuth: HttpAuthService;
-  artDatabaseClient: ArtDatabaseStore;
-  catalogApi: CatalogApi;
-};
-
-const artRouter = async (options: ArtRouterOptions) => {
+const artRouter = async (options: RouterOptions) => {
   const {
     discovery,
-    artDatabaseClient,
+    database,
     httpAuth,
     permissions,
     auth,
-    catalogApi,
+    catalog,
+    permissionsRegistry,
   } = options;
+
+  const artDatabaseClient = new ArtBackendDatabase(await database.getClient());
   const router = express.Router();
   const apiBaseUrl = `${await discovery.getBaseUrl('workstream')}/art`;
+
+  permissionsRegistry.addResourceType({
+    resourceRef: artPermissionResourceRef,
+    rules: [isArtOwner],
+    permissions: [artUpdatePermission],
+    getResources: async entityRefs => {
+      const resp = await catalog.getEntitiesByRefs(
+        {
+          entityRefs: entityRefs,
+          filter: [{ kind: 'ART' }],
+        },
+        {
+          credentials: await auth.getOwnServiceCredentials(),
+        },
+      );
+      const { items: artEntities } = resp;
+      return artEntities as ArtEntity[];
+    },
+  });
 
   router.get('/', async (_req, res) => {
     const result = await artDatabaseClient.listArts();
@@ -52,10 +60,9 @@ const artRouter = async (options: ArtRouterOptions) => {
   router.post('/', async (req, res) => {
     const credentials = await httpAuth.credentials(req);
     const decision = (
-      await permissions.authorize(
-        [{ permission: workstreamCreatePermission }],
-        { credentials: credentials },
-      )
+      await permissions.authorize([{ permission: artCreatePermission }], {
+        credentials: credentials,
+      })
     )[0];
     if (decision.result === AuthorizeResult.DENY) {
       throw new NotAllowedError('Unauthorized');
@@ -72,16 +79,14 @@ const artRouter = async (options: ArtRouterOptions) => {
     }
     const result = await artDatabaseClient.insertArt(artData);
     const artLocation = `${apiBaseUrl}/${result.name}`;
-    const catalogServiceToken = await auth.getPluginRequestToken({
-      targetPluginId: 'catalog',
-      onBehalfOf: await auth.getOwnServiceCredentials(),
-    });
-    await catalogApi.addLocation(
+    await catalog.addLocation(
       {
         target: artLocation,
         type: 'url',
       },
-      catalogServiceToken,
+      {
+        credentials: await auth.getOwnServiceCredentials(),
+      },
     );
     res.status(200).json({ data: result });
   });
@@ -109,7 +114,7 @@ const artRouter = async (options: ArtRouterOptions) => {
       await permissions.authorize(
         [
           {
-            permission: workstreamUpdatePermission,
+            permission: artUpdatePermission,
             resourceRef: `art:${DEFAULT_WORKSTREAM_NAMESPACE}/${artName}`,
           },
         ],
@@ -137,22 +142,18 @@ const artRouter = async (options: ArtRouterOptions) => {
         error: 'Something went wrong while updating database',
       });
     }
-    const catalogServiceToken = await auth.getPluginRequestToken({
-      targetPluginId: 'catalog',
-      onBehalfOf: await auth.getOwnServiceCredentials(),
-    });
+    const catalogServiceToken = {
+      credentials: await auth.getOwnServiceCredentials(),
+    };
     if (artName !== updatedData.name) {
       // remove original location
-      const currLoc = await catalogApi.getLocationByEntity(
+      const currLoc = await catalog.getLocationByEntity(
         `art:${DEFAULT_WORKSTREAM_NAMESPACE}/${artName}`,
         catalogServiceToken,
       );
-      await catalogApi.removeLocationById(
-        currLoc?.id ?? '',
-        catalogServiceToken,
-      );
+      await catalog.removeLocationById(currLoc?.id ?? '', catalogServiceToken);
       // add new location with updated target name
-      await catalogApi.addLocation(
+      await catalog.addLocation(
         {
           type: 'url',
           target: `${apiBaseUrl}/${updatedData.name}`,
@@ -165,7 +166,7 @@ const artRouter = async (options: ArtRouterOptions) => {
           'Workstream updated successfully (please refresh entity to view changes)',
       });
     }
-    await catalogApi.refreshEntity(
+    await catalog.refreshEntity(
       `art:${DEFAULT_WORKSTREAM_NAMESPACE}/${artName}`,
       catalogServiceToken,
     );
@@ -179,10 +180,9 @@ const artRouter = async (options: ArtRouterOptions) => {
   router.delete('/:art_name', async (req, res) => {
     const credentials = await httpAuth.credentials(req);
     const decision = (
-      await permissions.authorize(
-        [{ permission: workstreamDeletePermission }],
-        { credentials },
-      )
+      await permissions.authorize([{ permission: artDeletePermission }], {
+        credentials,
+      })
     )[0];
     if (decision.result === AuthorizeResult.DENY) {
       throw new NotAllowedError('Unauthorized');
@@ -190,17 +190,16 @@ const artRouter = async (options: ArtRouterOptions) => {
     const name = req.params.art_name;
     const result = await artDatabaseClient.getArtById(name);
     if (result) {
-      const catalogServiceToken = await auth.getPluginRequestToken({
-        targetPluginId: 'catalog',
-        onBehalfOf: await auth.getOwnServiceCredentials(),
-      });
+      const catalogServiceToken = {
+        credentials: await auth.getOwnServiceCredentials(),
+      };
 
-      const resp = await catalogApi.getLocationByRef(
+      const resp = await catalog.getLocationByRef(
         `url:${apiBaseUrl}/${result.name}`,
         catalogServiceToken,
       );
       if (resp) {
-        await catalogApi.removeLocationById(resp.id, catalogServiceToken);
+        await catalog.removeLocationById(resp.id, catalogServiceToken);
       }
       await artDatabaseClient.deleteArt(name);
       return res.status(200).json({ message: 'Deleted successfully' });

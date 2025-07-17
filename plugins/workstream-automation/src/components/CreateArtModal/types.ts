@@ -1,5 +1,5 @@
 import { WorkstreamEntity } from '@compass/backstage-plugin-workstream-automation-common';
-import { CustomUserEntity, TableRowDataType } from '../../types';
+import { CustomUserEntity, TableRowDataType, TJiraProject } from '../../types';
 import { GroupEntity } from '@backstage/catalog-model';
 
 export type ARTForm1 = {
@@ -8,6 +8,7 @@ export type ARTForm1 = {
   rte?: CustomUserEntity;
   pillar?: string;
   email?: string;
+  jiraProject?: TJiraProject;
   slackChannelUrl?: string;
   workstreams: WorkstreamEntity[];
 };

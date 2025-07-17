@@ -2,6 +2,8 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import { workstreamPluginPermissions } from '@compass/backstage-plugin-workstream-automation-common';
 import { createRouter } from './service/router';
 
 /**
@@ -22,6 +24,8 @@ export const workstreamAutomationPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         permissions: coreServices.permissions,
         httpAuth: coreServices.httpAuth,
+        permissionsRegistry: coreServices.permissionsRegistry,
+        catalog: catalogServiceRef,
       },
       async init({
         httpRouter,
@@ -32,11 +36,14 @@ export const workstreamAutomationPlugin = createBackendPlugin({
         discovery,
         permissions,
         httpAuth,
+        catalog,
+        permissionsRegistry,
       }) {
         httpRouter.addAuthPolicy({
           path: '/health',
           allow: 'unauthenticated',
         });
+        permissionsRegistry.addPermissions(workstreamPluginPermissions);
         httpRouter.use(
           await createRouter({
             logger,
@@ -46,6 +53,8 @@ export const workstreamAutomationPlugin = createBackendPlugin({
             discovery,
             permissions,
             httpAuth,
+            catalog,
+            permissionsRegistry,
           }),
         );
       },
