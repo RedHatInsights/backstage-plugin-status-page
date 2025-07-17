@@ -262,6 +262,79 @@ export async function createAuditInitiationRouter(
   );
 
   /**
+   * PUT /audits/:app_name/:frequency/:period/jira-key
+   * Allows the application owner to manually update the Jira Epic key for an audit.
+   * @route PUT /audits/:app_name/:frequency/:period/jira-key
+   * @param {string} req.params.app_name - Application name
+   * @param {string} req.params.frequency - Audit frequency
+   * @param {string} req.params.period - Audit period
+   * @param {Object} req.body - { jira_key: string }
+   * @returns {void} 204 - Success response
+   * @returns {Object} 403 - Forbidden
+   * @returns {Object} 404 - Audit not found
+   * @returns {Object} 500 - Error response
+   */
+  auditInitiationRouter.put(
+    '/audits/:app_name/:frequency/:period/jira-key',
+    async (req, res) => {
+      const { app_name, frequency, period } = req.params;
+      const { jira_key, user } = req.body;
+      try {
+        // Fetch the audit and application details
+        const audit = await database.findAuditByAppNamePeriod(
+          app_name,
+          frequency,
+          period,
+        );
+        const appDetails = await database.getApplicationDetails(app_name);
+        if (!audit || !appDetails) {
+          return res
+            .status(404)
+            .json({ error: 'Audit or application not found' });
+        }
+        // Check if the user is the application owner (compare username part)
+        let userName = '';
+        if (user && typeof user === 'string') {
+          if (user.includes('@')) {
+            userName = user.split('@')[0] || '';
+          } else {
+            userName = user.split('/').pop() || '';
+          }
+        }
+        let ownerName = '';
+        if (
+          appDetails.app_owner_email &&
+          typeof appDetails.app_owner_email === 'string'
+        ) {
+          ownerName = appDetails.app_owner_email.split('@')[0] || '';
+        } else if (
+          appDetails.app_owner &&
+          typeof appDetails.app_owner === 'string'
+        ) {
+          ownerName = appDetails.app_owner.split('@')[0] || '';
+        }
+        if (!user || !userName || !ownerName || userName !== ownerName) {
+          return res.status(403).json({
+            error: 'Only the application owner can update the Jira Epic key.',
+          });
+        }
+        await database.updateAudit(app_name, frequency, period, { jira_key });
+        return res.sendStatus(204);
+      } catch (error) {
+        logger.error('Failed to update Jira Epic key', {
+          error: error instanceof Error ? error.message : String(error),
+          app_name,
+          frequency,
+          period,
+        });
+        return res
+          .status(500)
+          .json({ error: 'Failed to update Jira Epic key' });
+      }
+    },
+  );
+
+  /**
    * POST /audits/check-duplicate
    * Checks if an audit already exists for the given parameters.
    *

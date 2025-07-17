@@ -596,28 +596,27 @@ export class AuditComplianceDatabase {
       }
 
       // Create Jira ticket
-      // const createResp = await axios
-      //   .post(`${jiraUrl}/rest/api/latest/issue`, requestBody, {
-      //     headers: {
-      //       Authorization: `Bearer ${jiraToken}`,
-      //       'Content-Type': 'application/json',
-      //     },
-      //   })
-      //   .catch(error => {
-      //     this.logger.error('Failed to create Jira ticket', {
-      //       error: error.response?.data || error.message,
-      //       status: error.response?.status,
-      //     });
-      //     throw new Error(
-      //       `Failed to create Jira ticket: ${
-      //         error.response?.data?.message || error.message
-      //       }`,
-      //     );
-      //   });
+      const createResp = await axios
+        .post(`${jiraUrl}/rest/api/latest/issue`, requestBody, {
+          headers: {
+            Authorization: `Bearer ${jiraToken}`,
+            'Content-Type': 'application/json',
+          },
+        })
+        .catch(error => {
+          this.logger.error('Failed to create Jira ticket', {
+            error: error.response?.data || error.message,
+            status: error.response?.status,
+          });
+          throw new Error(
+            `Failed to create Jira ticket: ${
+              error.response?.data?.message || error.message
+            }`,
+          );
+        });
 
-      // const { key: issueKey, id: issueId } = createResp.data;
-      const issueKey = 'APD-952';
-      const issueId = 'APD-952';
+      const { key: issueKey, id: issueId } = createResp.data;
+
       // Get ticket status
       const detailsResp = await axios
         .get<JiraIssueStatusResponse>(
@@ -1000,29 +999,28 @@ export class AuditComplianceDatabase {
       }
 
       // Create Jira ticket
-      // const createResp = await axios
-      //   .post(`${jiraUrl}/rest/api/latest/issue`, requestBody, {
-      //     headers: {
-      //       Authorization: `Bearer ${jiraToken}`,
-      //       'Content-Type': 'application/json',
-      //     },
-      //   })
-      //   .catch(error => {
-      //     this.logger.error('Failed to create Jira ticket', {
-      //       error: error instanceof Error ? error.message : String(error),
-      //       status: (error as any)?.response?.status,
-      //       requestBody,
-      //     });
-      //     throw new Error(
-      //       `Failed to create Jira ticket: ${
-      //         error.response?.data?.message || error.message
-      //       }`,
-      //     );
-      //   });
+      const createResp = await axios
+        .post(`${jiraUrl}/rest/api/latest/issue`, requestBody, {
+          headers: {
+            Authorization: `Bearer ${jiraToken}`,
+            'Content-Type': 'application/json',
+          },
+        })
+        .catch(error => {
+          this.logger.error('Failed to create Jira ticket', {
+            error: error instanceof Error ? error.message : String(error),
+            status: (error as any)?.response?.status,
+            requestBody,
+          });
+          throw new Error(
+            `Failed to create Jira ticket: ${
+              error.response?.data?.message || error.message
+            }`,
+          );
+        });
 
-      // const { key: issueKey, id: issueId } = createResp.data;
-      const issueKey = 'APD-951';
-      const issueId = 'APD-951';
+      const { key: issueKey, id: issueId } = createResp.data;
+
       // Get ticket status
       const detailsResp = await axios
         .get<JiraIssueStatusResponse>(
@@ -1178,24 +1176,41 @@ export class AuditComplianceDatabase {
         labels: [
           `${app_name}-${period}-${frequency}-Epic`,
           'audit-compliance-plugin',
+          ...extraLabels,
         ],
         customfield_12311141: summary, // Epic Name (same as summary)
+        ...(components ? { components } : {}),
+        ...otherFields,
       },
     };
 
     this.logger.info('Jira ticket request body', { requestBody });
 
-    const createResp = await axios.post(
-      `${jiraUrl}/rest/api/latest/issue`,
-      requestBody,
-      {
-        headers: {
-          Authorization: `Bearer ${jiraToken}`,
-          'Content-Type': 'application/json',
+    let createResp;
+    try {
+      createResp = await axios.post(
+        `${jiraUrl}/rest/api/latest/issue`,
+        requestBody,
+        {
+          headers: {
+            Authorization: `Bearer ${jiraToken}`,
+            'Content-Type': 'application/json',
+          },
         },
-      },
-    );
-    console.log('12--132 creating epic', createResp);
+      );
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        this.logger.error('Jira ticket creation failed', {
+          data: error.response?.data,
+          status: error.response?.status,
+        });
+      } else {
+        this.logger.error('Jira ticket creation failed', {
+          error: String(error),
+        });
+      }
+      throw error;
+    }
 
     const { key: issueKey, id: issueId } = createResp.data;
 
@@ -1249,7 +1264,7 @@ export class AuditComplianceDatabase {
    * @returns Promise resolving to application details or null if not found
    */
   async getApplicationDetails(appName: string) {
-    const result = await this.db('applications')
+    const appRows = await this.db('applications')
       .select(
         'source',
         'account_name',
@@ -1259,10 +1274,12 @@ export class AuditComplianceDatabase {
         'app_owner_email',
         'jira_metadata',
       )
-      .where({ app_name: appName })
-      .first();
+      .where({ app_name: appName });
 
-    return result || null;
+    if (!appRows || appRows.length === 0) return null;
+    // Prefer a row with jira_metadata, fallback to first row
+    const appDetails = appRows.find(row => row.jira_metadata) || appRows[0];
+    return appDetails;
   }
 
   /**

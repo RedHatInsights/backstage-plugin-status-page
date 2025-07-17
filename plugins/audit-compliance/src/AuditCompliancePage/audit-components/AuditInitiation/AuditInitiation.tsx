@@ -12,6 +12,7 @@ import {
   discoveryApiRef,
   fetchApiRef,
   useApi,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 import {
   Box,
@@ -24,8 +25,10 @@ import {
   MenuItem,
   Select,
   Typography,
+  IconButton,
 } from '@material-ui/core';
 import Group from '@material-ui/icons/Group';
+import EditIcon from '@material-ui/icons/Edit';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import { formatDisplayName } from '../AuditApplicationList/AuditApplicationList';
@@ -69,7 +72,39 @@ export const AuditInitiation = () => {
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
   const configApi = useApi(configApiRef);
+  const identityApi = useApi(identityApiRef);
+  const [currentUser, setCurrentUser] = useState('');
+  const [appOwnerEmail, setAppOwnerEmail] = useState('');
+  const [manualJiraKey, setManualJiraKey] = useState('');
+  const [editingJiraKey, setEditingJiraKey] = useState<{
+    key: string;
+    freq: string;
+    period: string;
+  } | null>(null);
   const jiraUrl = configApi.getString('auditCompliance.jiraUrl');
+
+  // Fetch current user and app owner
+  useEffect(() => {
+    const fetchUserAndOwner = async () => {
+      try {
+        const identity = await identityApi.getBackstageIdentity();
+        setCurrentUser(identity.userEntityRef);
+        if (app_name) {
+          const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+          const response = await fetchApi.fetch(
+            `${baseUrl}/application-details/${encodeURIComponent(app_name)}`,
+          );
+          const data = await response.json();
+          setAppOwnerEmail(data.app_owner_email);
+        }
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to fetch user or owner', e);
+      }
+    };
+    fetchUserAndOwner();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [app_name]);
 
   const fetchAuditHistory = async () => {
     try {
@@ -236,6 +271,47 @@ export const AuditInitiation = () => {
     });
   };
 
+  // Save manual Jira key
+  const handleSaveJiraKey = async (row: AuditHistoryItem) => {
+    try {
+      const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+      const response = await fetchApi.fetch(
+        `${baseUrl}/audits/${app_name}/${row.frequency}/${row.period}/jira-key`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jira_key: manualJiraKey, user: currentUser }),
+        },
+      );
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        alertApi.post({
+          message: errorData.error || 'Failed to update Jira Epic key',
+          severity: 'error',
+        });
+        return;
+      }
+      alertApi.post({
+        message: 'Jira Epic key updated successfully',
+        severity: 'success',
+      });
+      setEditingJiraKey(null);
+      setManualJiraKey('');
+      fetchAuditHistory();
+    } catch (e) {
+      alertApi.post({
+        message: 'Failed to update Jira Epic key',
+        severity: 'error',
+      });
+    }
+  };
+
+  // Determine if the current user is the application owner (component-level)
+  const isOwner =
+    currentUser &&
+    appOwnerEmail &&
+    currentUser.split('/').pop() === appOwnerEmail.split('@')[0];
+
   return (
     <Page themeId="tool">
       <Header
@@ -355,6 +431,41 @@ export const AuditInitiation = () => {
                     field: 'jira_key',
                     render: (row: AuditHistoryItem) => {
                       if (
+                        editingJiraKey &&
+                        editingJiraKey.key === row.jira_key &&
+                        editingJiraKey.freq === row.frequency &&
+                        editingJiraKey.period === row.period
+                      ) {
+                        return (
+                          <Box
+                            display="flex"
+                            alignItems="center"
+                            style={{ gap: 8 }}
+                          >
+                            <input
+                              type="text"
+                              value={manualJiraKey}
+                              onChange={e => setManualJiraKey(e.target.value)}
+                              placeholder="Enter Jira Epic Key"
+                            />
+                            <Button
+                              size="small"
+                              color="primary"
+                              variant="contained"
+                              onClick={() => handleSaveJiraKey(row)}
+                            >
+                              Save
+                            </Button>
+                            <Button
+                              size="small"
+                              onClick={() => setEditingJiraKey(null)}
+                            >
+                              Cancel
+                            </Button>
+                          </Box>
+                        );
+                      }
+                      if (
                         !row.jira_key ||
                         row.jira_key.toUpperCase() === 'N/A'
                       ) {
@@ -441,7 +552,32 @@ export const AuditInitiation = () => {
                     ),
                   },
                   { title: 'Created At', field: 'created_at' },
-
+                  // Only show Actions column if isOwner
+                  ...(isOwner
+                    ? [
+                        {
+                          title: 'Actions',
+                          field: 'actions',
+                          render: (row: AuditHistoryItem) => (
+                            <IconButton
+                              size="small"
+                              onClick={() =>
+                                setEditingJiraKey({
+                                  key: row.jira_key,
+                                  freq: row.frequency,
+                                  period: row.period,
+                                })
+                              }
+                              title="Edit Jira Epic"
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          ),
+                          sorting: false,
+                          hidden: false,
+                        },
+                      ]
+                    : []),
                   {
                     title: 'View Details',
                     render: (row: AuditHistoryItem) => (
