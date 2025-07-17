@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-outages [1.7.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-outages@1.6.0...@appdev/backstage-plugin-outages@1.7.0) (2025-07-17)
+
+
+### Features
+
+* **APD-1008:** Outages Backend plugin ([1828b7d](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/1828b7dd6f25f7a17960c956fc4f6710e06526ba))
+
 ## @appdev/backstage-plugin-outages [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-outages@1.5.0...@appdev/backstage-plugin-outages@1.6.0) (2025-07-15)
 
 
