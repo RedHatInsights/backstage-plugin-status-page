@@ -1,5 +1,13 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.15.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.14.0...@appdev/backstage-plugin-audit-compliance@1.15.0) (2025-07-17)
+
+
+### Features
+
+* **audit-compliance:** Adding a way to add JIRA _metadata ([5aa7868](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/5aa78680a0991760818c0cea714ea02525d82cf4))
+* **audit-compliance:** Allowing JIRA name editing in intiation steps ([a4a41d7](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/a4a41d781209c97aec64506c4e34a699b64b2102))
+
 ## @appdev/backstage-plugin-audit-compliance [1.14.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.13.0...@appdev/backstage-plugin-audit-compliance@1.14.0) (2025-07-17)
 
 
