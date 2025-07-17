@@ -1,10 +1,13 @@
+import { useApp } from '@backstage/core-plugin-api';
 import {
   Box,
-  Card,
   CardActionArea,
   CardContent,
   Grid,
+  Tooltip,
+  Typography,
 } from '@material-ui/core';
+import LinkTwoTone from '@material-ui/icons/LinkTwoTone';
 
 type LinkCardProps = {
   title?: string;
@@ -12,11 +15,21 @@ type LinkCardProps = {
   Icon?: React.JSX.Element;
 };
 
+export const LinkIcon = (props: { val?: string }) => {
+  const app = useApp();
+  const { val: key } = props;
+  const Icon = key ? app.getSystemIcon(key) ?? LinkTwoTone : LinkTwoTone;
+  return <Icon color="inherit" fontSize="large" />;
+};
+
 export const LinkCard = (props: LinkCardProps) => {
   const { Icon, href, title } = props;
   return (
-    <Card variant="outlined" style={{ margin: '4px', width: '5rem' }}>
-      <CardActionArea target="_blank" href={href}>
+    <CardActionArea target="_blank" style={{ width: '5rem' }} href={href}>
+      <Tooltip
+        title={title && title.length > 14 ? title : ''}
+        placement="bottom"
+      >
         <Box
           display="flex"
           flexDirection="column"
@@ -26,10 +39,22 @@ export const LinkCard = (props: LinkCardProps) => {
         >
           <Grid xs={12}>{Icon}</Grid>
           <Grid xs={12}>
-            <CardContent style={{ padding: '8px 0 0 0' }}>{title}</CardContent>
+            <CardContent
+              style={{
+                padding: '8px 1px 0 1px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              <Typography variant="button">
+                {title && title.length > 14
+                  ? `${title.substring(0, 14)}...`
+                  : title}
+              </Typography>
+            </CardContent>
           </Grid>
         </Box>
-      </CardActionArea>
-    </Card>
+      </Tooltip>
+    </CardActionArea>
   );
 };

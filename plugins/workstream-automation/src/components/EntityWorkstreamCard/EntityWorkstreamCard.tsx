@@ -128,13 +128,14 @@ export const EntityWorkstreamCard = (props: {
       )}
       <InfoCard
         {...props}
-        title={`Workstreams (${workstreams?.length})`}
+        title={`Workstreams (${workstreams.length})`}
         noPadding
         headerProps={{
           classes: { action: classes.action },
           action: entity.kind === 'ART' && (
             <RequirePermission
               permission={artUpdatePermission}
+              resourceRef={stringifyEntityRef(entity)}
               errorPage={<></>}
             >
               <IconButton onClick={() => setEditModalOpen(true)}>
@@ -144,17 +145,19 @@ export const EntityWorkstreamCard = (props: {
           ),
         }}
       >
-        <Table
-          columns={columns}
-          style={{ borderRadius: 0, padding: 0 }}
-          data={workstreams}
-          isLoading={entityLoading}
-          options={{
-            draggable: false,
-            padding: 'dense',
-            pageSize: workstreams.length > 5 ? 10 : 5,
-          }}
-        />
+        {workstreams.length > 0 && (
+          <Table
+            columns={columns}
+            style={{ borderRadius: 0, padding: 0 }}
+            data={workstreams}
+            isLoading={entityLoading}
+            options={{
+              draggable: false,
+              padding: 'dense',
+              pageSize: workstreams.length > 5 ? 10 : 5,
+            }}
+          />
+        )}
         {entitiesNotFound.length > 0 && (
           <ErrorPanel
             error={{

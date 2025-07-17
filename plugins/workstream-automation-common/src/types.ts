@@ -1,4 +1,6 @@
 import { Entity, EntityLink } from '@backstage/catalog-model';
+import { z } from 'zod/v4';
+import { UserNoteSchema } from './schemas';
 
 /**
  * @deprecated Use {@link WorkstreamEntity} instead
@@ -84,12 +86,4 @@ export interface ArtEntity extends Entity {
   };
 }
 
-export type UserNotes = {
-  userRef: string;
-  note: string;
-  updatedAt: string;
-  modificationHistory?: {
-    timestamp: string;
-    modifiedBy: string;
-  }[];
-};
+export type UserNote = z.infer<typeof UserNoteSchema>;

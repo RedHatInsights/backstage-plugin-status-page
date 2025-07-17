@@ -8,7 +8,9 @@ import { Autocomplete } from '@material-ui/lab';
 import { useEffect, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 
-export const FormInputJiraProject = () => {
+export const FormInputJiraProject = (props: { required?: boolean }) => {
+  const { required = true } = props;
+
   const discoveryApi = useApi(discoveryApiRef);
   const alertApi = useApi(alertApiRef);
   const [jiraOptions, setJiraOptions] = useState<any[]>([]);
@@ -37,7 +39,7 @@ export const FormInputJiraProject = () => {
     <Controller
       name="jiraProject"
       control={control}
-      rules={{ required: 'jira peoject is required' }}
+      rules={{ required: required && 'jira peoject is required' }}
       render={({
         field: { onChange, onBlur, value },
         fieldState: { error },
@@ -55,7 +57,7 @@ export const FormInputJiraProject = () => {
                 {...params}
                 fullWidth
                 label="Select Jira Project"
-                required
+                required={required}
                 error={!!error}
                 helperText={error ? error.message : null}
                 variant="outlined"

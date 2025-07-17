@@ -1,7 +1,4 @@
-import {
-  WorkstreamEntity,
-  workstreamUpdatePermission,
-} from '@compass/backstage-plugin-workstream-automation-common';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   InfoCard,
   InfoCardVariants,
@@ -16,14 +13,20 @@ import {
   EntityRefLink,
   useAsyncEntity,
 } from '@backstage/plugin-catalog-react';
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import {
+  UserNote,
+  WorkstreamEntity,
+  workstreamUpdatePermission,
+} from '@compass/backstage-plugin-workstream-automation-common';
 import { IconButton, makeStyles } from '@material-ui/core';
 import EditTwoTone from '@material-ui/icons/EditTwoTone';
 import { useEffect, useState } from 'react';
+import { noteApiRef } from '../../api';
 import { CustomUserEntity, TableRowDataType } from '../../types';
-import { MembersEditModal } from './MembersEditModal';
-import { RequirePermission } from '@backstage/plugin-permission-react';
-import { stringifyEntityRef } from '@backstage/catalog-model';
 import { MemberWarningChip } from '../MemberWarningChip/MemberWarningChip';
+import { ViewUserNote } from '../UserNotes';
+import { MembersEditModal } from './MembersEditModal';
 
 const useStyles = makeStyles(theme => ({
   action: {
@@ -34,7 +37,11 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
-  const { entity, loading: isLoading } = useAsyncEntity<WorkstreamEntity>();
+  const {
+    entity,
+    loading: isLoading,
+    refresh,
+  } = useAsyncEntity<WorkstreamEntity>();
   const classes = useStyles();
   const catalogApi = useApi(catalogApiRef);
   const members = entity?.spec.members;
@@ -66,6 +73,34 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
       getMemberEntites();
     }
   }, [catalogApi, members, loading, leadRef]);
+
+  const noteApi = useApi(noteApiRef);
+  const [notes, setNotes] = useState<Record<string, UserNote>>({});
+  useEffect(() => {
+    if (leadEntity && tableData.length) {
+      const totalData = [
+        ...(leadEntity
+          ? [
+              {
+                user: leadEntity,
+                role: 'Workstream Lead',
+              },
+            ]
+          : []),
+        ...tableData,
+      ];
+      noteApi
+        .getNotes(totalData.map(d => stringifyEntityRef(d.user)))
+        .then((res: UserNote[] | undefined) => {
+          const noteMap = Object.fromEntries(
+            res ? res.map(note => [note.userRef, note]) : [],
+          );
+          setNotes(noteMap);
+        });
+    }
+    // removed `leadEntity` from deps as it is already updated with tableData
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tableData, noteApi]);
 
   useEffect(() => {
     if (isLoading) {
@@ -99,7 +134,20 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
     },
     {
       sorting: false,
-      width: '5%',
+      width: '2%',
+      cellStyle: { padding: '2px 6px' },
+      render: data => (
+        <ViewUserNote
+          user={data.user}
+          note={notes[stringifyEntityRef(data.user)]}
+          refresh={refresh}
+        />
+      ),
+    },
+    {
+      sorting: false,
+      cellStyle: { padding: '2px 6px' },
+      width: '2%',
       render: data => <MemberWarningChip user={data.user} />,
     },
   ];

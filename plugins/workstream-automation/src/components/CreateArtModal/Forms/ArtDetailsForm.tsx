@@ -6,7 +6,10 @@ import {
   FormInputRteName,
 } from '../Inputs';
 
-import { FormInputTextField } from '../../CreateWorkstreamModal/Inputs';
+import {
+  FormInputJiraProject,
+  FormInputTextField,
+} from '../../CreateWorkstreamModal/Inputs';
 import { UseFormReturn } from 'react-hook-form';
 import { ARTForm2 } from '../types';
 import { Member } from '../../../types';
@@ -38,6 +41,9 @@ export const ArtDetailsForm = (props: { form2: UseFormReturn<ARTForm2> }) => {
       </Grid>
       <Grid item xs={12}>
         <FormInputRteName members={members} />
+      </Grid>
+      <Grid item xs={12}>
+        <FormInputJiraProject required={false} />
       </Grid>
       <Grid item xs={12}>
         <FormInputTextField

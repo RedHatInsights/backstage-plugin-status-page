@@ -32,3 +32,9 @@ export type ArtDatabaseModel = {
   updated_by: string;
   links: string;
 };
+
+export type UserNoteModel = {
+  user_ref: string;
+  note?: string;
+  modification_history: string;
+};

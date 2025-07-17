@@ -1,7 +1,6 @@
-import {
-  RESOURCE_TYPE_WORKSTREAM_ENTITY,
-  workstreamPermissions,
-} from '@compass/backstage-plugin-workstream-automation-common';
+import { AuthService, CacheService } from '@backstage/backend-plugin-api';
+import { CatalogApi } from '@backstage/catalog-client';
+import { parseEntityRef } from '@backstage/catalog-model';
 import {
   AuthorizeResult,
   isPermission,
@@ -15,12 +14,19 @@ import {
   PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 import {
+  RESOURCE_TYPE_ART_ENTITY,
+  RESOURCE_TYPE_USER_REF,
+  RESOURCE_TYPE_WORKSTREAM_ENTITY,
+  workstreamPluginPermissions,
+} from '@compass/backstage-plugin-workstream-automation-common';
+import {
+  artConditions,
+  createArtConditionalDecision,
+  createUserNoteConditionalDecision,
   createWorkstreamConditionalDecision,
+  userNoteConditions,
   workstreamConditions,
 } from './utils/conditionExports';
-import { AuthService, CacheService } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { parseEntityRef } from '@backstage/catalog-model';
 
 type AllowedUsers = {
   name: string;
@@ -35,7 +41,7 @@ type PluginPermissionConfig = {
 };
 
 export const isWorkstreamPermission = (permission: Permission) =>
-  Object.values(workstreamPermissions).some(workstreamPermission =>
+  Object.values(workstreamPluginPermissions).some(workstreamPermission =>
     isPermission(permission, workstreamPermission),
   );
 
@@ -130,6 +136,22 @@ export class WorkstreamPolicy implements PermissionPolicy {
         request.permission,
         workstreamConditions.isWorkstreamLead({
           claim: user?.info.userEntityRef ?? '',
+        }),
+      );
+    }
+
+    if (isResourcePermission(request.permission, RESOURCE_TYPE_ART_ENTITY)) {
+      return createArtConditionalDecision(
+        request.permission,
+        artConditions.isArtOwner({ claim: user.info.userEntityRef ?? '' }),
+      );
+    }
+
+    if (isResourcePermission(request.permission, RESOURCE_TYPE_USER_REF)) {
+      return createUserNoteConditionalDecision(
+        request.permission,
+        userNoteConditions.isValidUser({
+          claim: user.info.userEntityRef ?? '',
         }),
       );
     }

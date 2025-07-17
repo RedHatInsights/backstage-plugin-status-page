@@ -1,7 +1,9 @@
+import { EntityLink } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import { Member, Workstream } from '../types';
+import { knexNow } from '../utils/knexNow';
+import { normalizeEmail } from '../utils/normalizeEmail';
 import { WorkstreamDatabaseModel } from './types';
-import { EntityLink } from '@backstage/catalog-model';
 
 export interface WorkstreamBackendStore {
   insertWorkstream(data: Workstream): Promise<Workstream>;
@@ -39,7 +41,7 @@ export class WorkstreamBackendDatabase implements WorkstreamBackendStore {
       .select('*')
       .where('name', id)
       .first()
-      .update({ ...updatedData, updated_at: this.db.fn.now() }, '*');
+      .update({ ...updatedData, updated_at: knexNow() }, '*');
 
     if (dbResult.length < 1) {
       return null;
@@ -104,7 +106,7 @@ export class WorkstreamBackendDatabase implements WorkstreamBackendStore {
         workstream.links.map(link => ({
           ...link,
           ...(link.type?.toLowerCase() === 'email' && {
-            url: `mailto://${link.url}`,
+            url: normalizeEmail(link.url),
           }),
         })),
       ),

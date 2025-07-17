@@ -1,10 +1,6 @@
 import { GroupEntity, SystemEntity } from '@backstage/catalog-model';
-import { CustomUserEntity, TableRowDataType } from '../../../types';
+import { CustomUserEntity, TableRowDataType, TJiraProject } from '../../../types';
 
-interface TJiraProject {
-  key: string;
-  name: string;
-}
 
 export type Form2 = {
   kind: { label: string; value: string } | null;

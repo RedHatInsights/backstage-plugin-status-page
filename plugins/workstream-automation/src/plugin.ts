@@ -1,4 +1,6 @@
 import {
+  AlertApi,
+  alertApiRef,
   createComponentExtension,
   createPlugin,
   createRoutableExtension,
@@ -10,8 +12,15 @@ import {
   identityApiRef,
 } from '@backstage/core-plugin-api';
 
+import {
+  ArtApiClient,
+  artApiRef,
+  NoteApiClient,
+  noteApiRef,
+  WorkstreamApiClient,
+  workstreamApiRef,
+} from './api';
 import { rootRouteRef } from './routes';
-import { ArtApi, artApiRef, WorkstreamApi, workstreamApiRef } from './api';
 
 export const workstreamAutomationPlugin = createPlugin({
   id: 'workstream-automation',
@@ -31,7 +40,7 @@ export const workstreamAutomationPlugin = createPlugin({
         fetchApi: FetchApi;
         identityApi: IdentityApi;
       }) {
-        return new WorkstreamApi(deps);
+        return new WorkstreamApiClient(deps);
       },
     },
     {
@@ -46,7 +55,26 @@ export const workstreamAutomationPlugin = createPlugin({
         fetchApi: FetchApi;
         identityApi: IdentityApi;
       }) {
-        return new ArtApi(deps);
+        return new ArtApiClient(deps);
+      },
+    },
+    {
+      api: noteApiRef,
+      deps: {
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+        alertApi: alertApiRef,
+      },
+      factory(deps: {
+        discoveryApi: DiscoveryApi;
+        fetchApi: FetchApi;
+        alertApi: AlertApi;
+      }) {
+        return new NoteApiClient(
+          deps.alertApi,
+          deps.discoveryApi,
+          deps.fetchApi,
+        );
       },
     },
   ],
