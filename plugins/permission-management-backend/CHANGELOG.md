@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-permission-management-backend [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-permission-management-backend@1.1.0...@appdev/backstage-plugin-permission-management-backend@1.2.0) (2025-07-17)
+
+
+### Features
+
+* Permission Manager FE plugin with dashboards, email templates, and RBAC ([f64f0fc](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/f64f0fcf4fc22b68a89ecae59953d50836744b28))
+
 ## @appdev/backstage-plugin-permission-management-backend [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-permission-management-backend@1.0.0...@appdev/backstage-plugin-permission-management-backend@1.1.0) (2025-07-15)
 
 
