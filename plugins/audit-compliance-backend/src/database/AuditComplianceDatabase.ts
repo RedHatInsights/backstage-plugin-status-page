@@ -1135,8 +1135,9 @@ export class AuditComplianceDatabase {
       description ||
       `Parent Epic for ${titleCaseAppName} ${formattedPeriod} ${formattedFrequency} Access Review Audit. This audit covers user access reviews, service account reviews, and compliance checks.`;
 
+    // Fetch jira_metadata from applications table
     const appDetails = await this.db('applications')
-      .select('jira_project', 'app_owner', 'app_owner_email')
+      .select('jira_project', 'app_owner', 'app_owner_email', 'jira_metadata')
       .where({ app_name })
       .first();
 
@@ -1144,6 +1145,27 @@ export class AuditComplianceDatabase {
       this.logger.error(`Jira project not found for app_name: ${app_name}`);
       throw new Error(`Jira project not found for app_name: ${app_name}`);
     }
+
+    // Prepare extra fields from jira_metadata
+    const jiraMetadata = appDetails.jira_metadata || {};
+    let components = jiraMetadata.components;
+    if (components) {
+      if (typeof components === 'string') {
+        components = [{ name: components }];
+      } else if (Array.isArray(components)) {
+        components = components.map(c =>
+          typeof c === 'string' ? { name: c } : c,
+        );
+      }
+    }
+    let extraLabels = [];
+    if (jiraMetadata.labels) {
+      extraLabels = Array.isArray(jiraMetadata.labels)
+        ? jiraMetadata.labels
+        : [jiraMetadata.labels];
+    }
+    // Remove components and labels from extraFields to avoid duplication
+    const { components: _c, labels: _l, ...otherFields } = jiraMetadata;
 
     const requestBody: JiraRequestBody = {
       fields: {
@@ -1154,23 +1176,41 @@ export class AuditComplianceDatabase {
         labels: [
           `${app_name}-${period}-${frequency}-Epic`,
           'audit-compliance-plugin',
+          ...extraLabels,
         ],
         customfield_12311141: summary, // Epic Name (same as summary)
+        ...(components ? { components } : {}),
+        ...otherFields,
       },
     };
 
     this.logger.info('Jira ticket request body', { requestBody });
 
-    const createResp = await axios.post(
-      `${jiraUrl}/rest/api/latest/issue`,
-      requestBody,
-      {
-        headers: {
-          Authorization: `Bearer ${jiraToken}`,
-          'Content-Type': 'application/json',
+    let createResp;
+    try {
+      createResp = await axios.post(
+        `${jiraUrl}/rest/api/latest/issue`,
+        requestBody,
+        {
+          headers: {
+            Authorization: `Bearer ${jiraToken}`,
+            'Content-Type': 'application/json',
+          },
         },
-      },
-    );
+      );
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        this.logger.error('Jira ticket creation failed', {
+          data: error.response?.data,
+          status: error.response?.status,
+        });
+      } else {
+        this.logger.error('Jira ticket creation failed', {
+          error: String(error),
+        });
+      }
+      throw error;
+    }
 
     const { key: issueKey, id: issueId } = createResp.data;
 
@@ -1224,7 +1264,7 @@ export class AuditComplianceDatabase {
    * @returns Promise resolving to application details or null if not found
    */
   async getApplicationDetails(appName: string) {
-    const result = await this.db('applications')
+    const appRows = await this.db('applications')
       .select(
         'source',
         'account_name',
@@ -1232,11 +1272,14 @@ export class AuditComplianceDatabase {
         'cmdb_id',
         'jira_project',
         'app_owner_email',
+        'jira_metadata',
       )
-      .where({ app_name: appName })
-      .first();
+      .where({ app_name: appName });
 
-    return result || null;
+    if (!appRows || appRows.length === 0) return null;
+    // Prefer a row with jira_metadata, fallback to first row
+    const appDetails = appRows.find(row => row.jira_metadata) || appRows[0];
+    return appDetails;
   }
 
   /**
@@ -1549,6 +1592,7 @@ export class AuditComplianceDatabase {
       source: 'rover' | 'gitlab' | 'ldap';
       account_name: string;
     }>;
+    jira_metadata?: Record<string, string>;
   }) {
     const trx = await this.db.transaction();
 
@@ -1568,7 +1612,9 @@ export class AuditComplianceDatabase {
           account_name: account.account_name,
           created_at: this.db.fn.now(),
         };
-
+        if (appData.jira_metadata) {
+          entry.jira_metadata = appData.jira_metadata;
+        }
         return entry;
       });
 
@@ -1634,6 +1680,7 @@ export class AuditComplianceDatabase {
       source: 'rover' | 'gitlab' | 'ldap';
       account_name: string;
     }>;
+    jira_metadata?: Record<string, string>;
   }) {
     const trx = await this.db.transaction();
 
@@ -1656,7 +1703,9 @@ export class AuditComplianceDatabase {
           account_name: account.account_name,
           created_at: this.db.fn.now(),
         };
-
+        if (appData.jira_metadata) {
+          entry.jira_metadata = appData.jira_metadata;
+        }
         return entry;
       });
 

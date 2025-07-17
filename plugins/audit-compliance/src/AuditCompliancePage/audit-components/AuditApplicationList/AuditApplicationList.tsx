@@ -69,6 +69,7 @@ interface ApplicationDetails {
   jira_project: string;
   app_owner_email: string;
   accounts: AccountEntry[];
+  jira_metadata?: Record<string, string>;
 }
 
 export function AuditApplicationList() {
@@ -162,7 +163,7 @@ export function AuditApplicationList() {
   };
 
   const convertApiDataToFormData = (
-    apiData: ApplicationDetails,
+    apiData: ApplicationDetails & { jira_metadata?: Record<string, string> },
   ): ApplicationFormData => {
     // Use the accounts array as-is from the backend
     return {
@@ -177,6 +178,7 @@ export function AuditApplicationList() {
         apiData.accounts && apiData.accounts.length > 0
           ? apiData.accounts
           : [{ type: 'rover-group-name', source: 'rover', account_name: '' }],
+      jira_metadata: apiData.jira_metadata || {},
     };
   };
 
@@ -198,7 +200,7 @@ export function AuditApplicationList() {
       const data = await response.json();
       setEditFormData(convertApiDataToFormData(data));
       setIsEditModalOpen(true);
-      setIsSidePanelOpen(false);
+      setIsSidePanelOpen(false); // Close the drawer when editing
     } finally {
       setDetailsLoading(false);
     }
@@ -275,6 +277,36 @@ export function AuditApplicationList() {
             secondary={selectedAppDetails.jira_project}
           />
         </ListItem>
+        {/* Jira Metadata Section */}
+        {selectedAppDetails.jira_metadata &&
+          Object.keys(selectedAppDetails.jira_metadata).length > 0 && (
+            <ListItem alignItems="flex-start">
+              <ListItemText
+                primary="Jira Metadata Fields"
+                secondary={
+                  <div>
+                    {Object.entries(selectedAppDetails.jira_metadata).map(
+                      ([key, value]) => (
+                        <div
+                          key={key}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            marginBottom: 4,
+                          }}
+                        >
+                          <span style={{ fontWeight: 500, marginRight: 8 }}>
+                            {key}:
+                          </span>
+                          <span>{value}</span>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                }
+              />
+            </ListItem>
+          )}
         <ListItem>
           <ListItemText
             primary="Owner Email"
