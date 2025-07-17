@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.14.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.13.0...@appdev/backstage-plugin-audit-compliance@1.14.0) (2025-07-17)
+
+
+### Features
+
+* **audit-compliance:** enhance onboarding with LDAP integration, Rover API, and data panels ([6b3d838](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/6b3d83855c672f94e7a87416cb299fc569167167))
+
 ## @appdev/backstage-plugin-audit-compliance [1.13.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.12.1...@appdev/backstage-plugin-audit-compliance@1.13.0) (2025-07-15)
 
 
