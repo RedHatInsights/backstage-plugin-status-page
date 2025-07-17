@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-workstream-automation-common [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation-common@1.5.0...@compass/backstage-plugin-workstream-automation-common@1.6.0) (2025-07-17)
+
+
+### Features
+
+* **PULSE-538:** Adds user note management functionality ([3a17f9c](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/3a17f9c620238d490b4593d6941d008a886ed35c))
+
 ## @compass/backstage-plugin-workstream-automation-common [1.5.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation-common@1.4.0...@compass/backstage-plugin-workstream-automation-common@1.5.0) (2025-07-15)
 
 
