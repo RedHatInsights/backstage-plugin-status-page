@@ -1137,8 +1137,9 @@ export class AuditComplianceDatabase {
       description ||
       `Parent Epic for ${titleCaseAppName} ${formattedPeriod} ${formattedFrequency} Access Review Audit. This audit covers user access reviews, service account reviews, and compliance checks.`;
 
+    // Fetch jira_metadata from applications table
     const appDetails = await this.db('applications')
-      .select('jira_project', 'app_owner', 'app_owner_email')
+      .select('jira_project', 'app_owner', 'app_owner_email', 'jira_metadata')
       .where({ app_name })
       .first();
 
@@ -1146,6 +1147,27 @@ export class AuditComplianceDatabase {
       this.logger.error(`Jira project not found for app_name: ${app_name}`);
       throw new Error(`Jira project not found for app_name: ${app_name}`);
     }
+
+    // Prepare extra fields from jira_metadata
+    const jiraMetadata = appDetails.jira_metadata || {};
+    let components = jiraMetadata.components;
+    if (components) {
+      if (typeof components === 'string') {
+        components = [{ name: components }];
+      } else if (Array.isArray(components)) {
+        components = components.map(c =>
+          typeof c === 'string' ? { name: c } : c,
+        );
+      }
+    }
+    let extraLabels = [];
+    if (jiraMetadata.labels) {
+      extraLabels = Array.isArray(jiraMetadata.labels)
+        ? jiraMetadata.labels
+        : [jiraMetadata.labels];
+    }
+    // Remove components and labels from extraFields to avoid duplication
+    const { components: _c, labels: _l, ...otherFields } = jiraMetadata;
 
     const requestBody: JiraRequestBody = {
       fields: {
