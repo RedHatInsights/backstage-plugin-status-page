@@ -19,7 +19,7 @@ export const PermissionManagement = () => {
   const permissionApi = useApi(permissionManagementApiRef);
 
   const [isOwner, setIsOwner] = useState(false);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const init = async () => {
@@ -28,8 +28,11 @@ export const PermissionManagement = () => {
         if (!token) return;
 
         const identity = await identityApi.getBackstageIdentity();
-        const userId =  parseEntityRef(identity.userEntityRef).name ;
-    
+      
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const identityName = parseEntityRef(identity.userEntityRef).name;
+        const userId = identityName !== 'guest' ? identityName : payload.uid;
+
         // TODO : to be read from the catalog
         const result = await permissionApi.checkUserAccessStatus(
           'hydra-notifications-escalation-forecaster',
@@ -40,7 +43,7 @@ export const PermissionManagement = () => {
       } catch (error) {
         setIsOwner(false);
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 

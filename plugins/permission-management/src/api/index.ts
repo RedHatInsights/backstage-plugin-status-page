@@ -25,7 +25,7 @@ export class PermissionManagementApi {
   }
 
   private async getBaseUrl(): Promise<string> {
-    return `${await this.discoveryApi.getBaseUrl('proxy')}/permission-management`;
+    return `${await this.discoveryApi.getBaseUrl('permission-management')}`;
   }
 
   async getAllAccessRequests(): Promise<any[]> {
