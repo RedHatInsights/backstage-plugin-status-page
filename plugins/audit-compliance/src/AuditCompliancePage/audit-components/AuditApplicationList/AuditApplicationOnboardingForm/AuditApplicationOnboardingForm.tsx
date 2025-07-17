@@ -38,9 +38,24 @@ export const AuditApplicationOnboardingForm = ({
   initialData,
   isEditMode = false,
 }: AuditApplicationOnboardingFormProps) => {
-  const [formData, setFormData] = useState<ApplicationFormData>(() => {
+  // Use a simple array of {key, value} for jira_metadata
+  const [formData, setFormData] = useState<
+    Omit<ApplicationFormData, 'jira_metadata'> & {
+      jira_metadata: { key: string; value: string }[];
+    }
+  >(() => {
+    // Convert object to array for editing
+    const toArray = (obj?: Record<string, string>) =>
+      obj
+        ? Object.entries(obj).map(([key, value]) => ({ key, value }))
+        : [{ key: '', value: '' }];
     if (initialData) {
-      return initialData;
+      return {
+        ...initialData,
+        jira_metadata: toArray(
+          initialData.jira_metadata as Record<string, string>,
+        ),
+      };
     }
     return {
       app_name: '',
@@ -53,6 +68,7 @@ export const AuditApplicationOnboardingForm = ({
       accounts: [
         { type: 'rover-group-name', source: 'rover', account_name: '' },
       ],
+      jira_metadata: [{ key: '', value: '' }],
     };
   });
 
@@ -243,6 +259,36 @@ export const AuditApplicationOnboardingForm = ({
     }
   };
 
+  // Handlers for Jira Metadata (simple array version)
+  const handleJiraMetadataKeyChange = (idx: number, newKey: string) => {
+    setFormData(prev => ({
+      ...prev,
+      jira_metadata: prev.jira_metadata.map((item, i) =>
+        i === idx ? { ...item, key: newKey } : item,
+      ),
+    }));
+  };
+  const handleJiraMetadataValueChange = (idx: number, newValue: string) => {
+    setFormData(prev => ({
+      ...prev,
+      jira_metadata: prev.jira_metadata.map((item, i) =>
+        i === idx ? { ...item, value: newValue } : item,
+      ),
+    }));
+  };
+  const handleAddJiraMetadata = () => {
+    setFormData(prev => ({
+      ...prev,
+      jira_metadata: [...prev.jira_metadata, { key: '', value: '' }],
+    }));
+  };
+  const handleRemoveJiraMetadata = (idx: number) => {
+    setFormData(prev => ({
+      ...prev,
+      jira_metadata: prev.jira_metadata.filter((_, i) => i !== idx),
+    }));
+  };
+
   const handleSubmit = async () => {
     try {
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
@@ -250,12 +296,23 @@ export const AuditApplicationOnboardingForm = ({
         ? `/applications/onboarding/${encodeURIComponent(formData.app_name)}`
         : '/applications/onboarding';
 
+      // Convert jira_metadata array to object for backend
+      const jiraMetadataObj = Object.fromEntries(
+        formData.jira_metadata
+          .filter(item => item.key)
+          .map(item => [item.key, item.value]),
+      );
+      const payload = {
+        ...formData,
+        jira_metadata: jiraMetadataObj,
+      };
+
       const response = await fetchApi.fetch(`${baseUrl}${endpoint}`, {
         method: isEditMode ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -297,6 +354,7 @@ export const AuditApplicationOnboardingForm = ({
           accounts: [
             { type: 'rover-group-name', source: 'rover', account_name: '' },
           ],
+          jira_metadata: [{ key: '', value: '' }],
         });
       }
 
@@ -455,6 +513,79 @@ export const AuditApplicationOnboardingForm = ({
           </Card>
         </Grid>
 
+        {/* Jira Metadata Section */}
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Jira Compulsory Fields (Metadata)
+              </Typography>
+              <Typography variant="body2" color="error" gutterBottom>
+                <b>Tip:</b> These fields are <b>case sensitive</b> and the value
+                should match <b>exactly</b> as it is used in Jira. If not, Jira
+                issues will not be created.
+              </Typography>
+              <Typography variant="body2" color="textSecondary" gutterBottom>
+                Add key-value pairs for compulsory Jira fields. These will be
+                stored as metadata.
+              </Typography>
+              {formData.jira_metadata.length > 0 ? (
+                formData.jira_metadata.map((item, idx) => (
+                  <Grid
+                    container
+                    spacing={2}
+                    alignItems="center"
+                    key={idx}
+                    style={{ marginBottom: 8 }}
+                  >
+                    <Grid item xs={5}>
+                      <TextField
+                        label="Field Name"
+                        fullWidth
+                        value={item.key}
+                        onChange={e =>
+                          handleJiraMetadataKeyChange(idx, e.target.value)
+                        }
+                        required
+                      />
+                    </Grid>
+                    <Grid item xs={5}>
+                      <TextField
+                        label="Field Value"
+                        fullWidth
+                        value={item.value}
+                        onChange={e =>
+                          handleJiraMetadataValueChange(idx, e.target.value)
+                        }
+                        required
+                      />
+                    </Grid>
+                    <Grid item xs={2}>
+                      <IconButton
+                        color="secondary"
+                        onClick={() => handleRemoveJiraMetadata(idx)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                ))
+              ) : (
+                <Typography variant="body2" color="textSecondary">
+                  No Jira metadata fields added yet.
+                </Typography>
+              )}
+              <Button
+                variant="outlined"
+                startIcon={<AddIcon />}
+                onClick={handleAddJiraMetadata}
+                style={{ marginTop: 8 }}
+              >
+                Add Jira Field
+              </Button>
+            </CardContent>
+          </Card>
+        </Grid>
         {/* Account Entries Section */}
         <Grid item xs={12}>
           <Card>

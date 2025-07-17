@@ -4,6 +4,8 @@ export type AccountEntry = {
   account_name: string;
 };
 
+export type JiraMetadataArrayItem = { id: string; key: string; value: string };
+
 export type ApplicationFormData = {
   app_name: string;
   cmdb_id: string;
@@ -13,6 +15,7 @@ export type ApplicationFormData = {
   app_delegate: string;
   jira_project: string;
   accounts: AccountEntry[];
+  jira_metadata?: { [key: string]: string } | JiraMetadataArrayItem[];
 };
 
 export interface AuditApplicationOnboardingFormProps {

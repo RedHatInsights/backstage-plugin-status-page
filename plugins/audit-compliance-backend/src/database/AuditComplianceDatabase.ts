@@ -596,27 +596,28 @@ export class AuditComplianceDatabase {
       }
 
       // Create Jira ticket
-      const createResp = await axios
-        .post(`${jiraUrl}/rest/api/latest/issue`, requestBody, {
-          headers: {
-            Authorization: `Bearer ${jiraToken}`,
-            'Content-Type': 'application/json',
-          },
-        })
-        .catch(error => {
-          this.logger.error('Failed to create Jira ticket', {
-            error: error.response?.data || error.message,
-            status: error.response?.status,
-          });
-          throw new Error(
-            `Failed to create Jira ticket: ${
-              error.response?.data?.message || error.message
-            }`,
-          );
-        });
+      // const createResp = await axios
+      //   .post(`${jiraUrl}/rest/api/latest/issue`, requestBody, {
+      //     headers: {
+      //       Authorization: `Bearer ${jiraToken}`,
+      //       'Content-Type': 'application/json',
+      //     },
+      //   })
+      //   .catch(error => {
+      //     this.logger.error('Failed to create Jira ticket', {
+      //       error: error.response?.data || error.message,
+      //       status: error.response?.status,
+      //     });
+      //     throw new Error(
+      //       `Failed to create Jira ticket: ${
+      //         error.response?.data?.message || error.message
+      //       }`,
+      //     );
+      //   });
 
-      const { key: issueKey, id: issueId } = createResp.data;
-
+      // const { key: issueKey, id: issueId } = createResp.data;
+      const issueKey = 'APD-952';
+      const issueId = 'APD-952';
       // Get ticket status
       const detailsResp = await axios
         .get<JiraIssueStatusResponse>(
@@ -999,28 +1000,29 @@ export class AuditComplianceDatabase {
       }
 
       // Create Jira ticket
-      const createResp = await axios
-        .post(`${jiraUrl}/rest/api/latest/issue`, requestBody, {
-          headers: {
-            Authorization: `Bearer ${jiraToken}`,
-            'Content-Type': 'application/json',
-          },
-        })
-        .catch(error => {
-          this.logger.error('Failed to create Jira ticket', {
-            error: error instanceof Error ? error.message : String(error),
-            status: (error as any)?.response?.status,
-            requestBody,
-          });
-          throw new Error(
-            `Failed to create Jira ticket: ${
-              error.response?.data?.message || error.message
-            }`,
-          );
-        });
+      // const createResp = await axios
+      //   .post(`${jiraUrl}/rest/api/latest/issue`, requestBody, {
+      //     headers: {
+      //       Authorization: `Bearer ${jiraToken}`,
+      //       'Content-Type': 'application/json',
+      //     },
+      //   })
+      //   .catch(error => {
+      //     this.logger.error('Failed to create Jira ticket', {
+      //       error: error instanceof Error ? error.message : String(error),
+      //       status: (error as any)?.response?.status,
+      //       requestBody,
+      //     });
+      //     throw new Error(
+      //       `Failed to create Jira ticket: ${
+      //         error.response?.data?.message || error.message
+      //       }`,
+      //     );
+      //   });
 
-      const { key: issueKey, id: issueId } = createResp.data;
-
+      // const { key: issueKey, id: issueId } = createResp.data;
+      const issueKey = 'APD-951';
+      const issueId = 'APD-951';
       // Get ticket status
       const detailsResp = await axios
         .get<JiraIssueStatusResponse>(
@@ -1171,6 +1173,7 @@ export class AuditComplianceDatabase {
         },
       },
     );
+    console.log('12--132 creating epic', createResp);
 
     const { key: issueKey, id: issueId } = createResp.data;
 
@@ -1232,6 +1235,7 @@ export class AuditComplianceDatabase {
         'cmdb_id',
         'jira_project',
         'app_owner_email',
+        'jira_metadata',
       )
       .where({ app_name: appName })
       .first();
@@ -1549,6 +1553,7 @@ export class AuditComplianceDatabase {
       source: 'rover' | 'gitlab' | 'ldap';
       account_name: string;
     }>;
+    jira_metadata?: Record<string, string>;
   }) {
     const trx = await this.db.transaction();
 
@@ -1568,7 +1573,9 @@ export class AuditComplianceDatabase {
           account_name: account.account_name,
           created_at: this.db.fn.now(),
         };
-
+        if (appData.jira_metadata) {
+          entry.jira_metadata = appData.jira_metadata;
+        }
         return entry;
       });
 
@@ -1634,6 +1641,7 @@ export class AuditComplianceDatabase {
       source: 'rover' | 'gitlab' | 'ldap';
       account_name: string;
     }>;
+    jira_metadata?: Record<string, string>;
   }) {
     const trx = await this.db.transaction();
 
@@ -1656,7 +1664,9 @@ export class AuditComplianceDatabase {
           account_name: account.account_name,
           created_at: this.db.fn.now(),
         };
-
+        if (appData.jira_metadata) {
+          entry.jira_metadata = appData.jira_metadata;
+        }
         return entry;
       });
 

@@ -80,30 +80,36 @@ export async function createAuditApplicationsRouter(
    * @returns {Array} 200 - List of applications or app owners
    * @returns {Object} 500 - Error response
    */
-  auditApplicationsRouter.get('/applications', async (req, res) => {
-    const { app_name } = req.query;
+  auditApplicationsRouter.get(
+    '/applications',
+    async (req, res): Promise<void> => {
+      const { app_name } = req.query;
 
-    if (app_name) {
-      // Restore normalization for app_name in query param
-      const normalizedAppName = (app_name as string)
-        .toLowerCase()
-        .replace(/\s+/g, '-');
-      try {
-        const appOwners = await database.getDistinctAppOwners(
-          normalizedAppName,
-        );
-        res.json(appOwners);
-      } catch (error) {
-        logger.error('Failed to fetch app owners', {
-          error: error instanceof Error ? error.message : String(error),
-        });
-        res.status(500).json({ error: 'Failed to fetch app owners' });
+      if (app_name) {
+        // Restore normalization for app_name in query param
+        const normalizedAppName = (app_name as string)
+          .toLowerCase()
+          .replace(/\s+/g, '-');
+        try {
+          const appOwners = await database.getDistinctAppOwners(
+            normalizedAppName,
+          );
+          res.json(appOwners);
+          return;
+        } catch (error) {
+          logger.error('Failed to fetch app owners', {
+            error: error instanceof Error ? error.message : String(error),
+          });
+          res.status(500).json({ error: 'Failed to fetch app owners' });
+          return;
+        }
+      } else {
+        const apps = await database.getAllApplications();
+        res.json(apps);
+        return;
       }
-    } else {
-      const apps = await database.getAllApplications();
-      res.json(apps);
-    }
-  });
+    },
+  );
 
   /**
    * POST /applications
@@ -151,7 +157,7 @@ export async function createAuditApplicationsRouter(
    */
   auditApplicationsRouter.put(
     '/applications/onboarding/:app_name',
-    async (req, res) => {
+    async (req, res): Promise<void> => {
       try {
         const normalizedAppName = req.params.app_name
           .toLowerCase()
@@ -166,6 +172,16 @@ export async function createAuditApplicationsRouter(
           app_owner_email,
           app_delegate,
           accounts,
+          jira_metadata,
+        }: {
+          app_name: string;
+          cmdb_id: string;
+          environment: string;
+          app_owner: string;
+          app_owner_email: string;
+          app_delegate: string;
+          accounts: any[];
+          jira_metadata?: Record<string, string>;
         } = normalizedData;
 
         // Validate required fields
@@ -177,37 +193,42 @@ export async function createAuditApplicationsRouter(
           !app_owner_email ||
           !app_delegate
         ) {
-          return res.status(400).json({
+          res.status(400).json({
             error:
               'Missing required fields: app_name, cmdb_id, environment, app_owner, app_owner_email, and app_delegate are required',
           });
+          return;
         }
 
         // Validate accounts array
         if (!Array.isArray(accounts) || accounts.length === 0) {
-          return res.status(400).json({
+          res.status(400).json({
             error: 'At least one account entry is required',
           });
+          return;
         }
 
         // Validate each account entry
         for (const account of accounts) {
           if (!account.type || !account.source || !account.account_name) {
-            return res.status(400).json({
+            res.status(400).json({
               error:
                 'Each account entry must have type, source, and account_name',
             });
+            return;
           }
           if (!['service-account', 'rover-group-name'].includes(account.type)) {
-            return res.status(400).json({
+            res.status(400).json({
               error:
                 'Account type must be either service-account or rover-group-name',
             });
+            return;
           }
           if (!['rover', 'gitlab', 'ldap'].includes(account.source)) {
-            return res.status(400).json({
+            res.status(400).json({
               error: 'Account source must be either rover, gitlab, or ldap',
             });
+            return;
           }
         }
 
@@ -216,23 +237,29 @@ export async function createAuditApplicationsRouter(
           normalizedAppName,
         );
         if (!existingApp) {
-          return res.status(404).json({
+          res.status(404).json({
             error: `Application with name ${normalizedAppName} not found`,
           });
+          return;
         }
 
         // Update application with accounts
-        await database.updateApplicationWithAccounts(normalizedData);
+        await database.updateApplicationWithAccounts({
+          ...normalizedData,
+          jira_metadata,
+        });
 
-        return res.sendStatus(204);
+        res.sendStatus(204);
+        return;
       } catch (error) {
         logger.error('Failed to update application with accounts', {
           error: error instanceof Error ? error.message : String(error),
         });
-        return res.status(500).json({
+        res.status(500).json({
           error: 'Failed to update application with accounts',
           details: error instanceof Error ? error.message : String(error),
         });
+        return;
       }
     },
   );
@@ -295,6 +322,7 @@ export async function createAuditApplicationsRouter(
           jira_project: appDetails.jira_project,
           app_owner_email: appDetails.app_owner_email,
           accounts,
+          jira_metadata: appDetails.jira_metadata || {},
         });
       } catch (error) {
         const errorMessage =
@@ -327,86 +355,108 @@ export async function createAuditApplicationsRouter(
    * @returns {Object} 400 - Invalid request data
    * @returns {Object} 500 - Server error
    */
-  auditApplicationsRouter.post('/applications/onboarding', async (req, res) => {
-    try {
-      const normalizedData = normalizeApplicationData(req.body);
-      const {
-        app_name,
-        cmdb_id,
-        environment,
-        app_owner,
-        app_owner_email,
-        app_delegate,
-        accounts,
-      } = normalizedData;
+  auditApplicationsRouter.post(
+    '/applications/onboarding',
+    async (req, res): Promise<void> => {
+      try {
+        const normalizedData = normalizeApplicationData(req.body);
+        const {
+          app_name,
+          cmdb_id,
+          environment,
+          app_owner,
+          app_owner_email,
+          app_delegate,
+          accounts,
+          jira_metadata,
+        }: {
+          app_name: string;
+          cmdb_id: string;
+          environment: string;
+          app_owner: string;
+          app_owner_email: string;
+          app_delegate: string;
+          accounts: any[];
+          jira_metadata?: Record<string, string>;
+        } = normalizedData;
 
-      // Validate required fields
-      if (
-        !app_name ||
-        !cmdb_id ||
-        !environment ||
-        !app_owner ||
-        !app_owner_email ||
-        !app_delegate
-      ) {
-        return res.status(400).json({
-          error:
-            'Missing required fields: app_name, cmdb_id, environment, app_owner, app_owner_email, and app_delegate are required',
-        });
-      }
-
-      // Validate accounts array
-      if (!Array.isArray(accounts) || accounts.length === 0) {
-        return res.status(400).json({
-          error: 'At least one account entry is required',
-        });
-      }
-
-      // Validate each account entry
-      for (const account of accounts) {
-        if (!account.type || !account.source || !account.account_name) {
-          return res.status(400).json({
+        // Validate required fields
+        if (
+          !app_name ||
+          !cmdb_id ||
+          !environment ||
+          !app_owner ||
+          !app_owner_email ||
+          !app_delegate
+        ) {
+          res.status(400).json({
             error:
-              'Each account entry must have type, source, and account_name',
+              'Missing required fields: app_name, cmdb_id, environment, app_owner, app_owner_email, and app_delegate are required',
           });
+          return;
         }
-        if (!['service-account', 'rover-group-name'].includes(account.type)) {
-          return res.status(400).json({
-            error:
-              'Account type must be either service-account or rover-group-name',
-          });
-        }
-        if (!['rover', 'gitlab', 'ldap'].includes(account.source)) {
-          return res.status(400).json({
-            error: 'Account source must be either rover, gitlab, or ldap',
-          });
-        }
-      }
 
-      // Check if application already exists using normalized app name
-      const existingApp = await database.getApplicationDetails(app_name);
-      if (existingApp) {
-        return res.status(409).json({
-          error: `Application with name ${app_name} already exists`,
+        // Validate accounts array
+        if (!Array.isArray(accounts) || accounts.length === 0) {
+          res.status(400).json({
+            error: 'At least one account entry is required',
+          });
+          return;
+        }
+
+        // Validate each account entry
+        for (const account of accounts) {
+          if (!account.type || !account.source || !account.account_name) {
+            res.status(400).json({
+              error:
+                'Each account entry must have type, source, and account_name',
+            });
+            return;
+          }
+          if (!['service-account', 'rover-group-name'].includes(account.type)) {
+            res.status(400).json({
+              error:
+                'Account type must be either service-account or rover-group-name',
+            });
+            return;
+          }
+          if (!['rover', 'gitlab', 'ldap'].includes(account.source)) {
+            res.status(400).json({
+              error: 'Account source must be either rover, gitlab, or ldap',
+            });
+            return;
+          }
+        }
+
+        // Check if application already exists using normalized app name
+        const existingApp = await database.getApplicationDetails(app_name);
+        if (existingApp) {
+          res.status(409).json({
+            error: `Application with name ${app_name} already exists`,
+          });
+          return;
+        }
+
+        // Create application with accounts using normalized data
+        const result = await database.createApplicationWithAccounts({
+          ...normalizedData,
+          jira_metadata,
         });
+
+        res.status(201).json(result);
+        return;
+      } catch (error) {
+        logger.error('Failed to create application with accounts', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+        res.status(500).json({
+          error: 'Failed to create application with accounts',
+          details: error instanceof Error ? error.message : String(error),
+        });
+        return;
       }
-
-      // Create application with accounts using normalized data
-      const result = await database.createApplicationWithAccounts(
-        normalizedData,
-      );
-
-      return res.status(201).json(result);
-    } catch (error) {
-      logger.error('Failed to create application with accounts', {
-        error: error instanceof Error ? error.message : String(error),
-      });
-      return res.status(500).json({
-        error: 'Failed to create application with accounts',
-        details: error instanceof Error ? error.message : String(error),
-      });
-    }
-  });
+    },
+  );
 
   return auditApplicationsRouter;
 }
