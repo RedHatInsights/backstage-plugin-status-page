@@ -1,6 +1,9 @@
-import { AuthService, CacheService } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
-import { parseEntityRef } from '@backstage/catalog-model';
+import {
+  AuthService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
+import { GroupEntity, parseEntityRef } from '@backstage/catalog-model';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import {
   AuthorizeResult,
   isPermission,
@@ -45,72 +48,73 @@ export const isWorkstreamPermission = (permission: Permission) =>
     isPermission(permission, workstreamPermission),
   );
 
+export type RbacGroupEntity = GroupEntity & {
+  spec: GroupEntity['spec'] & {
+    permissions: string[];
+    members: string[];
+  };
+};
+
 export class WorkstreamPolicy implements PermissionPolicy {
-  private registeredPermissions: string[];
-  private allowedUsers: AllowedUsers[];
-  private readonly cache: CacheService;
-  private CACHE_KEY = 'backstage:rbac:workstream:admins';
+  private readonly registeredPermissions: string[];
+  private readonly configUsers: AllowedUsers[];
+
+  private allowedUsers: AllowedUsers[] = [];
 
   constructor(
     pluginConfig: PluginPermissionConfig,
-    private auth: AuthService,
-    private catalogApi: CatalogApi,
-    cache: CacheService,
+    auth: AuthService,
+    catalogService: CatalogService,
+    taskRunner: SchedulerServiceTaskRunner,
   ) {
     this.registeredPermissions = pluginConfig.workstream.permission ?? [];
-    this.allowedUsers = pluginConfig.workstream.users ?? [];
-    this.cache = cache.withOptions({ defaultTtl: 1800000 }); // Keep the cache for 30 Mins
-  }
-  private mergeUser(users: AllowedUsers[], newUser: AllowedUsers) {
-    const existing = users.find(u => u.name === newUser.name);
+    this.configUsers = pluginConfig.workstream.users ?? [];
 
-    if (existing) {
-      const permsSet = new Set([
-        ...(existing.permission ?? []),
-        ...(newUser.permission ?? []),
-      ]);
-      existing.permission = Array.from(permsSet);
-    } else {
-      users.push({ ...newUser });
-    }
+    taskRunner.run({
+      id: 'workstream-policy-refresh',
+      fn: async () => {
+        await this.refreshAndGetUsers(auth, catalogService);
+      },
+    });
   }
-  private async refreshAndGetUsers() {
-    const cachedUsers = await this.cache.get<AllowedUsers[]>(this.CACHE_KEY);
-    if (cachedUsers) return cachedUsers;
 
-    const _allowedUsers: AllowedUsers[] = [];
-    for (const user of this.allowedUsers) {
-      if (
-        parseEntityRef(user.name, {
-          defaultKind: 'user',
-          defaultNamespace: 'redhat',
-        }).kind === 'group'
-      ) {
-        const groupEntity = await this.catalogApi.getEntityByRef(
+  private async refreshAndGetUsers(
+    auth: AuthService,
+    catalogService: CatalogService,
+  ) {
+    for (const user of this.configUsers) {
+      const parsedEntity = parseEntityRef(user.name);
+      if (parsedEntity.kind === 'group' && parsedEntity.namespace === 'rbac') {
+        const catalogServiceCredentials = {
+          credentials: await auth.getOwnServiceCredentials(),
+        };
+        const rbacGroup = (await catalogService.getEntityByRef(
           user.name,
-          await this.auth.getPluginRequestToken({
-            targetPluginId: 'catalog',
-            onBehalfOf: await this.auth.getOwnServiceCredentials(),
-          }),
-        );
-        groupEntity?.relations
-          ?.filter(p => p.type === 'hasMember')
-          .forEach(relation =>
-            // if user is mututal in some other groups, merge them and update permissions
-            this.mergeUser(_allowedUsers, {
-              name: relation.targetRef,
-              permission: [...(user.permission ?? this.registeredPermissions)],
+          catalogServiceCredentials,
+        )) as RbacGroupEntity | undefined;
+        if (rbacGroup) {
+          // Assign rbac group permissions to members
+          rbacGroup.spec.members.forEach(member =>
+            mergeUser(this.allowedUsers, {
+              name: member,
+              permission: rbacGroup.spec.permissions,
             }),
           );
+          // Assign rbac group permissions to children groups
+          rbacGroup.spec.children.forEach(children => {
+            mergeUser(this.allowedUsers, {
+              name: children,
+              permission: rbacGroup.spec.permissions,
+            });
+          });
+        }
       } else {
-        this.mergeUser(_allowedUsers, {
+        mergeUser(this.allowedUsers, {
           name: user.name,
           permission: [...(user.permission ?? this.registeredPermissions)],
         });
       }
     }
-    await this.cache.set(this.CACHE_KEY, _allowedUsers);
-    return _allowedUsers;
   }
 
   async handle(
@@ -121,12 +125,14 @@ export class WorkstreamPolicy implements PermissionPolicy {
       return { result: AuthorizeResult.DENY };
     }
 
-    const allowedUsers = await this.refreshAndGetUsers();
-    const userFound = allowedUsers.find(
-      p => p.name === user?.info.userEntityRef,
-    );
-    if (userFound && userFound.permission?.includes(request.permission.name)) {
-      return { result: AuthorizeResult.ALLOW };
+    for (const entityRef of user.info.ownershipEntityRefs) {
+      const userFound = this.allowedUsers.find(p => p.name === entityRef);
+      if (
+        userFound &&
+        userFound.permission?.includes(request.permission.name)
+      ) {
+        return { result: AuthorizeResult.ALLOW };
+      }
     }
 
     if (
@@ -157,5 +163,18 @@ export class WorkstreamPolicy implements PermissionPolicy {
     }
 
     return { result: AuthorizeResult.DENY };
+  }
+}
+
+export function mergeUser(users: AllowedUsers[], newUser: AllowedUsers) {
+  const existing = users.find(u => u.name === newUser.name);
+  if (existing) {
+    const permsSet = new Set([
+      ...(existing.permission ?? []),
+      ...(newUser.permission ?? []),
+    ]);
+    existing.permission = Array.from(permsSet);
+  } else {
+    users.push({ ...newUser });
   }
 }

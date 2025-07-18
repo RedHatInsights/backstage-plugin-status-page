@@ -7,6 +7,7 @@ spec:
   memberOf: [development/guests]
   profile:
     displayName: Guest
+    picture: https://api.dicebear.com/9.x/fun-emoji/svg?seed=guest
     email: guest@example.com
 ---
 # https://backstage.io/docs/features/software-catalog/descriptor-format#kind-group
@@ -17,6 +18,7 @@ metadata:
   namespace: development
 spec:
   type: team
+  picture: https://api.dicebear.com/9.x/fun-emoji/svg?seed=guests
   children: []
 ---
 apiVersion: backstage.io/v1alpha1
@@ -29,6 +31,7 @@ spec:
   manager: user:redhat/npatil
   profile:
     displayName: Yash Oswal
+    picture: https://api.dicebear.com/9.x/fun-emoji/svg?seed=yoswal
     email: yoswal@redhat.com
 ---
 apiVersion: backstage.io/v1alpha1
@@ -41,6 +44,7 @@ spec:
   manager: user:redhat/npatil
   profile:
     displayName: Deepesh Nair
+    picture: https://api.dicebear.com/9.x/fun-emoji/svg?seed=denair
     email: denair@redhat.com
 
 ---
@@ -54,6 +58,7 @@ spec:
   manager: user:redhat/npatil
   profile:
     displayName: Gourisankar Das
+    picture: https://api.dicebear.com/9.x/fun-emoji/svg?seed=goudas
     email: goudas@redhat.com
 ---
 apiVersion: backstage.io/v1alpha1
@@ -66,6 +71,7 @@ spec:
   manager: user:redhat/npatil
   profile:
     displayName: Rigin Oommen
+    picture: https://api.dicebear.com/9.x/fun-emoji/svg?seed=roommen
     email: roommen@redhat.com
 ---
 apiVersion: backstage.io/v1alpha1
@@ -74,8 +80,34 @@ metadata:
   name: shrpande
   namespace: redhat
 spec:
-  memberOf: [one-platform-devs]
+  memberOf: []
   manager: user:redhat/npatil
   profile:
     displayName: Shruti Pandey
+    picture: https://api.dicebear.com/9.x/fun-emoji/svg?seed=shrpande
     email: shrpande@redhat.com
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: local-group
+  namespace: rbac
+  description: Local rback Group for testing
+spec:
+  type: compass-rbac
+  profile:
+    displayName: Local Group [RBAC Group]
+    picture: https://api.dicebear.com/9.x/fun-emoji/svg?seed=local-group
+  children:
+    - group:redhat/one-platform-devs
+  members:
+    - user:development/guest
+  
+  ## Permission defined here will overwrite any permissions defined in app-config
+  permissions:
+    - workstream.create
+    - workstream.update
+    - workstream.art.create
+    - workstream.art.update
+    - workstream.user.note.create
+    - workstream.user.note.update

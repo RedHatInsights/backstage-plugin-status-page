@@ -6308,6 +6308,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@backstage/plugin-catalog-node@npm:^1.17.2":
+  version: 1.17.2
+  resolution: "@backstage/plugin-catalog-node@npm:1.17.2"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.4.1"
+    "@backstage/catalog-client": "npm:^1.10.2"
+    "@backstage/catalog-model": "npm:^1.7.5"
+    "@backstage/errors": "npm:^1.2.7"
+    "@backstage/plugin-catalog-common": "npm:^1.1.5"
+    "@backstage/plugin-permission-common": "npm:^0.9.1"
+    "@backstage/plugin-permission-node": "npm:^0.10.2"
+    "@backstage/types": "npm:^1.2.1"
+    lodash: "npm:^4.17.21"
+    yaml: "npm:^2.0.0"
+  checksum: 10/2458cfc61b5c110eb6a4ec74c20d84122b9bec48e017a3d75e3c4ecf1e6bb3a85095143c0da852f23656b851c98fe594b180eb0ed275dcbe87606a985900710c
+  languageName: node
+  linkType: hard
+
 "@backstage/plugin-catalog-react@npm:^1.12.2, @backstage/plugin-catalog-react@npm:^1.12.3, @backstage/plugin-catalog-react@npm:^1.14.0, @backstage/plugin-catalog-react@npm:^1.15.0, @backstage/plugin-catalog-react@npm:^1.15.1, @backstage/plugin-catalog-react@npm:^1.19.0":
   version: 1.19.0
   resolution: "@backstage/plugin-catalog-react@npm:1.19.0"
@@ -22124,6 +22142,7 @@ __metadata:
     "@backstage/plugin-catalog-backend": "npm:^2.1.0"
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "npm:^0.2.9"
     "@backstage/plugin-catalog-backend-module-unprocessed": "npm:^0.6.1"
+    "@backstage/plugin-catalog-node": "npm:^1.17.2"
     "@backstage/plugin-devtools-backend": "npm:^0.5.6"
     "@backstage/plugin-events-node": "npm:^0.4.12"
     "@backstage/plugin-permission-backend": "npm:^0.7.1"

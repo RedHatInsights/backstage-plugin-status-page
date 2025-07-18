@@ -105,7 +105,7 @@ export async function noteRouter(options: RouterOptions) {
       },
     );
     if (decision.result === 'DENY') {
-      return res.status(403).json(NotAllowedError);
+      return res.status(403).json({ message: 'Access Denied' });
     }
 
     const compoundEntity = req.params;
@@ -177,14 +177,14 @@ export async function noteRouter(options: RouterOptions) {
   });
 
   router.delete('/:kind/:namespace/:name', async (req, res) => {
-    const [decision] = await permissions.authorizeConditional(
+    const [decision] = await permissions.authorize(
       [{ permission: userNoteDeletePermission }],
       {
         credentials: await httpAuth.credentials(req),
       },
     );
     if (decision.result === 'DENY') {
-      return res.status(403).json(NotAllowedError);
+      return res.status(403).json({ message: 'Access Denied' });
     }
 
     const compoundEntity = req.params;
