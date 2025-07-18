@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-workstream-automation-common [1.6.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation-common@1.6.0...@compass/backstage-plugin-workstream-automation-common@1.6.1) (2025-07-18)
+
+
+### Bug Fixes
+
+* **PULSE-915:** use static permission to delete note ([8d7a199](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/8d7a199220d2ed4e4df216a221027f5a704faab4))
+
 ## @compass/backstage-plugin-workstream-automation-common [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation-common@1.5.0...@compass/backstage-plugin-workstream-automation-common@1.6.0) (2025-07-17)
 
 
