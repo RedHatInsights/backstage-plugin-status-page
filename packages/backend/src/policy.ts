@@ -1,15 +1,13 @@
 import {
-  isWorkstreamPermission,
-  WorkstreamPolicy,
-} from '@compass/backstage-plugin-workstream-automation-backend';
-import {
   AuthService,
-  CacheService,
   coreServices,
   createBackendModule,
+  SchedulerServiceTaskRunner,
 } from '@backstage/backend-plugin-api';
-import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
-import { parseEntityRef } from '@backstage/catalog-model';
+import {
+  CatalogService,
+  catalogServiceRef,
+} from '@backstage/plugin-catalog-node';
 import {
   AuthorizeResult,
   PolicyDecision,
@@ -20,6 +18,10 @@ import {
   PolicyQueryUser,
 } from '@backstage/plugin-permission-node';
 import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
+import {
+  isWorkstreamPermission,
+  WorkstreamPolicy,
+} from '@compass/backstage-plugin-workstream-automation-backend';
 
 type AllowedUsers = {
   name: string;
@@ -48,19 +50,18 @@ type PermissionConfig = {
 
 class CustomPermissionPolicy implements PermissionPolicy {
   private readonly workstreamPolicy: WorkstreamPolicy;
-  private CACHE_KEY = 'backstage:rbac:admins';
 
   constructor(
     private config: PermissionConfig,
-    private auth: AuthService,
-    private catalogApi: CatalogApi,
-    private cache: CacheService,
+    auth: AuthService,
+    catalog: CatalogService,
+    taskRunner: SchedulerServiceTaskRunner,
   ) {
     this.workstreamPolicy = new WorkstreamPolicy(
       config.plugins,
       auth,
-      catalogApi,
-      cache,
+      catalog,
+      taskRunner,
     );
   }
 
@@ -68,35 +69,11 @@ class CustomPermissionPolicy implements PermissionPolicy {
     request: PolicyQuery,
     user: PolicyQueryUser,
   ): Promise<PolicyDecision> {
-    // Check if users are available in cache
-    if (!(await this.cache.get<AllowedUsers[]>(this.CACHE_KEY))) {
-      const allowedUsers: AllowedUsers[] = [];
-      for (const admin of this.config.admins) {
-        if (
-          parseEntityRef(admin.name, {
-            defaultKind: 'user',
-            defaultNamespace: 'redhat',
-          }).kind === 'group'
-        ) {
-          const groupEntity = await this.catalogApi.getEntityByRef(
-            admin.name,
-            await this.auth.getPluginRequestToken({
-              onBehalfOf: await this.auth.getOwnServiceCredentials(),
-              targetPluginId: 'catalog',
-            }),
-          );
-          groupEntity?.relations?.forEach(
-            r =>
-              r.type === 'hasMember' &&
-              allowedUsers.push({ name: r.targetRef }),
-          );
-        } else allowedUsers.push(admin);
-      }
-      await this.cache.set(this.CACHE_KEY, allowedUsers, { ttl: 1800000 }); // Keep the cache for 30 Mins
-    }
-
-    const admins = await this.cache.get<AllowedUsers[]>(this.CACHE_KEY);
-    if (admins?.some(p => p.name === user.info.userEntityRef)) {
+    if (
+      this.config.admins?.some(p =>
+        user.info.ownershipEntityRefs.includes(p.name),
+      )
+    ) {
       return { result: AuthorizeResult.ALLOW };
     }
 
@@ -119,16 +96,29 @@ const createPermissionsModule = createBackendModule({
         discoveryApi: coreServices.discovery,
         auth: coreServices.auth,
         cache: coreServices.cache,
+        schdeuler: coreServices.scheduler,
+        catalog: catalogServiceRef,
       },
-      async init({ policy, config, discoveryApi, auth, cache }) {
-        const catalogApi = new CatalogClient({ discoveryApi });
-
+      async init({ policy, config, auth, schdeuler, catalog }) {
         const permissionConfig =
-          config.get<PermissionConfig>('permission.rbac');
+          config.getOptional<PermissionConfig>('permission.rbac');
 
-        policy.setPolicy(
-          new CustomPermissionPolicy(permissionConfig, auth, catalogApi, cache),
-        );
+        if (permissionConfig) {
+          const taskRunner = schdeuler.createScheduledTaskRunner({
+            frequency: { hours: 3 },
+            timeout: { minutes: 15 },
+            initialDelay: { minutes: 3 },
+            scope: 'local',
+          });
+          policy.setPolicy(
+            new CustomPermissionPolicy(
+              permissionConfig,
+              auth,
+              catalog,
+              taskRunner,
+            ),
+          );
+        }
       },
     });
   },

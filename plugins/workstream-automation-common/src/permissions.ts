@@ -48,7 +48,6 @@ export const userNoteCreatePermission = createPermission({
 export const userNoteDeletePermission = createPermission({
   name: 'workstream.user.note.delete',
   attributes: { action: 'delete' },
-  resourceType: RESOURCE_TYPE_USER_REF,
 });
 
 export const userNoteUpdatePermission = createPermission({

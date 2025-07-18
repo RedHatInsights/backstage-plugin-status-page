@@ -16,6 +16,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import AddCommentTwoTone from '@material-ui/icons/AddCommentOutlined';
+import InsertCommentOutlined from '@material-ui/icons/InsertCommentOutlined';
 import CommentTwoTone from '@material-ui/icons/ModeCommentTwoTone';
 import { DateTime } from 'luxon';
 import HoverPopover from 'material-ui-popup-state/HoverPopover';
@@ -98,15 +99,15 @@ export const ViewUserNote = (props: {
         arrow
         placement="top"
       >
-        <IconButton
-          onClick={() => updateAllowed && setOpen(true)}
-          {...bindHover(popupState)}
-          size="small"
-        >
+        <IconButton onClick={() => updateAllowed && setOpen(true)} size="small">
           {note.note?.trim() === '' ? (
-            <AddCommentTwoTone fontSize="small" color="inherit" />
-          ) : (
             <CommentTwoTone fontSize="small" color="inherit" />
+          ) : (
+            <InsertCommentOutlined
+              {...bindHover(popupState)}
+              fontSize="small"
+              color="inherit"
+            />
           )}
         </IconButton>
       </Tooltip>

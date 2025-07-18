@@ -6,6 +6,7 @@ import {
   ArtEntity,
   UserNote,
   userNoteDeletePermission,
+  userNoteUpdatePermission,
   WorkstreamEntity,
 } from '@compass/backstage-plugin-workstream-automation-common';
 import {
@@ -16,10 +17,13 @@ import {
   DialogActions,
   DialogContent,
   FormControlLabel,
+  IconButton,
   TextField,
+  Tooltip,
   Typography,
 } from '@material-ui/core';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import DeleteIcon from '@material-ui/icons/DeleteForeverOutlined';
 import ChevronDownIcon from '@material-ui/icons/ExpandMore';
 import { DateTime } from 'luxon';
 import { useState } from 'react';
@@ -75,6 +79,21 @@ export const AddUserNote = (props: AddUserModal) => {
     }
   };
 
+  const handleClear = () => {
+    if (note) {
+      noteApi
+        .updateNote(userRef, {
+          userRef: note.userRef,
+          note: '',
+          editHistory: note.editHistory,
+        })
+        .then(() => {
+          handleClose();
+          refreshFn?.();
+        });
+    }
+  };
+
   const handleDelete = () => {
     noteApi.deleteNote(userRef).then(() => {
       handleClose();
@@ -112,6 +131,7 @@ export const AddUserNote = (props: AddUserModal) => {
               <Checkbox
                 icon={<ChevronRightIcon />}
                 checkedIcon={<ChevronDownIcon />}
+                color="default"
               />
             }
             onClick={() => setExpandHistory(!expandHistory)}
@@ -120,7 +140,6 @@ export const AddUserNote = (props: AddUserModal) => {
             label={`Edit History (${note.editHistory.slice(0, 9).length})`}
           />
         )}
-
         <Collapse
           in={expandHistory}
           timeout="auto"
@@ -129,16 +148,16 @@ export const AddUserNote = (props: AddUserModal) => {
         >
           {mode === 'Update' &&
             note.editHistory
-              .map((h, key) => {
+              .map((history, key) => {
                 let noteEditor: any;
                 try {
                   noteEditor = (
-                    <EntityRefLink entityRef={parseEntityRef(h.userRef)}>
-                      {parseEntityRef(h.userRef).name}
+                    <EntityRefLink entityRef={parseEntityRef(history.userRef)}>
+                      {parseEntityRef(history.userRef).name}
                     </EntityRefLink>
                   );
                 } catch (error) {
-                  noteEditor = h.userRef;
+                  noteEditor = history.userRef;
                 }
 
                 return (
@@ -148,8 +167,8 @@ export const AddUserNote = (props: AddUserModal) => {
                     component="p"
                     variant="caption"
                   >
-                    {noteEditor} - {h.note} -{' '}
-                    {DateTime.fromISO(h.timestamp).toRelative()}
+                    {noteEditor} - {history.note} -{' '}
+                    {DateTime.fromISO(history.timestamp).toRelative()}
                   </Typography>
                 );
               })
@@ -169,9 +188,9 @@ export const AddUserNote = (props: AddUserModal) => {
         <Button variant="outlined" color="inherit" onClick={handleClose}>
           Cancel
         </Button>
-        {mode === 'Update' && (
+        {mode === 'Update' && note.note && (
           <RequirePermission
-            permission={userNoteDeletePermission}
+            permission={userNoteUpdatePermission}
             resourceRef={
               entity.kind === 'Workstream' ? entity.spec.lead : entity.spec.rte
             }
@@ -179,11 +198,23 @@ export const AddUserNote = (props: AddUserModal) => {
           >
             <Button
               variant="contained"
-              onClick={handleDelete}
-              style={{ backgroundColor: '#ee0000' }}
+              onClick={handleClear}
+              style={{ backgroundColor: '#eeca00' }}
             >
-              Delete
+              Remove
             </Button>
+          </RequirePermission>
+        )}
+        {mode === 'Update' && (
+          <RequirePermission
+            permission={userNoteDeletePermission}
+            errorPage={<></>}
+          >
+            <Tooltip title="Delete forever">
+              <IconButton onClick={handleDelete} style={{ color: '#ee0000' }}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
           </RequirePermission>
         )}
       </DialogActions>

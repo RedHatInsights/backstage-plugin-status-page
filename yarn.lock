@@ -5732,6 +5732,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@backstage/plugin-catalog-common@npm:^1.1.5":
+  version: 1.1.5
+  resolution: "@backstage/plugin-catalog-common@npm:1.1.5"
+  dependencies:
+    "@backstage/catalog-model": "npm:^1.7.5"
+    "@backstage/plugin-permission-common": "npm:^0.9.1"
+    "@backstage/plugin-search-common": "npm:^1.2.19"
+  checksum: 10/2349ac930fb32c3217806b43a1dbf1fdc23192a1b220f1198c7f3fcec88b0d05e39a57141b014e3da4e2945c75ffdaf164028742cdca5ba89696514ecde9a7e6
+  languageName: node
+  linkType: hard
+
 "@backstage/plugin-catalog-graph@npm:^0.4.20":
   version: 0.4.20
   resolution: "@backstage/plugin-catalog-graph@npm:0.4.20"
@@ -5817,6 +5828,24 @@ __metadata:
     lodash: "npm:^4.17.21"
     yaml: "npm:^2.0.0"
   checksum: 10/59b88c1aba2b100f8c9be5590636da02537ee5ba66851d1490b2f87aed7b008481ce659629fb71f920d0e3d6b6376a2839ea19ae3b41feb53e6ae8c82c70ebb2
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-catalog-node@npm:^1.17.2":
+  version: 1.17.2
+  resolution: "@backstage/plugin-catalog-node@npm:1.17.2"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.4.1"
+    "@backstage/catalog-client": "npm:^1.10.2"
+    "@backstage/catalog-model": "npm:^1.7.5"
+    "@backstage/errors": "npm:^1.2.7"
+    "@backstage/plugin-catalog-common": "npm:^1.1.5"
+    "@backstage/plugin-permission-common": "npm:^0.9.1"
+    "@backstage/plugin-permission-node": "npm:^0.10.2"
+    "@backstage/types": "npm:^1.2.1"
+    lodash: "npm:^4.17.21"
+    yaml: "npm:^2.0.0"
+  checksum: 10/2458cfc61b5c110eb6a4ec74c20d84122b9bec48e017a3d75e3c4ecf1e6bb3a85095143c0da852f23656b851c98fe594b180eb0ed275dcbe87606a985900710c
   languageName: node
   linkType: hard
 
@@ -6782,6 +6811,16 @@ __metadata:
     "@backstage/plugin-permission-common": "npm:^0.9.0"
     "@backstage/types": "npm:^1.2.1"
   checksum: 10/9a7c262a5e1fc2d1bc40a9738d6e29ba215867a10efa22c1c3e3b7847d2b6f7566fde4c22f6989933a47d2f1928ee7544ade4f88fb2e0956f4dde7cf02cb85a6
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-search-common@npm:^1.2.19":
+  version: 1.2.19
+  resolution: "@backstage/plugin-search-common@npm:1.2.19"
+  dependencies:
+    "@backstage/plugin-permission-common": "npm:^0.9.1"
+    "@backstage/types": "npm:^1.2.1"
+  checksum: 10/31cfad17bca0868022e212beab4de80e55365598b9fcbddef738476cd723e4e3d9c39db8497f3df650477a7ba24ba7bb4f20a15d55c1c7b954a629d5a2cf064a
   languageName: node
   linkType: hard
 
@@ -21450,6 +21489,7 @@ __metadata:
     "@backstage/plugin-catalog-backend": "npm:^2.1.0"
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "npm:^0.2.9"
     "@backstage/plugin-catalog-backend-module-unprocessed": "npm:^0.6.1"
+    "@backstage/plugin-catalog-node": "npm:^1.17.2"
     "@backstage/plugin-devtools-backend": "npm:^0.5.6"
     "@backstage/plugin-events-node": "npm:^0.4.12"
     "@backstage/plugin-permission-backend": "npm:^0.7.1"

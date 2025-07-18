@@ -345,7 +345,7 @@ permission:
           - workstream.user.note.update
           - workstream.user.note.delete
         users:
-          - name: group:development/guests
+          - name: group:rbac/local-group
     admins:
       - name: user:redhat/yoswal
       - name: user:redhat/mdeshmuk
