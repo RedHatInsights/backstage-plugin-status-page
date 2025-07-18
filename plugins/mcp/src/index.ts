@@ -1,1 +1,1 @@
-export { mcpPlugin, McpPage } from './plugin';
+export { mcpPlugin, MCPPrimitives, MCPLinks } from './plugin';

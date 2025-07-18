@@ -32,3 +32,56 @@ spec:
     - label: Maintainers
       users:
         - user:redhat/souchowd
+---
+apiVersion: mcp/v1
+kind: MCPServer
+metadata:
+  name: compass-mcp-server
+  namespace: compass
+  title: Compass MCP Server
+ 
+  tags:
+    - mcp
+    - backstage
+    - catalog
+ 
+  annotations:
+    gitlab.com/instance: gitlab.cee.redhat.com
+    gitlab.com/project-slug: app-dev-platform/backstage-mcp-server
+    npm/registry: npmjs.com
+    npm/package: '@backstage/cli'
+    backstage.io/techdocs-ref: dir:.
+ 
+spec:
+  type: local # / remote
+  lifecycle: beta
+  owner: user:redhat/mdeshmuk
+  primitives: # / can also be called offerings
+    - type: tool
+      name: list_entities
+      description: Retrieves a list of entities from the catalog using some supported filters.
+    - type: tool
+      name: get_entities
+      description: Get details about a entity by it's kind, namespace and name
+    - type: tool
+      name: register_entities
+      description: Register a new entity using by registering it's location
+    - type: resource
+      name: entity_documentation
+    - type: template
+      name: entity_schema_template
+  packages:
+    - type: npm
+      registry_name: nexus.corp.redhat.com
+      name: "@compass/backstage-mcp-server"
+      version: 1.0.0
+      package_arguments:
+        - description: specify services and permissions
+          is_required: true
+          value: "-s"
+      environment_variables:
+        - description: API Key to access the server
+          name: API_KEY
+  remotes:
+    - type: sse
+      url: https://console.one.redhat.com/api/mcp

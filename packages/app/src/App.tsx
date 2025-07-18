@@ -68,7 +68,6 @@ import {
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import { McpPage } from '@compass/backstage-plugin-mcp';
 import {
   JiraIcon,
   SlackIcon,
@@ -210,7 +209,6 @@ const routes = (
     />
     <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
     <Route path="/devtools" element={<DevToolsPage />} />
-    <Route path="/mcp" element={<McpPage />} />
     <Route path="/audit-compliance" element={<AuditCompliancePage />} />
     <Route path="/audit-compliance/:app_name" element={<AuditInitiation />} />
     <Route

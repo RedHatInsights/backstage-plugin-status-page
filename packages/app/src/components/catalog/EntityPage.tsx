@@ -105,6 +105,7 @@ import {
   EntitySoundcheckCard,
   GroupSoundcheckContent,
 } from '@spotify/backstage-plugin-soundcheck';
+import { MCPPrimitives, MCPLinks } from '@compass/backstage-plugin-mcp';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -628,13 +629,22 @@ const MCPEntityPage = (
             <EntityAboutCard variant="gridItem" />
           </Grid>
           <Grid item xs={12}>
-            <EntityWorkstreamCard />
+            <EntityCatalogGraphCard variant="gridItem" height={400} />
+          </Grid>
+          <Grid item xs={12}>
+            <EntityWorkstreamCard variant='gridItem' />
           </Grid>
           <Grid item xs={12}>
             <EntityHasSubcomponentsCard variant="gridItem" />
           </Grid>
         </Grid>
         <Grid item md={4} xs={12}>
+          <Grid item xs={12}>
+            <MCPLinks variant="gridItem" />
+          </Grid>
+          <Grid item xs={12}>
+            <MCPPrimitives variant='gridItem' />
+          </Grid>
           <EntitySwitch>
             <EntitySwitch.Case if={isAppCodeAvailable}>
               <Grid item xs={12}>
@@ -652,13 +662,6 @@ const MCPEntityPage = (
               </Grid>
             </EntitySwitch.Case>
           </EntitySwitch>
-
-          <Grid item xs={12}>
-            <EntityLinksCard variant="gridItem" />
-          </Grid>
-          <Grid item xs={12}>
-            <EntityCatalogGraphCard variant="gridItem" height={400} />
-          </Grid>
         </Grid>
       </Grid>
     </EntityLayout.Route>
