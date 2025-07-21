@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-workstream-automation-backend [1.13.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation-backend@1.13.1...@compass/backstage-plugin-workstream-automation-backend@1.13.2) (2025-07-21)
+
+
+### Other changes
+
+* fix email urls while reading from database ([8bd3576](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/8bd35760d6c4ac83f4d0b063ab5d25a702ca7d4d))
+
 ## @compass/backstage-plugin-workstream-automation-backend [1.13.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation-backend@1.13.0...@compass/backstage-plugin-workstream-automation-backend@1.13.1) (2025-07-18)
 
 
