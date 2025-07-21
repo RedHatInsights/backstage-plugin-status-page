@@ -129,7 +129,12 @@ export class WorkstreamBackendDatabase implements WorkstreamBackendStore {
       createdAt: dbModel.created_at,
       updatedAt: dbModel.updated_at,
       createdBy: dbModel.created_by,
-      links: JSON.parse(dbModel.links) as EntityLink[],
+      links: (JSON.parse(dbModel.links) as EntityLink[]).map(link => ({
+        ...link,
+        ...(link.type?.toLowerCase() === 'email' && {
+          url: normalizeEmail(link.url),
+        }),
+      })),
       updatedBy: dbModel.updated_by ?? dbModel.created_by,
       art: dbModel.art,
     };
