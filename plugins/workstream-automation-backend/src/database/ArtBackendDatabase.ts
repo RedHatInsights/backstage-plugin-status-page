@@ -1,5 +1,6 @@
+import { EntityLink } from '@backstage/catalog-model';
 import { Knex } from 'knex';
-import { ART } from '../types';
+import { ART, Member } from '../types';
 import { knexNow } from '../utils/knexNow';
 import { normalizeEmail } from '../utils/normalizeEmail';
 import { ArtDatabaseModel } from './types';
@@ -96,13 +97,18 @@ export class ArtBackendDatabase implements ArtDatabaseStore {
       pillar: dbModel.pillar,
       workstreams: JSON.parse(dbModel.workstreams),
       rte: dbModel.rte,
-      members: JSON.parse(dbModel.members),
+      members: JSON.parse(dbModel.members) as Member[],
       jiraProject: dbModel.jira_project,
       createdAt: dbModel.created_at,
       updatedAt: dbModel.updated_at,
       createdBy: dbModel.created_by,
       updatedBy: dbModel.updated_by,
-      links: JSON.parse(dbModel.links),
+      links: (JSON.parse(dbModel.links) as EntityLink[]).map(link => ({
+        ...link,
+        ...(link.type?.toLowerCase() === 'email' && {
+          url: normalizeEmail(link.url),
+        }),
+      })),
     };
   }
 }
