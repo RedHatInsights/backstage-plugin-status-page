@@ -35,6 +35,10 @@ export const outageTemplatePlugin = createBackendPlugin({
             statusPageAuthToken,
           });
 
+          httpRouter.addAuthPolicy({
+            allow: 'unauthenticated',
+            path: '/health',
+          });
           httpRouter.use(
             await createRouter({
               httpAuth,

@@ -32,12 +32,12 @@ export const permissionManagementPlugin = createBackendPlugin({
         auth,
         httpAuth,
         httpRouter,
-        catalog : _catalog,
+        catalog: _catalog,
         discovery,
         permissions,
       }) {
         httpRouter.addAuthPolicy({
-          path: '/',
+          path: '/health',
           allow: 'unauthenticated',
         });
 

@@ -1,4 +1,3 @@
-
 import {
   coreServices,
   createBackendPlugin,
@@ -25,13 +24,7 @@ export const compassAssistantExamplePlugin = createBackendPlugin({
         auth: coreServices.auth,
         actionsRegistry: actionsRegistryServiceRef,
       },
-      async init({
-        logger,
-        discovery,
-        httpRouter,
-        auth,
-        actionsRegistry,
-      }) {
+      async init({ logger, discovery, httpRouter, auth, actionsRegistry }) {
         const catalogClient = new CatalogClient({ discoveryApi: discovery });
 
         // Register MCP actions
@@ -62,4 +55,3 @@ export const compassAssistantExamplePlugin = createBackendPlugin({
     });
   },
 });
-
