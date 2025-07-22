@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.16.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.15.0...@appdev/backstage-plugin-audit-compliance@1.16.0) (2025-07-22)
+
+
+### Features
+
+* **audit-compliance:** Changing name from 'Audit & Compliance' to 'Audit Access Manager' ([ef80db6](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/ef80db62a568d2cc4405d8d57cb631966027b2e2))
+
 ## @appdev/backstage-plugin-audit-compliance [1.15.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.14.0...@appdev/backstage-plugin-audit-compliance@1.15.0) (2025-07-17)
 
 
