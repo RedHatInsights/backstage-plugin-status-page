@@ -95,6 +95,7 @@ export class StatuspageApi {
         updatedAt: incident.updated_at,
         monitoringAt: incident.monitoring_at,
         body: incident.body ?? '',
+        postmortem_body: incident.postmortem_body ?? '',
         resolvedAt: incident.resolved_at,
         scheduledFor: incident.scheduled_for,
         scheduledUntil: incident.scheduled_until,
@@ -272,5 +273,54 @@ export class StatuspageApi {
       }
     }
     return groups;
+  }
+
+  async savePostmortemDraft(incidentId: string, postmortemDescription: string) {
+    try {
+      const baseUrl = await this.getBaseUrl();
+      await this.fetchApi.fetch(`${baseUrl}/postmortem/${incidentId}/draft`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          postmortem: { body_draft: postmortemDescription },
+        }),
+      });
+
+      return {};
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error saving draft:', error);
+      this.alertApi.post({
+        message: 'Failed to save postmortem draft!',
+        severity: 'error',
+      });
+      return [];
+    }
+  }
+
+  async publishPostmortem(incidentId: string,  postmortemDescription: string) {
+    try {
+      const baseUrl = await this.getBaseUrl();
+      await this.fetchApi.fetch(`${baseUrl}/postmortem/${incidentId}/publish`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          postmortem: { body_draft: postmortemDescription },
+        }),
+      });
+      this.alertApi.post({
+        message: 'Postmortem published successfully',
+        severity: 'success',
+      });
+      return await this.fetchIncidents();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error publishing postmortem:', error);
+      this.alertApi.post({
+        message: 'Failed to publish postmortem!',
+        severity: 'error',
+      });
+      return [];
+    }
   }
 }

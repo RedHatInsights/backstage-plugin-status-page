@@ -1,2 +1,3 @@
 export { IncidentFetchService } from './IncidentsFetchService';
-export type { IncidentService } from './types';
+export { PostmortemFetchService } from './PostmortemFetchService';
+export type { IncidentService, PostmortemService } from './types';

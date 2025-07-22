@@ -1,13 +1,15 @@
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import Router from 'express-promise-router';
-import { IncidentService } from './services';
+import { IncidentService, PostmortemService } from './services';
 
 export async function createRouter({
   incidentFetchService,
+  postmortemFetchService
 }: {
   httpAuth: HttpAuthService;
   incidentFetchService: IncidentService;
+  postmortemFetchService: PostmortemService;
 }): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
@@ -56,6 +58,28 @@ export async function createRouter({
     try {
       const incidentId = req.params.id;
       const response = await incidentFetchService.deleteIncident(incidentId);
+      res.json({ data: response });
+    } catch (err) {
+      res.json({ data: [], message: 'Error: Failed to create incident!' });
+    }
+  });
+
+  router.post('/postmortem/:id/draft', async (req, res) => {
+    try {
+      const incidentId = req.params.id;
+      const body = req.body;
+      const response = await postmortemFetchService.draftPostmortem(incidentId, body);
+      res.json({ data: response });
+    } catch (err) {
+      res.json({ data: [], message: 'Error: Failed to create incident!' });
+    }
+  });
+
+  router.post('/postmortem/:id/publish', async (req, res) => {
+    try {
+      const incidentId = req.params.id;
+      const body = req.body;
+      const response = await postmortemFetchService.publishPostmortem(incidentId, body);
       res.json({ data: response });
     } catch (err) {
       res.json({ data: [], message: 'Error: Failed to create incident!' });

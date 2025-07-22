@@ -1,5 +1,5 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { StatusPageIncident, UpdateIncidentProps } from '../constants';
+import { StatusPageIncident, UpdateIncidentProps, PostmortemBody } from '../constants';
 
 export const fetchIncidents = async (
   statusPageUrl: string,
@@ -141,8 +141,6 @@ export const deleteIncident = async (
   logger: LoggerService,
 ) => {
   try {
-    logger.error(`${statusPageUrl}/incidents/${incidentId}.json`);
-
     await fetch(`${statusPageUrl}/incidents/${incidentId}.json`, {
       method: 'DELETE',
       headers: {
@@ -154,5 +152,61 @@ export const deleteIncident = async (
   } catch (error) {
     logger.error(String(`Error deleting incident:', ${error}`));
     return { message: 'Error: failed to delete incident' };
+  }
+};
+
+export const draftPostmortem = async (
+  incidentId: string,
+  statusPageUrl: string,
+  token: string,
+  logger: LoggerService,
+  postmortemBody: PostmortemBody
+) => {
+  try {
+    const response = await fetch(
+      `${statusPageUrl}/incidents/${incidentId}/postmortem`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-type': 'application/json',
+          Authorization: `${token}`,
+        },
+        body: JSON.stringify(postmortemBody),
+      },
+    )
+      .then(data => {
+        return data.json();
+      })
+      .catch(err => {
+        throw new Error(err);
+      });
+    return response;
+  } catch (error) {
+    logger.error(String(`Error drafting postmortem:', ${error}`));
+    return { message: 'Error: failed to draft postmortem' };
+  }
+};
+
+export const publishPostmortem = async (
+  incidentId: string,
+  statusPageUrl: string,
+  token: string,
+  logger: LoggerService,
+  postmortemBody: PostmortemBody
+) => {
+  try {
+    await fetch(`${statusPageUrl}/incidents/${incidentId}/postmortem/publish`, {
+      method: 'PUT',
+      headers: {
+        'Content-type': 'application/json',
+        Authorization: `${token}`,
+        body: JSON.stringify(postmortemBody),
+      },
+      body: JSON.stringify({ postmortem: {} }),
+    });
+    return {};
+  } catch (error) {
+    logger.error(String(`Error publishing postmortem:', ${error}`));
+    return { message: 'Error: failed to publish postmortem' };
   }
 };

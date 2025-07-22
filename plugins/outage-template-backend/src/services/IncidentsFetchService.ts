@@ -50,6 +50,6 @@ export async function IncidentFetchService({
     },
     async deleteIncident(id: string) {
       return deleteIncident(id, statusPageUrl, statusPageAuthToken, logger);
-    },
+    }
   };
 }

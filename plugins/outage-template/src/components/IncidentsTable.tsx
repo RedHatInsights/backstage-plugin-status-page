@@ -112,17 +112,20 @@ const IncidentsTable = ({
                   {tabIndex === 1 && (
                     <>
                       <TableCell>
-                        {incident.scheduledFor && !isNaN(new Date(incident.scheduledFor).getTime())
+                        {incident.scheduledFor &&
+                        !isNaN(new Date(incident.scheduledFor).getTime())
                           ? new Date(incident.scheduledFor).toISOString()
                           : 'N/A'}
                       </TableCell>
                       <TableCell>
-                        {incident.scheduledUntil && !isNaN(new Date(incident.scheduledUntil).getTime())
+                        {incident.scheduledUntil &&
+                        !isNaN(new Date(incident.scheduledUntil).getTime())
                           ? new Date(incident.scheduledUntil).toISOString()
                           : 'N/A'}
                       </TableCell>
                       <TableCell>
-                        {incident.resolvedAt && !isNaN(new Date(incident.resolvedAt).getTime())
+                        {incident.resolvedAt &&
+                        !isNaN(new Date(incident.resolvedAt).getTime())
                           ? new Date(incident.resolvedAt).toISOString()
                           : 'N/A'}
                       </TableCell>
@@ -150,12 +153,12 @@ const IncidentsTable = ({
                         color="primary"
                         onClick={() => onUpdate(incident.id)}
                         style={{ margin: '5px' }}
-                        disabled={
-                          incident.status === 'resolved' ||
-                          incident.status === 'completed'
-                        }
+                        disabled={incident.status === 'postmortem'}
                       >
-                        Update
+                        {incident.status === 'resolved' ||
+                        incident.status === 'completed'
+                          ? 'Postmortem'
+                          : 'Update'}
                       </Button>
                       <Button
                         variant="outlined"
