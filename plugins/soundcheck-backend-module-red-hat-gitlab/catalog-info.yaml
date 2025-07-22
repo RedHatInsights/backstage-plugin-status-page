@@ -5,7 +5,7 @@ metadata:
   name: soundcheck-backend-module-red-hat-gitlab
   title: Red Hat GitLab Module Soundcheck Backstage
   description: Red Hat GitLab module for Soundcheck backned plugin
-  namespace: devex
+  namespace: compass
   tags:
     - backstage
     - idp
@@ -15,11 +15,11 @@ metadata:
     - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-soundcheck-backend-module-red-hat-gitlab
       title: Backstage Red Hat Gitlab Backend Module NPM Package
   annotations:
-    nexus-repository-manager/repository: appdev-platform
-    nexus-repository-manager/name: backstage-plugin-soundcheck-backend-module-red-hat-gitlab
+    npm/registry: compass
+    npm/package: '@compass/backstage-plugin-soundcheck-backend-red-hat-gitlab'
 spec:
   type: backstage-backend-plugin-module
   lifecycle: production
-  owner: group:redhat/one-platform-devs
-  system: devex/redhat-experience-platform
-  subcomponentOf: devex/backstage-console-backend
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-backend

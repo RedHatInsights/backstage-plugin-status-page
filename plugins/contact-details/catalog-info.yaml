@@ -5,7 +5,7 @@ metadata:
   name: contact-details
   title: Contact Details Plugin Backstage
   description: Backstage Plugin for Contact Details
-  namespace: devex
+  namespace: compass
   tags:
     - backstage
     - idp
@@ -18,12 +18,11 @@ metadata:
 
   annotations:
     backstage.io/techdocs-ref: dir:.
-    nexus-repository-manager/repository: appdev-platform
-    nexus-repository-manager/name: backstage-plugin-contact-details
-
+    npm/package: '@compass/backstage-plugin-contact-details'
+    npm/registry: compass
 spec:
   type: backstage-frontend-plugin
   lifecycle: production
-  owner: group:redhat/one-platform-devs
-  system: devex/redhat-experience-platform
-  subcomponentOf: devex/backstage-console-frontend
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-frontend

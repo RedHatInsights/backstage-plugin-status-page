@@ -5,7 +5,7 @@ metadata:
   name: workstream-automation-backend-plugin
   title: Workstream Automation Backend Plugin
   description: Backstage backend plugin for workstream automation
-  namespace: devex
+  namespace: compass
   tags:
     - workstream
     - automation
@@ -16,18 +16,18 @@ metadata:
       title: Backstage Workstream Automation Backend Plugin Package
   annotations:
     backstage.io/techdocs-ref: dir:.
-    nexus-repository-manager/repository: appdev-platform
-    nexus-repository-manager/name: backstage-plugin-workstream-automation-backend
+    npm/registry: compass
+    npm/package: '@compass/backstage-plugin-workstream-automation-backend'
 spec:
   type: backstage-backend-plugin
   lifecycle: production
-  owner: group:redhat/one-platform-devs
-  system: devex/redhat-experience-platform
-  subcomponentOf: devex/backstage-console-backend
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-backend
   dependsOn:
-    - component:devex/workstream-automation-common-plugin
+    - component:compass/workstream-automation-common-plugin
   providesApis:
-    - devex/workstream-plugin-api
+    - compass/workstream-plugin-api
 ---
 apiVersion: backstage.io/v1alpha1
 kind: API
@@ -35,11 +35,11 @@ metadata:
   name: workstream-plugin-api
   title: Backstage Workstream Automation Backend Plugin ReST API
   description: ReST API for backstage Workstream Automation Backend plugin
-  namespace: devex
+  namespace: compass
 spec:
   type: openapi
   lifecycle: production
-  owner: group:redhat/one-platform-devs
-  system: devex/redhat-experience-platform
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
   definition:
     $text: './docs/workstream-automation.openapi.yaml'

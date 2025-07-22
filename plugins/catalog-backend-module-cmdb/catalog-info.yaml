@@ -6,7 +6,7 @@ metadata:
   title: CMDB Discovery Plugin
   description: |
     An extension module to the catalog-backend plugin, providing a CMDBDiscoveryEntityProvider and CMDBDiscoveryEntityProcessor that can be used to ingest business applications from Service Now Configuration Management Database (CMDB).
-  namespace: devex
+  namespace: compass
   tags:
     - backstage
     - cmdb
@@ -19,12 +19,12 @@ metadata:
 
   annotations:
     backstage.io/techdocs-ref: dir:.
-    nexus-repository-manager/repository: appdev-platform
-    nexus-repository-manager/name: backstage-plugin-catalog-backend-module-cmdb
+    npm/package: '@compass/backstage-plugin-catalog-backend-module-cmdb'
+    npm/registry: compass
 
 spec:
   type: backstage-backend-plugin-module
   lifecycle: production
-  owner: group:redhat/one-platform-devs
-  system: devex/redhat-experience-platform
-  subcomponentOf: devex/backstage-console-backend
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-backend

@@ -4,7 +4,7 @@ metadata:
   name: docsbot-plugin
   title: Documentation Bot Plugin Backstage
   description: Backstage Plugin for Documentation Bot
-  namespace: devex
+  namespace: compass
   tags:
     - backstage
     - idp
@@ -21,11 +21,11 @@ metadata:
 
   annotations:
     backstage.io/techdocs-ref: dir:.
-    nexus-repository-manager/repository: appdev-platform
-    nexus-repository-manager/name: backstage-plugin-docsbot
+    npm/registry: compass
+    npm/package: '@appdev/backstage-plugin-docsbot'
 spec:
   type: backstage-frontend-plugin
   lifecycle: production
   owner: group:redhat/chaturdocs
-  system: devex/redhat-experience-platform
-  subcomponentOf: devex/backstage-console-frontend
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-frontend

@@ -4,7 +4,7 @@ metadata:
   name: hydra-support-dashboard-plugin
   title: Hydra Support Dashboard Plugin Backstage
   description: Backstage Plugin for Hydra Support Dashboard
-  namespace: devex
+  namespace: compass
   tags:
     - backstage
     - idp
@@ -18,11 +18,11 @@ metadata:
       title: Hydra Dashboard
 
   annotations:
-    nexus-repository-manager/repository: appdev-platform
-    nexus-repository-manager/name: backstage-plugin-hydra-support-dashboard
+    npm/registry: compass
+    npm/package: '@appdev/backstage-plugin-hydra-support-dashboard'
 spec:
   type: backstage-frontend-plugin
   lifecycle: production
   owner: group:redhat/chaturdocs
-  system: devex/redhat-experience-platform
-  subcomponentOf: devex/backstage-console-frontend
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-frontend
