@@ -4,7 +4,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
-import { IncidentFetchService } from './services';
+import { IncidentFetchService, PostmortemFetchService } from './services';
 
 /**
  * outageTemplate backend plugin
@@ -34,11 +34,17 @@ export const outageTemplatePlugin = createBackendPlugin({
             statusPageUrl,
             statusPageAuthToken,
           });
+          const postmortemFetchService = await PostmortemFetchService({
+            logger,
+            statusPageUrl,
+            statusPageAuthToken,
+          });
 
           httpRouter.use(
             await createRouter({
               httpAuth,
               incidentFetchService,
+              postmortemFetchService
             }),
           );
         } catch (err) {

@@ -87,3 +87,11 @@ export interface Update {
   body: string;
   status: string;
 }
+
+export interface PostmortemBodyDraft {
+  body_draft: string;
+}
+
+export interface PostmortemBody {
+  postmortem: PostmortemBodyDraft;
+}
