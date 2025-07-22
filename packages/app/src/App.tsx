@@ -209,17 +209,23 @@ const routes = (
     />
     <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
     <Route path="/devtools" element={<DevToolsPage />} />
-    <Route path="/audit-compliance" element={<AuditCompliancePage />} />
-    <Route path="/audit-compliance/:app_name" element={<AuditInitiation />} />
+    <Route path="/audit-access-manager" element={<AuditCompliancePage />} />
     <Route
-      path="/audit-compliance/:app_name/:frequency/:period/details"
+      path="/audit-access-manager/:app_name"
+      element={<AuditInitiation />}
+    />
+    <Route
+      path="/audit-access-manager/:app_name/:frequency/:period/details"
       element={<AuditDetailsSection />}
     />
     <Route
-      path="/audit-compliance/:app_name/:frequency/:period/summary"
+      path="/audit-access-manager/:app_name/:frequency/:period/summary"
       element={<AuditSummary />}
     />
-    <Route path="/permission-management" element={<PermissionManagementPage />} />
+    <Route
+      path="/permission-management"
+      element={<PermissionManagementPage />}
+    />
   </FlatRoutes>
 );
 

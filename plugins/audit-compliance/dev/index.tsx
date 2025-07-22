@@ -6,6 +6,6 @@ createDevApp()
   .addPage({
     element: <AuditCompliancePage />,
     title: 'Root Page',
-    path: '/audit-compliance',
+    path: '/audit-access-manager',
   })
   .render();

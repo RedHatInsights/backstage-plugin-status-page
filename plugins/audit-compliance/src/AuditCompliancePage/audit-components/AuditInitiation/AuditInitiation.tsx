@@ -266,7 +266,7 @@ export const AuditInitiation = () => {
     const freq = rowData.frequency;
     const prd = rowData.period;
 
-    navigate(`/audit-compliance/${app_name}/${freq}/${prd}/details`, {
+    navigate(`/audit-access-manager/${app_name}/${freq}/${prd}/details`, {
       state: { ...rowData, app_name },
     });
   };
@@ -315,15 +315,15 @@ export const AuditInitiation = () => {
   return (
     <Page themeId="tool">
       <Header
-        title=" Audit and Compliance"
+        title=" Audit Access Manager"
         subtitle={
           <Box>
             <Typography variant="subtitle1" style={{ marginBottom: '8px' }}>
               Ensure Trust. Enforce Standards. Empower Teams.
             </Typography>
             <Breadcrumbs aria-label="breadcrumb">
-              <RouterLink to="/audit-compliance">
-                Audit and Compliance
+              <RouterLink to="/audit-access-manager">
+                Audit Access Manager
               </RouterLink>
               <Typography color="textPrimary">Audit Initiation</Typography>
             </Breadcrumbs>

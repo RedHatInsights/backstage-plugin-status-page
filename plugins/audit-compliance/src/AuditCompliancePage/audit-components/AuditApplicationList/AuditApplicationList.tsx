@@ -456,7 +456,7 @@ export function AuditApplicationList() {
                           color="primary"
                           className={classes.button}
                           onClick={() =>
-                            navigate(`/audit-compliance/${app.app_name}`)
+                            navigate(`/audit-access-manager/${app.app_name}`)
                           }
                         >
                           More Details

@@ -276,7 +276,9 @@ export const AuditDetailsSection = () => {
   const handleSummary = async () => {
     if (isAuditCompleted) {
       // If already completed, just navigate to summary page
-      navigate(`/audit-compliance/${app_name}/${frequency}/${period}/summary`);
+      navigate(
+        `/audit-access-manager/${app_name}/${frequency}/${period}/summary`,
+      );
       return;
     }
     try {
@@ -324,7 +326,9 @@ export const AuditDetailsSection = () => {
       }
 
       // Navigate to summary page
-      navigate(`/audit-compliance/${app_name}/${frequency}/${period}/summary`);
+      navigate(
+        `/audit-access-manager/${app_name}/${frequency}/${period}/summary`,
+      );
     } catch (error) {
       alertApi.post({
         message:
@@ -409,15 +413,17 @@ export const AuditDetailsSection = () => {
   return (
     <Page themeId="tool">
       <Header
-        title="Audit and Compliance"
+        title="Audit Access Manager"
         subtitle={
           <Box>
             <Typography variant="subtitle1" style={{ marginBottom: '8px' }}>
               Ensure Trust. Enforce Standards. Empower Teams.
             </Typography>
             <Breadcrumbs aria-label="breadcrumb">
-              <Link to="/audit-compliance">Audit and Compliance</Link>
-              <Link to={`/audit-compliance/${app_name}`}>Audit Initiation</Link>
+              <Link to="/audit-access-manager">Audit Access Manager</Link>
+              <Link to={`/audit-access-manager/${app_name}`}>
+                Audit Initiation
+              </Link>
               <Typography color="textPrimary">Audit Details</Typography>
             </Breadcrumbs>
           </Box>
