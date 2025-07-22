@@ -7,12 +7,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Box, Divider, Typography } from '@material-ui/core';
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useState,
-} from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { EmailProps, EmailRef, UserAccessData, UserEntity } from './types';
 
 export const Email = forwardRef<EmailRef, EmailProps>(
@@ -130,7 +125,7 @@ export const Email = forwardRef<EmailRef, EmailProps>(
   </table>
   <p>Please click the link below to complete your review:</p>
   <p>
-    <a href="${backstageUrl}/audit-compliance/${appName}/${frequency}/${auditPeriod}/details" target="_blank" rel="noopener noreferrer">
+    <a href="${backstageUrl}/audit-access-manager/${appName}/${frequency}/${auditPeriod}/details" target="_blank" rel="noopener noreferrer">
       Open Audit & Compliance Plugin
     </a>
   </p>
@@ -167,7 +162,9 @@ export const Email = forwardRef<EmailRef, EmailProps>(
               html: section.body,
               replyTo: section.recipientEmail,
             };
-            const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+            const baseUrl = await discoveryApi.getBaseUrl(
+              'audit-access-manager',
+            );
             const response = await fetchApi.fetch(`${baseUrl}/send-email`, {
               method: 'POST',
               headers: {
