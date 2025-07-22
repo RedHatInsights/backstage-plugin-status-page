@@ -24,6 +24,10 @@ organization:
   name: Backstage Plugins
 
 backend:
+  actions:
+    pluginSources:
+      - "catalog"
+      - "mcp-actions-example"
   # Used for enabling authentication, secret is shared by all backend plugins
   # See https://backstage.io/docs/auth/service-to-service-auth for
   # information on the format
@@ -75,6 +79,14 @@ backend:
           subject: audit-compliance-token
         accessRestrictions:
           - plugin: audit-compliance
+      - type: static
+        options:
+          token: ${MCP_ACTIONS_ACCESS_TOKEN}
+          subject: mcp-clients
+        accessRestrictions:
+          - plugin: mcp-actions
+          - plugin: catalog
+          - plugin: mcp-actions-example
 
 integrations:
   github:

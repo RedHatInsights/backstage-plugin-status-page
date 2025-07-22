@@ -165,4 +165,7 @@ backend.add(
   import('@appdev/backstage-plugin-permission-management-backend'),
 );
 backend.add(import('@appdev/backstage-plugin-outage-template-backend'));
+backend.add(import('@compass/backstage-plugin-mcp-actions-example-backend'));
+backend.add(import('@backstage/plugin-mcp-actions-backend'));
+
 backend.start();
