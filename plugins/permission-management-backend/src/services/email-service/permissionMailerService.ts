@@ -18,6 +18,7 @@ export class PermissionEmailService {
   private readonly transporter: Transporter;
   private readonly from: string;
   private readonly logger: LoggerService;
+  private readonly baseUrl: string;
 
   constructor(config: Config, logger: LoggerService) {
     this.logger = logger;
@@ -27,10 +28,12 @@ export class PermissionEmailService {
     const secure = config.getBoolean('permissionManagement.email.secure');
     const from = config.getString('permissionManagement.email.from');
     const caCertPath = config.getString('permissionManagement.email.caCert');
+    const baseUrl = config.getString('app.baseUrl');
 
     const customCa = caCertPath ? fs.readFileSync(caCertPath) : undefined;
 
     this.from = from;
+    this.baseUrl = baseUrl;
     this.transporter = createTransport({
       host,
       port,
@@ -79,6 +82,7 @@ export class PermissionEmailService {
         .replace(/{{requestor}}/gi, data.userName || '')
         .replace(/{{role}}/gi, data.role || '')
         .replace(/{{year}}/gi, new Date().getFullYear().toString())
+        .replace(/{{baseUrl}}/gi, this.baseUrl || '')
         .replace(/{{rejectionReason}}/gi, data.rejectionReason || '');
 
       await this.sendMail({ to, subject, html: template });
