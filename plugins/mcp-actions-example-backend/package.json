@@ -11,7 +11,10 @@
   },
   "backstage": {
     "role": "backend-plugin",
-    "pluginId": "mcp-actions-example"
+    "pluginId": "mcp-actions-example",
+    "pluginPackages": [
+      "@compass/backstage-plugin-mcp-actions-example-backend"
+    ]
   },
   "scripts": {
     "start": "backstage-cli package start",
