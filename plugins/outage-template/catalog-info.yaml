@@ -4,7 +4,7 @@ metadata:
   name: outages-plugin
   title: Outage Template Plugin Backstage
   description: Backstage Plugin for Outage Template
-  namespace: devex
+  namespace: compass
   tags:
     - backstage
     - idp
@@ -17,11 +17,11 @@ metadata:
       title: Backstage outage Plugin NPM Package
 
   annotations:
-    nexus-repository-manager/repository: appdev-platform
-    nexus-repository-manager/name: backstage-plugin-outages
+    npm/registry: compass
+    npm/package: '@appdev/backstage-plugin-outages'
 spec:
   type: backstage-frontend-plugin
   lifecycle: production
-  owner: group:redhat/one-platform-devs
-  system: devex/redhat-experience-platform
-  subcomponentOf: devex/backstage-console-frontend
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-frontend

@@ -5,7 +5,7 @@ metadata:
   name: soundcheck-backend-module-droperator
   title: Droperator Backend Module Soundcheck Backstage
   description: Droperator module for Soundcheck backned plugin
-  namespace: devex
+  namespace: compass
   tags:
     - backstage
     - idp
@@ -17,9 +17,11 @@ metadata:
   annotations:
     nexus-repository-manager/repository: appdev-platform
     nexus-repository-manager/name: backstage-plugin-soundcheck-backend-module-droperator
+    npm/registry: compass
+    npm/package: '@compass/backstage-plugin-soundcheck-backend-module-droperator'
 spec:
   type: backstage-backend-plugin-module
   lifecycle: production
-  owner: group:redhat/one-platform-devs
-  system: devex/redhat-experience-platform
-  subcomponentOf: devex/backstage-console-backend
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-backend

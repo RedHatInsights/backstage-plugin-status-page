@@ -4,7 +4,7 @@ metadata:
   name: audit-compliance-plugin
   title: Audit Compliance Plugin Compass
   description: Backstage Plugin for Audit Compliance
-  namespace: devex
+  namespace: compass
   tags:
     - compass
     - idp
@@ -21,11 +21,11 @@ metadata:
 
   annotations:
     backstage.io/techdocs-ref: dir:.
-    nexus-repository-manager/repository: appdev-platform
-    nexus-repository-manager/name: backstage-plugin-audit-compliance
+    npm/registry: compass
+    npm/package: '@appdev/backstage-plugin-audit-compliance'
 spec:
   type: backstage-frontend-plugin
   lifecycle: production
   owner: group:redhat/xe-compass-devs
-  system: devex/redhat-experience-platform
-  subcomponentOf: devex/backstage-console-frontend
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-frontend

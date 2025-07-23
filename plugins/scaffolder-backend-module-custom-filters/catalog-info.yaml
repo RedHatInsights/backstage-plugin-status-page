@@ -6,7 +6,7 @@ metadata:
   title: Custom Filters for Scaffolder Plugin
   description: |
     An extension module for the scaffolder-backend plugin, provides some custom fitlers for extending software templates.
-  namespace: devex
+  namespace: compass
   tags:
     - backstage
     - scaffolder
@@ -17,12 +17,12 @@ metadata:
 
   annotations:
     backstage.io/techdocs-ref: dir:.
-    npm/registry: nexus.corp.redhat.com
+    npm/registry: compass
     npm/package: '@compass/backstage-plugin-scaffolder-backend-module-custom-filters'
 
 spec:
   type: backstage-backend-plugin-module
   lifecycle: production
-  owner: group:redhat/one-platform-devs
-  system: devex/redhat-experience-platform
-  subcomponentOf: devex/backstage-console-backend
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-backend

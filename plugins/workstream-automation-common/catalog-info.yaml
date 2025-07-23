@@ -5,7 +5,7 @@ metadata:
   name: workstream-automation-common-plugin
   title: Workstream Automation Common Plugin
   description: Backstage common plugin for workstream automation
-  namespace: devex
+  namespace: compass
   tags:
     - workstream
     - automation
@@ -17,10 +17,10 @@ metadata:
       title: Backstage Workstream Automation Common Plugin Package
   annotations:
     backstage.io/techdocs-ref: dir:.
-    nexus-repository-manager/repository: appdev-platform
-    nexus-repository-manager/name: backstage-plugin-workstream-automation-common
+    npm/registry: compass
+    npm/package: '@compass/backstage-plugin-workstream-automation-common'
 spec:
   type: backstage-common-library
   lifecycle: production
-  owner: group:redhat/one-platform-devs
-  system: devex/redhat-experience-platform
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform

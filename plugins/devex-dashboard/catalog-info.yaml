@@ -6,7 +6,7 @@ metadata:
   title: Devex Dashboard Plugin Backstage
   description: |
     Devex Dashboard is an overview page that displays the overall statistics of DevEx and all it's projects.
-  namespace: devex
+  namespace: compass
   tags:
     - backstage
     - idp
@@ -26,14 +26,14 @@ metadata:
 
   annotations:
     backstage.io/techdocs-ref: dir:.
-    nexus-repository-manager/repository: appdev-platform
-    nexus-repository-manager/name: backstage-plugin-devex-dashboard
+    npm/registry: compass
+    npm/package: '@appdev/backstage-plugin-devex-dashboard'
 
 spec:
   type: backstage-frontend-plugin
   lifecycle: production
-  owner: group:redhat/one-platform-devs
-  system: devex/redhat-experience-platform
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
   dependsOn:
-    - component:devex/devex-data-layer-backend-plugin
-  subcomponentOf: component:devex/backstage-console-frontend
+    - component:compass/devex-data-layer-backend-plugin
+  subcomponentOf: component:compass/compass-frontend

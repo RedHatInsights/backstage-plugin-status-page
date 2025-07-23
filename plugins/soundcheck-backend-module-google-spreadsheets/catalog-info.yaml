@@ -5,16 +5,19 @@ metadata:
   name: soundcheck-backend-module-google-spreadsheets
   title: Google Spreadsheets Backend Module for Soundcheck Plugin
   description: Module to fetch facts from google spreadsheets
-  namespace: uxe
+  namespace: compass
   annotations:
     servicenow.com/appcode: SNDC-001
+    npm/registry: compass
+    npm/package: '@compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets'
   tags:
     - soundcheck
     - fact-collector
+    - compass
 spec:
-  type: service
-  lifecycle: experimental
+  type: library
+  lifecycle: production
   owner: group:redhat/xe-compass-devs
-  system: uxe/xe-compass
+  system: compass/compass-platfrom
   dependsOn:
     - component:uxe/sndc-001-soundcheck-1

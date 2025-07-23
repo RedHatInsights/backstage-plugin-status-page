@@ -6,7 +6,7 @@ metadata:
   title: Enrichment Data Plugin
   description: |
     An extension module for the catalog-backend plugin, providing an EnrichmentDataProcessor for extending entity data.
-  namespace: devex
+  namespace: compass
   tags:
     - backstage
     - catalog
@@ -17,12 +17,12 @@ metadata:
 
   annotations:
     backstage.io/techdocs-ref: dir:.
-    nexus-repository-manager/repository: appdev-platform
-    nexus-repository-manager/name: backstage-plugin-catalog-backend-module-enrichment
+    npm/package: '@compass/backstage-plugin-catalog-backend-module-enrichment'
+    npm/registry: compass
 
 spec:
   type: backstage-backend-plugin-module
   lifecycle: preproduction
-  owner: group:redhat/one-platform-devs
-  system: devex/redhat-experience-platform
-  subcomponentOf: devex/backstage-console-backend
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-backend

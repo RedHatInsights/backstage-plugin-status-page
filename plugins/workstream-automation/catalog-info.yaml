@@ -5,7 +5,7 @@ metadata:
   name: workstream-automation-plugin
   title: Workstream Automation Plugin
   description: Create, Manage and View workstreams within backstage using this plugin
-  namespace: devex
+  namespace: compass
   tags:
     - workstream
     - automation
@@ -16,16 +16,16 @@ metadata:
       title: Backstage Workstream Automation Plugin Package
   annotations:
     backstage.io/techdocs-ref: dir:.
-    nexus-repository-manager/repository: appdev-platform
-    nexus-repository-manager/name: backstage-plugin-workstream-automation
+    npm/registry: compass
+    npm/package: '@compass/backstage-plugin-workstream-automation'
 spec:
   type: backstage-frontend-plugin
   lifecycle: production
-  owner: group:redhat/one-platform-devs
-  system: devex/redhat-experience-platform
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
   providesApis:
-    - api:devex/workstream-plugin-api
+    - api:compass/workstream-plugin-api
   dependsOn:
-    - component:devex/workstream-automation-common-plugin
-    - component:devex/workstream-automation-backend-plugin
-  subcomponentOf: component:devex/backstage-console-frontend
+    - component:compass/workstream-automation-common-plugin
+    - component:compass/workstream-automation-backend-plugin
+  subcomponentOf: component:compass/compass-frontend

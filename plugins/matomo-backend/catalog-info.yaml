@@ -5,7 +5,7 @@ metadata:
   name: matomo-backend-plugin
   title: Backend Matomo Plugin Backstage
   description: Backstage Plugin for Backend Matomo
-  namespace: devex
+  namespace: compass
   tags:
     - backstage
     - idp
@@ -16,9 +16,12 @@ metadata:
   links:
     - url: https://www.npmjs.com/package/@backstage-community/plugin-matomo-backend
       title: Backstage Matomo Backend Plugin NPM Package
+  annotations:
+    npm/registry: npm
+    npm/package: '@backstage-community/plugin-matomo-backend'
 spec:
   type: backstage-backend-plugin
   lifecycle: production
-  owner: group:redhat/one-platform-devs
-  system: devex/redhat-experience-platform
-  subcomponentOf: devex/backstage-console-backend
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-backend

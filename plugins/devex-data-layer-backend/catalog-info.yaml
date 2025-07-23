@@ -6,7 +6,7 @@ metadata:
   title: Devex Data Layer Backend Plugin Backstage
   description: |
     Data layer backend plugin provides api to run subgraph searches
-  namespace: devex
+  namespace: compass
   tags:
     - backstage
     - idp
@@ -20,12 +20,12 @@ metadata:
 
   annotations:
     backstage.io/techdocs-ref: dir:.
-    nexus-repository-manager/repository: appdev-platform
-    nexus-repository-manager/name: backstage-plugin-devex-data-layer-backend
+    npm/registry: compass
+    npm/package: '@appdev/backstage-plugin-devex-data-layer-backend'
 
 spec:
   type: backstage-backend-plugin
   lifecycle: production
-  owner: group:redhat/one-platform-devs
-  system: devex/redhat-experience-platform
-  subcomponentOf: devex/backstage-console-backend
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-backend
