@@ -1,5 +1,13 @@
 # Changelog
 
+## @appdev/backstage-plugin-devex-data-layer-backend [1.11.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-devex-data-layer-backend@1.11.0...@appdev/backstage-plugin-devex-data-layer-backend@1.11.1) (2025-07-23)
+
+
+### Other changes
+
+* **PULSE-709:** add health check endpoints ([cd1e95b](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/cd1e95b32797208c81d38b8ca5e5cb513e312229))
+* **no-release:** update namespace, owner and npm annotations ([1165815](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/1165815a73ac1798a5f092ecca93744c87fd15da))
+
 ## @appdev/backstage-plugin-devex-data-layer-backend [1.11.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-devex-data-layer-backend@1.10.0...@appdev/backstage-plugin-devex-data-layer-backend@1.11.0) (2025-07-15)
 
 
