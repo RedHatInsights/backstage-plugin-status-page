@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance-backend [1.16.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance-backend@1.16.0...@appdev/backstage-plugin-audit-compliance-backend@1.16.1) (2025-07-23)
+
+
+### Other changes
+
+* **PULSE-709:** add health check endpoints ([cd1e95b](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/cd1e95b32797208c81d38b8ca5e5cb513e312229))
+
 ## @appdev/backstage-plugin-audit-compliance-backend [1.16.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance-backend@1.15.0...@appdev/backstage-plugin-audit-compliance-backend@1.16.0) (2025-07-17)
 
 
