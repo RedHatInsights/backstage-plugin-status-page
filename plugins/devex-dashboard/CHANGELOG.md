@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-devex-dashboard [1.9.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-devex-dashboard@1.9.0...@appdev/backstage-plugin-devex-dashboard@1.9.1) (2025-07-23)
+
+
+### Other changes
+
+* **no-release:** update namespace, owner and npm annotations ([1165815](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/1165815a73ac1798a5f092ecca93744c87fd15da))
+
 ## @appdev/backstage-plugin-devex-dashboard [1.9.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-devex-dashboard@1.8.0...@appdev/backstage-plugin-devex-dashboard@1.9.0) (2025-07-15)
 
 
