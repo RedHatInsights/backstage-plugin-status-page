@@ -62,7 +62,7 @@ export async function createRouter(
   router.use('/health', createHealthRoute(logger));
 
   // Mount core access request routes
-  router.use('/access', createAccessRequestRoutes(accessRequestDb, emailService, roverClient));
+  router.use('/access', createAccessRequestRoutes(accessRequestDb, emailService, roverClient, config));
 
   // Mount Rover API integration routes
   router.use('/rover', createRoverRoutes(roverClient));

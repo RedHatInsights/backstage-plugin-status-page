@@ -430,6 +430,7 @@ auditCompliance:
     caCert: ${NODE_EXTRA_CA_CERTS}
 
 permissionManagement:
+  enableDeleteRoute: true
   roverUsername: ${ROVER_USERNAME}
   roverPassword: ${ROVER_PASSWORD}
   roverBaseUrl: ${ROVER_BASE_URL}
