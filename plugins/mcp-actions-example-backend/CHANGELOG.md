@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-mcp-actions-example-backend [1.0.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-mcp-actions-example-backend@1.0.0...@compass/backstage-plugin-mcp-actions-example-backend@1.0.1) (2025-07-23)
+
+
+### Bug Fixes
+
+* add plugin metadata ([1121bbe](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/1121bbe3724bfdea58028f2915fb7e12052b3ee7))
+
 ## @compass/backstage-plugin-mcp-actions-example-backend 1.0.0 (2025-07-23)
 
 
