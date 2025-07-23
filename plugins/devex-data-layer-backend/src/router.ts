@@ -159,6 +159,7 @@ export async function createRouter(
     );
     res.json({ data: cachedData });
   });
+  router.get('/health', (_, res) => res.json({ status: 'ok' }));
 
   return router;
 }

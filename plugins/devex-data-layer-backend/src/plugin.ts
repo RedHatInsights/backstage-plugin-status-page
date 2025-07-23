@@ -25,43 +25,46 @@ export const devexDataLayerPlugin = createBackendPlugin({
       },
       async init({ logger, auth, httpRouter, config, database, scheduler }) {
         try {
-        const token = config.getOptionalString('dataLayer.splunkToken') || '';
-        const subgraphsSnippetUrl =
-          config.getOptionalString('dataLayer.splunkSubgraphsSnippet') || '';
-        const splunkApiHost =
-          config.getOptionalString('dataLayer.splunkApiHost') || '';
+          const token = config.getOptionalString('dataLayer.splunkToken') || '';
+          const subgraphsSnippetUrl =
+            config.getOptionalString('dataLayer.splunkSubgraphsSnippet') || '';
+          const splunkApiHost =
+            config.getOptionalString('dataLayer.splunkApiHost') || '';
 
-        const splunkQueryService = await CreateSplunkQueryService({
-          logger,
-          auth,
-          splunkApiHost,
-          token,
-          database,
-          subgraphsSnippetUrl,
-        });
+          const splunkQueryService = await CreateSplunkQueryService({
+            logger,
+            auth,
+            splunkApiHost,
+            token,
+            database,
+            subgraphsSnippetUrl,
+          });
 
-        const schedulerConfig: SchedulerServiceTaskScheduleDefinition =
-          config.getOptional('dataLayer.schedule') || {
-            timeout: { hours: 6 },
-            frequency: { hours: 12 },
-          };
+          const schedulerConfig: SchedulerServiceTaskScheduleDefinition =
+            config.getOptional('dataLayer.schedule') || {
+              timeout: { hours: 6 },
+              frequency: { hours: 12 },
+            };
 
-        // scheduled to sync the splunk data
-        const runner = scheduler.createScheduledTaskRunner(schedulerConfig);
-        runner.run({
-          fn: () => {
-            splunkQueryService.fetchDTLHistoricalData();
-            splunkQueryService.fetchHydraHistoricalData();
-          },
-          id: 'splunk-query-service-runner__id',
-        });
+          // scheduled to sync the splunk data
+          const runner = scheduler.createScheduledTaskRunner(schedulerConfig);
+          runner.run({
+            fn: () => {
+              splunkQueryService.fetchDTLHistoricalData();
+              splunkQueryService.fetchHydraHistoricalData();
+            },
+            id: 'splunk-query-service-runner__id',
+          });
 
-        httpRouter.use(await createRouter(database));
-      }
-
-    catch(err) {
-      logger.error(String(err));
-    }
-    }});
+          httpRouter.addAuthPolicy({
+            allow: 'unauthenticated',
+            path: '/health',
+          });
+          httpRouter.use(await createRouter(database));
+        } catch (err) {
+          logger.error(String(err));
+        }
+      },
+    });
   },
 });

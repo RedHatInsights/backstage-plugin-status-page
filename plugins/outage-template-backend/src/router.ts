@@ -63,6 +63,7 @@ export async function createRouter({
       res.json({ data: [], message: 'Error: Failed to create incident!' });
     }
   });
+  router.get('/health', (_, res) => res.json({ status: 'ok' }));
 
   router.post('/postmortem/:id/draft', async (req, res) => {
     try {

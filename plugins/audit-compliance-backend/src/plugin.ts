@@ -22,6 +22,10 @@ export const auditCompliancePlugin = createBackendPlugin({
       async init({ logger, database, httpRouter, config }) {
         logger.info('[audit-compliance] Plugin initialization started');
         try {
+          httpRouter.addAuthPolicy({
+            allow: 'unauthenticated',
+            path: '/health',
+          });
           const router = await createRouter(database, config, logger);
           httpRouter.use(router);
         } catch (err) {

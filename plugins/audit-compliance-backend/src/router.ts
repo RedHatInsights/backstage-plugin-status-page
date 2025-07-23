@@ -34,5 +34,6 @@ export async function createRouter(
 
   const combinedRouter = await createCombinedRouter(knex, config, logger);
   router.use('/', combinedRouter);
+  router.get('/health', (_, res) => res.json({ status: 'ok' }));
   return router;
 }
