@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-permission-management-backend [1.2.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-permission-management-backend@1.2.1...@appdev/backstage-plugin-permission-management-backend@1.2.2) (2025-07-24)
+
+
+### Bug Fixes
+
+* resolved the proxy token issue for the permission manager ([832279c](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/832279cd048246335bbe93ddc3fdb52e26a9f0ce))
+
 ## @appdev/backstage-plugin-permission-management-backend [1.2.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-permission-management-backend@1.2.0...@appdev/backstage-plugin-permission-management-backend@1.2.1) (2025-07-23)
 
 
