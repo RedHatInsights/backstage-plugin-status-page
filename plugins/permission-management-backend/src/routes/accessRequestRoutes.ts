@@ -230,7 +230,7 @@ export function createAccessRequestRoutes(
       return res.status(400).json({ error: 'Request body must be a non-empty array of access requests' });
     }
 
-    const authHeader = req.headers.authorization || '';
+    const authHeader = req.headers.hydra_token as string || '';
     const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
 
     if (!bearerToken) {
