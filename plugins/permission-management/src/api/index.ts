@@ -71,7 +71,7 @@ export class PermissionManagementApi {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${accessToken}`,
+          'hydra_token': `Bearer ${accessToken}`,
         },
         body: JSON.stringify(updates),
       });
