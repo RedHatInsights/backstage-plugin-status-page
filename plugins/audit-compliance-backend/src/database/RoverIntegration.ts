@@ -738,4 +738,220 @@ export class RoverDatabase implements RoverStore {
       return [];
     }
   }
+
+  /**
+   * Generates static LDAP data entries for an application.
+   * Creates entries in group_access_reports or service_account_access_review tables
+   * based on LDAP account configurations stored in the applications table.
+   *
+   * @param appname - Name of the application
+   * @param frequency - Review frequency
+   * @param period - Review period
+   * @returns Promise resolving to array of generated LDAP records
+   */
+  async generateLDAPData(
+    appname: string,
+    frequency: string,
+    period: string,
+  ): Promise<any[]> {
+    const report: any[] = [];
+
+    // Get LDAP entries from applications table
+    const ldapEntries = await this.db('applications')
+      .select(
+        'type',
+        'environment',
+        'app_delegate',
+        'account_name',
+        'app_name',
+        'app_owner',
+        'app_owner_email',
+      )
+      .where({
+        app_name: appname,
+        source: 'ldap',
+      });
+
+    if (!ldapEntries.length) {
+      this.logger.info(`No LDAP data found for appname: ${appname}`);
+      return report;
+    }
+
+    this.logger.info(
+      `Processing ${ldapEntries.length} LDAP entries for appname: ${appname}`,
+    );
+
+    for (const app of ldapEntries) {
+      const {
+        type,
+        environment,
+        app_delegate,
+        account_name,
+        app_name,
+        app_owner,
+        app_owner_email,
+      } = app;
+
+      if (type === 'rover-group-name') {
+        // Add to group_access_reports table
+        const dbRow = {
+          environment,
+          full_name: account_name, // Use account_name as full_name for LDAP
+          user_id: account_name, // Use account_name as user_id for LDAP
+          user_role: 'member', // Default role for LDAP groups
+          manager: app_owner || 'N/A',
+          manager_uid: app_owner_email?.split('@')[0] || '',
+          sign_off_status: 'pending',
+          sign_off_by: 'N/A',
+          sign_off_date: null,
+          source: 'ldap',
+          comments: '',
+          ticket_reference: '',
+          access_change_date: null,
+          created_at: new Date(),
+          account_name,
+          app_name,
+          frequency,
+          period,
+          app_delegate,
+          ticket_status: 'pending',
+        };
+        await this.db('group_access_reports').insert(dbRow);
+        report.push(dbRow);
+        this.logger.debug(`Added LDAP group access entry: ${account_name}`);
+      } else if (type === 'service-account') {
+        // Add to service_account_access_review table
+        const dbRow = {
+          app_name,
+          environment,
+          service_account: account_name,
+          user_role: 'service-account',
+          manager: app_owner || 'N/A',
+          manager_uid: app_owner_email?.split('@')[0] || '',
+          sign_off_status: 'Pending',
+          sign_off_by: 'N/A',
+          sign_off_date: null,
+          comments: '',
+          ticket_reference: '',
+          revoked_date: null,
+          created_at: new Date(),
+          updated_at: new Date(),
+          period,
+          frequency,
+          app_delegate,
+          ticket_status: '',
+          source: 'ldap',
+        };
+        await this.db('service_account_access_review').insert(dbRow);
+        report.push(dbRow);
+        this.logger.debug(`Added LDAP service account entry: ${account_name}`);
+      }
+    }
+
+    this.logger.info(
+      `Successfully generated ${report.length} LDAP entries for appname: ${appname}`,
+    );
+    return report;
+  }
+
+  /**
+   * Fetches LDAP data for fresh tables without inserting into main tables.
+   * Used by the sync-fresh-data endpoint to avoid duplicate entries.
+   *
+   * @param appname - Name of the application
+   * @param frequency - Review frequency
+   * @param period - Review period
+   * @returns Promise resolving to array of fetched LDAP records
+   */
+  async fetchLDAPDataForFresh(
+    appname: string,
+    frequency: string,
+    period: string,
+  ): Promise<any[]> {
+    const report: any[] = [];
+
+    // Get LDAP entries from applications table
+    const ldapEntries = await this.db('applications')
+      .select(
+        'type',
+        'environment',
+        'app_delegate',
+        'account_name',
+        'app_name',
+        'app_owner',
+        'app_owner_email',
+      )
+      .where({
+        app_name: appname,
+        source: 'ldap',
+      });
+
+    if (!ldapEntries.length) {
+      this.logger.info(`No LDAP data found for appname: ${appname}`);
+      return report;
+    }
+
+    this.logger.info(
+      `Processing ${ldapEntries.length} LDAP entries for fresh data: ${appname}`,
+    );
+
+    for (const app of ldapEntries) {
+      const {
+        type,
+        environment,
+        app_delegate,
+        account_name,
+        app_name,
+        app_owner,
+        app_owner_email,
+      } = app;
+
+      if (type === 'rover-group-name') {
+        // Add to group_access_reports_fresh table
+        const dbRow = {
+          environment,
+          full_name: account_name,
+          user_id: account_name,
+          user_role: 'member',
+          manager: app_owner || 'N/A',
+          manager_uid: app_owner_email?.split('@')[0] || '',
+          source: 'ldap',
+          account_name,
+          app_name,
+          frequency,
+          period,
+          app_delegate,
+          created_at: new Date(),
+        };
+        report.push(dbRow);
+        this.logger.debug(
+          `Added LDAP group access fresh entry: ${account_name}`,
+        );
+      } else if (type === 'service-account') {
+        // Add to service_account_access_review_fresh table
+        const dbRow = {
+          app_name,
+          environment,
+          service_account: account_name,
+          user_role: 'service-account',
+          manager: app_owner || 'N/A',
+          app_delegate,
+          source: 'ldap',
+          account_name,
+          created_at: new Date(),
+          period,
+          frequency,
+        };
+        report.push(dbRow);
+        this.logger.debug(
+          `Added LDAP service account fresh entry: ${account_name}`,
+        );
+      }
+    }
+
+    this.logger.info(
+      `Successfully fetched ${report.length} LDAP entries for fresh data: ${appname}`,
+    );
+    return report;
+  }
 }

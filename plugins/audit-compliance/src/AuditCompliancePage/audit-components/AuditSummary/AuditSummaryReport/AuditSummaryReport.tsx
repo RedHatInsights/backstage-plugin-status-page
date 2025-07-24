@@ -35,7 +35,6 @@ import { useStyles } from './AuditSummaryReport.styles';
 import {
   AccountList as AccountListComponent,
   DataInconsistencyWarning,
-  getStatusChip,
   StatCard,
 } from './components';
 import { ReviewDataTable } from './ReviewDataTable';
@@ -99,6 +98,18 @@ const StatisticsTable: React.FC<{
       status: `${totals.gitlab.approved} Approved, ${totals.gitlab.rejected} Rejected`,
       statusColor: 'info' as const,
     },
+    {
+      category: 'LDAP Accounts',
+      before: totals.ldap.before,
+      after: totals.ldap.after,
+      change:
+        totals.ldap.before > 0
+          ? ((totals.ldap.after - totals.ldap.before) / totals.ldap.before) *
+            100
+          : 0,
+      status: `${totals.ldap.approved} Approved, ${totals.ldap.rejected} Rejected`,
+      statusColor: 'info' as const,
+    },
   ];
 
   return (
@@ -120,10 +131,6 @@ const StatisticsTable: React.FC<{
               <TableCell align="center" className={classes.tableHeaderCell}>
                 After
               </TableCell>
-
-              <TableCell align="center" className={classes.tableHeaderCell}>
-                Status
-              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -142,10 +149,6 @@ const StatisticsTable: React.FC<{
                 <TableCell align="center" className={classes.tableCell}>
                   {row.after}
                 </TableCell>
-
-                <TableCell align="center" className={classes.tableCell}>
-                  {getStatusChip(row.status, row.statusColor, classes)}
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -155,6 +158,12 @@ const StatisticsTable: React.FC<{
   );
 };
 
+interface AccountEntry {
+  type: 'service-account' | 'rover-group-name';
+  source: 'rover' | 'gitlab' | 'ldap';
+  account_name: string;
+}
+
 interface ApplicationDetails {
   app_name: string;
   cmdb_id: string;
@@ -162,11 +171,9 @@ interface ApplicationDetails {
   app_owner: string;
   app_delegate: string;
   jira_project: string;
-  accounts: {
-    rover: string[];
-    gitlab: string[];
-    service_accounts: string[];
-  };
+  app_owner_email?: string;
+  accounts: AccountEntry[];
+  jira_metadata?: Record<string, string>;
 }
 
 export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
@@ -195,6 +202,17 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [userRef, setUserRef] = useState<string>('');
   const [isCompleting, setIsCompleting] = useState(false);
+
+  // Helper function to filter accounts by type and source
+  const getFilteredAccounts = (
+    type: 'rover-group-name' | 'service-account',
+    source: 'rover' | 'gitlab' | 'ldap',
+  ) => {
+    if (!applicationDetails?.accounts) return [];
+    return applicationDetails.accounts
+      .filter(acc => acc.type === type && acc.source === source)
+      .map(acc => acc.account_name);
+  };
 
   // Function to fetch statistics
   const fetchStatistics = async () => {
@@ -460,29 +478,38 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
           isSyncing={isSyncing}
         />
         <Grid container spacing={2} style={{ marginBottom: '16px' }}>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <StatCard
               title="Total Reviews"
               value={
                 statistics.group_access.rover.total +
                 statistics.group_access.gitlab.total +
-                statistics.service_accounts.total
+                statistics.group_access.ldap.total +
+                statistics.service_accounts.rover.total +
+                statistics.service_accounts.gitlab.total +
+                statistics.service_accounts.ldap.total
               }
               type="total"
               subtitle="All Access Reviews"
               before={
                 statistics.group_access.rover.fresh +
                 statistics.group_access.gitlab.fresh +
-                statistics.service_accounts.fresh
+                statistics.group_access.ldap.fresh +
+                statistics.service_accounts.rover.fresh +
+                statistics.service_accounts.gitlab.fresh +
+                statistics.service_accounts.ldap.fresh
               }
               after={
                 statistics.group_access.rover.total +
                 statistics.group_access.gitlab.total +
-                statistics.service_accounts.total
+                statistics.group_access.ldap.total +
+                statistics.service_accounts.rover.total +
+                statistics.service_accounts.gitlab.total +
+                statistics.service_accounts.ldap.total
               }
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <StatCard
               title="Total Approvals"
               value={statistics.statusOverview.totalReviews.approved}
@@ -491,12 +518,15 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
               before={
                 statistics.group_access.rover.approved +
                 statistics.group_access.gitlab.approved +
-                statistics.service_accounts.approved
+                statistics.group_access.ldap.approved +
+                statistics.service_accounts.rover.approved +
+                statistics.service_accounts.gitlab.approved +
+                statistics.service_accounts.ldap.approved
               }
               after={statistics.statusOverview.totalReviews.approved}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <StatCard
               title="Total Rejections"
               value={statistics.statusOverview.totalReviews.rejected}
@@ -505,9 +535,42 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
               before={
                 statistics.group_access.rover.rejected +
                 statistics.group_access.gitlab.rejected +
-                statistics.service_accounts.rejected
+                statistics.group_access.ldap.rejected +
+                statistics.service_accounts.rover.rejected +
+                statistics.service_accounts.gitlab.rejected +
+                statistics.service_accounts.ldap.rejected
               }
               after={statistics.statusOverview.totalReviews.rejected}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <StatCard
+              title="Service Accounts"
+              value={
+                statistics.service_accounts.rover.total +
+                statistics.service_accounts.gitlab.total +
+                statistics.service_accounts.ldap.total
+              }
+              type="total"
+              subtitle={`${
+                statistics.service_accounts.rover.approved +
+                statistics.service_accounts.gitlab.approved +
+                statistics.service_accounts.ldap.approved
+              } Approved, ${
+                statistics.service_accounts.rover.rejected +
+                statistics.service_accounts.gitlab.rejected +
+                statistics.service_accounts.ldap.rejected
+              } Rejected`}
+              before={
+                statistics.service_accounts.rover.fresh +
+                statistics.service_accounts.gitlab.fresh +
+                statistics.service_accounts.ldap.fresh
+              }
+              after={
+                statistics.service_accounts.rover.total +
+                statistics.service_accounts.gitlab.total +
+                statistics.service_accounts.ldap.total
+              }
             />
           </Grid>
         </Grid>
@@ -534,12 +597,12 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
           </Grid>
           <Grid item xs={4}>
             <StatCard
-              title="Service Accounts"
-              value={statistics.service_accounts.total}
+              title="LDAP Reviews"
+              value={statistics.group_access.ldap.total}
               type="total"
-              subtitle={`${statistics.service_accounts.approved} Approved, ${statistics.service_accounts.rejected} Rejected`}
-              before={statistics.service_accounts.fresh}
-              after={statistics.service_accounts.total}
+              subtitle={`${statistics.group_access.ldap.approved} Approved, ${statistics.group_access.ldap.rejected} Rejected`}
+              before={statistics.group_access.ldap.fresh}
+              after={statistics.group_access.ldap.total}
             />
           </Grid>
         </Grid>
@@ -836,7 +899,7 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
               Account Names
             </Typography>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={3}>
                 <Typography
                   variant="subtitle2"
                   color="textSecondary"
@@ -845,10 +908,10 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
                   Rover Accounts
                 </Typography>
                 <AccountListComponent
-                  accounts={applicationDetails?.accounts.rover}
+                  accounts={getFilteredAccounts('rover-group-name', 'rover')}
                 />
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={3}>
                 <Typography
                   variant="subtitle2"
                   color="textSecondary"
@@ -857,10 +920,22 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
                   GitLab Accounts
                 </Typography>
                 <AccountListComponent
-                  accounts={applicationDetails?.accounts.gitlab}
+                  accounts={getFilteredAccounts('rover-group-name', 'gitlab')}
                 />
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={3}>
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  gutterBottom
+                >
+                  LDAP Accounts
+                </Typography>
+                <AccountListComponent
+                  accounts={getFilteredAccounts('rover-group-name', 'ldap')}
+                />
+              </Grid>
+              <Grid item xs={12} md={3}>
                 <Typography
                   variant="subtitle2"
                   color="textSecondary"
@@ -869,7 +944,11 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
                   Service Accounts
                 </Typography>
                 <AccountListComponent
-                  accounts={applicationDetails?.accounts.service_accounts}
+                  accounts={[
+                    ...getFilteredAccounts('service-account', 'rover'),
+                    ...getFilteredAccounts('service-account', 'gitlab'),
+                    ...getFilteredAccounts('service-account', 'ldap'),
+                  ]}
                 />
               </Grid>
             </Grid>

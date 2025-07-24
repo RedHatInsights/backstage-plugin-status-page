@@ -84,19 +84,60 @@ export interface StatisticsData {
       };
       accounts?: string[];
     };
+    ldap: {
+      total: number;
+      fresh: number;
+      approved: number;
+      rejected: number;
+      pending: number;
+      changes: {
+        added: number;
+        removed: number;
+        modified: number;
+      };
+      accounts?: string[];
+    };
   };
   service_accounts: {
-    total: number;
-    fresh: number;
-    approved: number;
-    rejected: number;
-    pending: number;
-    changes: {
-      added: number;
-      removed: number;
-      modified: number;
+    rover: {
+      total: number;
+      fresh: number;
+      approved: number;
+      rejected: number;
+      pending: number;
+      changes: {
+        added: number;
+        removed: number;
+        modified: number;
+      };
+      accounts?: string[];
     };
-    accounts?: string[];
+    gitlab: {
+      total: number;
+      fresh: number;
+      approved: number;
+      rejected: number;
+      pending: number;
+      changes: {
+        added: number;
+        removed: number;
+        modified: number;
+      };
+      accounts?: string[];
+    };
+    ldap: {
+      total: number;
+      fresh: number;
+      approved: number;
+      rejected: number;
+      pending: number;
+      changes: {
+        added: number;
+        removed: number;
+        modified: number;
+      };
+      accounts?: string[];
+    };
   };
   statusOverview: {
     totalReviews: {

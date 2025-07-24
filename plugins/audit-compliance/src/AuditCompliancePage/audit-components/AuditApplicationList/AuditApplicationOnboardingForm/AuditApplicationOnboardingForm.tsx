@@ -5,24 +5,25 @@ import {
   fetchApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
-import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/Delete';
-import InfoIcon from '@material-ui/icons/Info';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
 import {
   Button,
   Card,
   CardContent,
+  CircularProgress,
   Divider,
   Grid,
   IconButton,
+  Menu,
   MenuItem,
   TextField,
-  CircularProgress,
-  Menu,
 } from '@material-ui/core';
-import { Fragment, useState, useEffect, useRef } from 'react';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
+import InfoIcon from '@material-ui/icons/Info';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import {
   AccountEntry,
   ApplicationFormData,
@@ -38,17 +39,21 @@ export const AuditApplicationOnboardingForm = ({
   initialData,
   isEditMode = false,
 }: AuditApplicationOnboardingFormProps) => {
-  // Use a simple array of {key, value} for jira_metadata
+  // Use a simple array of {key, value, schema} for jira_metadata
   const [formData, setFormData] = useState<
     Omit<ApplicationFormData, 'jira_metadata'> & {
-      jira_metadata: { key: string; value: string }[];
+      jira_metadata: { key: string; value: string; schema?: any }[];
     }
   >(() => {
     // Convert object to array for editing
     const toArray = (obj?: Record<string, string>) =>
       obj
-        ? Object.entries(obj).map(([key, value]) => ({ key, value }))
-        : [{ key: '', value: '' }];
+        ? Object.entries(obj).map(([key, value]) => ({
+            key,
+            value,
+            schema: undefined,
+          }))
+        : [{ key: '', value: '', schema: undefined }];
     if (initialData) {
       return {
         ...initialData,
@@ -68,9 +73,25 @@ export const AuditApplicationOnboardingForm = ({
       accounts: [
         { type: 'rover-group-name', source: 'rover', account_name: '' },
       ],
-      jira_metadata: [{ key: '', value: '' }],
+      jira_metadata: [{ key: '', value: '', schema: undefined }],
     };
   });
+
+  useEffect(() => {
+    if (initialData) {
+      const toArray = (obj?: Record<string, string>) =>
+        obj
+          ? Object.entries(obj).map(([key, value]) => ({ key, value }))
+          : [{ key: '', value: '' }];
+      setFormData({
+        ...initialData,
+        jira_metadata: toArray(
+          initialData.jira_metadata as Record<string, string>,
+        ),
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialData]);
 
   const fetchApi = useApi(fetchApiRef);
   const discoveryApi = useApi(discoveryApiRef);
@@ -107,6 +128,47 @@ export const AuditApplicationOnboardingForm = ({
       formData.accounts.length,
     );
   }, [formData.accounts]);
+
+  // Jira field mapping state
+  const [jiraFields, setJiraFields] = useState<
+    Array<{
+      id: string;
+      name: string;
+      schema: any;
+      custom: boolean;
+    }>
+  >([]);
+  const [jiraFieldsLoading, setJiraFieldsLoading] = useState(false);
+  const [jiraFieldsError, setJiraFieldsError] = useState<string | null>(null);
+  useEffect(() => {
+    async function fetchJiraFields() {
+      setJiraFieldsLoading(true);
+      setJiraFieldsError(null);
+      try {
+        const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+        const resp = await fetchApi.fetch(`${baseUrl}/jira/fields`);
+        if (resp.ok) {
+          const data = await resp.json();
+          setJiraFields(data);
+        } else {
+          setJiraFieldsError('Failed to fetch Jira fields');
+          alertApi.post({
+            message: 'Failed to fetch Jira fields',
+            severity: 'error',
+          });
+        }
+      } catch (err) {
+        setJiraFieldsError('Error fetching Jira fields');
+        alertApi.post({
+          message: 'Error fetching Jira fields',
+          severity: 'error',
+        });
+      } finally {
+        setJiraFieldsLoading(false);
+      }
+    }
+    fetchJiraFields();
+  }, [fetchApi, discoveryApi, alertApi]);
 
   const handleMainFieldChange =
     (field: keyof Omit<ApplicationFormData, 'accounts'>) =>
@@ -259,13 +321,22 @@ export const AuditApplicationOnboardingForm = ({
     }
   };
 
-  // Handlers for Jira Metadata (simple array version)
+  // Handlers for Jira Metadata (now using dropdown for key)
   const handleJiraMetadataKeyChange = (idx: number, newKey: string) => {
     setFormData(prev => ({
       ...prev,
-      jira_metadata: prev.jira_metadata.map((item, i) =>
-        i === idx ? { ...item, key: newKey } : item,
-      ),
+      jira_metadata: prev.jira_metadata.map((item, i) => {
+        if (i === idx) {
+          // Find the selected field to get its schema
+          const selectedField = jiraFields.find(field => field.id === newKey);
+          return {
+            ...item,
+            key: newKey,
+            schema: selectedField?.schema || undefined,
+          };
+        }
+        return item;
+      }),
     }));
   };
   const handleJiraMetadataValueChange = (idx: number, newValue: string) => {
@@ -279,7 +350,10 @@ export const AuditApplicationOnboardingForm = ({
   const handleAddJiraMetadata = () => {
     setFormData(prev => ({
       ...prev,
-      jira_metadata: [...prev.jira_metadata, { key: '', value: '' }],
+      jira_metadata: [
+        ...prev.jira_metadata,
+        { key: '', value: '', schema: undefined },
+      ],
     }));
   };
   const handleRemoveJiraMetadata = (idx: number) => {
@@ -296,12 +370,16 @@ export const AuditApplicationOnboardingForm = ({
         ? `/applications/onboarding/${encodeURIComponent(formData.app_name)}`
         : '/applications/onboarding';
 
-      // Convert jira_metadata array to object for backend
-      const jiraMetadataObj = Object.fromEntries(
-        formData.jira_metadata
-          .filter(item => item.key)
-          .map(item => [item.key, item.value]),
-      );
+      // Convert jira_metadata array to object for backend with schema information
+      const jiraMetadataObj: Record<string, any> = {};
+      formData.jira_metadata
+        .filter(item => item.key)
+        .forEach(item => {
+          jiraMetadataObj[item.key] = {
+            value: item.value,
+            schema: item.schema,
+          };
+        });
       const payload = {
         ...formData,
         jira_metadata: jiraMetadataObj,
@@ -354,7 +432,7 @@ export const AuditApplicationOnboardingForm = ({
           accounts: [
             { type: 'rover-group-name', source: 'rover', account_name: '' },
           ],
-          jira_metadata: [{ key: '', value: '' }],
+          jira_metadata: [{ key: '', value: '', schema: undefined }],
         });
       }
 
@@ -367,6 +445,97 @@ export const AuditApplicationOnboardingForm = ({
         display: 'transient',
       });
     }
+  };
+
+  // Helper to render Jira metadata section
+  const renderJiraMetadataSection = () => {
+    if (jiraFieldsLoading) {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <CircularProgress size={20} />{' '}
+          <Typography color="textSecondary">Loading Jira fields...</Typography>
+        </div>
+      );
+    }
+    if (jiraFieldsError) {
+      return <Typography color="error">{jiraFieldsError}</Typography>;
+    }
+    if (jiraFields.length === 0) {
+      return (
+        <Typography color="textSecondary">No Jira fields found.</Typography>
+      );
+    }
+    if (formData.jira_metadata.length === 0) {
+      return (
+        <Typography variant="body2" color="textSecondary">
+          No Jira metadata fields added yet.
+        </Typography>
+      );
+    }
+    return formData.jira_metadata.map((item, idx) => {
+      const selectedField = jiraFields.find(field => field.id === item.key);
+      return (
+        <Grid
+          container
+          spacing={1}
+          alignItems="center"
+          key={idx}
+          style={{ marginBottom: 8 }}
+        >
+          <Grid item xs={12} sm={4}>
+            <Autocomplete
+              options={jiraFields}
+              getOptionLabel={field => field.name}
+              value={selectedField || undefined}
+              onChange={(_, newValue) => {
+                handleJiraMetadataKeyChange(idx, newValue ? newValue.id : '');
+              }}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  label="Jira Field"
+                  variant="outlined"
+                  required
+                  fullWidth
+                  size="small"
+                />
+              )}
+              fullWidth
+              disableClearable
+            />
+          </Grid>
+          <Grid item xs={12} sm={3}>
+            <TextField
+              label="Field ID"
+              value={item.key}
+              disabled
+              fullWidth
+              margin="normal"
+              size="small"
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              label="Field Value"
+              fullWidth
+              value={item.value}
+              onChange={e => handleJiraMetadataValueChange(idx, e.target.value)}
+              required
+              size="small"
+            />
+          </Grid>
+          <Grid item xs={12} sm={1}>
+            <IconButton
+              color="secondary"
+              onClick={() => handleRemoveJiraMetadata(idx)}
+              size="small"
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Grid>
+        </Grid>
+      );
+    });
   };
 
   return (
@@ -529,52 +698,7 @@ export const AuditApplicationOnboardingForm = ({
                 Add key-value pairs for compulsory Jira fields. These will be
                 stored as metadata.
               </Typography>
-              {formData.jira_metadata.length > 0 ? (
-                formData.jira_metadata.map((item, idx) => (
-                  <Grid
-                    container
-                    spacing={2}
-                    alignItems="center"
-                    key={idx}
-                    style={{ marginBottom: 8 }}
-                  >
-                    <Grid item xs={5}>
-                      <TextField
-                        label="Field Name"
-                        fullWidth
-                        value={item.key}
-                        onChange={e =>
-                          handleJiraMetadataKeyChange(idx, e.target.value)
-                        }
-                        required
-                      />
-                    </Grid>
-                    <Grid item xs={5}>
-                      <TextField
-                        label="Field Value"
-                        fullWidth
-                        value={item.value}
-                        onChange={e =>
-                          handleJiraMetadataValueChange(idx, e.target.value)
-                        }
-                        required
-                      />
-                    </Grid>
-                    <Grid item xs={2}>
-                      <IconButton
-                        color="secondary"
-                        onClick={() => handleRemoveJiraMetadata(idx)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Grid>
-                  </Grid>
-                ))
-              ) : (
-                <Typography variant="body2" color="textSecondary">
-                  No Jira metadata fields added yet.
-                </Typography>
-              )}
+              {renderJiraMetadataSection()}
               <Button
                 variant="outlined"
                 startIcon={<AddIcon />}
