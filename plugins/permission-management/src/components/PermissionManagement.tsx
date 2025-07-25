@@ -53,7 +53,7 @@ export const PermissionManagement = () => {
   if (loading) {
     return (
       <Page themeId="tool">
-        <Header title="Sentiment Analysis - Permission Management">
+        <Header title="Escalation Forecaster - Permission Management">
           <HeaderLabel label="Maintainer" value="AppDev" />
           <HeaderLabel label="Lifecycle" value="Alpha" />
         </Header>
@@ -67,7 +67,7 @@ export const PermissionManagement = () => {
   return (
     <Page themeId="tool">
       <Header
-        title="Sentiment Analysis - Permission Management"
+        title="Escalation Forecaster - Permission Management"
         subtitle={
           isOwner
             ? 'Admin dashboard to review and manage user access requests'
