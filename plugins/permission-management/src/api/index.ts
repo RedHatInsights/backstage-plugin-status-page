@@ -59,6 +59,7 @@ export class PermissionManagementApi {
       userId: string;
       group: string;
       role: string;
+      reviewer: string;
       status: 'approved' | 'rejected';
       rejectionReason?: string;
       updatedBy: string;

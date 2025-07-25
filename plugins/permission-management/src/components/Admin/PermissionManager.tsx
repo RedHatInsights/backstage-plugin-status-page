@@ -79,9 +79,9 @@ export const PermissionManagementComponent = () => {
   useEffect(() => {
     const fetchAuth = async () => {
       const token = await oauth2Api.getAccessToken();
-      const profile = await identityApi.getProfileInfo();
+      const payload = JSON.parse(atob(token.split('.')[1]));
       setAccessToken(token || null);
-      setReviewerEmail(profile.email || '');
+      setReviewerEmail(`${payload.uid}@redhat.com` || '');
     };
     fetchAuth();
   }, [identityApi, oauth2Api]);
@@ -128,6 +128,7 @@ export const PermissionManagementComponent = () => {
           role: req.role,
           status: 'approved' as const,
           rejectionReason: '',
+          reviewer: reviewerEmail,
           updatedBy: reviewerEmail,
         }];
       });
@@ -161,6 +162,7 @@ export const PermissionManagementComponent = () => {
         role: req.role,
         status: 'rejected' as const,
         rejectionReason,
+        reviewer: reviewerEmail,
         updatedBy: reviewerEmail,
       }];
     });
