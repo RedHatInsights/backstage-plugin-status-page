@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-permission-management-backend [1.2.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-permission-management-backend@1.2.2...@appdev/backstage-plugin-permission-management-backend@1.2.3) (2025-07-25)
+
+
+### Bug Fixes
+
+* header & reviewer issue resolved for permission manager ([6cc26b5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/6cc26b5cf5e478e5c11f1b268ad0792995dc589a))
+
 ## @appdev/backstage-plugin-permission-management-backend [1.2.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-permission-management-backend@1.2.1...@appdev/backstage-plugin-permission-management-backend@1.2.2) (2025-07-24)
 
 
