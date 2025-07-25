@@ -122,8 +122,14 @@ export const ViewUserNote = (props: {
           horizontal: 'center',
         }}
       >
-        <Paper elevation={0} style={{ maxWidth: '320px' }}>
-          <Typography component="pre" style={{ padding: '10px' }}>
+        <Paper elevation={0} style={{ maxWidth: '500px' }}>
+          <Typography
+            style={{
+              padding: '10px',
+              whiteSpace: 'pre-wrap',
+              overflowWrap: 'anywhere',
+            }}
+          >
             {note.note}
           </Typography>
           <Divider />

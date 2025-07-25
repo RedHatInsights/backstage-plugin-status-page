@@ -51,7 +51,9 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const WorkstreamLinksCard = (props: { variant: InfoCardVariants }) => {
-  const { entity, loading } = useAsyncEntity<WorkstreamEntity | ArtEntity>();
+  const { entity, loading, refresh } = useAsyncEntity<
+    WorkstreamEntity | ArtEntity
+  >();
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 
@@ -113,6 +115,7 @@ export const WorkstreamLinksCard = (props: { variant: InfoCardVariants }) => {
         open={open}
         currentEntity={entity}
         setModalOpen={setOpen}
+        refresh={refresh}
       />
       {linkTypes.map(type => (
         <Accordion defaultExpanded key={type}>
