@@ -247,6 +247,7 @@ export async function createAuditApplicationsRouter(
         await database.updateApplicationWithAccounts({
           ...normalizedData,
           jira_metadata,
+          performed_by: req.body.performed_by || 'system',
         });
 
         res.sendStatus(204);
@@ -441,6 +442,7 @@ export async function createAuditApplicationsRouter(
         const result = await database.createApplicationWithAccounts({
           ...normalizedData,
           jira_metadata,
+          performed_by: req.body.performed_by || 'system',
         });
 
         res.status(201).json(result);

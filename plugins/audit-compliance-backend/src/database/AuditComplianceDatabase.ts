@@ -1353,11 +1353,17 @@ export class AuditComplianceDatabase {
       .where('app_name', 'ilike', app_name)
       .orderBy('created_at', 'desc');
 
-    if (frequency) {
-      query = query.andWhere('frequency', frequency);
+    // Only filter by frequency and period if they are provided AND not null/undefined
+    // This allows application-level events (without frequency/period) to be included
+    if (frequency && frequency.trim() !== '') {
+      query = query.andWhere(function () {
+        this.where('frequency', frequency).orWhereNull('frequency');
+      });
     }
-    if (period) {
-      query = query.andWhere('period', period);
+    if (period && period.trim() !== '') {
+      query = query.andWhere(function () {
+        this.where('period', period).orWhereNull('period');
+      });
     }
     if (limit) {
       query = query.limit(limit);
@@ -1366,7 +1372,17 @@ export class AuditComplianceDatabase {
       query = query.offset(offset);
     }
 
-    return query.select();
+    const events = await query.select();
+
+    this.logger.info('Activity stream events retrieved', {
+      app_name,
+      frequency,
+      period,
+      total_events: events.length,
+      event_types: events.map(e => e.event_type),
+    });
+
+    return events;
   }
 
   /**
@@ -1616,6 +1632,7 @@ export class AuditComplianceDatabase {
       account_name: string;
     }>;
     jira_metadata?: Record<string, string | { value: string; schema?: any }>;
+    performed_by?: string;
   }) {
     const trx = await this.db.transaction();
 
@@ -1681,7 +1698,7 @@ export class AuditComplianceDatabase {
       await this.createActivityEvent({
         event_type: 'APPLICATION_CREATED',
         app_name: appData.app_name,
-        performed_by: 'system',
+        performed_by: appData.performed_by || 'system',
         metadata: {
           cmdb_id: appData.cmdb_id,
           environment: appData.environment,
@@ -1735,6 +1752,7 @@ export class AuditComplianceDatabase {
       account_name: string;
     }>;
     jira_metadata?: Record<string, string | { value: string; schema?: any }>;
+    performed_by?: string;
   }) {
     const trx = await this.db.transaction();
 
@@ -1800,16 +1818,27 @@ export class AuditComplianceDatabase {
       await trx.commit();
 
       // Create activity event for application update
+      try {
       await this.createActivityEvent({
         event_type: 'APPLICATION_UPDATED',
         app_name: appData.app_name,
-        performed_by: 'system',
+          performed_by: appData.performed_by || 'system',
         metadata: {
           cmdb_id: appData.cmdb_id,
           environment: appData.environment,
           account_count: appData.accounts.length,
         },
       });
+      } catch (error) {
+        this.logger.error(
+          'Failed to create activity event for application update',
+          {
+            error: error instanceof Error ? error.message : String(error),
+            app_name: appData.app_name,
+          },
+        );
+        // Don't throw the error to avoid breaking the application update
+      }
 
       return {
         ids: insertedIds,
@@ -1892,5 +1921,54 @@ export class AuditComplianceDatabase {
   }
   public getConfig() {
     return this.config;
+  }
+
+  /**
+   * Deletes all audit data for a specific app/frequency/period combination.
+   * This includes both group access reports and service account access reviews.
+   * Used during data refresh to ensure clean state before inserting new data.
+   *
+   * @param app_name - Name of the application
+   * @param frequency - Review frequency (e.g., 'quarterly', 'annual')
+   * @param period - Review period (e.g., '2024', 'Q1-2024')
+   * @returns Promise resolving to deletion results
+   */
+  async deleteAuditData(
+    app_name: string,
+    frequency: string,
+    period: string,
+  ): Promise<{ groupAccessDeleted: number; serviceAccountsDeleted: number }> {
+    try {
+      // Delete group access reports
+      const groupAccessDeleted = await this.db('group_access_reports')
+        .where({ app_name, frequency, period })
+        .delete();
+
+      // Delete service account access reviews
+      const serviceAccountsDeleted = await this.db(
+        'service_account_access_review',
+      )
+        .where({ app_name, frequency, period })
+        .delete();
+
+      this.logger.info(
+        `Deleted audit data for ${app_name}/${frequency}/${period}: ${groupAccessDeleted} group access records, ${serviceAccountsDeleted} service account records`,
+      );
+
+      return {
+        groupAccessDeleted,
+        serviceAccountsDeleted,
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed to delete audit data for ${app_name}/${frequency}/${period}`,
+        { error: error instanceof Error ? error.message : String(error) },
+      );
+      throw new Error(
+        `Failed to delete audit data: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
   }
 }

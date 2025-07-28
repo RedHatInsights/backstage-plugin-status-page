@@ -43,6 +43,24 @@ interface GitLabMember {
 }
 
 /**
+ * Represents a GitLab group member with their access level and role information.
+ */
+interface GitLabGroupMember {
+  /** Unique identifier for the member in GitLab */
+  id: number;
+  /** Username of the member */
+  username: string;
+  /** Full name of the member */
+  name: string;
+  /** Current state of the member's access (e.g., 'active', 'blocked') */
+  state: string;
+  /** Numeric access level indicating permissions (10-50) */
+  access_level: number;
+  /** URL to the member's GitLab profile page */
+  web_url: string;
+}
+
+/**
  * Interface representing the response structure for user information from Rover API.
  */
 interface UserInfoResponse {
@@ -70,15 +88,15 @@ const headers = {
 
 /**
  * Interface defining the contract for GitLab integration operations.
- * Provides methods for accessing and managing GitLab project data.
+ * Provides methods for accessing and managing GitLab project and group data.
  */
 export interface GitLabStore {
   /**
-   * Retrieves access report for a specific GitLab project.
-   * @param projectPath - The GitLab project path (e.g., 'group/project')
-   * @returns Promise resolving to array of project access records
+   * Retrieves access report for a specific GitLab project or group.
+   * @param path - The GitLab project or group path (e.g., 'group/project' or 'group')
+   * @returns Promise resolving to array of access records
    */
-  getProjectAccessReport(projectPath: string): Promise<any[]>;
+  getProjectAccessReport(path: string): Promise<any[]>;
 
   /**
    * Generates and stores GitLab access data for an application.
@@ -218,6 +236,61 @@ export class GitLabDatabase implements GitLabStore {
   }
 
   /**
+   * Determines whether a GitLab path is a project or group by checking both APIs.
+   * First tries to find it as a project, then as a group if not found.
+   *
+   * @param path - The GitLab path to check
+   * @returns Promise resolving to 'project', 'group', or 'unknown'
+   */
+  private async detectGitLabType(
+    path: string,
+  ): Promise<'project' | 'group' | 'unknown'> {
+    try {
+      // First try to find it as a project
+      const projectUrl = `${
+        this.gitlabBaseUrl
+      }/api/v4/projects/${encodeURIComponent(path)}`;
+      const projectResponse = await axios.get(projectUrl, {
+        headers: { ...headers, ...this.getAuthHeader() },
+      });
+
+      if (projectResponse.status === 200) {
+        this.logger.debug(`Path ${path} is a GitLab project`);
+        return 'project';
+      }
+    } catch (projectError: any) {
+      // Project not found, try as group
+      if (projectError.response?.status === 404) {
+        try {
+          const groupUrl = `${
+            this.gitlabBaseUrl
+          }/api/v4/groups/${encodeURIComponent(path)}`;
+          const groupResponse = await axios.get(groupUrl, {
+            headers: { ...headers, ...this.getAuthHeader() },
+          });
+
+          if (groupResponse.status === 200) {
+            this.logger.debug(`Path ${path} is a GitLab group`);
+            return 'group';
+          }
+        } catch (groupError: any) {
+          if (groupError.response?.status === 404) {
+            this.logger.warn(
+              `Path ${path} is neither a GitLab project nor group`,
+            );
+            return 'unknown';
+          }
+          throw groupError;
+        }
+      } else {
+        throw projectError;
+      }
+    }
+
+    return 'unknown';
+  }
+
+  /**
    * Retrieves all members of a GitLab project, including inherited members.
    *
    * @param projectPath - The GitLab project path
@@ -240,6 +313,50 @@ export class GitLabDatabase implements GitLabStore {
       );
       return [];
     }
+  }
+
+  /**
+   * Retrieves all members of a GitLab group, including inherited members.
+   *
+   * @param groupPath - The GitLab group path
+   * @returns Promise resolving to array of GitLabGroupMember objects
+   */
+  private async getGroupMembers(
+    groupPath: string,
+  ): Promise<GitLabGroupMember[]> {
+    const url = `${this.gitlabBaseUrl}/api/v4/groups/${encodeURIComponent(
+      groupPath,
+    )}/members/all`;
+    try {
+      const response = await axios.get(url, {
+        headers: { ...headers, ...this.getAuthHeader() },
+      });
+      return response.data;
+    } catch (e) {
+      this.logger.warn(`Failed to fetch group members for ${groupPath}: ${e}`);
+      return [];
+    }
+  }
+
+  /**
+   * Retrieves members from either a GitLab project or group based on the path type.
+   *
+   * @param path - The GitLab project or group path
+   * @returns Promise resolving to array of member objects (GitLabMember or GitLabGroupMember)
+   */
+  private async getMembers(
+    path: string,
+  ): Promise<(GitLabMember | GitLabGroupMember)[]> {
+    const type = await this.detectGitLabType(path);
+
+    if (type === 'project') {
+      return await this.getProjectMembers(path);
+    }
+    if (type === 'group') {
+      return await this.getGroupMembers(path);
+    }
+    this.logger.warn(`Unknown GitLab type for path: ${path}`);
+    return [];
   }
 
   /**
@@ -285,26 +402,24 @@ export class GitLabDatabase implements GitLabStore {
   }
 
   /**
-   * Generates and stores an access report for a GitLab project.
+   * Generates and stores an access report for a GitLab project or group.
    * Creates records in the group_access_reports table for each active member.
    *
-   * @param projectPath - The GitLab project path
+   * @param path - The GitLab project or group path
    * @returns Promise resolving to array of created access report records
    */
-  async getProjectAccessReport(projectPath: string): Promise<any[]> {
+  async getProjectAccessReport(path: string): Promise<any[]> {
     const report: any[] = [];
-    const members = await this.getProjectMembers(projectPath);
+    const members = await this.getMembers(path);
 
-    // Get app details for this project
+    // Get app details for this project/group
     const appEntry = await this.db('applications')
       .select('app_name', 'environment', 'app_delegate', 'app_owner')
-      .where({ account_name: projectPath, source: 'gitlab' })
+      .where({ account_name: path, source: 'gitlab' })
       .first();
 
     if (!appEntry) {
-      this.logger.warn(
-        `No application entry found for GitLab project: ${projectPath}`,
-      );
+      this.logger.warn(`No application entry found for GitLab path: ${path}`);
       return report;
     }
 
@@ -339,7 +454,7 @@ export class GitLabDatabase implements GitLabStore {
       }
 
       const row = {
-        environment: appEntry.environment || projectPath,
+        environment: appEntry.environment || path,
         full_name: userDetails.name,
         user_id: userDetails.username,
         user_role: this.getAccessLevelName(member.access_level),
@@ -353,7 +468,7 @@ export class GitLabDatabase implements GitLabStore {
         ticket_reference: '',
         access_change_date: null,
         created_at: new Date(),
-        account_name: projectPath,
+        account_name: path,
         app_name: appEntry.app_name,
         frequency: 'quarterly', // Default value, should be updated by the caller
         period: new Date().getFullYear().toString(), // Default value, should be updated by the caller
@@ -376,7 +491,7 @@ export class GitLabDatabase implements GitLabStore {
 
   /**
    * Generates and stores GitLab access data for an application.
-   * Processes all GitLab projects associated with the application and creates access records.
+   * Processes all GitLab projects and groups associated with the application and creates access records.
    *
    * @param appname - Name of the application
    * @param frequency - Review frequency (e.g., 'quarterly', 'annual')
@@ -431,12 +546,12 @@ export class GitLabDatabase implements GitLabStore {
           continue;
         }
         this.logger.info(
-          `Processing GitLab project: ${account_name} for app: ${app_name}`,
+          `Processing GitLab path: ${account_name} for app: ${app_name}`,
         );
-        // Use account_name as the GitLab project path
-        const members = await this.getProjectMembers(account_name);
+        // Use account_name as the GitLab project or group path
+        const members = await this.getMembers(account_name);
         this.logger.info(
-          `Found ${members.length} members for project: ${account_name}`,
+          `Found ${members.length} members for path: ${account_name}`,
         );
         // Fetch all user details in parallel (cache)
         await Promise.all(
@@ -609,13 +724,13 @@ export class GitLabDatabase implements GitLabStore {
         }
 
         this.logger.info(
-          `Processing GitLab project: ${account_name} for app: ${app_name}`,
+          `Processing GitLab path: ${account_name} for app: ${app_name}`,
         );
 
-        // Use account_name as the GitLab project path
-        const members = await this.getProjectMembers(account_name);
+        // Use account_name as the GitLab project or group path
+        const members = await this.getMembers(account_name);
         this.logger.info(
-          `Found ${members.length} members for project: ${account_name}`,
+          `Found ${members.length} members for path: ${account_name}`,
         );
 
         for (const member of members) {

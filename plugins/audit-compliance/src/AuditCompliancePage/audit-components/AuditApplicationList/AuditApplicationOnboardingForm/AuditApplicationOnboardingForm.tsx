@@ -3,6 +3,7 @@ import {
   alertApiRef,
   discoveryApiRef,
   fetchApiRef,
+  identityApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
 import {
@@ -96,6 +97,7 @@ export const AuditApplicationOnboardingForm = ({
   const fetchApi = useApi(fetchApiRef);
   const discoveryApi = useApi(discoveryApiRef);
   const alertApi = useApi(alertApiRef);
+  const identityApi = useApi(identityApiRef);
 
   // Change groupOptions type to array of arrays of group objects
   const [groupOptions, setGroupOptions] = useState<string[][]>([]); // Array of options for each account entry
@@ -370,6 +372,10 @@ export const AuditApplicationOnboardingForm = ({
         ? `/applications/onboarding/${encodeURIComponent(formData.app_name)}`
         : '/applications/onboarding';
 
+      // Get current user identity
+      const identity = await identityApi.getBackstageIdentity();
+      const currentUser = identity.userEntityRef;
+
       // Convert jira_metadata array to object for backend with schema information
       const jiraMetadataObj: Record<string, any> = {};
       formData.jira_metadata
@@ -383,6 +389,7 @@ export const AuditApplicationOnboardingForm = ({
       const payload = {
         ...formData,
         jira_metadata: jiraMetadataObj,
+        performed_by: currentUser,
       };
 
       const response = await fetchApi.fetch(`${baseUrl}${endpoint}`, {

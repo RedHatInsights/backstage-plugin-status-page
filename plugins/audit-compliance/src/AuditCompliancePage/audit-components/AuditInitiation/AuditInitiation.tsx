@@ -29,6 +29,7 @@ import {
 } from '@material-ui/core';
 import Group from '@material-ui/icons/Group';
 import EditIcon from '@material-ui/icons/Edit';
+import RefreshIcon from '@material-ui/icons/Refresh';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
 import { formatDisplayName } from '../AuditApplicationList/AuditApplicationList';
@@ -306,6 +307,76 @@ export const AuditInitiation = () => {
     }
   };
 
+  // Refresh data for existing audit
+  const handleRefreshData = async (row: AuditHistoryItem) => {
+    setIsLoading(true);
+    // Show temporary loading alert
+    alertApi.post({
+      message: 'Refreshing audit data...',
+      severity: 'info',
+      display: 'transient',
+    });
+
+    try {
+      const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+
+      const refreshResponse = await fetchApi.fetch(
+        `${baseUrl}/audits/refresh-data`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            app_name,
+            frequency: row.frequency,
+            period: row.period,
+            performed_by: currentUser,
+          }),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+
+      const refreshResult = await refreshResponse.json();
+
+      if (!refreshResponse.ok) {
+        alertApi.post({
+          message:
+            refreshResult.error ||
+            'Failed to refresh audit data. Please try again.',
+          severity: 'error',
+        });
+        return;
+      }
+
+      // Show success message with statistics
+      const successMessage = [
+        'Audit data refreshed successfully.',
+        refreshResult.total_records > 0
+          ? `Total records refreshed: ${refreshResult.total_records}`
+          : 'No records were refreshed.',
+        refreshResult.sources?.length > 0
+          ? `Sources: ${refreshResult.sources.join(', ')}`
+          : '',
+        'Previous data was cleared and replaced with fresh data.',
+      ]
+        .filter(Boolean)
+        .join(' ');
+
+      alertApi.post({
+        message: successMessage,
+        severity: refreshResult.total_records > 0 ? 'success' : 'warning',
+      });
+
+      // Refresh audit history
+      await fetchAuditHistory();
+    } catch (err) {
+      alertApi.post({
+        message: 'Failed to refresh audit data. Please try again.',
+        severity: 'error',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Determine if the current user is the application owner (component-level)
   const isOwner =
     currentUser &&
@@ -559,19 +630,33 @@ export const AuditInitiation = () => {
                           title: 'Actions',
                           field: 'actions',
                           render: (row: AuditHistoryItem) => (
-                            <IconButton
-                              size="small"
-                              onClick={() =>
-                                setEditingJiraKey({
-                                  key: row.jira_key,
-                                  freq: row.frequency,
-                                  period: row.period,
-                                })
-                              }
-                              title="Edit Jira Epic"
+                            <Box
+                              display="flex"
+                              alignItems="center"
+                              style={{ gap: 8 }}
                             >
-                              <EditIcon />
-                            </IconButton>
+                              <IconButton
+                                size="small"
+                                onClick={() =>
+                                  setEditingJiraKey({
+                                    key: row.jira_key,
+                                    freq: row.frequency,
+                                    period: row.period,
+                                  })
+                                }
+                                title="Edit Jira Epic"
+                              >
+                                <EditIcon />
+                              </IconButton>
+                              <IconButton
+                                size="small"
+                                onClick={() => handleRefreshData(row)}
+                                title="Refresh Data"
+                                disabled={isLoading}
+                              >
+                                <RefreshIcon />
+                              </IconButton>
+                            </Box>
                           ),
                           sorting: false,
                           hidden: false,
