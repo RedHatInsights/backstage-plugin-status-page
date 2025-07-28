@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.17.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.16.1...@appdev/backstage-plugin-audit-compliance@1.17.0) (2025-07-28)
+
+
+### Features
+
+* **audit-access-manager:** Fixing JIRA creation for mandatory fields and adding ldap data source ([07738cf](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/07738cfe2f34ff67ee9e99a7f4e465683ee2acaa))
+
 ## @appdev/backstage-plugin-audit-compliance [1.16.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.16.0...@appdev/backstage-plugin-audit-compliance@1.16.1) (2025-07-23)
 
 
