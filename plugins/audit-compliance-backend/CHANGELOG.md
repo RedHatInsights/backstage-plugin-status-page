@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance-backend [1.18.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance-backend@1.17.0...@appdev/backstage-plugin-audit-compliance-backend@1.18.0) (2025-07-28)
+
+
+### Features
+
+* **audit-access-manager:**  Enhance activity stream with application events and user tracking ([cd02e51](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/cd02e5136c541f61399f8c107a3f21f3b4215592))
+
 ## @appdev/backstage-plugin-audit-compliance-backend [1.17.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance-backend@1.16.1...@appdev/backstage-plugin-audit-compliance-backend@1.17.0) (2025-07-28)
 
 
