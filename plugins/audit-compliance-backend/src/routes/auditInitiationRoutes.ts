@@ -414,5 +414,129 @@ export async function createAuditInitiationRouter(
       });
     }
   });
+
+  /**
+   * POST /audits/refresh-data
+   * Refreshes data for an existing audit without creating a new audit record.
+   * Bypasses duplicate checks and only refreshes the data sources.
+   *
+   * @route POST /audits/refresh-data
+   * @param {Object} req.body - Audit parameters
+   * @returns {Object} 200 - Refresh results with statistics
+   * @returns {Object} 400 - Missing parameters error
+   * @returns {Object} 500 - Error response
+   */
+  auditInitiationRouter.post('/audits/refresh-data', async (req, res) => {
+    const { app_name, frequency, period } = req.body;
+
+    if (!app_name || !frequency || !period) {
+      return res.status(400).json({
+        error: 'Missing required parameters: app_name, frequency, period',
+      });
+    }
+
+    try {
+      // First, delete all existing data for this app/frequency/period combination
+      const deletionResult = await database.deleteAuditData(
+        app_name,
+        frequency,
+        period,
+      );
+      logger.info(
+        `Deleted existing audit data for ${app_name}/${frequency}/${period}`,
+      );
+
+      // Generate reports from all sources (same as audit initiation but without creating audit record)
+      const reportPromises = [
+        // Generate Rover report
+        roverStore
+          .generateRoverData(app_name, frequency, period)
+          .catch(error => {
+            logger.error('Failed to generate Rover report', { error });
+            return null;
+          }),
+        // Generate GitLab report
+        gitlabStore
+          .generateGitLabData(app_name, frequency, period)
+          .catch(error => {
+            logger.error('Failed to generate GitLab report', { error });
+            return null;
+          }),
+        // Generate LDAP report
+        roverStore
+          .generateLDAPData(app_name, frequency, period)
+          .catch(error => {
+            logger.error('Failed to generate LDAP report', { error });
+            return null;
+          }),
+      ];
+
+      // Wait for all report generations to complete
+      const reportResults = await Promise.all(reportPromises);
+      const successfulReports = reportResults.filter(result => result !== null);
+
+      // Calculate statistics
+      const roverCount = reportResults[0]?.length || 0;
+      const gitlabCount = reportResults[1]?.length || 0;
+      const ldapCount = reportResults[2]?.length || 0;
+      const totalRecords = roverCount + gitlabCount + ldapCount;
+
+      const sources = [];
+      if (roverCount > 0) sources.push('Rover');
+      if (gitlabCount > 0) sources.push('GitLab');
+      if (ldapCount > 0) sources.push('LDAP');
+
+      // Create activity stream event for data refresh
+      await database.createActivityEvent({
+        event_type: 'data_refresh',
+        app_name,
+        frequency,
+        period,
+        performed_by: req.body.performed_by || 'system',
+        metadata: {
+          previous_status: 'data_refreshed',
+          new_status: 'data_refreshed',
+          reason: `Data refreshed: ${totalRecords} total records from ${sources.join(
+            ', ',
+          )}`,
+          deletion_stats: {
+            group_access_deleted: deletionResult.groupAccessDeleted,
+            service_accounts_deleted: deletionResult.serviceAccountsDeleted,
+          },
+          refresh_stats: {
+            rover_records: roverCount,
+            gitlab_records: gitlabCount,
+            ldap_records: ldapCount,
+            total_records: totalRecords,
+            sources: sources,
+          },
+        },
+      });
+
+      return res.json({
+        message: 'Audit data refreshed successfully',
+        reports_generated: successfulReports.length,
+        total_records: totalRecords,
+        sources: sources,
+        statistics: {
+          rover: { total: roverCount },
+          gitlab: { total: gitlabCount },
+          ldap: { total: ldapCount },
+        },
+      });
+    } catch (error) {
+      logger.error('Failed to refresh audit data', {
+        error: error instanceof Error ? error.message : String(error),
+        app_name,
+        frequency,
+        period,
+      });
+      return res.status(500).json({
+        error: 'Failed to refresh audit data',
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+  });
+
   return auditInitiationRouter;
 }

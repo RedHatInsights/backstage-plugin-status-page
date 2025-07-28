@@ -104,6 +104,30 @@ const ACTIVITY_MESSAGES = {
       <b>{event.performed_by}</b>
     </Typography>
   ),
+  APPLICATION_CREATED: (event: AuditEvent) => (
+    <Typography className="activityStream">
+      <b>Application created</b> for <b>{event.app_name}</b> by{' '}
+      <b>{event.performed_by}</b>
+      {event.metadata?.account_count && (
+        <> with {event.metadata.account_count} account(s)</>
+      )}
+    </Typography>
+  ),
+  APPLICATION_UPDATED: (event: AuditEvent) => (
+    <Typography className="activityStream">
+      <b>Application updated</b> for <b>{event.app_name}</b> by{' '}
+      <b>{event.performed_by}</b>
+    </Typography>
+  ),
+  data_refresh: (event: AuditEvent) => (
+    <Typography className="activityStream">
+      [{event.period}], {event.frequency?.toUpperCase()} <b>Data Refresh</b> for{' '}
+      <b>{event.app_name}</b> by <b>{event.performed_by}</b>
+      {event.metadata?.refresh_stats?.total_records && (
+        <> - {event.metadata.refresh_stats.total_records} records refreshed</>
+      )}
+    </Typography>
+  ),
   default: (event: AuditEvent) => (
     <Typography className="activityStream">
       [{event.period}], {event.frequency?.toUpperCase()}
