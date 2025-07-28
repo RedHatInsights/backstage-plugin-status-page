@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-workstream-automation [1.19.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.19.2...@compass/backstage-plugin-workstream-automation@1.19.3) (2025-07-28)
+
+
+### Bug Fixes
+
+* **PULSE-949:** fixed text wrapping in notes ui ([6512138](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/6512138e435365223e885f36fc38c12afddd9266))
+
 ## @compass/backstage-plugin-workstream-automation [1.19.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.19.1...@compass/backstage-plugin-workstream-automation@1.19.2) (2025-07-23)
 
 
