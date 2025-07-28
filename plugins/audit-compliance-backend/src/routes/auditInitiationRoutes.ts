@@ -145,7 +145,7 @@ export async function createAuditInitiationRouter(
         throw new Error(`Application details not found for ${audit.app_name}`);
       }
 
-      // Generate reports from both sources
+      // Generate reports from all sources
       const reportPromises = [
         // Generate Rover report
         roverStore
@@ -159,6 +159,13 @@ export async function createAuditInitiationRouter(
           .generateGitLabData(audit.app_name, audit.frequency, audit.period)
           .catch(error => {
             logger.error('Failed to generate GitLab report', { error });
+            return null;
+          }),
+        // Generate LDAP report
+        roverStore
+          .generateLDAPData(audit.app_name, audit.frequency, audit.period)
+          .catch(error => {
+            logger.error('Failed to generate LDAP report', { error });
             return null;
           }),
       ];

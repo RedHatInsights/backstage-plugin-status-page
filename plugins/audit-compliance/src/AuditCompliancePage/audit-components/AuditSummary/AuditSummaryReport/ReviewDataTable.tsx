@@ -77,10 +77,12 @@ export const ReviewDataTable: React.FC<ReviewDataTableProps> = ({
           }
 
           const reviews = await response.json();
-          // Filter to only include rover and gitlab sources
+          // Filter to include rover, gitlab, and ldap sources
           const filteredReviews = reviews.filter(
             (review: any) =>
-              review.source === 'rover' || review.source === 'gitlab',
+              review.source === 'rover' ||
+              review.source === 'gitlab' ||
+              review.source === 'ldap',
           );
           setData(filteredReviews);
         } else {
@@ -239,8 +241,12 @@ export const ReviewDataTable: React.FC<ReviewDataTableProps> = ({
             field: 'source',
             render: rowData => {
               const source = rowData.source?.toLowerCase();
-              const icon =
-                source === 'gitlab' ? <GitHubIcon /> : <PersonIcon />;
+              let icon = <PersonIcon />;
+              if (source === 'gitlab') {
+                icon = <GitHubIcon />;
+              } else if (source === 'ldap') {
+                icon = <PersonIcon />; // Using PersonIcon for LDAP
+              }
               return (
                 <Chip
                   icon={icon}

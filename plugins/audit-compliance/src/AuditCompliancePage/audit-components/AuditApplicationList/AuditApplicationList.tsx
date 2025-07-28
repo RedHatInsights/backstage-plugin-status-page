@@ -87,6 +87,9 @@ export function AuditApplicationList() {
   const [editFormData, setEditFormData] = useState<ApplicationFormData | null>(
     null,
   );
+  const [jiraFields, setJiraFields] = useState<{ [id: string]: string }>({});
+  const [jiraFieldsLoading, setJiraFieldsLoading] = useState(false);
+  const [jiraFieldsError, setJiraFieldsError] = useState<string | null>(null);
 
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
@@ -163,9 +166,36 @@ export function AuditApplicationList() {
   };
 
   const convertApiDataToFormData = (
-    apiData: ApplicationDetails & { jira_metadata?: Record<string, string> },
+    apiData: ApplicationDetails & { jira_metadata?: Record<string, any> },
   ): ApplicationFormData => {
-    // Use the accounts array as-is from the backend
+    // Convert transformed metadata back to raw values for the form
+    const rawMetadata: Record<string, string> = {};
+    if (apiData.jira_metadata) {
+      Object.entries(apiData.jira_metadata).forEach(([key, value]) => {
+        if (typeof value === 'string') {
+          rawMetadata[key] = value;
+        } else if (typeof value === 'object' && value !== null) {
+          const objValue = value as any;
+          if (objValue.name) {
+            rawMetadata[key] = objValue.name;
+          } else if (objValue.value) {
+            rawMetadata[key] = objValue.value;
+          } else if (Array.isArray(value)) {
+            rawMetadata[key] = (value as any[])
+              .map((item: any) =>
+                typeof item === 'string' ? item : item.name || item.value || '',
+              )
+              .filter(Boolean)
+              .join(',');
+          } else {
+            rawMetadata[key] = JSON.stringify(value);
+          }
+        } else {
+          rawMetadata[key] = String(value);
+        }
+      });
+    }
+
     return {
       app_name: apiData.app_name,
       cmdb_id: apiData.cmdb_id,
@@ -178,7 +208,7 @@ export function AuditApplicationList() {
         apiData.accounts && apiData.accounts.length > 0
           ? apiData.accounts
           : [{ type: 'rover-group-name', source: 'rover', account_name: '' }],
-      jira_metadata: apiData.jira_metadata || {},
+      jira_metadata: rawMetadata,
     };
   };
 
@@ -210,6 +240,104 @@ export function AuditApplicationList() {
     setIsEditModalOpen(false);
     setEditFormData(null);
     fetchApplications(); // Refresh the applications list
+  };
+
+  useEffect(() => {
+    async function fetchJiraFields() {
+      setJiraFieldsLoading(true);
+      setJiraFieldsError(null);
+      try {
+        const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+        const resp = await fetchApi.fetch(`${baseUrl}/jira/fields`);
+        if (resp.ok) {
+          const data = await resp.json();
+          // Convert array of field objects to id -> name mapping
+          const fieldMapping: { [id: string]: string } = {};
+          data.forEach((field: any) => {
+            if (field.id && field.name) {
+              fieldMapping[field.id] = field.name;
+            }
+          });
+          setJiraFields(fieldMapping);
+        } else {
+          setJiraFieldsError('Failed to fetch Jira fields');
+        }
+      } catch (err) {
+        setJiraFieldsError('Error fetching Jira fields');
+      } finally {
+        setJiraFieldsLoading(false);
+      }
+    }
+    fetchJiraFields();
+  }, [fetchApi, discoveryApi]);
+
+  // Helper to render Jira metadata fields with labels
+  const renderJiraMetadataFields = () => {
+    if (
+      !selectedAppDetails ||
+      !selectedAppDetails.jira_metadata ||
+      typeof selectedAppDetails.jira_metadata !== 'object'
+    )
+      return null;
+    if (jiraFieldsLoading) {
+      return (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <CircularProgress size={18} />
+          <span>Loading Jira fields...</span>
+        </div>
+      );
+    }
+    if (jiraFieldsError) {
+      return <span style={{ color: 'red' }}>{jiraFieldsError}</span>;
+    }
+    return (
+      <div>
+        {Object.entries(selectedAppDetails.jira_metadata).map(
+          ([key, value]) => {
+            // Handle different value formats
+            let displayValue = '';
+            if (typeof value === 'string') {
+              displayValue = value;
+            } else if (typeof value === 'object' && value !== null) {
+              const objValue = value as any;
+              if (objValue.name) {
+                displayValue = objValue.name;
+              } else if (objValue.value) {
+                displayValue = objValue.value;
+              } else if (Array.isArray(value)) {
+                displayValue = (value as any[])
+                  .map((item: any) =>
+                    typeof item === 'string'
+                      ? item
+                      : item.name || item.value || JSON.stringify(item),
+                  )
+                  .join(', ');
+              } else {
+                displayValue = JSON.stringify(value);
+              }
+            } else {
+              displayValue = String(value);
+            }
+
+            return (
+              <div
+                key={key}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  marginBottom: 4,
+                }}
+              >
+                <span style={{ fontWeight: 500, marginRight: 8 }}>
+                  {jiraFields[key] || key}:
+                </span>
+                <span>{displayValue}</span>
+              </div>
+            );
+          },
+        )}
+      </div>
+    );
   };
 
   const renderDrawerContent = () => {
@@ -283,27 +411,7 @@ export function AuditApplicationList() {
             <ListItem alignItems="flex-start">
               <ListItemText
                 primary="Jira Metadata Fields"
-                secondary={
-                  <div>
-                    {Object.entries(selectedAppDetails.jira_metadata).map(
-                      ([key, value]) => (
-                        <div
-                          key={key}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            marginBottom: 4,
-                          }}
-                        >
-                          <span style={{ fontWeight: 500, marginRight: 8 }}>
-                            {key}:
-                          </span>
-                          <span>{value}</span>
-                        </div>
-                      ),
-                    )}
-                  </div>
-                }
+                secondary={renderJiraMetadataFields()}
               />
             </ListItem>
           )}

@@ -60,9 +60,10 @@ export async function createDataSyncRouter(
       // Use a transaction to ensure atomicity
       const result: SyncFreshDataResult = await db.transaction(
         async (trx: Knex.Transaction) => {
-          // Fetch data from both sources, but do not fail if one is missing
+          // Fetch data from all sources, but do not fail if one is missing
           let roverData: RoverDataItem[] = [];
           let gitlabData: GitLabDataItem[] = [];
+          let ldapData: any[] = [];
 
           try {
             roverData = await roverStore.fetchRoverDataForFresh(
@@ -84,6 +85,16 @@ export async function createDataSyncRouter(
             logger.warn(`GitLab data not available: ${e.message || e}`);
           }
 
+          try {
+            ldapData = await roverStore.fetchLDAPDataForFresh(
+              appname,
+              frequency,
+              period,
+            );
+          } catch (e: any) {
+            logger.warn(`LDAP data not available: ${e.message || e}`);
+          }
+
           // Clear existing fresh data for this app/period combination
           await trx('service_account_access_review_fresh')
             .where({ app_name: appname, period, frequency })
@@ -95,6 +106,8 @@ export async function createDataSyncRouter(
           let roverServiceAccounts = 0;
           let roverGroupAccess = 0;
           let gitlabGroupAccess = 0;
+          let ldapServiceAccounts = 0;
+          let ldapGroupAccess = 0;
 
           // Insert Rover data into fresh tables only
           if (roverData.length > 0) {
@@ -167,6 +180,58 @@ export async function createDataSyncRouter(
             gitlabGroupAccess = groupAccess.length;
           }
 
+          // Insert LDAP data into fresh tables only
+          if (ldapData.length > 0) {
+            // Handle LDAP service accounts
+            const ldapServiceAccountsData = ldapData
+              .filter((item: any) => item.service_account)
+              .map((item: any) => ({
+                app_name: item.app_name,
+                environment: item.environment,
+                service_account: item.service_account,
+                user_role: item.user_role,
+                manager: item.manager,
+                app_delegate: item.app_delegate,
+                source: 'ldap',
+                account_name: item.account_name,
+                period,
+                frequency,
+                created_at: new Date(),
+              }));
+
+            if (ldapServiceAccountsData.length > 0) {
+              await trx('service_account_access_review_fresh').insert(
+                ldapServiceAccountsData,
+              );
+              ldapServiceAccounts = ldapServiceAccountsData.length;
+            }
+
+            // Handle LDAP group access
+            const ldapGroupAccessData = ldapData
+              .filter((item: any) => item.user_id)
+              .map((item: any) => ({
+                environment: item.environment,
+                full_name: item.full_name,
+                user_id: item.user_id,
+                user_role: item.user_role,
+                manager: item.manager,
+                source: 'ldap',
+                account_name: item.account_name,
+                app_name: item.app_name,
+                period,
+                frequency,
+                app_delegate: item.app_delegate,
+                created_at: new Date(),
+              }));
+
+            if (ldapGroupAccessData.length > 0) {
+              await trx('group_access_reports_fresh').insert(
+                ldapGroupAccessData,
+              );
+              ldapGroupAccess = ldapGroupAccessData.length;
+            }
+          }
+
           return {
             message: 'Fresh data synced successfully',
             statistics: {
@@ -179,8 +244,17 @@ export async function createDataSyncRouter(
                 group_access: gitlabGroupAccess,
                 total: gitlabGroupAccess,
               },
+              ldap: {
+                service_accounts: ldapServiceAccounts,
+                group_access: ldapGroupAccess,
+                total: ldapServiceAccounts + ldapGroupAccess,
+              },
               total_records:
-                roverServiceAccounts + roverGroupAccess + gitlabGroupAccess,
+                roverServiceAccounts +
+                roverGroupAccess +
+                gitlabGroupAccess +
+                ldapServiceAccounts +
+                ldapGroupAccess,
             },
           };
         },

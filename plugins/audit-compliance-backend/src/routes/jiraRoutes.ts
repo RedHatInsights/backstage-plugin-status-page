@@ -1,7 +1,11 @@
-import { Knex } from 'knex';
 import express from 'express';
 import Router from 'express-promise-router';
+import { Knex } from 'knex';
 import { AuditComplianceDatabase } from '../database/AuditComplianceDatabase';
+import {
+  fetchJiraFieldSchemas,
+  transformJiraMetadataForStorage,
+} from '../database/JiraIntegration';
 
 /**
  * Creates the plugin router with all endpoint definitions.
@@ -122,6 +126,89 @@ export async function createJiraRouter(
       res.status(200).json({ message: 'Comment added successfully.' });
     } catch (err: any) {
       logger.error('Error adding Jira comment (service account):', err.message);
+      res.status(500).json({ error: err.message || 'Unknown error occurred.' });
+    }
+  });
+
+  /**
+   * GET /jira/fields
+   * Returns Jira field information including ID, name, and schema.
+   *
+   * @route GET /jira/fields
+   * @returns {Object} 200 - Array of field objects with id, name, and schema
+   * @returns {Object} 500 - Error response
+   */
+  jiraRouter.get('/jira/fields', async (_req, res) => {
+    try {
+      const fieldSchemas = await fetchJiraFieldSchemas(
+        database.getLogger(),
+        database.getConfig(),
+      );
+
+      const fields = Object.entries(fieldSchemas).map(([id, field]) => ({
+        id,
+        name: field.name || id,
+        schema: field.schema || null,
+        custom: field.custom || false,
+      }));
+
+      res.status(200).json(fields);
+    } catch (err: any) {
+      logger.error('Error fetching Jira field schemas:', err.message);
+      res.status(500).json({ error: err.message || 'Unknown error occurred.' });
+    }
+  });
+
+  /**
+   * POST /jira/transform-metadata
+   * Transforms raw Jira metadata from form input to Jira-compatible format.
+   * This is useful for testing the transformation function.
+   *
+   * @route POST /jira/transform-metadata
+   * @param {Object} req.body - Request body containing raw metadata object
+   * @returns {Object} 200 - Transformed metadata
+   * @returns {Object} 500 - Error response
+   */
+  jiraRouter.post('/jira/transform-metadata', async (req, res) => {
+    try {
+      const { rawMetadata, useSchemas = true } = req.body;
+
+      if (!rawMetadata || typeof rawMetadata !== 'object') {
+        res.status(400).json({
+          error: 'rawMetadata is required and must be an object',
+        });
+        return;
+      }
+
+      let fieldSchemas: Record<string, any> | undefined;
+      if (useSchemas) {
+        try {
+          fieldSchemas = await fetchJiraFieldSchemas(
+            database.getLogger(),
+            database.getConfig(),
+          );
+        } catch (error) {
+          logger.warn('Failed to fetch field schemas, using pattern matching', {
+            error: error instanceof Error ? error.message : String(error),
+          });
+        }
+      }
+
+      const transformedMetadata = transformJiraMetadataForStorage(
+        rawMetadata,
+        fieldSchemas,
+        database.getLogger(),
+      );
+
+      res.status(200).json({
+        message: 'Metadata transformed successfully',
+        original: rawMetadata,
+        transformed: transformedMetadata,
+        schemasUsed: !!fieldSchemas,
+        fieldSchemas: fieldSchemas ? Object.keys(fieldSchemas) : [],
+      });
+    } catch (err: any) {
+      logger.error('Error transforming Jira metadata:', err.message);
       res.status(500).json({ error: err.message || 'Unknown error occurred.' });
     }
   });

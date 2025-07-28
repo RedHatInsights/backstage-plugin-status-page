@@ -4,7 +4,12 @@ import {
 } from '@backstage/backend-plugin-api';
 import axios from 'axios';
 import { Knex } from 'knex';
-import { addJiraComment, checkAndUpdateJiraStatuses } from './JiraIntegration';
+import {
+  addJiraComment,
+  checkAndUpdateJiraStatuses,
+  transformJiraMetadataForStorage,
+  fetchJiraFieldSchemas,
+} from './JiraIntegration';
 import {
   JiraIssueStatusResponse,
   JiraRequestBody,
@@ -574,6 +579,14 @@ export class AuditComplianceDatabase {
         period,
       );
 
+      // Fetch jira_metadata from applications table
+      const appRecord = await this.db('applications')
+        .select('jira_metadata')
+        .where({ app_name: appName })
+        .first();
+
+      const jira_metadata = appRecord?.jira_metadata || {};
+
       // Enhance description with manager information if available
       const enhancedDescription = manager_name
         ? `${description}\n\n*Manager:* ${manager_name}`
@@ -589,6 +602,7 @@ export class AuditComplianceDatabase {
             `${appName}-${period}-${frequency}-Service-Account-Review`,
             'audit-compliance-plugin',
           ],
+          ...jira_metadata,
         },
       };
       if (parentEpicKey?.trim()) {
@@ -616,7 +630,7 @@ export class AuditComplianceDatabase {
         });
 
       const { key: issueKey, id: issueId } = createResp.data;
-
+      console.log('TASK:JIRA - service account', requestBody);
       // Get ticket status
       const detailsResp = await axios
         .get<JiraIssueStatusResponse>(
@@ -959,6 +973,7 @@ export class AuditComplianceDatabase {
   }) {
     const jiraUrl = this.config.getString('auditCompliance.jiraUrl');
     const jiraToken = this.config.getString('auditCompliance.jiraToken');
+
     try {
       this.logger.info('Creating AQR Jira ticket', {
         user_id,
@@ -981,6 +996,15 @@ export class AuditComplianceDatabase {
         period,
       );
 
+      // Fetch jira_metadata from applications table
+      const appRecord = await this.db('applications')
+        .select('jira_metadata')
+        .where({ app_name })
+        .first();
+
+      const jira_metadata = appRecord?.jira_metadata || {};
+
+      // 4. Build request body including jira_metadata
       const requestBody: JiraRequestBody = {
         fields: {
           project: { key: jira_project },
@@ -991,6 +1015,7 @@ export class AuditComplianceDatabase {
             `${app_name}-${period}-${frequency}`,
             'audit-compliance-plugin',
           ],
+          ...jira_metadata,
         },
       };
 
@@ -1071,7 +1096,7 @@ export class AuditComplianceDatabase {
           });
       }
 
-      // Update database
+      // Update database with ticket reference and status
       await this.db('group_access_reports')
         .where({
           user_id,
@@ -1146,26 +1171,21 @@ export class AuditComplianceDatabase {
       throw new Error(`Jira project not found for app_name: ${app_name}`);
     }
 
-    // Prepare extra fields from jira_metadata
-    const jiraMetadata = appDetails.jira_metadata || {};
-    let components = jiraMetadata.components;
-    if (components) {
-      if (typeof components === 'string') {
-        components = [{ name: components }];
-      } else if (Array.isArray(components)) {
-        components = components.map(c =>
-          typeof c === 'string' ? { name: c } : c,
-        );
-      }
-    }
+    // Get jira_metadata from database
+    const jira_metadata = appDetails.jira_metadata || {};
+
+    // Handle components and labels for Epic tickets
+    const components = jira_metadata.components;
     let extraLabels = [];
-    if (jiraMetadata.labels) {
-      extraLabels = Array.isArray(jiraMetadata.labels)
-        ? jiraMetadata.labels
-        : [jiraMetadata.labels];
+
+    if (jira_metadata.labels) {
+      extraLabels = Array.isArray(jira_metadata.labels)
+        ? jira_metadata.labels
+        : [jira_metadata.labels];
     }
-    // Remove components and labels from extraFields to avoid duplication
-    const { components: _c, labels: _l, ...otherFields } = jiraMetadata;
+
+    // Remove components and labels from jira_metadata to avoid duplication
+    const { components: _c, labels: _l, ...otherFields } = jira_metadata;
 
     const requestBody: JiraRequestBody = {
       fields: {
@@ -1184,7 +1204,7 @@ export class AuditComplianceDatabase {
       },
     };
 
-    this.logger.info('Jira ticket request body', { requestBody });
+    this.logger.info('EPIC: Jira ticket request body', { requestBody });
 
     let createResp;
     try {
@@ -1429,7 +1449,7 @@ export class AuditComplianceDatabase {
         app_name: appname,
         frequency,
         period,
-        status: 'approved',
+        sign_off_status: 'approved',
       });
 
     const rejected = await this.db('group_access_reports')
@@ -1446,7 +1466,7 @@ export class AuditComplianceDatabase {
         app_name: appname,
         frequency,
         period,
-        status: 'rejected',
+        sign_off_status: 'rejected',
       });
 
     return {
@@ -1476,12 +1496,13 @@ export class AuditComplianceDatabase {
         'user_role',
         'manager_name',
         'updated_at',
+        'source',
       )
       .where({
         app_name: appname,
         frequency,
         period,
-        status: 'approved',
+        sign_off_status: 'approved',
       });
 
     const rejected = await this.db('service_account_access_review')
@@ -1492,12 +1513,13 @@ export class AuditComplianceDatabase {
         'user_role',
         'manager_name',
         'updated_at',
+        'source',
       )
       .where({
         app_name: appname,
         frequency,
         period,
-        status: 'rejected',
+        sign_off_status: 'rejected',
       });
 
     return {
@@ -1577,6 +1599,7 @@ export class AuditComplianceDatabase {
    * @param appData.app_delegate - Application delegate
    * @param appData.jira_project - Jira project key
    * @param appData.accounts - Array of account entries
+   * @param appData.jira_metadata - Raw Jira metadata from form (will be transformed)
    * @returns Promise resolving to the created application ID and account entries
    */
   async createApplicationWithAccounts(appData: {
@@ -1592,11 +1615,40 @@ export class AuditComplianceDatabase {
       source: 'rover' | 'gitlab' | 'ldap';
       account_name: string;
     }>;
-    jira_metadata?: Record<string, string>;
+    jira_metadata?: Record<string, string | { value: string; schema?: any }>;
   }) {
     const trx = await this.db.transaction();
 
     try {
+      // Transform Jira metadata from user input to Jira-compatible format
+      let transformedJiraMetadata: Record<string, any> = {};
+      if (appData.jira_metadata) {
+        // Try to fetch field schemas for accurate transformation
+        let fieldSchemas: Record<string, any> | undefined;
+        try {
+          fieldSchemas = await fetchJiraFieldSchemas(this.logger, this.config);
+        } catch (error) {
+          this.logger.warn(
+            'Failed to fetch field schemas, using pattern matching',
+            {
+              error: error instanceof Error ? error.message : String(error),
+            },
+          );
+        }
+
+        transformedJiraMetadata = transformJiraMetadataForStorage(
+          appData.jira_metadata,
+          fieldSchemas,
+          this.logger,
+        );
+        this.logger.info('Transformed Jira metadata for storage', {
+          app_name: appData.app_name,
+          original: appData.jira_metadata,
+          transformed: transformedJiraMetadata,
+          schemasUsed: !!fieldSchemas,
+        });
+      }
+
       // Insert all entries into applications table
       const entries = appData.accounts.map(account => {
         const entry: any = {
@@ -1612,8 +1664,8 @@ export class AuditComplianceDatabase {
           account_name: account.account_name,
           created_at: this.db.fn.now(),
         };
-        if (appData.jira_metadata) {
-          entry.jira_metadata = appData.jira_metadata;
+        if (Object.keys(transformedJiraMetadata).length > 0) {
+          entry.jira_metadata = transformedJiraMetadata;
         }
         return entry;
       });
@@ -1641,6 +1693,7 @@ export class AuditComplianceDatabase {
         ids: insertedIds,
         app_name: appData.app_name,
         accounts: appData.accounts,
+        jira_metadata: transformedJiraMetadata,
       };
     } catch (error) {
       await trx.rollback();
@@ -1665,6 +1718,7 @@ export class AuditComplianceDatabase {
    * @param appData.app_delegate - Application delegate
    * @param appData.jira_project - Jira project key
    * @param appData.accounts - Array of account entries
+   * @param appData.jira_metadata - Raw Jira metadata from form (will be transformed)
    * @returns Promise resolving to the updated application data
    */
   async updateApplicationWithAccounts(appData: {
@@ -1680,11 +1734,40 @@ export class AuditComplianceDatabase {
       source: 'rover' | 'gitlab' | 'ldap';
       account_name: string;
     }>;
-    jira_metadata?: Record<string, string>;
+    jira_metadata?: Record<string, string | { value: string; schema?: any }>;
   }) {
     const trx = await this.db.transaction();
 
     try {
+      // Transform Jira metadata from user input to Jira-compatible format
+      let transformedJiraMetadata: Record<string, any> = {};
+      if (appData.jira_metadata) {
+        // Try to fetch field schemas for accurate transformation
+        let fieldSchemas: Record<string, any> | undefined;
+        try {
+          fieldSchemas = await fetchJiraFieldSchemas(this.logger, this.config);
+        } catch (error) {
+          this.logger.warn(
+            'Failed to fetch field schemas, using pattern matching',
+            {
+              error: error instanceof Error ? error.message : String(error),
+            },
+          );
+        }
+
+        transformedJiraMetadata = transformJiraMetadataForStorage(
+          appData.jira_metadata,
+          fieldSchemas,
+          this.logger,
+        );
+        this.logger.info('Transformed Jira metadata for update', {
+          app_name: appData.app_name,
+          original: appData.jira_metadata,
+          transformed: transformedJiraMetadata,
+          schemasUsed: !!fieldSchemas,
+        });
+      }
+
       // Delete existing entries for this application
       await trx('applications').where({ app_name: appData.app_name }).del();
 
@@ -1703,8 +1786,8 @@ export class AuditComplianceDatabase {
           account_name: account.account_name,
           created_at: this.db.fn.now(),
         };
-        if (appData.jira_metadata) {
-          entry.jira_metadata = appData.jira_metadata;
+        if (Object.keys(transformedJiraMetadata).length > 0) {
+          entry.jira_metadata = transformedJiraMetadata;
         }
         return entry;
       });
@@ -1732,6 +1815,7 @@ export class AuditComplianceDatabase {
         ids: insertedIds,
         app_name: appData.app_name,
         accounts: appData.accounts,
+        jira_metadata: transformedJiraMetadata,
       };
     } catch (error) {
       await trx.rollback();
@@ -1801,5 +1885,12 @@ export class AuditComplianceDatabase {
     this.logger.info(
       `Successfully added comment to Jira ticket ${ticket_reference} and updated service account database.`,
     );
+  }
+
+  public getLogger() {
+    return this.logger;
+  }
+  public getConfig() {
+    return this.config;
   }
 }

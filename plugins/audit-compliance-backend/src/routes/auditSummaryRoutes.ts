@@ -217,47 +217,206 @@ export async function createAuditSummaryRouter(
               }).length,
             },
           },
+          ldap: {
+            total: regularGroupAccess.filter(r => r.source === 'ldap').length,
+            fresh: freshGroupAccess.filter(r => r.source === 'ldap').length,
+            approved: regularGroupAccess.filter(
+              r =>
+                r.source === 'ldap' &&
+                r.sign_off_status?.toLowerCase() === 'approved',
+            ).length,
+            rejected: regularGroupAccess.filter(
+              r =>
+                r.source === 'ldap' &&
+                r.sign_off_status?.toLowerCase() === 'rejected',
+            ).length,
+            pending: regularGroupAccess.filter(
+              r =>
+                r.source === 'ldap' &&
+                (!r.sign_off_status ||
+                  r.sign_off_status?.toLowerCase() === 'pending'),
+            ).length,
+            changes: {
+              added: freshGroupAccess.filter(
+                fresh =>
+                  fresh.source === 'ldap' &&
+                  !regularGroupAccess.some(
+                    reg => reg.user_id === fresh.user_id,
+                  ),
+              ).length,
+              removed: regularGroupAccess.filter(
+                reg =>
+                  reg.source === 'ldap' &&
+                  !freshGroupAccess.some(
+                    fresh => fresh.user_id === reg.user_id,
+                  ),
+              ).length,
+              modified: regularGroupAccess.filter(reg => {
+                if (reg.source !== 'ldap') return false;
+                const fresh = freshGroupAccess.find(
+                  f => f.user_id === reg.user_id,
+                );
+                return (
+                  fresh &&
+                  (fresh.user_role !== reg.user_role ||
+                    fresh.manager !== reg.manager ||
+                    fresh.app_delegate !== reg.app_delegate)
+                );
+              }).length,
+            },
+          },
         };
 
-        // Calculate statistics for service accounts
+        // Calculate statistics for service accounts by source
         const serviceAccountStats = {
-          total: regularServiceAccounts.length,
-          fresh: freshServiceAccounts.length,
-          approved: regularServiceAccounts.filter(
-            r => r.sign_off_status?.toLowerCase() === 'approved',
-          ).length,
-          rejected: regularServiceAccounts.filter(
-            r => r.sign_off_status?.toLowerCase() === 'rejected',
-          ).length,
-          pending: regularServiceAccounts.filter(
-            r =>
-              !r.sign_off_status ||
-              r.sign_off_status?.toLowerCase() === 'pending',
-          ).length,
-          changes: {
-            added: freshServiceAccounts.filter(
-              fresh =>
-                !regularServiceAccounts.some(
-                  reg => reg.service_account === fresh.service_account,
-                ),
+          rover: {
+            total: regularServiceAccounts.filter(r => r.source === 'rover')
+              .length,
+            fresh: freshServiceAccounts.filter(r => r.source === 'rover')
+              .length,
+            approved: regularServiceAccounts.filter(
+              r =>
+                r.source === 'rover' &&
+                r.sign_off_status?.toLowerCase() === 'approved',
             ).length,
-            removed: regularServiceAccounts.filter(
-              reg =>
-                !freshServiceAccounts.some(
-                  fresh => fresh.service_account === reg.service_account,
-                ),
+            rejected: regularServiceAccounts.filter(
+              r =>
+                r.source === 'rover' &&
+                r.sign_off_status?.toLowerCase() === 'rejected',
             ).length,
-            modified: regularServiceAccounts.filter(reg => {
-              const fresh = freshServiceAccounts.find(
-                f => f.service_account === reg.service_account,
-              );
-              return (
-                fresh &&
-                (fresh.user_role !== reg.user_role ||
-                  fresh.manager !== reg.manager ||
-                  fresh.app_delegate !== reg.app_delegate)
-              );
-            }).length,
+            pending: regularServiceAccounts.filter(
+              r =>
+                r.source === 'rover' &&
+                (!r.sign_off_status ||
+                  r.sign_off_status?.toLowerCase() === 'pending'),
+            ).length,
+            changes: {
+              added: freshServiceAccounts.filter(
+                fresh =>
+                  fresh.source === 'rover' &&
+                  !regularServiceAccounts.some(
+                    reg => reg.service_account === fresh.service_account,
+                  ),
+              ).length,
+              removed: regularServiceAccounts.filter(
+                reg =>
+                  reg.source === 'rover' &&
+                  !freshServiceAccounts.some(
+                    fresh => fresh.service_account === reg.service_account,
+                  ),
+              ).length,
+              modified: regularServiceAccounts.filter(reg => {
+                if (reg.source !== 'rover') return false;
+                const fresh = freshServiceAccounts.find(
+                  f => f.service_account === reg.service_account,
+                );
+                return (
+                  fresh &&
+                  (fresh.user_role !== reg.user_role ||
+                    fresh.manager !== reg.manager ||
+                    fresh.app_delegate !== reg.app_delegate)
+                );
+              }).length,
+            },
+          },
+          gitlab: {
+            total: regularServiceAccounts.filter(r => r.source === 'gitlab')
+              .length,
+            fresh: freshServiceAccounts.filter(r => r.source === 'gitlab')
+              .length,
+            approved: regularServiceAccounts.filter(
+              r =>
+                r.source === 'gitlab' &&
+                r.sign_off_status?.toLowerCase() === 'approved',
+            ).length,
+            rejected: regularServiceAccounts.filter(
+              r =>
+                r.source === 'gitlab' &&
+                r.sign_off_status?.toLowerCase() === 'rejected',
+            ).length,
+            pending: regularServiceAccounts.filter(
+              r =>
+                r.source === 'gitlab' &&
+                (!r.sign_off_status ||
+                  r.sign_off_status?.toLowerCase() === 'pending'),
+            ).length,
+            changes: {
+              added: freshServiceAccounts.filter(
+                fresh =>
+                  fresh.source === 'gitlab' &&
+                  !regularServiceAccounts.some(
+                    reg => reg.service_account === fresh.service_account,
+                  ),
+              ).length,
+              removed: regularServiceAccounts.filter(
+                reg =>
+                  reg.source === 'gitlab' &&
+                  !freshServiceAccounts.some(
+                    fresh => fresh.service_account === reg.service_account,
+                  ),
+              ).length,
+              modified: regularServiceAccounts.filter(reg => {
+                if (reg.source !== 'gitlab') return false;
+                const fresh = freshServiceAccounts.find(
+                  f => f.service_account === reg.service_account,
+                );
+                return (
+                  fresh &&
+                  (fresh.user_role !== reg.user_role ||
+                    fresh.manager !== reg.manager ||
+                    fresh.app_delegate !== reg.app_delegate)
+                );
+              }).length,
+            },
+          },
+          ldap: {
+            total: regularServiceAccounts.filter(r => r.source === 'ldap')
+              .length,
+            fresh: freshServiceAccounts.filter(r => r.source === 'ldap').length,
+            approved: regularServiceAccounts.filter(
+              r =>
+                r.source === 'ldap' &&
+                r.sign_off_status?.toLowerCase() === 'approved',
+            ).length,
+            rejected: regularServiceAccounts.filter(
+              r =>
+                r.source === 'ldap' &&
+                r.sign_off_status?.toLowerCase() === 'rejected',
+            ).length,
+            pending: regularServiceAccounts.filter(
+              r =>
+                r.source === 'ldap' &&
+                (!r.sign_off_status ||
+                  r.sign_off_status?.toLowerCase() === 'pending'),
+            ).length,
+            changes: {
+              added: freshServiceAccounts.filter(
+                fresh =>
+                  fresh.source === 'ldap' &&
+                  !regularServiceAccounts.some(
+                    reg => reg.service_account === fresh.service_account,
+                  ),
+              ).length,
+              removed: regularServiceAccounts.filter(
+                reg =>
+                  reg.source === 'ldap' &&
+                  !freshServiceAccounts.some(
+                    fresh => fresh.service_account === reg.service_account,
+                  ),
+              ).length,
+              modified: regularServiceAccounts.filter(reg => {
+                if (reg.source !== 'ldap') return false;
+                const fresh = freshServiceAccounts.find(
+                  f => f.service_account === reg.service_account,
+                );
+                return (
+                  fresh &&
+                  (fresh.user_role !== reg.user_role ||
+                    fresh.manager !== reg.manager ||
+                    fresh.app_delegate !== reg.app_delegate)
+                );
+              }).length,
+            },
           },
         };
 

@@ -13,29 +13,48 @@ export const formatChange = (change: number): string => {
 export const calculateTotals = (statistics: StatisticsData) => {
   const rover = statistics.group_access.rover;
   const gitlab = statistics.group_access.gitlab;
-  const serviceAccounts = statistics.service_accounts;
+  const ldap = statistics.group_access.ldap;
+  const roverServiceAccounts = statistics.service_accounts.rover;
+  const gitlabServiceAccounts = statistics.service_accounts.gitlab;
+  const ldapServiceAccounts = statistics.service_accounts.ldap;
 
-  // Total user accounts (before)
-  const totalUserAccountsBefore = rover.fresh + gitlab.fresh;
-  // Total service accounts (before)
-  const totalServiceAccountsBefore = serviceAccounts.fresh;
+  // Total user accounts (before) - group access from all sources
+  const totalUserAccountsBefore = rover.fresh + gitlab.fresh + ldap.fresh;
+  // Total service accounts (before) - service accounts from all sources
+  const totalServiceAccountsBefore =
+    roverServiceAccounts.fresh +
+    gitlabServiceAccounts.fresh +
+    ldapServiceAccounts.fresh;
   // Total access reviews (before) = user accounts + service accounts
   const totalAccessReviewsBefore =
     totalUserAccountsBefore + totalServiceAccountsBefore;
 
-  // Total user accounts (after)
-  const totalUserAccountsAfter = rover.total + gitlab.total;
-  // Total service accounts (after)
-  const totalServiceAccountsAfter = serviceAccounts.total;
+  // Total user accounts (after) - group access from all sources
+  const totalUserAccountsAfter = rover.total + gitlab.total + ldap.total;
+  // Total service accounts (after) - service accounts from all sources
+  const totalServiceAccountsAfter =
+    roverServiceAccounts.total +
+    gitlabServiceAccounts.total +
+    ldapServiceAccounts.total;
   // Total access reviews (after)
   const totalAccessReviewsAfter =
     totalUserAccountsAfter + totalServiceAccountsAfter;
 
   // Calculate approved and rejected totals
   const totalApprovedBefore =
-    rover.approved + gitlab.approved + serviceAccounts.approved;
+    rover.approved +
+    gitlab.approved +
+    ldap.approved +
+    roverServiceAccounts.approved +
+    gitlabServiceAccounts.approved +
+    ldapServiceAccounts.approved;
   const totalRejectedBefore =
-    rover.rejected + gitlab.rejected + serviceAccounts.rejected;
+    rover.rejected +
+    gitlab.rejected +
+    ldap.rejected +
+    roverServiceAccounts.rejected +
+    gitlabServiceAccounts.rejected +
+    ldapServiceAccounts.rejected;
   const totalBefore = totalApprovedBefore + totalRejectedBefore;
 
   // Validate data consistency
@@ -80,11 +99,23 @@ export const calculateTotals = (statistics: StatisticsData) => {
       approved: gitlab.approved,
       rejected: gitlab.rejected,
     },
+    ldap: {
+      before: ldap.fresh,
+      after: ldap.total,
+      approved: ldap.approved,
+      rejected: ldap.rejected,
+    },
     serviceAccounts: {
-      before: serviceAccounts.fresh,
-      after: serviceAccounts.total,
-      approved: serviceAccounts.approved,
-      rejected: serviceAccounts.rejected,
+      before: totalServiceAccountsBefore,
+      after: totalServiceAccountsAfter,
+      approved:
+        roverServiceAccounts.approved +
+        gitlabServiceAccounts.approved +
+        ldapServiceAccounts.approved,
+      rejected:
+        roverServiceAccounts.rejected +
+        gitlabServiceAccounts.rejected +
+        ldapServiceAccounts.rejected,
     },
     validationResult,
   };
