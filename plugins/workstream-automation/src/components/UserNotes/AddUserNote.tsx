@@ -18,6 +18,7 @@ import {
   DialogContent,
   FormControlLabel,
   IconButton,
+  makeStyles,
   TextField,
   Tooltip,
   Typography,
@@ -46,36 +47,56 @@ type AddUserModal = {
     }
 );
 
+const useStyles = makeStyles(theme => {
+  return {
+    listItem: {
+      backgroundColor: theme.palette.background.default,
+    },
+  };
+});
+
 export const AddUserNote = (props: AddUserModal) => {
   const { open, mode, userRef, note, setOpen, refreshFn } = props;
+  const classes = useStyles();
   const noteApi = useApi(noteApiRef);
   const { entity } = useEntity<WorkstreamEntity | ArtEntity>();
-  const { register, handleSubmit, formState, reset } = useForm<{
-    userRef: string;
-    editHistory: Array<{ timestamp: string; userRef: string; note?: string }>;
-    note: string;
-  }>({
-    values: {
-      userRef: userRef,
-      editHistory: note?.editHistory ?? [],
-      note: note?.note ?? '',
-    },
-    mode: 'all',
-  });
+
+  const { register, handleSubmit, formState, reset, getValues, watch } =
+    useForm<{
+      userRef: string;
+      editHistory: Array<{ timestamp: string; userRef: string; note?: string }>;
+      note: string;
+    }>({
+      values: {
+        userRef: userRef,
+        editHistory: note?.editHistory ?? [],
+        note: note?.note ?? '',
+      },
+      mode: 'all',
+    });
+  watch('note');
+
   const [expandHistory, setExpandHistory] = useState(false);
 
   const handleClose = () => {
     setExpandHistory(false);
     reset();
     setOpen(false);
-    refreshFn?.();
   };
 
   const onSubmit = (data: UserNote) => {
     if (mode === 'Add') {
-      noteApi.createNote(data).then(() => handleClose());
+      noteApi.createNote({ ...data, note: data.note?.trim() }).then(() => {
+        handleClose();
+        refreshFn?.();
+      });
     } else {
-      noteApi.updateNote(userRef, data).then(() => handleClose());
+      noteApi
+        .updateNote(userRef, { ...data, note: data.note?.trim() })
+        .then(() => {
+          handleClose();
+          refreshFn?.();
+        });
     }
   };
 
@@ -116,13 +137,17 @@ export const AddUserNote = (props: AddUserModal) => {
             : `Edit note for ${parseEntityRef(userRef).name}`}
         </Typography>
         <TextField
-          {...register('note', { validate: val => val.trim() !== '' })}
+          {...register('note', {
+            validate: val => val.trim() !== '' && val.trim().length <= 300,
+          })}
           variant="filled"
           placeholder="Enter note here..."
           disabled={formState.isSubmitting}
           fullWidth
           multiline
+          error={!!formState.errors.note}
           minRows={3}
+          helperText={`${getValues('note').trim().length}/300`}
           InputProps={{ style: { padding: '10px 10px' } }}
         />
         {mode === 'Update' && note.editHistory.length > 0 && (
@@ -144,7 +169,7 @@ export const AddUserNote = (props: AddUserModal) => {
           in={expandHistory}
           timeout="auto"
           unmountOnExit
-          style={{ maxHeight: '150px', overflow: 'scroll' }}
+          style={{ maxHeight: '200px', overflow: 'scroll' }}
         >
           {mode === 'Update' &&
             note.editHistory
@@ -163,9 +188,10 @@ export const AddUserNote = (props: AddUserModal) => {
                 return (
                   <Typography
                     key={key}
-                    style={{ padding: '5px 10px' }}
+                    style={{ padding: '5px 10px', overflowWrap: 'anywhere' }}
                     component="p"
                     variant="caption"
+                    {...(key % 2 === 0 && { className: classes.listItem })}
                   >
                     {noteEditor} - {history.note} -{' '}
                     {DateTime.fromISO(history.timestamp).toRelative()}

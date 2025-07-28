@@ -153,9 +153,10 @@ export const LinksEditModal = (props: {
   setModalOpen: Function;
   links: EntityLink[];
   currentEntity: WorkstreamEntity | ArtEntity;
+  refresh: VoidFunction | undefined;
 }) => {
   const LINK_TYPES = ['Document', 'Contact', 'Website', 'Email', 'Other'];
-  const { links, open, setModalOpen, currentEntity } = props;
+  const { links, open, setModalOpen, currentEntity, refresh } = props;
   const app = useApp();
   const workstreamApi = useApi(workstreamApiRef);
   const artApi = useApi(artApiRef);
@@ -355,6 +356,7 @@ export const LinksEditModal = (props: {
                 .then(res =>
                   alertApi.post({ message: res.message, display: 'transient' }),
                 );
+            refresh?.();
             handleClose();
           })}
           color="primary"
