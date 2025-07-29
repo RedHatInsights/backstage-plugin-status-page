@@ -29,7 +29,11 @@ export async function IncidentFetchService({
       return fetchIncident(id, statusPageUrl, statusPageAuthToken, logger);
     },
     async getComponents() {
-      return fetchComponents(statusPageUrl, statusPageAuthToken, logger);
+      const [componentsPage1, componentsPage2] = await Promise.all([
+        fetchComponents(statusPageUrl, statusPageAuthToken, logger, 1),
+        fetchComponents(statusPageUrl, statusPageAuthToken, logger, 2),
+      ]);
+      return [...componentsPage1, ...componentsPage2];
     },
     async createIncident(incidentData: StatusPageIncident) {
       return createIncident(
@@ -50,6 +54,6 @@ export async function IncidentFetchService({
     },
     async deleteIncident(id: string) {
       return deleteIncident(id, statusPageUrl, statusPageAuthToken, logger);
-    }
+    },
   };
 }
