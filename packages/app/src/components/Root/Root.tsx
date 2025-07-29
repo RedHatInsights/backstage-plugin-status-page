@@ -189,7 +189,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
             <Grid item xs={8}>
               <SidebarItem
                 icon={Report as IconComponent}
-                to="permission-management"
+                to="hydra-permission-management"
                 text="Permission Management"
               />
             </Grid>
