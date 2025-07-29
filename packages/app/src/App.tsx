@@ -223,7 +223,7 @@ const routes = (
       element={<AuditSummary />}
     />
     <Route
-      path="/permission-management"
+      path="/hydra-permission-management"
       element={<PermissionManagementPage />}
     />
   </FlatRoutes>
