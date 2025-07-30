@@ -1,5 +1,9 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { StatusPageIncident, UpdateIncidentProps, PostmortemBody } from '../constants';
+import {
+  StatusPageIncident,
+  UpdateIncidentProps,
+  PostmortemBody,
+} from '../constants';
 
 export const fetchIncidents = async (
   statusPageUrl: string,
@@ -58,15 +62,19 @@ export const fetchComponents = async (
   statusPageUrl: string,
   token: string,
   logger: LoggerService,
+  page: number,
 ) => {
   try {
-    const response = await fetch(`${statusPageUrl}/components`, {
-      method: 'GET',
-      headers: {
-        'Content-type': 'application/json',
-        Authorization: `${token}`,
+    const response = await fetch(
+      `${statusPageUrl}/components?page=${page}&per_page=100`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-type': 'application/json',
+          Authorization: `${token}`,
+        },
       },
-    });
+    );
 
     if (!response.ok) {
       throw new Error(
@@ -160,7 +168,7 @@ export const draftPostmortem = async (
   statusPageUrl: string,
   token: string,
   logger: LoggerService,
-  postmortemBody: PostmortemBody
+  postmortemBody: PostmortemBody,
 ) => {
   try {
     const response = await fetch(
@@ -192,7 +200,7 @@ export const publishPostmortem = async (
   statusPageUrl: string,
   token: string,
   logger: LoggerService,
-  postmortemBody: PostmortemBody
+  postmortemBody: PostmortemBody,
 ) => {
   try {
     await fetch(`${statusPageUrl}/incidents/${incidentId}/postmortem/publish`, {
