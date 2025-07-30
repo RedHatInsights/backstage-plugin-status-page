@@ -115,28 +115,25 @@ export const AuditDetailsSection = () => {
           )}`,
         );
         const data = await response.json();
-        const owners = data.app_owner
-          .split(',')
-          .map((owner: string) => owner.trim());
-
+        const owners = [
+          data.app_owner,
+          data.app_owner_email?.split('@')[0],
+          data.app_delegate,
+        ].filter(Boolean);
         setAppOwners(owners);
 
         const identity = await identityApi.getBackstageIdentity();
-        const user = identity.userEntityRef;
-        setCurrentUser(user);
+        const currentUserRef = identity.userEntityRef;
+        setCurrentUser(currentUserRef);
 
-        // Enable final signoff if username from identity ref matches username from app_owner_email
-        const appOwnerEmail = data.app_owner_email || '';
-        const ownerEmailUserId =
-          appOwnerEmail.split('@')[0]?.trim().toLowerCase() || '';
-        const normalizedUser =
-          user.split('/').pop()?.trim().toLowerCase() || '';
-        const isOwnerOrDelegate = normalizedUser === ownerEmailUserId;
-        setIsAppOwnerOrDelegate(isOwnerOrDelegate);
+        const isOwner = owners.some(owner =>
+          currentUserRef.toLowerCase().includes(owner?.toLowerCase() || ''),
+        );
+        setIsAppOwnerOrDelegate(isOwner);
         setOwnerChecked(true);
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.error('Error checking app owner/delegate:', error);
+        console.error('Error checking app owner or delegate:', error);
         setOwnerChecked(true);
       }
     };
@@ -145,6 +142,28 @@ export const AuditDetailsSection = () => {
       fetchAuditStatus();
       checkAppOwnerOrDelegate();
     }
+
+    // Add event listener to refetch status when page becomes visible
+    const handleVisibilityChange = () => {
+      if (!document.hidden && app_name && frequency && period) {
+        fetchAuditStatus();
+      }
+    };
+
+    // Add event listener to refetch status when window gains focus
+    const handleFocus = () => {
+      if (app_name && frequency && period) {
+        fetchAuditStatus();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [app_name, frequency, period, discoveryApi, fetchApi, identityApi]);
 

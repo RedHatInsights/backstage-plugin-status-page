@@ -255,7 +255,6 @@ export class GitLabDatabase implements GitLabStore {
       });
 
       if (projectResponse.status === 200) {
-        this.logger.debug(`Path ${path} is a GitLab project`);
         return 'project';
       }
     } catch (projectError: any) {
@@ -270,7 +269,6 @@ export class GitLabDatabase implements GitLabStore {
           });
 
           if (groupResponse.status === 200) {
-            this.logger.debug(`Path ${path} is a GitLab group`);
             return 'group';
           }
         } catch (groupError: any) {
@@ -534,25 +532,65 @@ export class GitLabDatabase implements GitLabStore {
 
       for (const app of appEntries) {
         const {
+          type,
           environment,
           app_delegate,
-          account_name,
-          app_name,
           app_owner,
           app_owner_email,
+          account_name,
+          app_name,
         } = app;
-        if (!account_name) {
-          this.logger.warn(`No account_name found for app: ${app_name}`);
-          continue;
+
+        // Check if this is a service account - handle differently
+        if (type === 'service-account') {
+          // For service accounts, we don't fetch GitLab members - just create the service account entry
+          let managerName = app_owner || 'N/A';
+          let managerUidFinal = '';
+
+          // Try to get manager info from app_owner_email if app_owner is not available
+          if (!app_owner && app_owner_email && app_owner_email.includes('@')) {
+            managerName = app_owner_email.split('@')[0];
+            managerUidFinal = app_owner_email.split('@')[0];
+          }
+
+          // Insert into service_account_access_review table
+          const serviceAccountRow = {
+            app_name: app_name,
+            environment: environment,
+            service_account: account_name,
+            user_role: 'service-account',
+            manager: managerName,
+            manager_uid: managerUidFinal,
+            sign_off_status: 'pending',
+            sign_off_by: 'N/A',
+            sign_off_date: null,
+            comments: '',
+            ticket_reference: '',
+            revoked_date: null,
+            created_at: new Date(),
+            updated_at: new Date(),
+            period: period,
+            frequency: frequency,
+            app_delegate: app_delegate,
+            ticket_status: 'pending',
+            source: 'gitlab',
+          };
+          await this.db('service_account_access_review').insert(
+            serviceAccountRow,
+          );
+          report.push(serviceAccountRow);
+          continue; // Skip the rest of the loop for service accounts
         }
-        this.logger.info(
-          `Processing GitLab path: ${account_name} for app: ${app_name}`,
-        );
+
+        // For regular user accounts, fetch GitLab members
         // Use account_name as the GitLab project or group path
         const members = await this.getMembers(account_name);
-        this.logger.info(
-          `Found ${members.length} members for path: ${account_name}`,
-        );
+
+        if (!members || members.length === 0) {
+          this.logger.warn(`No members found for GitLab path: ${account_name}`);
+          continue;
+        }
+
         // Fetch all user details in parallel (cache)
         await Promise.all(
           members.map(async member => {
@@ -564,19 +602,17 @@ export class GitLabDatabase implements GitLabStore {
             }
           }),
         );
+
         for (const member of members) {
-          if (member.state !== 'active') {
-            this.logger.debug(`Skipping inactive member: ${member.username}`);
-            continue;
-          }
           const userDetails = allUserDetails[member.id];
           if (!userDetails) {
             this.logger.warn(
-              `Could not fetch details for user ID: ${member.id}`,
+              `Could not fetch details for GitLab user ID: ${member.id}`,
             );
             continue;
           }
-          // Fetch manager information from Rover using GitLab username
+
+          // Get manager info from Rover using GitLab username
           let managerUid = '';
           if (userDetails.username) {
             try {
@@ -596,7 +632,9 @@ export class GitLabDatabase implements GitLabStore {
               );
             }
           }
+
           allRows.push({
+            type,
             environment,
             full_name: userDetails.name,
             user_id: userDetails.username,
@@ -606,8 +644,8 @@ export class GitLabDatabase implements GitLabStore {
             app_owner_email,
             account_name,
             app_name,
-            frequency,
             period,
+            frequency,
             app_delegate,
           });
         }
@@ -710,69 +748,100 @@ export class GitLabDatabase implements GitLabStore {
 
       for (const app of appEntries) {
         const {
+          type,
           environment,
           app_delegate,
-          account_name,
-          app_name,
+
           app_owner,
           app_owner_email,
+          account_name,
+          app_name,
         } = app;
 
-        if (!account_name) {
-          this.logger.warn(`No account_name found for app: ${app_name}`);
+        this.logger.info(
+          `Processing GitLab path: ${account_name} for app: ${app_name} with type: ${type}`,
+        );
+
+        if (type === 'service-account') {
+          // For service accounts, we don't fetch GitLab members - just create the service account entry
+          let managerName = app_owner || 'N/A';
+
+          // Try to get manager info from app_owner_email if app_owner is not available
+          if (!app_owner && app_owner_email && app_owner_email.includes('@')) {
+            managerName = app_owner_email.split('@')[0];
+          }
+
+          // Return service account data structure
+          const serviceAccountRow = {
+            environment,
+            service_account: account_name,
+            user_role: 'service-account',
+            manager: managerName,
+            source: 'gitlab',
+            account_name: account_name,
+            app_name,
+            frequency,
+            period,
+            app_delegate,
+          };
+          report.push(serviceAccountRow);
+          continue; // Skip the rest of the loop for service accounts
+        }
+
+        // For regular user accounts, fetch GitLab members
+        // Use account_name as the GitLab project or group path
+        const members = await this.getMembers(account_name);
+
+        if (!members || members.length === 0) {
+          this.logger.warn(`No members found for GitLab path: ${account_name}`);
           continue;
         }
 
-        this.logger.info(
-          `Processing GitLab path: ${account_name} for app: ${app_name}`,
-        );
-
-        // Use account_name as the GitLab project or group path
-        const members = await this.getMembers(account_name);
-        this.logger.info(
-          `Found ${members.length} members for path: ${account_name}`,
-        );
-
         for (const member of members) {
           if (member.state !== 'active') {
-            this.logger.debug(`Skipping inactive member: ${member.username}`);
             continue;
           }
 
           const userDetails = await this.getUserDetails(member.id);
           if (!userDetails) {
             this.logger.warn(
-              `Could not fetch details for user ID: ${member.id}`,
+              `Could not fetch details for GitLab user ID: ${member.id}`,
             );
             continue;
           }
 
-          // Fetch manager information from Rover using GitLab username
-          let managerName = app_owner || 'N/A';
+          // Get manager info from Rover using GitLab username
           let managerUid = '';
-
-          try {
-            const roverUserInfo = await this.getRoverUserInfo(
-              userDetails.username,
-            );
-            if (roverUserInfo && roverUserInfo.manager) {
-              const managerUidFromRover = extractUid(roverUserInfo.manager);
-              if (managerUidFromRover) {
-                const managerInfo = await this.getRoverUserInfo(
-                  managerUidFromRover,
-                );
-                if (managerInfo) {
-                  managerName = managerInfo.cn || managerUidFromRover;
+          if (userDetails.username) {
+            try {
+              const roverUserInfo = await this.getRoverUserInfo(
+                userDetails.username,
+              );
+              if (roverUserInfo && roverUserInfo.manager) {
+                const managerUidFromRover = extractUid(roverUserInfo.manager);
+                if (managerUidFromRover) {
                   managerUid = managerUidFromRover;
                 }
               }
+            } catch (error) {
+              this.logger.warn(
+                `Failed to fetch manager info for user ${userDetails.username}: ${error}`,
+              );
             }
-          } catch (error) {
-            this.logger.warn(
-              `Failed to fetch manager info for user ${userDetails.username}: ${error}`,
-            );
           }
 
+          const managerInfo = managerUid
+            ? await this.getRoverUserInfo(managerUid)
+            : null;
+
+          let managerName = app_owner || 'N/A';
+          if (managerInfo) {
+            managerName = managerInfo.cn || managerUid;
+          } else if (app_owner_email) {
+            managerName = app_owner_email.split('@')[0];
+          }
+
+          // Return regular user data structure
           const row = {
             environment,
             full_name: userDetails.name,
@@ -790,9 +859,6 @@ export class GitLabDatabase implements GitLabStore {
           };
 
           report.push(row);
-          this.logger.debug(
-            `Successfully processed user: ${userDetails.username}`,
-          );
         }
       }
 

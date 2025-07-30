@@ -105,6 +105,7 @@ export async function createDataSyncRouter(
 
           let roverServiceAccounts = 0;
           let roverGroupAccess = 0;
+          let gitlabServiceAccounts = 0;
           let gitlabGroupAccess = 0;
           let ldapServiceAccounts = 0;
           let ldapGroupAccess = 0;
@@ -161,23 +162,54 @@ export async function createDataSyncRouter(
 
           // Insert GitLab data into fresh tables only
           if (gitlabData.length > 0) {
-            const groupAccess = gitlabData.map((item: GitLabDataItem) => ({
-              environment: item.environment,
-              full_name: item.full_name,
-              user_id: item.user_id,
-              user_role: item.user_role,
-              manager: item.manager,
-              source: 'gitlab',
-              account_name: item.account_name,
-              app_name: item.app_name,
-              period,
-              frequency,
-              app_delegate: item.app_delegate,
-              created_at: new Date(),
-            }));
+            // Handle GitLab service accounts
+            const gitlabServiceAccountsData = gitlabData
+              .filter((item: GitLabDataItem) => item.service_account)
+              .map((item: GitLabDataItem) => ({
+                app_name: item.app_name,
+                environment: item.environment,
+                service_account: item.service_account,
+                user_role: item.user_role,
+                manager: item.manager,
+                app_delegate: item.app_delegate,
+                source: 'gitlab',
+                account_name: item.account_name,
+                period,
+                frequency,
+                created_at: new Date(),
+              }));
 
-            await trx('group_access_reports_fresh').insert(groupAccess);
-            gitlabGroupAccess = groupAccess.length;
+            if (gitlabServiceAccountsData.length > 0) {
+              await trx('service_account_access_review_fresh').insert(
+                gitlabServiceAccountsData,
+              );
+              gitlabServiceAccounts = gitlabServiceAccountsData.length;
+            }
+
+            // Handle GitLab group access
+            const gitlabGroupAccessData = gitlabData
+              .filter((item: GitLabDataItem) => item.user_id)
+              .map((item: GitLabDataItem) => ({
+                environment: item.environment,
+                full_name: item.full_name,
+                user_id: item.user_id,
+                user_role: item.user_role,
+                manager: item.manager,
+                source: 'gitlab',
+                account_name: item.account_name,
+                app_name: item.app_name,
+                period,
+                frequency,
+                app_delegate: item.app_delegate,
+                created_at: new Date(),
+              }));
+
+            if (gitlabGroupAccessData.length > 0) {
+              await trx('group_access_reports_fresh').insert(
+                gitlabGroupAccessData,
+              );
+              gitlabGroupAccess = gitlabGroupAccessData.length;
+            }
           }
 
           // Insert LDAP data into fresh tables only
@@ -241,8 +273,9 @@ export async function createDataSyncRouter(
                 total: roverServiceAccounts + roverGroupAccess,
               },
               gitlab: {
+                service_accounts: gitlabServiceAccounts,
                 group_access: gitlabGroupAccess,
-                total: gitlabGroupAccess,
+                total: gitlabServiceAccounts + gitlabGroupAccess,
               },
               ldap: {
                 service_accounts: ldapServiceAccounts,
@@ -252,6 +285,7 @@ export async function createDataSyncRouter(
               total_records:
                 roverServiceAccounts +
                 roverGroupAccess +
+                gitlabServiceAccounts +
                 gitlabGroupAccess +
                 ldapServiceAccounts +
                 ldapGroupAccess,
