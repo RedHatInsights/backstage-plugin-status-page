@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-permission-management-backend [1.2.4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-permission-management-backend@1.2.3...@appdev/backstage-plugin-permission-management-backend@1.2.4) (2025-07-30)
+
+
+### Bug Fixes
+
+* publish plugin ([a41ba75](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/a41ba75b8b7b0a18fdcd74ee96948ae0ac5d3ac4))
+
 ## @appdev/backstage-plugin-permission-management-backend [1.2.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-permission-management-backend@1.2.2...@appdev/backstage-plugin-permission-management-backend@1.2.3) (2025-07-25)
 
 
