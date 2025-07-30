@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-outage-template-backend [1.1.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-outage-template-backend@1.1.1...@appdev/backstage-plugin-outage-template-backend@1.1.2) (2025-07-30)
+
+
+### Bug Fixes
+
+* **APD-1041:** Fetching missing components ([eb8ce04](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/eb8ce04df34c22a7188124df9ac7c3754ab72faf))
+
 ## @appdev/backstage-plugin-outage-template-backend [1.1.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-outage-template-backend@1.1.0...@appdev/backstage-plugin-outage-template-backend@1.1.1) (2025-07-23)
 
 
