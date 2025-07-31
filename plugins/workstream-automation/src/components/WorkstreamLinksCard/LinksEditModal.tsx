@@ -6,6 +6,10 @@ import {
   useApp,
 } from '@backstage/core-plugin-api';
 import {
+  ArtEntity,
+  WorkstreamEntity,
+} from '@compass/backstage-plugin-workstream-automation-common';
+import {
   Button,
   createStyles,
   Dialog,
@@ -20,18 +24,20 @@ import {
   Tooltip,
   Typography,
 } from '@material-ui/core';
-import ExpandMoreRounded from '@material-ui/icons/ExpandMoreRounded';
 import ExpandLessRounded from '@material-ui/icons/ExpandLessRounded';
+import ExpandMoreRounded from '@material-ui/icons/ExpandMoreRounded';
 import RemoveCircleOutlineOutlinedIcon from '@material-ui/icons/RemoveCircleOutlineOutlined';
 import { Autocomplete } from '@material-ui/lab';
 import { capitalize } from 'lodash';
 import { useState } from 'react';
-import { Control, Controller, useFieldArray, useForm } from 'react-hook-form';
-import { artApiRef, workstreamApiRef } from '../../api';
 import {
-  ArtEntity,
-  WorkstreamEntity,
-} from '@compass/backstage-plugin-workstream-automation-common';
+  Control,
+  Controller,
+  SubmitHandler,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form';
+import { artApiRef, workstreamApiRef } from '../../api';
 
 type FormValues = {
   links: EntityLink[];
@@ -189,6 +195,29 @@ export const LinksEditModal = (props: {
     reset();
   };
 
+  const handleUpdate: SubmitHandler<FormValues> = data => {
+    if (currentEntity.kind === 'Workstream')
+      workstreamApi
+        .updateWorkstream(currentEntity.metadata.name, {
+          name: currentEntity.metadata.name,
+          ...data,
+        })
+        .then(res =>
+          alertApi.post({ message: res.message, display: 'transient' }),
+        );
+    else if (currentEntity.kind === 'ART')
+      artApi
+        .updateArt(currentEntity.metadata.name, {
+          name: currentEntity.metadata.name,
+          ...data,
+        })
+        .then(res =>
+          alertApi.post({ message: res.message, display: 'transient' }),
+        );
+    setTimeout(() => refresh?.(), 2000);
+    handleClose();
+  };
+
   return (
     <Dialog
       open={open}
@@ -337,28 +366,7 @@ export const LinksEditModal = (props: {
         <Button
           focusRipple
           variant="contained"
-          onClick={handleSubmit(data => {
-            if (currentEntity.kind === 'Workstream')
-              workstreamApi
-                .updateWorkstream(currentEntity.metadata.name, {
-                  name: currentEntity.metadata.name,
-                  ...data,
-                })
-                .then(res =>
-                  alertApi.post({ message: res.message, display: 'transient' }),
-                );
-            else if (currentEntity.kind === 'ART')
-              artApi
-                .updateArt(currentEntity.metadata.name, {
-                  name: currentEntity.metadata.name,
-                  ...data,
-                })
-                .then(res =>
-                  alertApi.post({ message: res.message, display: 'transient' }),
-                );
-            refresh?.();
-            handleClose();
-          })}
+          onClick={handleSubmit(handleUpdate)}
           color="primary"
         >
           Submit
