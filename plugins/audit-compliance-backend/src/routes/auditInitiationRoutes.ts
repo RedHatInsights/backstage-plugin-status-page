@@ -447,6 +447,27 @@ export async function createAuditInitiationRouter(
       );
 
       // Generate reports from all sources (same as audit initiation but without creating audit record)
+      logger.info('Starting refresh data generation for sources:', {
+        app_name,
+        frequency,
+        period,
+      });
+
+      // Check what applications exist for this app_name
+      const applications = await knex('applications')
+        .select('source', 'type', 'account_name')
+        .where('app_name', app_name);
+
+      logger.info('Found applications for refresh:', {
+        app_name,
+        totalApplications: applications.length,
+        applications: applications.map(app => ({
+          source: app.source,
+          type: app.type,
+          account_name: app.account_name,
+        })),
+      });
+
       const reportPromises = [
         // Generate Rover report
         roverStore
@@ -459,7 +480,10 @@ export async function createAuditInitiationRouter(
         gitlabStore
           .generateGitLabData(app_name, frequency, period)
           .catch(error => {
-            logger.error('Failed to generate GitLab report', { error });
+            logger.error('Failed to generate GitLab report', {
+              error: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : undefined,
+            });
             return null;
           }),
         // Generate LDAP report
@@ -481,10 +505,72 @@ export async function createAuditInitiationRouter(
       const ldapCount = reportResults[2]?.length || 0;
       const totalRecords = roverCount + gitlabCount + ldapCount;
 
+      // Add detailed logging for debugging
+      logger.info('Refresh data results:', {
+        app_name,
+        frequency,
+        period,
+        roverCount,
+        gitlabCount,
+        ldapCount,
+        totalRecords,
+        roverData: reportResults[0]
+          ? `${reportResults[0].length} records`
+          : 'null',
+        gitlabData: reportResults[1]
+          ? `${reportResults[1].length} records`
+          : 'null',
+        ldapData: reportResults[2]
+          ? `${reportResults[2].length} records`
+          : 'null',
+      });
+
+      // Log GitLab data details if available
+      if (reportResults[1] && reportResults[1].length > 0) {
+        const gitlabData = reportResults[1];
+        const serviceAccounts = gitlabData.filter(item => item.service_account);
+        const userAccounts = gitlabData.filter(item => item.user_id);
+
+        logger.info('GitLab data breakdown:', {
+          total: gitlabData.length,
+          serviceAccounts: serviceAccounts.length,
+          userAccounts: userAccounts.length,
+          serviceAccountDetails: serviceAccounts.map(sa => ({
+            service_account: sa.service_account,
+            app_name: sa.app_name,
+            source: sa.source,
+          })),
+          userAccountDetails: userAccounts.map(ua => ({
+            user_id: ua.user_id,
+            app_name: ua.app_name,
+            source: ua.source,
+          })),
+        });
+      }
+
       const sources = [];
       if (roverCount > 0) sources.push('Rover');
       if (gitlabCount > 0) sources.push('GitLab');
       if (ldapCount > 0) sources.push('LDAP');
+
+      // Reset audit status to 'details_under_review' after data refresh
+      // This allows users to continue working on the audit after refreshing data
+      try {
+        // Reset both progress and status to initial state
+        await database.updateAudit(app_name, frequency, period, {
+          progress: 'details_under_review',
+          status: 'in_progress',
+          updated_at: new Date(),
+        });
+        logger.info(
+          `Reset audit status to initial state for ${app_name}/${frequency}/${period}`,
+        );
+      } catch (error) {
+        logger.warn(
+          `Failed to reset audit status after data refresh: ${error}`,
+        );
+        // Don't fail the entire refresh operation if status reset fails
+      }
 
       // Create activity stream event for data refresh
       await database.createActivityEvent({
@@ -498,7 +584,7 @@ export async function createAuditInitiationRouter(
           new_status: 'data_refreshed',
           reason: `Data refreshed: ${totalRecords} total records from ${sources.join(
             ', ',
-          )}`,
+          )}. Audit status reset to 'details_under_review' to allow continued work.`,
           deletion_stats: {
             group_access_deleted: deletionResult.groupAccessDeleted,
             service_accounts_deleted: deletionResult.serviceAccountsDeleted,

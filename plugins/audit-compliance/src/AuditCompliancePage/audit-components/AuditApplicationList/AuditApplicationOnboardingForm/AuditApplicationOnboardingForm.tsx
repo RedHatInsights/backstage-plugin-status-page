@@ -254,6 +254,7 @@ export const AuditApplicationOnboardingForm = ({
               alertApi.post({
                 message: 'No matching rover group found',
                 severity: 'error',
+                display: 'transient',
               });
             }
           } else {

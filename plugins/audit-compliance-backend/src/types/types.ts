@@ -37,9 +37,11 @@ export interface GitLabDataItem {
   /** Environment (e.g., 'production', 'staging') */
   environment: string;
   /** Full name of the user */
-  full_name: string;
+  full_name?: string;
   /** User ID in GitLab */
-  user_id: string;
+  user_id?: string;
+  /** Service account identifier if applicable */
+  service_account?: string;
   /** Role of the user in the project */
   user_role: string;
   /** Manager of the user */
@@ -55,7 +57,7 @@ export interface GitLabDataItem {
   /** Review period (e.g., '2024') */
   period: string;
   /** Application delegate */
-  app_delegate?: string;
+  app_delegate: string;
 }
 
 /**
