@@ -1,5 +1,13 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.18.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.18.0...@appdev/backstage-plugin-audit-compliance@1.18.1) (2025-07-31)
+
+
+### Bug Fixes
+
+* **audit-access-manager:** Fixing email body and namespace ([0bd5787](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/0bd5787fdedc2d014971d11d08578333121771ee))
+* **audit-access-manager:** Fixing gitlab service account data issue ([b1bdc13](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/b1bdc13461d54b20f2296d0b8d1d11d5fc671e63))
+
 ## @appdev/backstage-plugin-audit-compliance [1.18.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.17.0...@appdev/backstage-plugin-audit-compliance@1.18.0) (2025-07-28)
 
 
