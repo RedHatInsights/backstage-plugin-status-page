@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-workstream-automation [1.19.4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.19.3...@compass/backstage-plugin-workstream-automation@1.19.4) (2025-07-31)
+
+
+### Bug Fixes
+
+* **PULSE-426:** trigger refresh after 2s timeout ([57a7bc1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/57a7bc1399534404c6133fd01fd9ce389793b83f))
+
 ## @compass/backstage-plugin-workstream-automation [1.19.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.19.2...@compass/backstage-plugin-workstream-automation@1.19.3) (2025-07-28)
 
 
