@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.19.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.18.1...@appdev/backstage-plugin-audit-compliance@1.19.0) (2025-08-04)
+
+
+### Features
+
+* **audit-compliance:** Adding Deletion routes and adding misisng LDAP accounts ([f26e4d5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/f26e4d5da6a34a638a4f02b0c10cb6f4617ed6ad))
+
 ## @appdev/backstage-plugin-audit-compliance [1.18.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.18.0...@appdev/backstage-plugin-audit-compliance@1.18.1) (2025-07-31)
 
 
