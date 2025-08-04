@@ -424,58 +424,98 @@ export function AuditApplicationList() {
         <Divider />
         <ListItem>
           <ListItemText
-            primary="Rover Accounts"
-            secondary={getAccountDisplayText(
-              selectedAppDetails.accounts
-                .filter(
-                  acc =>
-                    acc.type === 'rover-group-name' && acc.source === 'rover',
-                )
-                .map(acc => acc.account_name),
-              'Rover',
-            )}
-          />
-        </ListItem>
-        <ListItem>
-          <ListItemText
-            primary="GitLab Accounts"
-            secondary={getAccountDisplayText(
-              selectedAppDetails.accounts
-                .filter(
-                  acc =>
-                    acc.type === 'rover-group-name' && acc.source === 'gitlab',
-                )
-                .map(acc => acc.account_name),
-              'GitLab',
-            )}
-          />
-        </ListItem>
-        <ListItem>
-          <ListItemText
-            primary="LDAP Accounts"
-            secondary={getAccountDisplayText(
-              selectedAppDetails.accounts
-                .filter(
-                  acc =>
-                    acc.type === 'service-account' && acc.source === 'ldap',
-                )
-                .map(acc => acc.account_name),
-              'LDAP',
-            )}
+            primary="User Accounts"
+            secondary={
+              <div>
+                <div>
+                  <strong>Rover:</strong>{' '}
+                  {getAccountDisplayText(
+                    selectedAppDetails.accounts
+                      .filter(
+                        acc =>
+                          acc.type === 'rover-group-name' &&
+                          acc.source === 'rover',
+                      )
+                      .map(acc => acc.account_name),
+                    'Rover',
+                  )}
+                </div>
+                <div>
+                  <strong>GitLab:</strong>{' '}
+                  {getAccountDisplayText(
+                    selectedAppDetails.accounts
+                      .filter(
+                        acc =>
+                          acc.type === 'rover-group-name' &&
+                          acc.source === 'gitlab',
+                      )
+                      .map(acc => acc.account_name),
+                    'GitLab',
+                  )}
+                </div>
+                <div>
+                  <strong>LDAP:</strong>{' '}
+                  {getAccountDisplayText(
+                    selectedAppDetails.accounts
+                      .filter(
+                        acc =>
+                          acc.type === 'rover-group-name' &&
+                          acc.source === 'ldap',
+                      )
+                      .map(acc => acc.account_name),
+                    'LDAP',
+                  )}
+                </div>
+              </div>
+            }
           />
         </ListItem>
         <ListItem>
           <ListItemText
             primary="Service Accounts"
-            secondary={getAccountDisplayText(
-              selectedAppDetails.accounts
-                .filter(
-                  acc =>
-                    acc.type === 'service-account' && acc.source !== 'ldap',
-                )
-                .map(acc => acc.account_name),
-              'Service',
-            )}
+            secondary={
+              <div>
+                <div>
+                  <strong>Rover:</strong>{' '}
+                  {getAccountDisplayText(
+                    selectedAppDetails.accounts
+                      .filter(
+                        acc =>
+                          acc.type === 'service-account' &&
+                          acc.source === 'rover',
+                      )
+                      .map(acc => acc.account_name),
+                    'Rover',
+                  )}
+                </div>
+                <div>
+                  <strong>GitLab:</strong>{' '}
+                  {getAccountDisplayText(
+                    selectedAppDetails.accounts
+                      .filter(
+                        acc =>
+                          acc.type === 'service-account' &&
+                          acc.source === 'gitlab',
+                      )
+                      .map(acc => acc.account_name),
+                    'GitLab',
+                  )}
+                </div>
+                <div>
+                  <strong>LDAP:</strong>{' '}
+                  {getAccountDisplayText(
+                    selectedAppDetails.accounts
+                      .filter(
+                        acc =>
+                          acc.type === 'service-account' &&
+                          acc.source === 'ldap',
+                      )
+                      .map(acc => acc.account_name),
+                    'LDAP',
+                  )}
+                </div>
+              </div>
+            }
           />
         </ListItem>
       </List>

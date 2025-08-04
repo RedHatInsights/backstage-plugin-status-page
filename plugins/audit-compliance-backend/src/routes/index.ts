@@ -7,6 +7,7 @@ import { createAuditInitiationRouter } from './auditInitiationRoutes';
 import { createAuditSummaryRouter } from './auditSummaryRoutes';
 import { createEmailRouter } from './emailRoutes';
 import { createJiraRouter } from './jiraRoutes';
+import { createDataDeletionRouter } from './dataDeletionRoutes';
 
 export const createCombinedRouter = async (
   knex: Knex,
@@ -23,6 +24,7 @@ export const createCombinedRouter = async (
     jiraRouter,
     auditInitiationRouter,
     emailRouter,
+    dataDeletionRouter,
   ] = await Promise.all([
     createDetailsRouter(knex, logger, config),
     createDataSyncRouter(knex, config, logger),
@@ -31,6 +33,7 @@ export const createCombinedRouter = async (
     createJiraRouter(knex, logger, config),
     createAuditInitiationRouter(knex, config, logger),
     createEmailRouter(config, logger),
+    createDataDeletionRouter(knex, logger, config),
   ]);
 
   router.use('/', detailsRouter);
@@ -40,6 +43,7 @@ export const createCombinedRouter = async (
   router.use('/', jiraRouter);
   router.use('/', auditInitiationRouter);
   router.use('/', emailRouter);
+  router.use('/', dataDeletionRouter);
 
   return router;
 };
