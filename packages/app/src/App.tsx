@@ -31,6 +31,7 @@ import {
   AuditDetailsSection,
   AuditInitiation,
   AuditSummary,
+  ComplianceManagerPage,
 } from '@appdev/backstage-plugin-audit-compliance';
 import {
   AppDevDashboardPage,
@@ -219,6 +220,7 @@ const routes = (
     <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
     <Route path="/devtools" element={<DevToolsPage />} />
     <Route path="/audit-access-manager" element={<AuditCompliancePage />} />
+    <Route path="/compliance-manager" element={<ComplianceManagerPage />} />
     <Route
       path="/audit-access-manager/:app_name"
       element={<AuditInitiation />}

@@ -16,12 +16,17 @@ export const configRouteRef = createRouteRef({
   id: 'audit-compliance-configuration',
 });
 
+export const complianceManagerRouteRef = createRouteRef({
+  id: 'compliance-manager',
+});
+
 export const auditCompliancePlugin = createPlugin({
   id: 'audit-compliance',
   routes: {
     root: rootRouteRef,
     details: detailsRouteRef,
     configurations: configRouteRef,
+    complianceManager: complianceManagerRouteRef,
   },
 });
 
@@ -32,5 +37,15 @@ export const AuditCompliancePage = auditCompliancePlugin.provide(
     component: () =>
       import('./AuditCompliancePage').then(m => m.AuditCompliancePage),
     mountPoint: rootRouteRef,
+  }),
+);
+
+// Compliance Manager page
+export const ComplianceManagerPage = auditCompliancePlugin.provide(
+  createRoutableExtension({
+    name: 'ComplianceManagerPage',
+    component: () =>
+      import('./ComplianceManagerPage').then(m => m.ComplianceManagerPage),
+    mountPoint: complianceManagerRouteRef,
   }),
 );

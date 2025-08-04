@@ -11,3 +11,7 @@ export const detailsRouteRef = createRouteRef({
 export const configRouteRef = createRouteRef({
   id: 'audit-compliance-configuration',
 });
+
+export const complianceManagerRouteRef = createRouteRef({
+  id: 'compliance-manager',
+});
