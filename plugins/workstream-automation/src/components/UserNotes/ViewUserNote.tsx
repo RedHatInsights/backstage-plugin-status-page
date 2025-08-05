@@ -44,12 +44,14 @@ export const ViewUserNote = (props: {
   const { allowed: createAllowed } = usePermission({
     permission: userNoteCreatePermission,
     resourceRef:
-      entity.kind === 'Workstream' ? entity.spec.lead : entity.spec.rte,
+      (entity.kind === 'Workstream' ? entity.spec.lead : entity.spec.rte) ??
+      'admin',
   });
   const { allowed: updateAllowed } = usePermission({
     permission: userNoteUpdatePermission,
     resourceRef:
-      entity.kind === 'Workstream' ? entity.spec.lead : entity.spec.rte,
+      (entity.kind === 'Workstream' ? entity.spec.lead : entity.spec.rte) ??
+      'admin',
   });
 
   const [open, setOpen] = useState(false);

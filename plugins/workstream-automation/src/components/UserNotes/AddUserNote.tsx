@@ -218,7 +218,9 @@ export const AddUserNote = (props: AddUserModal) => {
           <RequirePermission
             permission={userNoteUpdatePermission}
             resourceRef={
-              entity.kind === 'Workstream' ? entity.spec.lead : entity.spec.rte
+              (entity.kind === 'Workstream'
+                ? entity.spec.lead
+                : entity.spec.rte) ?? 'admin'
             }
             errorPage={<></>}
           >

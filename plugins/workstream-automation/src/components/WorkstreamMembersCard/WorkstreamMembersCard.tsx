@@ -77,7 +77,7 @@ export const WorkstreamMembersCard = (props: { variant: InfoCardVariants }) => {
   const noteApi = useApi(noteApiRef);
   const [notes, setNotes] = useState<Record<string, UserNote>>({});
   useEffect(() => {
-    if (leadEntity && tableData.length) {
+    if (tableData.length) {
       const totalData = [
         ...(leadEntity
           ? [
