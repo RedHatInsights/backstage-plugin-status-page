@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-workstream-automation [1.19.5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.19.4...@compass/backstage-plugin-workstream-automation@1.19.5) (2025-08-05)
+
+
+### Bug Fixes
+
+* fixed permission issue in notes ([d5d2f10](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/d5d2f1096394fe6393a8a6feb99bfe016fa4b958))
+
 ## @compass/backstage-plugin-workstream-automation [1.19.4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.19.3...@compass/backstage-plugin-workstream-automation@1.19.4) (2025-07-31)
 
 
