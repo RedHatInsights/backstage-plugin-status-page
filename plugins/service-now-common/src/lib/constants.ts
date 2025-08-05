@@ -28,6 +28,8 @@ export const CMDB_SIA_RECORD_FIELDS = [
   "sys_updated_on",
   "state",
   "expires",
+  "recovery_time_objective.name",
+  "recovery_point_objective.name",
 ]
 export const DEFAULT_CMDB_RECORD_FIELDS = [
   'sys_id',
