@@ -129,6 +129,9 @@ export interface ServiceNowSIAComplianceControlsResponse {
   name: string;
   sys_updated_on: string;
   state: string;
-  expires:string;
-  expiresCount:number;
+  expires: string;
+  expiresCount: number;
+  // API response fields (dot notation)
+  'recovery_time_objective.name'?: string;
+  'recovery_point_objective.name'?: string;
 }

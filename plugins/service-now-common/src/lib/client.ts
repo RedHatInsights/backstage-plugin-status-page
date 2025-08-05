@@ -51,7 +51,6 @@ export class ServiceNowClient {
     });
   }
 
-  /** @deprecated */
   async getComplianceControlsByTriggerId(
     triggerId: string,
     options?: CommonListOptions,
@@ -65,18 +64,6 @@ export class ServiceNowClient {
     });
   }
 
-  async getComplianceControlsByAppliesTo(
-    sysId: string,
-    options?: CommonListOptions,
-  ) {
-    const uri = `/api/now/table/${CMDB_PIA_TABLE_NAME}`;
-
-    const sysparmQuery = `applies_to=${sysId}`;
-    return this.pagedRequest<ServiceNowPIAComplianceControlsResponse>(uri, {
-      ...options,
-      sysparm_query: sysparmQuery,
-    });
-  }
   async getSIAComplianceControlsBySysId(
     sysId: string,
     options?: CommonListOptions,
