@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-service-now-common [1.5.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-service-now-common@1.4.0...@compass/backstage-plugin-service-now-common@1.5.0) (2025-08-05)
+
+
+### Features
+
+* **PULSE-970:** added rto and rpo data collection from sia_bia_analysis to sia factcollector in servicenow-common ([aefc9be](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/aefc9beb829a867bdf5ee8cf9a3f47ebb06ae7bb))
+
 ## @compass/backstage-plugin-service-now-common [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-service-now-common@1.3.0...@compass/backstage-plugin-service-now-common@1.4.0) (2025-07-15)
 
 
