@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.4.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.4.0...@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.4.1) (2025-08-06)
+
+
+### Bug Fixes
+
+* update sia factcollector to rto and rpo value ([8f736a8](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/8f736a8aea2e269247f7e5157eb53cbe7d08c031))
+
 ## @compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.4.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.3.1...@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.4.0) (2025-07-15)
 
 
