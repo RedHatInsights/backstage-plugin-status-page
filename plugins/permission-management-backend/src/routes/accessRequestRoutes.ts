@@ -523,7 +523,12 @@ export function createAccessRequestRoutes(
     const { groupCn, userId } = req.params;
     const roleQuery = req.query.role as string | undefined;
     try {
-      const { memberUids, ownerUids } = await roverClient.getGroupMembersAndOwners(groupCn);
+      const authHeader = req.headers.hydra_token as string || '';
+      const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+      if (!bearerToken) {
+        return res.status(401).json({ error: 'Missing or invalid Authorization Bearer token' });
+      }
+      const { memberUids, ownerUids } = await roverClient.getGroupMembersAndOwners(groupCn, bearerToken);
       const isMember = memberUids.includes(userId);
       const isOwner = ownerUids.includes(userId);
       if (roleQuery === 'member') {

@@ -37,6 +37,7 @@ export const PermissionManagement = () => {
         const result = await permissionApi.checkUserAccessStatus(
           'hydra-notifications-escalation-forecaster',
           userId,
+          token
         );
 
         setIsOwner(result.isOwner === true);
