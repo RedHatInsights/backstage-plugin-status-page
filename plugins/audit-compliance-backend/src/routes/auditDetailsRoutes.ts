@@ -103,15 +103,9 @@ export async function createDetailsRouter(
   auditDetailsRouter.get('/activity-stream', async (req, res) => {
     const { app_name, frequency, period, limit, offset } = req.query;
 
-    if (!app_name) {
-      return res.status(400).json({
-        error: 'Missing required query parameter: app_name',
-      });
-    }
-
     try {
       const events = await database.getActivityStreamEvents({
-        app_name: app_name as string,
+        app_name: (app_name as string) || '',
         frequency: frequency as string,
         period: period as string,
         limit: limit ? Number(limit) : undefined,

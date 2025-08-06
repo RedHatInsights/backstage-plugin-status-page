@@ -2,6 +2,8 @@ import { Knex } from 'knex';
 import express from 'express';
 import Router from 'express-promise-router';
 import { AuditComplianceDatabase } from '../database/AuditComplianceDatabase';
+import { RoverDatabase } from '../database/RoverIntegration';
+import { GitLabDatabase } from '../database/GitLabIntegration';
 
 /**
  * Creates the compliance manager router with all endpoint definitions.
@@ -20,6 +22,21 @@ export async function createComplianceManagerRouter(
     skipMigrations: true,
     logger,
     config,
+  });
+
+  // Initialize Rover integrations database
+  const roverStore = await RoverDatabase.create({
+    knex,
+    config,
+    logger,
+    skipMigrations: true,
+  });
+
+  // Initialize GitLab integrations database
+  const gitlabStore = await GitLabDatabase.create({
+    knex,
+    config,
+    logger,
   });
 
   const complianceManagerRouter = Router();
@@ -196,13 +213,29 @@ export async function createComplianceManagerRouter(
               continue;
             }
 
+            // First clear any existing data for this app/period combination
+            const db = await knex;
+            await db('group_access_reports')
+              .where({
+                app_name: appName,
+                frequency: auditConfig.frequency,
+                period: auditConfig.period,
+              })
+              .delete();
+            await db('service_account_access_review')
+              .where({
+                app_name: appName,
+                frequency: auditConfig.frequency,
+                period: auditConfig.period,
+              })
+              .delete();
+
             // Create audit record
             const auditData = {
               app_name: appName,
               frequency: auditConfig.frequency,
               period: auditConfig.period,
               progress: 'audit_started',
-              initiated_by: auditConfig.initiated_by || 'compliance-manager',
               created_at: new Date().toISOString(),
             };
 
@@ -210,16 +243,127 @@ export async function createComplianceManagerRouter(
 
             // Create activity event
             await database.createActivityEvent({
-              event_type: 'audit_initiated',
+              event_type: 'AUDIT_INITIATED',
               app_name: appName,
               frequency: auditConfig.frequency,
               period: auditConfig.period,
               performed_by: auditConfig.initiated_by || 'compliance-manager',
               metadata: {
                 audit_id: auditId,
+                jira_key: null,
                 bulk_initiation: true,
               },
             });
+
+            // Get application details
+            const appDetails = await database.getApplicationDetails(appName);
+
+            if (!appDetails) {
+              logger.warn(`Application details not found for ${appName}`);
+            }
+
+            // Generate reports from all sources
+            const reportPromises = [
+              // Generate Rover report
+              roverStore
+                .generateRoverData(
+                  appName,
+                  auditConfig.frequency,
+                  auditConfig.period,
+                )
+                .catch(error => {
+                  logger.error('Failed to generate Rover report', {
+                    app_name: appName,
+                    error:
+                      error instanceof Error ? error.message : String(error),
+                  });
+                  return null;
+                }),
+              // Generate GitLab report
+              gitlabStore
+                .generateGitLabData(
+                  appName,
+                  auditConfig.frequency,
+                  auditConfig.period,
+                )
+                .catch(error => {
+                  logger.error('Failed to generate GitLab report', {
+                    app_name: appName,
+                    error:
+                      error instanceof Error ? error.message : String(error),
+                  });
+                  return null;
+                }),
+              // Generate LDAP report
+              roverStore
+                .generateLDAPData(
+                  appName,
+                  auditConfig.frequency,
+                  auditConfig.period,
+                )
+                .catch(error => {
+                  logger.error('Failed to generate LDAP report', {
+                    app_name: appName,
+                    error:
+                      error instanceof Error ? error.message : String(error),
+                  });
+                  return null;
+                }),
+            ];
+
+            // Wait for all report generations to complete
+            const reportResults = await Promise.all(reportPromises);
+            const successfulReports = reportResults.filter(
+              result => result !== null,
+            );
+
+            // Try to create Jira ticket for the audit (as an Epic)
+            let jiraTicket = null;
+            let jiraCreationFailed = false;
+            try {
+              jiraTicket = await database.createAuditJiraTicket({
+                app_name: appName,
+                frequency: auditConfig.frequency,
+                period: auditConfig.period,
+              });
+              // Update the audit record with the Jira ticket key
+              await database.updateAudit(
+                appName,
+                auditConfig.frequency,
+                auditConfig.period,
+                {
+                  jira_key: jiraTicket.key,
+                  jira_status: jiraTicket.status,
+                },
+              );
+            } catch (jiraError) {
+              logger.error('Failed to create JIRA epic', {
+                app_name: appName,
+                error:
+                  jiraError instanceof Error
+                    ? jiraError.message
+                    : String(jiraError),
+              });
+              jiraCreationFailed = true;
+              // Update the audit record with jira_key: 'N/A'
+              await database.updateAudit(
+                appName,
+                auditConfig.frequency,
+                auditConfig.period,
+                {
+                  jira_key: 'N/A',
+                  jira_status: 'N/A',
+                },
+              );
+            }
+
+            // Set progress to 'details_under_review' after data is fetched and JIRA is handled
+            await database.updateAuditProgress(
+              appName,
+              auditConfig.frequency,
+              auditConfig.period,
+              'details_under_review',
+            );
 
             createdAudits.push({
               id: auditId,
@@ -227,7 +371,10 @@ export async function createComplianceManagerRouter(
               app_name: appName,
               frequency: auditConfig.frequency,
               period: auditConfig.period,
-              status: 'audit_started',
+              status: 'details_under_review',
+              reports_generated: successfulReports.length,
+              jira_creation_failed: jiraCreationFailed,
+              jira_ticket: jiraTicket,
             });
           } catch (error) {
             logger.error('Failed to create audit for application', {

@@ -23,6 +23,7 @@ import {
   ActivityStream,
   InitiateAuditDialog,
 } from './components';
+import { AuditEvent } from '../AuditCompliancePage/audit-components/AuditDetailsSection/AuditActivityStream/types';
 
 interface Application {
   id: string;
@@ -31,15 +32,7 @@ interface Application {
   cmdb_id: string;
 }
 
-interface AuditHistoryItem {
-  application_id: string;
-  app_name: string;
-  frequency: string;
-  period: string;
-  status: string;
-  created_at: string;
-  jira_key: string;
-}
+// Using AuditEvent from existing component
 
 interface ComplianceSummary {
   totalApplications: number;
@@ -88,7 +81,7 @@ export const ComplianceManagerPage = () => {
   const [initiatingAudits, setInitiatingAudits] = useState(false);
 
   // Audit history and summary state
-  const [auditHistory, setAuditHistory] = useState<AuditHistoryItem[]>([]);
+  const [auditHistory, setAuditHistory] = useState<AuditEvent[]>([]);
   const [complianceSummary, setComplianceSummary] = useState<ComplianceSummary>(
     {
       totalApplications: 0,
@@ -101,6 +94,7 @@ export const ComplianceManagerPage = () => {
 
   // Dialog state
   const [initiateDialogOpen, setInitiateDialogOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const fetchApplications = async () => {
     try {
@@ -134,17 +128,17 @@ export const ComplianceManagerPage = () => {
   const fetchAuditHistory = async () => {
     try {
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+      // Use existing activity stream API without app_name to get all events
       const response = await fetchApi.fetch(
-        `${baseUrl}/compliance/audit-history`,
+        `${baseUrl}/activity-stream?limit=20`,
       );
 
       if (response.ok) {
         const data = await response.json();
         setAuditHistory(data);
-        calculateComplianceSummary(data);
       }
     } catch (err) {
-      console.error('Failed to fetch audit history:', err);
+      console.error('Failed to fetch activity stream:', err);
     }
   };
 
@@ -162,7 +156,7 @@ export const ComplianceManagerPage = () => {
     }
   };
 
-  const calculateComplianceSummary = (history: AuditHistoryItem[]) => {
+  const calculateComplianceSummary = (history: AuditEvent[]) => {
     const summary: ComplianceSummary = {
       totalApplications: applications.length,
       compliant: 0,
@@ -173,10 +167,26 @@ export const ComplianceManagerPage = () => {
 
     // Group by application and get latest status
     const appStatuses = new Map<string, string>();
-    history.forEach(audit => {
-      const existing = appStatuses.get(audit.application_id);
-      if (!existing || new Date(audit.created_at) > new Date(existing)) {
-        appStatuses.set(audit.application_id, audit.status);
+    history.forEach(event => {
+      const existing = appStatuses.get(event.app_name);
+      if (!existing || new Date(event.created_at) > new Date(existing)) {
+        // Map event_type to status for compliance calculation
+        let status = 'UNKNOWN';
+        switch (event.event_type) {
+          case 'AUDIT_COMPLETED':
+          case 'AUDIT_FINAL_SIGNOFF_COMPLETED':
+            status = 'COMPLETED';
+            break;
+          case 'AUDIT_SUMMARY_GENERATED':
+            status = 'IN_PROGRESS';
+            break;
+          case 'AUDIT_INITIATED':
+            status = 'AUDIT_STARTED';
+            break;
+          default:
+            status = 'UNKNOWN';
+        }
+        appStatuses.set(event.app_name, status);
       }
     });
 
@@ -310,6 +320,8 @@ export const ComplianceManagerPage = () => {
       setSelectedQuarter('');
       setInitiateDialogOpen(false);
       fetchAuditHistory();
+      fetchApplications(); // Refresh applications to show new audits
+      setRefreshTrigger(prev => prev + 1); // Trigger table refresh
     } catch (err) {
       alertApi.post({
         message:
@@ -431,9 +443,9 @@ export const ComplianceManagerPage = () => {
           <ComplianceSummaryCards summary={complianceSummary} />
 
           {/* Two Sections: Table and Activity Stream */}
-          <Grid container spacing={3}>
+          <Grid container spacing={3} style={{ minHeight: '700px' }}>
             {/* Applications Table Section */}
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12} md={6} style={{ height: '700px' }}>
               <ApplicationsTable
                 applications={filteredApplications}
                 selectedApplications={selectedApplications}
@@ -441,11 +453,12 @@ export const ComplianceManagerPage = () => {
                 onSearchChange={setSearchTerm}
                 onSelectionChange={setSelectedApplications}
                 onRefresh={fetchApplications}
+                refreshTrigger={refreshTrigger}
               />
             </Grid>
 
             {/* Activity Stream Section */}
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={6} style={{ height: '700px' }}>
               <ActivityStream
                 auditHistory={auditHistory}
                 onRefresh={fetchAuditHistory}
