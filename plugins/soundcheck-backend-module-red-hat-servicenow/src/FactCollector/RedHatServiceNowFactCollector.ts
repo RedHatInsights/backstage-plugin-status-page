@@ -119,6 +119,9 @@ export class RedHatServiceNowFactCollector implements FactCollector {
       logger: this.logger,
     });
 
+    // Determine which fact types are requested
+    const requestedFactRefs = params?.factRefs?.map(ref => stringifyFactRef(ref)) || allowedRefs;
+
     for (const entity of entities) {
       const cmdbRecordId =
         entity.metadata?.annotations?.['servicenow.com/appcode'];
@@ -138,83 +141,109 @@ export class RedHatServiceNowFactCollector implements FactCollector {
         continue;
       }
 
-      const options = {
-        'profile.cmdb_ci': cmdbSysId,
-        '^state!': 'retired',
-        ORDERBYnumber: true,
-      };
+      // Collect compliance controls based on requested fact types
+      for (const factRef of requestedFactRefs) {
+        switch (factRef) {
+          case stringifyFactRef(SERVICE_FACT_REFERENCE): {
+            const options = {
+              'profile.cmdb_ci': cmdbSysId,
+              '^state!': 'retired',
+              ORDERBYnumber: true,
+            };
 
-      const resp = await serviceNowClient.getComplianceControls('', options);
+            const resp = await serviceNowClient.getComplianceControls('', options);
 
-      if (!resp || !resp.items || !Array.isArray(resp.items)) {
-        this.logger.error(
-          `Invalid response from ServiceNow for entity ${entity.metadata.namespace}/${entity.metadata.name}`,
-        );
-        continue;
+            if (!resp || !resp.items || !Array.isArray(resp.items)) {
+              this.logger.error(
+                `Invalid response from ServiceNow ESS controls for entity ${entity.metadata.namespace}/${entity.metadata.name}`,
+              );
+            } else {
+              const invalidItems = resp.items.filter(
+                item => !this.isValidComplianceControlItem(item),
+              );
+              if (invalidItems.length > 0) {
+                this.logger.error(
+                  `Invalid structure for ${invalidItems.length} items in the ServiceNow ESS response.`,
+                );
+              } else {
+                facts.push({
+                  factRef: SERVICE_FACT_REFERENCE,
+                  entityRef: stringifyEntityRef(entity),
+                  data: {
+                    controls: resp.items as unknown as JsonObject,
+                  },
+                  timestamp: new Date().toISOString(),
+                });
+              }
+            }
+            break;
+          }
+
+          case stringifyFactRef(PIA_STATE_FACT_REFERENCE): {
+            const piaData = await serviceNowClient.getComplianceControlsByTriggerId(
+              cmdbSysId,
+            );
+            if (!piaData || !piaData.items || !Array.isArray(piaData.items)) {
+              this.logger.error(
+                `Invalid response from ServiceNow PIA controls for entity ${entity.metadata.namespace}/${entity.metadata.name}`,
+              );
+            } else {
+              const piaResponseState = piaData.items.map(item => item?.state);
+
+              facts.push({
+                factRef: PIA_STATE_FACT_REFERENCE,
+                entityRef: stringifyEntityRef(entity),
+                data: { pia_state: piaResponseState } as JsonObject,
+                timestamp: new Date().toISOString(),
+              });
+            }
+            break;
+          }
+
+          case stringifyFactRef(SIA_STATE_FACT_REFERENCE): {
+            const siaData = await serviceNowClient.getSIAComplianceControlsBySysId(
+              cmdbSysId,
+            );
+            if (!siaData || !siaData.items || !Array.isArray(siaData.items)) {
+              this.logger.error(
+                `Invalid response from ServiceNow SIA controls for entity ${entity.metadata.namespace}/${entity.metadata.name}`,
+              );
+            } else {
+              const now = Date.now();
+              const siaResponse = siaData.items.map(item => {
+                const { 
+                  'recovery_time_objective.name': rto, 
+                  'recovery_point_objective.name': rpo, 
+                  ...cleanItem 
+                } = item;
+
+                return {
+                  ...cleanItem,
+                  expiresCount: Math.ceil(
+                    (new Date(item.expires).getTime() - now) / 86400000,
+                  ),
+                  recovery_time_objective_rto: rto,
+                  recovery_point_objective_rpo: rpo,
+                };
+              });
+
+              facts.push({
+                factRef: SIA_STATE_FACT_REFERENCE,
+                entityRef: stringifyEntityRef(entity),
+                data: { sia_state: siaResponse } as unknown as JsonObject,
+                timestamp: new Date().toISOString(),
+              });
+            }
+            break;
+          }
+
+          default:
+            this.logger.warn(
+              `Unsupported fact reference: ${factRef} for entity ${entity.metadata.namespace}/${entity.metadata.name}`,
+            );
+            break;
+        }
       }
-
-      const invalidItems = resp.items.filter(
-        item => !this.isValidComplianceControlItem(item),
-      );
-      if (invalidItems.length > 0) {
-        this.logger.error(
-          `Invalid structure for ${invalidItems.length} items in the ServiceNow response.`,
-        );
-        continue;
-      }
-
-      const piaData = await serviceNowClient.getComplianceControlsByTriggerId(
-        cmdbSysId,
-      );
-      if (!piaData || !piaData.items || !Array.isArray(piaData.items)) {
-        this.logger.error(
-          `Invalid response from ServiceNow for entity ${entity.metadata.namespace}/${entity.metadata.name}`,
-        );
-        continue;
-      }
-
-      const piaResponseState = piaData.items.map(item => item?.state);
-
-      const siaData = await serviceNowClient.getSIAComplianceControlsBySysId(
-        cmdbSysId,
-      );
-      if (!siaData || !siaData.items || !Array.isArray(siaData.items)) {
-        this.logger.error(
-          `Invalid response from ServiceNow for SIA compliance controls for entity ${entity.metadata.namespace}/${entity.metadata.name}`,
-        );
-        continue;
-      }
-      const now = Date.now();
-
-      const siaResponse = siaData.items.map(item => ({
-        ...item,
-        expiresCount: Math.ceil(
-          (new Date(item.expires).getTime() - now) / 86400000,
-        ),
-      }));
-
-      facts.push({
-        factRef: PIA_STATE_FACT_REFERENCE,
-        entityRef: stringifyEntityRef(entity),
-        data: { pia_state: piaResponseState } as JsonObject,
-        timestamp: new Date().toISOString(),
-      });
-
-      facts.push({
-        factRef: SIA_STATE_FACT_REFERENCE,
-        entityRef: stringifyEntityRef(entity),
-        data: { sia_state: siaResponse } as unknown as JsonObject,
-        timestamp: new Date().toISOString(),
-      });
-
-      facts.push({
-        factRef: SERVICE_FACT_REFERENCE,
-        entityRef: stringifyEntityRef(entity),
-        data: {
-          controls: resp.items as unknown as JsonObject,
-        },
-        timestamp: new Date().toISOString(),
-      });
     }
 
     return facts;
@@ -231,7 +260,7 @@ export class RedHatServiceNowFactCollector implements FactCollector {
 
   /** @inheritdoc */
   async getDataSchema(factName: FactRef): Promise<string | undefined> {
-    switch (stringifyFactRef(factName)) {
+    switch (factName) {
       case SERVICE_FACT_REFERENCE.split('/')[1]:
         return JSON.stringify({
           title: 'ESS Compliance Controls',
@@ -291,6 +320,8 @@ export class RedHatServiceNowFactCollector implements FactCollector {
                   expires: { type: 'string' },
                   sys_created_on: { type: 'string', format: 'date-time' },
                   sys_updated_on: { type: 'string', format: 'date-time' },
+                  recovery_time_objective_rto: { type: 'string' },
+                  recovery_point_objective_rpo: { type: 'string' },
                 },
                 required: [
                   'name',
