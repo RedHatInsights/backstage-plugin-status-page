@@ -22,7 +22,13 @@ export function createRoverRoutes(roverClient: RoverClient): express.Router {
   router.get('/:groupCn/report', async (req, res) => {
     const { groupCn } = req.params;
     try {
-      const report = await roverClient.getGroupAccessReport(groupCn);
+      const authHeader = req.headers.hydra_token as string || '';
+      const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+
+      if (!bearerToken) {
+        return res.status(401).json({ error: 'Missing or invalid Authorization Bearer token' });
+      }
+      const report = await roverClient.getGroupAccessReport(groupCn, bearerToken);
       return res.status(200).json({ report });
     } catch (e: any) {
       return res.status(500).json({ error: e.message });
@@ -64,7 +70,14 @@ export function createRoverRoutes(roverClient: RoverClient): express.Router {
     const { groupCn } = req.params;
 
     try {
-      const { memberUids, ownerUids } = await roverClient.getGroupMembersAndOwners(groupCn);
+      const authHeader = req.headers.hydra_token as string || '';
+      const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : '';
+
+      if (!bearerToken) {
+        return res.status(401).json({ error: 'Missing or invalid Authorization Bearer token' });
+      }
+
+      const { memberUids, ownerUids } = await roverClient.getGroupMembersAndOwners(groupCn, bearerToken);
       return res.status(200).json({ memberUids, ownerUids });
     } catch (e: any) {
       return res.status(500).json({ error: e.message });

@@ -102,6 +102,7 @@ export class PermissionManagementApi {
   async checkUserAccessStatus(
     groupCn: string,
     userId: string,
+    accessToken: string,
     role?: 'member' | 'owner'
   ): Promise<{ isMember?: boolean; isOwner?: boolean }> {
     try {
@@ -116,7 +117,10 @@ export class PermissionManagementApi {
 
       const response = await this.fetchApi.fetch(url.toString(), {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'hydra_token': `Bearer ${accessToken}`,
+        },
       });
 
       if (!response.ok) {

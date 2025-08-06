@@ -8,24 +8,6 @@ interface UserInfoResponse {
 }
 
 /**
- * Interface representing Rover group structure.
- */
-interface GroupInfo {
-    cn: string;
-    memberUids?: string[];
-    ownerUids?: string[];
-}
-
-/**
- * Interface for Rover group API response.
- */
-interface GroupApiResponse {
-    result?: {
-        result?: GroupInfo[];
-    };
-}
-
-/**
  * Extract UID from a DN string (e.g., "uid=abc,ou=Users,dc=example,dc=com").
  */
 const extractUid = (dn: string): string | null =>
@@ -89,28 +71,29 @@ export class RoverClient {
     /**
      * Fetch member and owner UIDs for a Rover group.
      */
-    async getGroupMembersAndOwners(groupCn: string): Promise<{
+    async getGroupMembersAndOwners(groupCn: string, bearerToken: string): Promise<{
         memberUids: string[];
         ownerUids: string[];
     }> {
-        const url = `${this.roverBaseUrl}/groups?criteria=${groupCn}`;
+        const url = `${this.roverBaseUrlV2}/v1/groups/${groupCn}`;
         try {
             const response = await fetch(url, {
                 method: 'GET',
-                headers: { ...headers, ...this.getAuthHeader() },
+                headers: {
+                    ...headers,
+                    Authorization: `Bearer ${bearerToken}`,
+                },
             });
+            const data = (await response.json());
+            const groups = data ?? [];
+            if (!groups) return { memberUids: [], ownerUids: [] };
 
-            const data = (await response.json()) as GroupApiResponse;
-            const groups = data?.result?.result ?? [];
-            const groupInfo = groups.find(g => g.cn === groupCn);
-
-            if (!groupInfo) return { memberUids: [], ownerUids: [] };
-
-            const memberUids = (groupInfo.memberUids || [])
-                .map(extractUid)
+            const memberUids = (groups.members || [])
+                .map((member: any) => member.id)
                 .filter(Boolean) as string[];
-            const ownerUids = (groupInfo.ownerUids || [])
-                .map(extractUid)
+
+            const ownerUids = (groups.owners || [])
+                .map((owner: any) => owner.id)
                 .filter(Boolean) as string[];
 
             return { memberUids, ownerUids };
@@ -123,8 +106,8 @@ export class RoverClient {
     /**
      * Get combined user details for a group (members and owners).
      */
-    async getGroupAccessReport(groupCn: string): Promise<any[]> {
-        const { memberUids, ownerUids } = await this.getGroupMembersAndOwners(groupCn);
+    async getGroupAccessReport(groupCn: string, bearerToken: string): Promise<any[]> {
+        const { memberUids, ownerUids } = await this.getGroupMembersAndOwners(groupCn, bearerToken);
         const allUids = Array.from(new Set([...memberUids, ...ownerUids]));
 
         const report: any[] = [];
@@ -216,7 +199,7 @@ export class RoverClient {
         const body = {
             additions: userIds.map(id => ({ type: 'user', id })),
         };
-        
+
         try {
             const response = await fetch(url, {
                 method: 'POST',
