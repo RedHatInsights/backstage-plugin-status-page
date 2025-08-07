@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-permission-management-backend [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-permission-management-backend@1.2.5...@appdev/backstage-plugin-permission-management-backend@1.3.0) (2025-08-07)
+
+
+### Features
+
+* permission manager ui enhancement and value changes ([0c776f0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/0c776f0c8dde654d7e7d8c5dbed33bf6ad8de7ff))
+
 ## @appdev/backstage-plugin-permission-management-backend [1.2.5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-permission-management-backend@1.2.4...@appdev/backstage-plugin-permission-management-backend@1.2.5) (2025-08-06)
 
 
