@@ -37,7 +37,7 @@ export class RoverClient {
         this.roverUsername = config.getOptionalString('permissionManagement.roverUsername') || '';
         this.roverPassword = config.getOptionalString('permissionManagement.roverPassword') || '';
         this.roverBaseUrl = config.getOptionalString('permissionManagement.roverBaseUrl') || '';
-        this.roverBaseUrlV2 = config.getOptionalString('permissionManagement.roverBaseUrlV2') || '';
+        this.roverBaseUrlV2 = `${config.getOptionalString('permissionManagement.roverBaseUrlV2')}/v1/groups` || '';
         this.logger = logger;
     }
 
@@ -75,7 +75,7 @@ export class RoverClient {
         memberUids: string[];
         ownerUids: string[];
     }> {
-        const url = `${this.roverBaseUrlV2}/v1/groups/${groupCn}`;
+        const url = `${this.roverBaseUrlV2}/${groupCn}`;
         try {
             const response = await fetch(url, {
                 method: 'GET',

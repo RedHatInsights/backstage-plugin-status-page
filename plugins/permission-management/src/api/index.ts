@@ -36,6 +36,10 @@ export class PermissionManagementApi {
         headers: { 'Content-Type': 'application/json' },
       });
 
+      
+      if (response?.status === 204) {
+        return [];
+      }
 
       if (!response.ok) {
         throw new Error(

@@ -1,8 +1,5 @@
-import {
-  Progress,
-  ResponseErrorPanel,
-} from '@backstage/core-components';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
+import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import {
   Button,
   Card,
@@ -33,6 +30,10 @@ import {
 import { useEffect, useState } from 'react';
 import { permissionManagementApiRef } from '../../api';
 import { oauth2ApiRef } from '../../plugin';
+import { 
+    TableNoAdminRequestsEmptyState,
+    TableNoFilteredResultsEmptyState
+} from '../Common';
 
 interface AccessRequest {
   id: string;
@@ -68,7 +69,7 @@ export const PermissionManagementComponent = () => {
   const [sortDirection] = useState<'asc' | 'desc'>('asc');
   const [roleFilter, setRoleFilter] = useState('');
   const [groupFilter, setGroupFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('pending');
+  const [statusFilter, setStatusFilter] = useState('pending'); 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<AccessRequest | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -91,7 +92,12 @@ export const PermissionManagementComponent = () => {
       const all = await permissionApi.getAllAccessRequests();
       setRequests(all);
     } catch (err) {
-      setError(err as Error);
+      const catchError = err as any;
+      if (catchError?.status === 204 || catchError?.response?.status === 204) {
+        setRequests([]);
+      } else {
+        setError(err as Error);
+      }
     } finally {
       setLoading(false);
     }
@@ -104,7 +110,12 @@ export const PermissionManagementComponent = () => {
         const all = await permissionApi.getAllAccessRequests();
         setRequests(all);
       } catch (err) {
-        setError(err as Error);
+        const fetchError = err as any;
+        if (fetchError?.status === 204 || fetchError?.response?.status === 204) {
+          setRequests([]);
+        } else {
+          setError(err as Error);
+        }
       } finally {
         setLoading(false);
       }
@@ -234,8 +245,10 @@ export const PermissionManagementComponent = () => {
     }
   };
 
+
   if (loading) return <Progress />;
   if (error) return <ResponseErrorPanel error={error} />;
+
 
   const getRoleColor = (role: string): string => {
     switch (role) {
@@ -342,7 +355,14 @@ export const PermissionManagementComponent = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredRequests.map(request => (
+            {(() => {
+              if (requests.length === 0) {
+                return <TableNoAdminRequestsEmptyState colSpan={8} onRefresh={refetchRequests} />;
+              }
+              if (filteredRequests.length === 0) {
+                return <TableNoFilteredResultsEmptyState colSpan={8} onRefresh={refetchRequests} />;
+              }
+              return filteredRequests.map(request => (
               <TableRow key={request.id} hover>
                 <TableCell padding="checkbox">
                   <Checkbox
@@ -414,7 +434,8 @@ export const PermissionManagementComponent = () => {
                   </Button>
                 </TableCell>
               </TableRow>
-            ))}
+              ));
+            })()}
           </TableBody>
         </MuiTable>
       </Paper>
