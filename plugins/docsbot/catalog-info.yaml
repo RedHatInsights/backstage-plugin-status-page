@@ -23,6 +23,7 @@ metadata:
     backstage.io/techdocs-ref: dir:.
     npm/registry: compass
     npm/package: '@appdev/backstage-plugin-docsbot'
+    servicenow.com/appcode: CUDS-001
 spec:
   type: backstage-frontend-plugin
   lifecycle: production
