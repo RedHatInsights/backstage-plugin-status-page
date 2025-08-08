@@ -8,6 +8,44 @@ This repository contains the custom plugins used and developed by the AppDev Pla
 
 If you have a use case for a new plugin, please create [a new issue](/issues/new) in this repository, as well as [a new issue in the upstream](https://github.com/janus-idp/backstage-plugins/issues/new?template=plugin.md).
 
+## Set up your environment
+
+- Copy `.env.example` to `.env`.
+
+- Fill up **VAULT_*** variables in env, use values shown here.
+  - `VAULT_ENDPOINT`: Set it to `https://vault.corp.redhat.com:8200`
+  - `VAULT_ROLE_ID`: Set it to `xe-compass-vault`
+  - `VAULT_SECRET_ID`: Generate your own `secret_id` for **xe-compass-vault** approle, [Follow this instructions](https://source.redhat.com/departments/it/identityaccessmanagement/it_iam_vault/vault_reset_an_approle_password#generate-a-new-secret-id-).
+  - `VAULT_SECRET_NAME`: Set it to `plugins-dev`
+
+- Install dependencies
+  ```sh
+  yarn install
+  ```
+
+- Run following command to auto-generate ✨ `.env` for local development.
+  ```sh
+  yarn vault:sync
+  ```
+  The above command will populate all secrets from vault in your local `.env` file
+  ```sh
+  # Start of vault secrets
+  #########################################################
+  #             Secrets fetched from Vault                #
+  #                 Script By: @yoswal                    #
+  #########################################################
+  ANALYTICS_MATOMO_INSTANCE_URL=value_here
+  ANALYTICS_MATOMO_SITE_ID=3
+  ...
+  ...
+  ### End of vault secrets ###
+  ```
+
+- Start backstage app
+  ```sh
+  yarn start
+  ```
+
 ## Creating a new plugin
 
 Run the following command to start a new plugin and follow the instructions:
@@ -22,8 +60,6 @@ yarn new
 
 Backstage's support for standalone plugin development is very limited (especially for backend plugins), therefore we include a minimal test instance within this repository.
 
-1. Install the plugin via `yarn workspace [app|backend] add @appdev-platform/<PLUGIN_NAME>@*` (`@*` at the end ensures the package is always linked to the local package in the `plugins` folder)
-2. Run `yarn start`
 
 ### Developing a frontend plugin
 

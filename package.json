@@ -6,6 +6,7 @@
     "node": "20 || 22"
   },
   "scripts": {
+    "vault:sync": "tsx ./scripts/vault.ts",
     "start": "backstage-cli repo start",
     "build:backend": "yarn workspace backend build",
     "build:all": "backstage-cli repo build --all",
@@ -37,7 +38,9 @@
     "dotenv": "^16.1.4",
     "multi-semantic-release": "^3.0.2",
     "node-gyp": "^10.0.0",
+    "node-vault": "^0.10.5",
     "prettier": "^2.3.2",
+    "tsx": "^4.20.3",
     "typescript": "~5.8.0"
   },
   "workspaces": {
