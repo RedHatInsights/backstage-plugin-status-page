@@ -95,3 +95,13 @@ export interface PostmortemBodyDraft {
 export interface PostmortemBody {
   postmortem: PostmortemBodyDraft;
 }
+
+export interface TemplateBody {
+  id?: string;
+  name: string;
+  body: any;
+  impactOverride: string;
+  status: string;
+  created_on?: string;
+  last_updated_on?: string;
+}

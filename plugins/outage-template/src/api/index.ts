@@ -33,6 +33,10 @@ export class StatuspageApi {
       const baseUrl = await this.getBaseUrl();
       const response = await this.fetchApi.fetch(`${baseUrl}/incidents`, {
         method: 'GET',
+        headers: {
+          'Content-type': 'application/json',
+          accept: 'application/json',
+        },
       });
       if (!response.ok) {
         throw new Error(
@@ -298,7 +302,7 @@ export class StatuspageApi {
     }
   }
 
-  async publishPostmortem(incidentId: string,  postmortemDescription: string) {
+  async publishPostmortem(incidentId: string, postmortemDescription: string) {
     try {
       const baseUrl = await this.getBaseUrl();
       await this.fetchApi.fetch(`${baseUrl}/postmortem/${incidentId}/publish`, {
@@ -321,6 +325,108 @@ export class StatuspageApi {
         severity: 'error',
       });
       return [];
+    }
+  }
+
+  async fetchTemplates() {
+    try {
+      const baseUrl = await this.getBaseUrl();
+      const response = await this.fetchApi.fetch(`${baseUrl}/templates`, {
+        method: 'GET',
+      });
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch templates: ${response.status} ${response.statusText}`,
+        );
+      }
+      return await response.json();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error fetching templates:', error);
+      return [];
+    }
+  }
+
+  async createTemplate(templateData: TemplateBody) {
+    try {
+      const baseUrl = await this.getBaseUrl();
+      const response = await this.fetchApi.fetch(`${baseUrl}/templates`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(templateData),
+      });
+      if (!response.ok) {
+        throw new Error(
+          `Failed to create template: ${response.status} ${response.statusText}`,
+        );
+      }
+      this.alertApi.post({
+        message: 'Template created successfully',
+        severity: 'success',
+      });
+      return await this.fetchTemplates();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error creating template:', error);
+      this.alertApi.post({
+        message: 'Failed to create template',
+        severity: 'error',
+      });
+      return null;
+    }
+  }
+
+  async updateTemplate(templateData: TemplateBody) {
+    try {
+      const baseUrl = await this.getBaseUrl();
+      const response = await this.fetchApi.fetch(`${baseUrl}/templates`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(templateData),
+      });
+      if (!response.ok) {
+        throw new Error(
+          `Failed to update template: ${response.status} ${response.statusText}`,
+        );
+      }
+      this.alertApi.post({
+        message: 'Template updated successfully',
+        severity: 'success',
+      });
+      return await response.json();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error updating template:', error);
+      this.alertApi.post({
+        message: 'Failed to update template',
+        severity: 'error',
+      });
+      return null;
+    }
+  }
+
+  async deleteTemplate(templateId: string) {
+    try {
+      const baseUrl = await this.getBaseUrl();
+      const response = await this.fetchApi.fetch(
+        `${baseUrl}/templates/${templateId}`,
+        {
+          method: 'DELETE',
+        },
+      );
+      this.alertApi.post({
+        message: 'Template deleted successfully',
+        severity: 'success',
+      });
+      return await response.json();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error deleting template:', error);
+      this.alertApi.post({
+        message: 'Failed to delete template',
+        severity: 'error',
+      });
+      return null;
     }
   }
 }

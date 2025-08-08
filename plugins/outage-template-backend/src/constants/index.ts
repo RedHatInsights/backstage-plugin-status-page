@@ -10,5 +10,6 @@ export type {
   StatusPageIncident,
   Update,
   UpdateIncidentProps,
-  PostmortemBody
+  PostmortemBody,
+  TemplateBody
 } from './interfaces';

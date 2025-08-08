@@ -10,10 +10,12 @@ import DeleteIncident from './DeleteIncident';
 import { StatusPageHeader } from './Header';
 import IncidentsTable from './IncidentsTable';
 import IncidentUpdatesDrawer from './IncidentUpdatesDrawer';
+import TemplateFormModal from './TemplateForm';
 
 export const OutageComponent = () => {
   const [incidents, setIncidents] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchTermForTemplates, setSearchTermForTemplates] = useState('');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedIncidentUpdates, setSelectedIncidentUpdates] =
     useState<IncidentDrawerData>({
@@ -25,6 +27,11 @@ export const OutageComponent = () => {
   const [isFocused, setIsFocused] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [templateFormOpen, setTemplateFormOpen] = useState(false);
+  const [refreshTemplates, setRefreshTemplates] = useState(false);
+  const [templateFormType, setTemplateFormType] = useState<string>('create');
+  const [templateToEdit, setTemplateToEdit] = useState<any | null>(null);
+  const [tabIndex, setTabIndex] = useState(0);
 
   useEffect(() => {
     const loadIncidents = async () => {
@@ -34,8 +41,7 @@ export const OutageComponent = () => {
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Error fetching incidents:', error);
-      }
-      finally {
+      } finally {
         setLoading(false);
       }
     };
@@ -58,7 +64,10 @@ export const OutageComponent = () => {
 
   return (
     <Page themeId="tool">
-      <StatusPageHeader title="Status Page" subtitle="Incident & Maintenance Tracking" />
+      <StatusPageHeader
+        title="Status Page"
+        subtitle="Incident & Maintenance Tracking"
+      />
       <Content>
         <Grid container spacing={3} direction="column">
           <Grid item>
@@ -70,14 +79,31 @@ export const OutageComponent = () => {
             >
               Create Status Update
             </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => {
+                setTemplateFormType('create');
+                setTemplateFormOpen(true);
+              }}
+              style={{ marginBottom: '20px', marginLeft: '10px' }}
+            >
+              Create Template
+            </Button>
           </Grid>
 
           <Grid item>
             <TextField
-              label="Search Incidents & Maintenance"
+              label={tabIndex === 2 ? "Search Templates" : "Search Incidents & Maintenance"}
               variant="outlined"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
+              value={tabIndex === 2 ? searchTermForTemplates : searchTerm}
+              onChange={e => {
+                if (tabIndex === 2) {
+                  setSearchTermForTemplates(e.target.value);
+                } else {
+                  setSearchTerm(e.target.value);
+                }
+              }}
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
               fullWidth
@@ -96,7 +122,9 @@ export const OutageComponent = () => {
           </Grid>
 
           {loading ? (
-            <LinearProgress sx={{ width: '110vw', marginLeft: '-5vw', height: 4, }} />
+            <LinearProgress
+              sx={{ width: '110vw', marginLeft: '-5vw', height: 4 }}
+            />
           ) : (
             <Grid item>
               <IncidentsTable
@@ -107,6 +135,14 @@ export const OutageComponent = () => {
                 }}
                 onUpdate={handleUpdateIncident}
                 onDelete={incidentId => setDeletingIncident(incidentId)}
+                refreshTemplates={refreshTemplates}
+                onEditTemplate={template => {
+                  setTemplateToEdit(template);
+                  setTemplateFormType('edit');
+                  setTemplateFormOpen(true);
+                }}
+                onSetTabIndex={(index) => setTabIndex(index)}
+                searchTermForTemplates={searchTermForTemplates}
               />
             </Grid>
           )}
@@ -123,6 +159,19 @@ export const OutageComponent = () => {
           onClose={() => setDrawerOpen(false)}
           data={selectedIncidentUpdates}
         />
+        {templateFormOpen && (
+          <TemplateFormModal
+            open={templateFormOpen}
+            onClose={() => {
+              setTemplateFormOpen(false);
+              setTemplateToEdit(null);
+              setRefreshTemplates(false);
+            }}
+            onCreateTemplate={() => setRefreshTemplates(true)}
+            type={templateFormType}
+            templateToEdit={templateToEdit}
+          />
+        )}
       </Content>
     </Page>
   );

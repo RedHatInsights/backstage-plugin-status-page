@@ -1,5 +1,5 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { IncidentService } from './types';
+import { IncidentServiceType } from './types';
 import {
   createIncident,
   deleteIncident,
@@ -19,41 +19,59 @@ export async function IncidentFetchService({
   logger: LoggerService;
   statusPageUrl: string;
   statusPageAuthToken: string;
-}): Promise<IncidentService> {
+}): Promise<IncidentServiceType> {
   logger.info('Initializing IncidentFetchService');
   return {
-    async getIncidents() {
-      return fetchIncidents(statusPageUrl, statusPageAuthToken, logger);
+    async getIncidents(cookie: any) {
+      return fetchIncidents(statusPageUrl, statusPageAuthToken, logger, cookie);
     },
-    async getIncidentsById(id: string) {
-      return fetchIncident(id, statusPageUrl, statusPageAuthToken, logger);
+    async getIncidentsById(id: string, cookie: any) {
+      return fetchIncident(
+        id,
+        statusPageUrl,
+        statusPageAuthToken,
+        logger,
+        cookie,
+      );
     },
-    async getComponents() {
+    async getComponents(cookie: any) {
       const [componentsPage1, componentsPage2] = await Promise.all([
-        fetchComponents(statusPageUrl, statusPageAuthToken, logger, 1),
-        fetchComponents(statusPageUrl, statusPageAuthToken, logger, 2),
+        fetchComponents(statusPageUrl, statusPageAuthToken, logger, 1, cookie),
+        fetchComponents(statusPageUrl, statusPageAuthToken, logger, 2, cookie),
       ]);
       return [...componentsPage1, ...componentsPage2];
     },
-    async createIncident(incidentData: StatusPageIncident) {
+    async createIncident(incidentData: StatusPageIncident, cookie: any) {
       return createIncident(
         incidentData,
         statusPageUrl,
         statusPageAuthToken,
         logger,
+        cookie,
       );
     },
-    async updateIncident(id: string, incidentData: UpdateIncidentProps) {
+    async updateIncident(
+      id: string,
+      incidentData: UpdateIncidentProps,
+      cookie: any,
+    ) {
       return updateIncident(
         id,
         incidentData,
         statusPageUrl,
         statusPageAuthToken,
         logger,
+        cookie,
       );
     },
-    async deleteIncident(id: string) {
-      return deleteIncident(id, statusPageUrl, statusPageAuthToken, logger);
+    async deleteIncident(id: string, cookie: any) {
+      return deleteIncident(
+        id,
+        statusPageUrl,
+        statusPageAuthToken,
+        logger,
+        cookie,
+      );
     },
   };
 }

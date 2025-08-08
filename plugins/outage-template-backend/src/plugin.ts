@@ -4,7 +4,11 @@ import {
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
-import { IncidentFetchService, PostmortemFetchService } from './services';
+import {
+  IncidentFetchService,
+  PostmortemFetchService,
+  TemplateFetchService,
+} from './services';
 
 /**
  * outageTemplate backend plugin
@@ -21,8 +25,9 @@ export const outageTemplatePlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         catalog: catalogServiceRef,
         config: coreServices.rootConfig,
+        databaseServer: coreServices.database,
       },
-      async init({ logger, httpAuth, httpRouter, config }) {
+      async init({ logger, httpAuth, httpRouter, config, databaseServer }) {
         try {
           const statusPageUrl =
             config.getOptionalString('outageService.statusPageUrl') || '';
@@ -39,6 +44,9 @@ export const outageTemplatePlugin = createBackendPlugin({
             statusPageUrl,
             statusPageAuthToken,
           });
+          const templateFetchService = await TemplateFetchService({
+            logger,
+          });
 
           httpRouter.addAuthPolicy({
             allow: 'unauthenticated',
@@ -48,7 +56,10 @@ export const outageTemplatePlugin = createBackendPlugin({
             await createRouter({
               httpAuth,
               incidentFetchService,
-              postmortemFetchService
+              postmortemFetchService,
+              templateFetchService,
+              logger,
+              databaseServer,
             }),
           );
         } catch (err) {
