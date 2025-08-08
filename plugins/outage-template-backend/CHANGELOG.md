@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-outage-template-backend [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-outage-template-backend@1.1.2...@appdev/backstage-plugin-outage-template-backend@1.2.0) (2025-08-08)
+
+
+### Features
+
+* **APD-390:** Outage Templates feature with DB changes on backend plugin ([23e7bdd](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/23e7bdd3842a3c17f99e4b84fd00cc24a007384e))
+
 ## @appdev/backstage-plugin-outage-template-backend [1.1.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-outage-template-backend@1.1.1...@appdev/backstage-plugin-outage-template-backend@1.1.2) (2025-07-30)
 
 
