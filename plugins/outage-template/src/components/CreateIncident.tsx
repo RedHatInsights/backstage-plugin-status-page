@@ -31,7 +31,6 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { outageApiRef } from '../api';
-import templateData from './../template.json';
 import { StatusPageHeader } from './Header';
 import { StatusPageUserGuideConfluenceUrl } from '../constants/Constants';
 
@@ -73,8 +72,9 @@ export const CreateIncident = () => {
     const loadData = async () => {
       try {
         const componentsResponse = await outageApi.fetchComponents();
+        const templatesResponse = await outageApi.fetchTemplates();
         setComponents(componentsResponse);
-        setIncidentTemplates(templateData);
+        setIncidentTemplates(templatesResponse.data);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Error loading componenets:', error);
@@ -628,7 +628,7 @@ export const CreateIncident = () => {
                               <MenuItem value="">None</MenuItem>
                               {Object.keys(incidentTemplates).map(key => (
                                 <MenuItem key={key} value={key}>
-                                  {key}
+                                  {incidentTemplates[key].name}
                                 </MenuItem>
                               ))}
                             </Select>

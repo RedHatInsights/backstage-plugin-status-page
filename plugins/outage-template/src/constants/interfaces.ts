@@ -47,9 +47,13 @@ interface CreateIncidentProps {
 
 interface IncidentsTableProps {
   incidents: Incident[];
+  refreshTemplates: boolean;
   onViewUpdates: (data: IncidentDrawerData) => void;
   onUpdate: (incidentId: string) => void;
   onDelete: (incidentId: string) => void;
+  onEditTemplate: (template: any) => void;
+  onSetTabIndex: (index: number) => void;
+  searchTermForTemplates?: string;
 }
 
 interface UpdateIncidentProps {
@@ -85,5 +89,16 @@ interface Component {
 
 interface Update {
   body: string;
+  status: string;
+}
+
+interface TemplatesTableProps {
+  templates: any;
+}
+
+interface TemplateBody {
+  name: string;
+  body: string;
+  impactOverride: string;
   status: string;
 }
