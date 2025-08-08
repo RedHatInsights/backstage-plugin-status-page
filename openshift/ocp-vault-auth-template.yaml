@@ -11,6 +11,8 @@ objects:
     kind: Secret
     metadata:
       name: vault-approle-credentials
+      annotations:
+        paas.redhat.com/encrypted: 'true'
     type: Opaque
     data:
       id: RU5DW1JTQSxBZ0NJVFpNL3NpcGZOVXZDdW9jTVFYYWdnUUI3dm5YbkJZUEhxdGw4eWxNWGtvVk9USXlZMVlGeEtLOFFxU2FvbTFhYWd6UzJnNEpueVU0Vk9adVZnQTcxbzBpWEYyd2V5L0ZjYldYbmdHbnhXcmtVT2l5Zm4yWTFKaXQ2eGZyMysxajBNb0lxaENJWGFjWVV6Ymh4ZUVFMjA1aWt5Qms4ekQyaVlOTjNqUll6MGpOTXZsL0dKaTZ1NUxyRHMydHpMNmZOQWdBN0tSdDRCMHVpai92TElzL0p4U3FHd1N2aUpUYVNwWGRGenhZQlczZU5ncWR0dkYweVltOGZLV0tPYnVZcUN2ZWZFcDJVOFk0dlQ3SWVxYmJLUWRVR3dqVXZOZ1FkTElwRXRjL3BJRE1Qa0psSVlPUXdMRVN5RXhORkxLMnZKQ0d0RWJuTDlpYkkvNW04YXU1UGJxbThYOGpqSG1WdW5Bamw4b3JuOC9lTWp6TERraHJQSFVxd2htcnBMc2RIM2JsaDYxU3VBdDRnbHF4TU8zT0VYa1VNTWw5TDRNbFg3d201SWh4STQvbWgzUndlcUJ3L0xJek1jWlpQbFpPdm00dTU5SnNONGh1OVNuSFhSS0ZJYjFaNWU0WGhWN0tlQ0xxM1QySWFaYTRnUmlLd1drdG0yak5YQk1mbDV5MWxJRWErUE45MmhQWWhZL3VFTzZCYk9nYnlkMUVkK3RQUURsY0RidHN2ZGJ1VU1QY2hUQ2RxVm9EUkNucGY5QWJjSDFNQkRXbFFHa2ZCSFFLZG8yTnhHZHhCZ2FTcWpYWDhZY0c0b0pMa09KeFpXRHMyWXlNRm9EMTc2bTZsM0QzcUtZQVNOR2k4cWRIbS9QVDhTNUZZUjhkd1ZpZk9zbGtHalRCNkM0MVBrdmJ1enVibXpQQWhqZnIzM1NwTi9SSm9Qa1g1SUc4RUx5U3ZRWnV2QlB3QXhSWGdhSEF3L08yQzluRFhaa2VFbEZLRkVmVT1d
@@ -20,7 +22,7 @@ objects:
       name: vault-connection
     spec:
       address: ${VAULT_ADDR}
-      skipTLSVerify: false
+      skipTLSVerify: true
   - apiVersion: secrets.hashicorp.com/v1beta1
     kind: VaultAuth
     metadata:
