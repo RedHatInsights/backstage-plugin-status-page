@@ -1,0 +1,21 @@
+# Required for all files
+*                                             @mdeshmuk @yoswal @roommen
+
+[Compass Plugins]                             @mdeshmuk @yoswal
+plugins/mcp-actions-example-backend/          @souchowd
+plugins/soundcheck-backend-module-*/          @deeprasa
+
+[AppDev Workstream]                           @souchowd @nmore
+plugins/audit-compliance/
+plugins/audit-compliance-backend/
+plugins/devex-dashboard/                      @goudas
+plugins/devex-data-layer-backend/             @goudas
+plugins/docsbot/
+plugins/hydra-support-dashboard/              @goudas
+plugins/outage-template/
+plugins/outage-templatebackend/
+plugins/permission-management/
+plugins/permission-management-backend/
+plugins/permission-managementnager/
+plugins/spaship/
+
