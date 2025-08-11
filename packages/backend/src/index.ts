@@ -112,7 +112,6 @@ backend.add(import('@backstage-community/plugin-matomo-backend'));
 backend.add(import('@janus-idp/backstage-plugin-feedback-backend/alpha'));
 backend.add(import('@backstage-community/plugin-report-portal-backend'));
 
-// Spotify soundcheck plugin
 backend.add(import('@spotify/backstage-plugin-soundcheck-backend'));
 backend.add(
   import(
@@ -167,5 +166,6 @@ backend.add(
 backend.add(import('@appdev/backstage-plugin-outage-template-backend'));
 backend.add(import('@compass/backstage-plugin-mcp-actions-example-backend'));
 backend.add(import('@backstage/plugin-mcp-actions-backend'));
+backend.add(import('@appdev/backstage-plugin-gdpr-backend'));
 
 backend.start();

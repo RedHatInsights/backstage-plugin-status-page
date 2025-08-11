@@ -1,0 +1,1 @@
+export { drupalService } from './drupalService';
