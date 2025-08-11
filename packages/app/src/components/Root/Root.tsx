@@ -7,6 +7,7 @@ import DataUsageIcon from '@material-ui/icons/DataUsage';
 import MapIcon from '@material-ui/icons/MyLocation';
 import SpashipIcon from '@material-ui/icons/FlightTakeoff';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
@@ -185,7 +186,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
               />
             </Grid>
           </Grid>
-           <Grid container>
+          <Grid container>
             <Grid item xs={8}>
               <SidebarItem
                 icon={Report as IconComponent}
@@ -200,6 +201,15 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
                 icon={ExtensionIcon as IconComponent}
                 to="mcp"
                 text="MCP Server"
+              />
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={8}>
+              <SidebarItem
+                icon={MenuBookIcon as IconComponent}
+                to="gdpr"
+                text="GDPR"
               />
             </Grid>
           </Grid>

@@ -18,6 +18,7 @@
   "dependencies": {
     "@appdev/backstage-plugin-audit-compliance-backend": "*",
     "@appdev/backstage-plugin-devex-data-layer-backend": "*",
+    "@appdev/backstage-plugin-gdpr-backend": "*",
     "@appdev/backstage-plugin-outage-template-backend": "*",
     "@appdev/backstage-plugin-permission-management-backend": "*",
     "@backstage-community/plugin-matomo-backend": "^1.13.0",

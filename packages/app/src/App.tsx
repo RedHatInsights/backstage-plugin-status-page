@@ -85,6 +85,7 @@ import WebLinkIcon from '@material-ui/icons/Language';
 import { getThemes } from '@red-hat-developer-hub/backstage-plugin-theme';
 import { SoundcheckRoutingPage } from '@spotify/backstage-plugin-soundcheck';
 import { CatalogPage } from './components/CatalogPage/CatalogPage';
+import { GdprPage } from '@appdev/backstage-plugin-gdpr';
 
 const app = createApp({
   apis,
@@ -207,6 +208,7 @@ const routes = (
       path="/status-page/:type/:incident_id"
       element={<UpdateIncident />}
     />
+    <Route path="/gdpr" element={<GdprPage />} />
     <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
     <Route path="/devtools" element={<DevToolsPage />} />
     <Route path="/audit-access-manager" element={<AuditCompliancePage />} />

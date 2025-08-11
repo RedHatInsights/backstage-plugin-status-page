@@ -441,3 +441,13 @@ permissionManagement:
     from: ${EMAIL_FROM}
     secure: false
     caCert: ${NODE_EXTRA_CA_CERTS}
+    
+gdpr: 
+  dcp:
+    apiBaseUrl: ${GDPR_DCP_API_BASE_URL}
+    serviceAccount: ${GDPR_DRUPAL_SA}
+    token: ${GDPR_DRUPAL_TOKEN}
+  dxsp:
+    apiBaseUrl: ${GDPR_DXSP_API_BASE_URL}
+    serviceAccount: ${GDPR_DRUPAL_SA}
+    token: ${GDPR_DRUPAL_TOKEN}
