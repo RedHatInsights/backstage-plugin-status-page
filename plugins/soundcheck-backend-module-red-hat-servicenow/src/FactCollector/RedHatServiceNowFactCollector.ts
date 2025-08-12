@@ -211,10 +211,10 @@ export class RedHatServiceNowFactCollector implements FactCollector {
             } else {
               const now = Date.now();
               const siaResponse = siaData.items.map(item => {
-                const { 
-                  'recovery_time_objective.name': rto, 
-                  'recovery_point_objective.name': rpo, 
-                  ...cleanItem 
+                const {
+                  'recovery_time_objective.name': rto,
+                  'recovery_point_objective.name': rpo,
+                  ...cleanItem
                 } = item;
 
                 return {
@@ -222,8 +222,8 @@ export class RedHatServiceNowFactCollector implements FactCollector {
                   expiresCount: Math.ceil(
                     (new Date(item.expires).getTime() - now) / 86400000,
                   ),
-                  recovery_time_objective_rto: rto,
-                  recovery_point_objective_rpo: rpo,
+                  recovery_time_objective_rto: (rto as string)?.trim(),
+                  recovery_point_objective_rpo: (rpo as string)?.trim(),
                 };
               });
 
