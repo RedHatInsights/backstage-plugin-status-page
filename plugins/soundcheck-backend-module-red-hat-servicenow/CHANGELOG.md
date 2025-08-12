@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.4.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.4.1...@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.4.2) (2025-08-12)
+
+
+### Bug Fixes
+
+* trim extra spaces in RTO and RPO values ([c04bd86](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/c04bd8644a85dc5ad3411d56ac22bab7cd102572))
+
 ## @compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.4.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.4.0...@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.4.1) (2025-08-06)
 
 
