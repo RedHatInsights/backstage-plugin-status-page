@@ -673,7 +673,11 @@ export class JiraOperations {
       self: `${jiraUrl}/rest/api/latest/issue/${issueKey}`,
     };
   }
-
+  /*
+   * Converts a hyphen-separated string to Title Case with spaces
+   * @param str - The string to convert
+   * @returns The string in Title Case format with spaces
+   */
   private toTitleCase(str: string): string {
     return str
       .split('-')

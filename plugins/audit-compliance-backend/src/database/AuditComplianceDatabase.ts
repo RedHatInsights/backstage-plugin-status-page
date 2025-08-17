@@ -70,17 +70,7 @@ export class AuditComplianceDatabase {
     );
   }
 
-  /*
-   * Converts a hyphen-separated string to Title Case with spaces
-   * @param str - The string to convert
-   * @returns The string in Title Case format with spaces
-   */
-  private toTitleCase(str: string): string {
-    return str
-      .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
-  }
+
   // Implementation: ApplicationOperations.ts
   async getAllApplications() {
     return this.applicationOps.getAllApplications();
