@@ -12,6 +12,12 @@ import { ReviewData } from './AuditComplianceDatabase.types';
 import { AuditOperations } from './operations/AuditOperations';
 import { DeleteOperations } from './operations/DeleteOperations';
 import { JiraOperations } from './operations/JiraOperations';
+import {
+  AccountType,
+  AccountSource,
+  AuditProgress,
+  EventType,
+} from './operations/operations.types';
 
 const migrationsDir = resolvePackagePath(
   '@appdev/backstage-plugin-audit-compliance-backend',
@@ -108,8 +114,8 @@ export class AuditComplianceDatabase {
     app_delegate: string;
     jira_project: string;
     accounts: Array<{
-      type: 'service-account' | 'rover-group-name';
-      source: 'rover' | 'gitlab' | 'ldap';
+      type: AccountType;
+      source: AccountSource;
       account_name: string;
     }>;
     jira_metadata?: Record<string, string | { value: string; schema?: any }>;
@@ -128,8 +134,8 @@ export class AuditComplianceDatabase {
     app_delegate: string;
     jira_project: string;
     accounts: Array<{
-      type: 'service-account' | 'rover-group-name';
-      source: 'rover' | 'gitlab' | 'ldap';
+      type: AccountType;
+      source: AccountSource;
       account_name: string;
     }>;
     jira_metadata?: Record<string, string | { value: string; schema?: any }>;
@@ -183,12 +189,7 @@ export class AuditComplianceDatabase {
     app_name: string,
     frequency: string,
     period: string,
-    progress:
-      | 'audit_started'
-      | 'details_under_review'
-      | 'summary_generated'
-      | 'completed'
-      | 'final_sign_off_done',
+    progress: AuditProgress,
     performed_by: string = 'system',
   ) {
     return this.auditOps.updateAuditProgress(
@@ -211,7 +212,7 @@ export class AuditComplianceDatabase {
 
   // Implementation: ActivityStreamOperations.ts
   async createActivityEvent(event: {
-    event_type: string;
+    event_type: EventType;
     app_name: string;
     frequency?: string;
     period?: string;

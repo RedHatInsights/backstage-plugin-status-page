@@ -1,13 +1,23 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { Knex } from 'knex';
 import { Config } from '@backstage/config';
+import { Knex } from 'knex';
+import { ReviewData } from '../AuditComplianceDatabase.types';
+import { checkAndUpdateJiraStatuses } from '../integrations/JiraIntegration';
+import { ActivityStreamOperations } from './ActivityStreamOperations';
+import { JiraOperations } from './JiraOperations';
 
 export class AccessReviewOperations {
+  private readonly activityStreamOps: ActivityStreamOperations;
+  private readonly jiraOps: JiraOperations;
+
   constructor(
     private readonly db: Knex,
     private readonly logger: LoggerService,
     private readonly config: Config,
-  ) {}
+  ) {
+    this.activityStreamOps = new ActivityStreamOperations(db, logger, config);
+    this.jiraOps = new JiraOperations(db, logger, config);
+  }
   /**
    * Retrieves access review records filtered by application name, frequency, and period.
    *
@@ -102,7 +112,7 @@ export class AccessReviewOperations {
         // Check if sign_off_status has changed
         if (sign_off_status && sign_off_status !== existing.sign_off_status) {
           // Create activity stream event for status change
-          await this.createActivityEvent({
+          await this.activityStreamOps.createActivityEvent({
             event_type:
               sign_off_status === 'approved'
                 ? 'ACCESS_APPROVED'
@@ -303,7 +313,7 @@ export class AccessReviewOperations {
             existing.sign_off_status?.toLowerCase()
         ) {
           // Create activity stream event for status change
-          await this.createActivityEvent({
+          await this.activityStreamOps.createActivityEvent({
             event_type:
               sign_off_status.toLowerCase() === 'approved'
                 ? 'ACCESS_APPROVED'
@@ -328,22 +338,23 @@ export class AccessReviewOperations {
           !existing.ticket_reference
         ) {
           try {
-            const jiraTicket = await this.createServiceAccountJiraTicket({
-              service_account,
-              appName: app_name || existing.app_name,
-              frequency: frequency || existing.frequency,
-              period: period || existing.period,
-              title:
-                item.title ||
-                `Service account access review for ${service_account}`,
-              description:
-                description ||
-                `Service account access review for ${service_account}`,
-              comments: comments || '',
-              manager_uid: item.manager_uid,
-              current_user_uid: item.current_user_uid,
-              manager_name: item.manager_name,
-            });
+            const jiraTicket =
+              await this.jiraOps.createServiceAccountJiraTicket({
+                service_account,
+                appName: app_name || existing.app_name,
+                frequency: frequency || existing.frequency,
+                period: period || existing.period,
+                title:
+                  item.title ||
+                  `Service account access review for ${service_account}`,
+                description:
+                  description ||
+                  `Service account access review for ${service_account}`,
+                comments: comments || '',
+                manager_uid: item.manager_uid,
+                current_user_uid: item.current_user_uid,
+                manager_name: item.manager_name,
+              });
 
             results.push({
               status: 'created_ticket',

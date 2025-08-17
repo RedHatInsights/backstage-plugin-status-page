@@ -1,8 +1,13 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { Knex } from 'knex';
 import { Config } from '@backstage/config';
-import { addJiraComment } from '../integrations/JiraIntegration';
 import axios from 'axios';
+import { Knex } from 'knex';
+import {
+  JiraIssueStatusResponse,
+  JiraRequestBody,
+} from '../AuditComplianceDatabase.types';
+import { addJiraComment } from '../integrations/JiraIntegration';
+import { CONTENT_TYPE_JSON, JiraIssueType } from './operations.types';
 
 export class JiraOperations {
   constructor(
@@ -93,7 +98,7 @@ export class JiraOperations {
           project: { key: jira_project },
           summary: title,
           description: enhancedDescription,
-          issuetype: { name: 'Task' },
+          issuetype: { name: 'Task' as JiraIssueType },
           labels: [
             `${appName}-${period}-${frequency}-Service-Account-Review`,
             'audit-compliance-plugin',
@@ -110,7 +115,7 @@ export class JiraOperations {
         .post(`${jiraUrl}/rest/api/latest/issue`, requestBody, {
           headers: {
             Authorization: `Bearer ${jiraToken}`,
-            'Content-Type': 'application/json',
+            'Content-Type': CONTENT_TYPE_JSON,
           },
         })
         .catch(error => {
@@ -288,7 +293,7 @@ export class JiraOperations {
           project: { key: jira_project },
           summary: title,
           description: description,
-          issuetype: { name: 'Task' },
+          issuetype: { name: 'Task' as JiraIssueType },
           labels: [
             `${app_name}-${period}-${frequency}`,
             'audit-compliance-plugin',
@@ -306,7 +311,7 @@ export class JiraOperations {
         .post(`${jiraUrl}/rest/api/latest/issue`, requestBody, {
           headers: {
             Authorization: `Bearer ${jiraToken}`,
-            'Content-Type': 'application/json',
+            'Content-Type': CONTENT_TYPE_JSON,
           },
         })
         .catch(error => {
@@ -524,7 +529,7 @@ export class JiraOperations {
       `Successfully added comment to Jira ticket ${ticket_reference} and updated service account database.`,
     );
   }
-  
+
   /**
    * Creates a Jira ticket for audit initiation and updates the audit record.
    *
@@ -584,7 +589,7 @@ export class JiraOperations {
         project: { key: appDetails.jira_project },
         summary,
         description: ticketDescription,
-        issuetype: { name: 'Epic' },
+        issuetype: { name: 'Epic' as JiraIssueType },
         labels: [
           `${app_name}-${period}-${frequency}-Epic`,
           'audit-compliance-plugin',
@@ -606,7 +611,7 @@ export class JiraOperations {
         {
           headers: {
             Authorization: `Bearer ${jiraToken}`,
-            'Content-Type': 'application/json',
+            'Content-Type': CONTENT_TYPE_JSON,
           },
         },
       );

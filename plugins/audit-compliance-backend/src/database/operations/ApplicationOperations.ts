@@ -5,13 +5,19 @@ import {
   fetchJiraFieldSchemas,
   transformJiraMetadataForStorage,
 } from '../integrations/JiraIntegration';
+import { AccountType, AccountSource, EventType } from './operations.types';
+import { ActivityStreamOperations } from './ActivityStreamOperations';
 
 export class ApplicationOperations {
+  private readonly activityStreamOps: ActivityStreamOperations;
+
   constructor(
     private readonly db: Knex,
     private readonly logger: LoggerService,
     private readonly config: Config,
-  ) {}
+  ) {
+    this.activityStreamOps = new ActivityStreamOperations(db, logger, config);
+  }
 
   /**
    * Retrieves all unique applications from the database.
@@ -83,8 +89,8 @@ export class ApplicationOperations {
     app_delegate: string;
     jira_project: string;
     accounts: Array<{
-      type: 'service-account' | 'rover-group-name';
-      source: 'rover' | 'gitlab' | 'ldap';
+      type: AccountType;
+      source: AccountSource;
       account_name: string;
     }>;
     jira_metadata?: Record<string, string | { value: string; schema?: any }>;
@@ -151,7 +157,7 @@ export class ApplicationOperations {
       await trx.commit();
 
       // Create activity event for application creation
-      await this.createActivityEvent({
+      await this.activityStreamOps.createActivityEvent({
         event_type: 'APPLICATION_CREATED',
         app_name: appData.app_name,
         performed_by: appData.performed_by || 'system',
@@ -203,8 +209,8 @@ export class ApplicationOperations {
     app_delegate: string;
     jira_project: string;
     accounts: Array<{
-      type: 'service-account' | 'rover-group-name';
-      source: 'rover' | 'gitlab' | 'ldap';
+      type: AccountType;
+      source: AccountSource;
       account_name: string;
     }>;
     jira_metadata?: Record<string, string | { value: string; schema?: any }>;
@@ -275,8 +281,8 @@ export class ApplicationOperations {
 
       // Create activity event for application update
       try {
-        await this.createActivityEvent({
-          event_type: 'APPLICATION_UPDATED',
+        await this.activityStreamOps.createActivityEvent({
+          event_type: 'APPLICATION_UPDATED' as EventType,
           app_name: appData.app_name,
           performed_by: appData.performed_by || 'system',
           metadata: {

@@ -1,13 +1,20 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { Knex } from 'knex';
 import { Config } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
+import { Knex } from 'knex';
+import { ActivityStreamOperations } from './ActivityStreamOperations';
+import { AuditProgress, EventType } from './operations.types';
 
 export class AuditOperations {
+  private readonly activityStreamOps: ActivityStreamOperations;
+
   constructor(
     private readonly db: Knex,
     private readonly logger: LoggerService,
     private readonly config: Config,
-  ) {}
+  ) {
+    this.activityStreamOps = new ActivityStreamOperations(db, logger, config);
+  }
 
   /**
    * Retrieves all audit records from the database.
@@ -85,15 +92,16 @@ export class AuditOperations {
       updateData,
     });
     // Ensure progress is one of the allowed values
+    const validProgressValues: AuditProgress[] = [
+      'audit_started',
+      'details_under_review',
+      'final_sign_off_done',
+      'summary_generated',
+      'completed',
+    ];
     if (
       updateData.progress &&
-      ![
-        'audit_started',
-        'details_under_review',
-        'final_sign_off_done',
-        'summary_generated',
-        'completed',
-      ].includes(updateData.progress)
+      !validProgressValues.includes(updateData.progress as AuditProgress)
     ) {
       throw new Error('Invalid progress value');
     }
@@ -117,12 +125,7 @@ export class AuditOperations {
     app_name: string,
     frequency: string,
     period: string,
-    progress:
-      | 'audit_started'
-      | 'details_under_review'
-      | 'summary_generated'
-      | 'completed'
-      | 'final_sign_off_done',
+    progress: AuditProgress,
     performed_by: string = 'system',
   ) {
     this.logger.debug('Updating audit progress', {
@@ -145,7 +148,7 @@ export class AuditOperations {
     }
 
     // Create activity stream event based on progress
-    let eventType: string;
+    let eventType: EventType;
     switch (progress) {
       case 'audit_started':
         eventType = 'AUDIT_INITIATED';
@@ -163,7 +166,7 @@ export class AuditOperations {
         eventType = 'AUDIT_PROGRESS_UPDATED';
     }
 
-    await this.createActivityEvent({
+    await this.activityStreamOps.createActivityEvent({
       event_type: eventType,
       app_name,
       frequency,

@@ -1,6 +1,8 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { Knex } from 'knex';
 import { Config } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
+import { Knex } from 'knex';
+import { EventType } from './operations.types';
 
 export class ActivityStreamOperations {
   constructor(
@@ -87,7 +89,7 @@ export class ActivityStreamOperations {
    * @returns Promise resolving to the created event record
    */
   async createActivityEvent(event: {
-    event_type: string;
+    event_type: EventType;
     app_name: string;
     frequency?: string;
     period?: string;
