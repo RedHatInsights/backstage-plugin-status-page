@@ -560,9 +560,12 @@ export default function RoverAuditTable({
     render: row => (
       <Box display="flex" margin={2}>
         <Button
-          variant="contained"
-          color="primary"
-          style={{ margin: '0 10px' }}
+          variant="outlined"
+          style={{
+            margin: '0 10px',
+            borderColor: '#4caf50',
+            color: '#4caf50',
+          }}
           size="small"
           onClick={() => handleApprove(row)}
           disabled={isAuditCompleted || isFinalSignedOff}
@@ -570,8 +573,12 @@ export default function RoverAuditTable({
           Approve
         </Button>
         <Button
-          variant="contained"
-          color="secondary"
+          variant="outlined"
+          style={{
+            margin: '0 10px',
+            borderColor: '#f44336',
+            color: '#f44336',
+          }}
           size="small"
           onClick={() => handleReject(row)}
           disabled={isAuditCompleted || isFinalSignedOff}
@@ -665,7 +672,10 @@ export default function RoverAuditTable({
           <Grid item>
             <Button
               variant="outlined"
-              color="primary"
+              style={{
+                borderColor: '#4caf50',
+                color: '#4caf50',
+              }}
               disabled={
                 selectedRows.length === 0 ||
                 isAuditCompleted ||
@@ -679,7 +689,10 @@ export default function RoverAuditTable({
           <Grid item>
             <Button
               variant="outlined"
-              color="secondary"
+              style={{
+                borderColor: '#f44336',
+                color: '#f44336',
+              }}
               disabled={
                 selectedRows.length === 0 ||
                 isAuditCompleted ||

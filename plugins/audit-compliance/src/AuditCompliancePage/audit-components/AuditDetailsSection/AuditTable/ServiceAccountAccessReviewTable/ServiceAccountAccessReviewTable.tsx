@@ -543,19 +543,26 @@ export default function ServiceAccountAccessReviewTable({
       render: row => (
         <Box display="flex">
           <Button
-            variant="contained"
-            color="primary"
+            variant="outlined"
             size="small"
-            style={{ margin: '0 10px' }}
+            style={{
+              margin: '0 10px',
+              borderColor: '#4caf50',
+              color: '#4caf50',
+            }}
             onClick={() => handleApprove(row)}
             disabled={isAuditCompleted || isFinalSignedOff}
           >
             Approve
           </Button>
           <Button
-            variant="contained"
-            color="secondary"
+            variant="outlined"
             size="small"
+            style={{
+              margin: '0 10px',
+              borderColor: '#f44336',
+              color: '#f44336',
+            }}
             onClick={() => handleReject(row)}
             disabled={isAuditCompleted || isFinalSignedOff}
           >
@@ -645,7 +652,10 @@ export default function ServiceAccountAccessReviewTable({
           <Grid item>
             <Button
               variant="outlined"
-              color="primary"
+              style={{
+                borderColor: '#4caf50',
+                color: '#4caf50',
+              }}
               disabled={
                 selectedRows.length === 0 ||
                 isAuditCompleted ||
@@ -659,7 +669,10 @@ export default function ServiceAccountAccessReviewTable({
           <Grid item>
             <Button
               variant="outlined"
-              color="secondary"
+              style={{
+                borderColor: '#f44336',
+                color: '#f44336',
+              }}
               disabled={
                 selectedRows.length === 0 ||
                 isAuditCompleted ||
