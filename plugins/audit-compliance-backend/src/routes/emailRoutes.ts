@@ -4,7 +4,7 @@ import {
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { EmailService } from '../database/EmailService';
+import { EmailService } from '../database/integrations/EmailService';
 
 /**
  * Creates the plugin router with all endpoint definitions.

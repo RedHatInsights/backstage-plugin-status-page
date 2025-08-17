@@ -5,8 +5,8 @@ import {
   RoverDataItem,
   GitLabDataItem,
 } from '../types/types';
-import { RoverDatabase } from '../database/RoverIntegration';
-import { GitLabDatabase } from '../database/GitLabIntegration';
+import { RoverDatabase } from '../database/integrations/RoverIntegration';
+import { GitLabDatabase } from '../database/integrations/GitLabIntegration';
 import { Knex } from 'knex';
 
 /**
