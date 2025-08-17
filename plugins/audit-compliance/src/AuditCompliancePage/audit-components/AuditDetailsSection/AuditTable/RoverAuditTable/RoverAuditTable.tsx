@@ -293,11 +293,11 @@ export default function RoverAuditTable({
       const result = await response.json();
       const { key: ticketId, status } = result;
 
-      // Determine which users to update - if selectedRows has multiple users, update all of them
+      // Determine which users to update - only the selected rows
       const usersToUpdate =
-        selectedRows.length > 1 ? selectedRows : [selectedUser];
+        selectedRows.length > 0 ? selectedRows : [selectedUser];
 
-      // Update all users with the same ticket information
+      // Update only the selected users with the same ticket information
       const updatedUsers = usersToUpdate.map(user => {
         const { tableData, ...cleanUser } = user as any;
         return {
@@ -312,7 +312,7 @@ export default function RoverAuditTable({
         };
       });
 
-      // Update the database for all users
+      // Update the database for only the selected users
       await postAuditUpdate(updatedUsers, discoveryApi, fetchApi);
 
       alertApi.post({
@@ -321,7 +321,7 @@ export default function RoverAuditTable({
         display: 'transient',
       });
 
-      // Update the local state for all users
+      // Update the local state for only the selected users
       setUserData(prev =>
         prev.map(d => {
           const updatedUser = updatedUsers.find(u => u.id === d.id);

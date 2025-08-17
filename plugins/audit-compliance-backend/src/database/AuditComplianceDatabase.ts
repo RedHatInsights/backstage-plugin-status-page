@@ -70,7 +70,6 @@ export class AuditComplianceDatabase {
     );
   }
 
-
   // Implementation: ApplicationOperations.ts
   async getAllApplications() {
     return this.applicationOps.getAllApplications();
@@ -261,6 +260,11 @@ export class AuditComplianceDatabase {
   // Implementation: AccessReviewOperations.ts
   async updateAccessReview(data: any[]): Promise<any[]> {
     return this.accessReviewOps.updateAccessReview(data);
+  }
+
+  // Implementation: AccessReviewOperations.ts
+  async updateServiceAccountAccessReviewData(data: any[]): Promise<any[]> {
+    return this.accessReviewOps.updateServiceAccountAccessReviewData(data);
   }
 
   // Implementation: AccessReviewOperations.ts

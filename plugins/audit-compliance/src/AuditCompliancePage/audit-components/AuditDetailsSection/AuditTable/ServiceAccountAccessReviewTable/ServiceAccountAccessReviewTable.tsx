@@ -271,7 +271,7 @@ export default function ServiceAccountAccessReviewTable({
       const result = await response.json();
       const { key: ticketId, status } = result;
 
-      // Update all selected service accounts with the same ticket info
+      // Update only the selected service accounts with the same ticket info
       const usersToUpdate =
         selectedRows.length > 0 ? selectedRows : [selectedUser];
       const updatedUsers: ServiceAccountData[] = usersToUpdate.map(user => {
@@ -288,7 +288,7 @@ export default function ServiceAccountAccessReviewTable({
         };
       });
 
-      // Update the database for all users
+      // Update the database for only the selected users
       const updateResponse = await fetchApi.fetch(
         `${baseUrl}/service_account_access_review`,
         {
@@ -314,9 +314,7 @@ export default function ServiceAccountAccessReviewTable({
         display: 'transient',
       });
 
-      // Refresh data after successful update to get latest Jira statuses
-      // await fetchData();
-      // Instead, update local state for all selected rows
+      // Update local state for only the selected rows
       setData(prevData =>
         prevData.map(d => {
           const updatedUser = updatedUsers.find(u => u.id === d.id);

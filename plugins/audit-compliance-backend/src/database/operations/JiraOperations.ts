@@ -17,6 +17,161 @@ export class JiraOperations {
   ) {}
 
   /**
+   * Creates a Jira ticket for audit initiation and updates the audit record.
+   *
+   * @param auditData - Audit data containing app_name, frequency, and period
+   * @param description - Optional custom description for the Jira ticket
+   * @returns Promise resolving to created Jira ticket details
+   * @throws Error if Jira project not found or ticket creation fails
+   */
+  async createAuditJiraTicket(
+    auditData: { app_name: string; frequency: string; period: string },
+    description?: string,
+  ) {
+    const jiraUrl = this.config.getString('auditCompliance.jiraUrl');
+    const jiraToken = this.config.getString('auditCompliance.jiraToken');
+    this.logger.info('Creating Jira ticket for audit initiation', auditData);
+
+    const { app_name, frequency, period } = auditData;
+    const titleCaseAppName = this.toTitleCase(app_name);
+    const formattedPeriod = period.toUpperCase().replace('-', ' ');
+    const formattedFrequency =
+      frequency.charAt(0).toUpperCase() + frequency.slice(1);
+
+    const summary = `[${formattedPeriod}] ${titleCaseAppName} ${formattedFrequency} Access Review Audit`;
+    const ticketDescription =
+      description ||
+      `Parent Epic for ${titleCaseAppName} ${formattedPeriod} ${formattedFrequency} Access Review Audit. This audit covers user access reviews, service account reviews, and compliance checks.`;
+
+    // Fetch jira_metadata from applications table
+    const appDetails = await this.db('applications')
+      .select('jira_project', 'app_owner', 'app_owner_email', 'jira_metadata')
+      .where({ app_name })
+      .first();
+
+    if (!appDetails?.jira_project) {
+      this.logger.error(`Jira project not found for app_name: ${app_name}`);
+      throw new Error(`Jira project not found for app_name: ${app_name}`);
+    }
+
+    // Get jira_metadata from database
+    const jira_metadata = appDetails.jira_metadata || {};
+
+    // Handle components and labels for Epic tickets
+    const components = jira_metadata.components;
+    let extraLabels = [];
+
+    if (jira_metadata.labels) {
+      extraLabels = Array.isArray(jira_metadata.labels)
+        ? jira_metadata.labels
+        : [jira_metadata.labels];
+    }
+
+    // Remove components and labels from jira_metadata to avoid duplication
+    const { components: _c, labels: _l, ...otherFields } = jira_metadata;
+
+    const requestBody: JiraRequestBody = {
+      fields: {
+        project: { key: appDetails.jira_project },
+        summary,
+        description: ticketDescription,
+        issuetype: { name: 'Epic' as JiraIssueType },
+        labels: [
+          `${app_name}-${period}-${frequency}-Epic`,
+          'audit-compliance-plugin',
+          ...extraLabels,
+        ],
+        customfield_12311141: summary, // Epic Name (same as summary)
+        ...(components ? { components } : {}),
+        ...otherFields,
+      },
+    };
+
+    this.logger.info('EPIC: Jira ticket request body', { requestBody });
+
+    let createResp;
+    try {
+      createResp = await axios.post(
+        `${jiraUrl}/rest/api/latest/issue`,
+        requestBody,
+        {
+          headers: {
+            Authorization: `Bearer ${jiraToken}`,
+            'Content-Type': CONTENT_TYPE_JSON,
+          },
+        },
+      );
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        this.logger.error('Jira ticket creation failed', {
+          data: error.response?.data,
+          status: error.response?.status,
+        });
+      } else {
+        this.logger.error('Jira ticket creation failed', {
+          error: String(error),
+        });
+      }
+      throw error;
+    }
+
+    const { key: issueKey, id: issueId } = createResp.data;
+  
+    const detailsResp = await axios
+      .get<JiraIssueStatusResponse>(
+        `${jiraUrl}/rest/api/latest/issue/${issueKey}`,
+        {
+          headers: {
+            Authorization: `Bearer ${jiraToken}`,
+            Accept: 'application/json',
+          },
+        },
+      )
+      .catch(error => {
+        this.logger.error('Failed to get Jira ticket status', {
+          error: error.response?.data || error.message,
+          status: error.response?.status,
+        });
+        throw new Error(
+          `Failed to get Jira ticket status: ${
+            error.response?.data?.errorMessages?.join(', ') ||
+            error.response?.data?.errors?.join(', ') ||
+            error.message
+          }`,
+        );
+      });
+
+    const status = detailsResp.data.fields.status.name;
+
+    // Store the epic key in application_audits table
+    await this.db('application_audits')
+      .where({ app_name, frequency, period })
+      .update({
+        jira_key: issueKey,
+        jira_status: status,
+        updated_at: this.db.fn.now(),
+      });
+
+    return {
+      id: issueId,
+      key: issueKey,
+      status,
+      self: `${jiraUrl}/rest/api/latest/issue/${issueKey}`,
+    };
+  }
+  /*
+   * Converts a hyphen-separated string to Title Case with spaces
+   * @param str - The string to convert
+   * @returns The string in Title Case format with spaces
+   */
+  private toTitleCase(str: string): string {
+    return str
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+  }
+
+  /**
    * Creates a Jira ticket for service account access review and updates the database.
    *
    * @param params - Parameters for ticket creation
@@ -528,160 +683,5 @@ export class JiraOperations {
     this.logger.info(
       `Successfully added comment to Jira ticket ${ticket_reference} and updated service account database.`,
     );
-  }
-
-  /**
-   * Creates a Jira ticket for audit initiation and updates the audit record.
-   *
-   * @param auditData - Audit data containing app_name, frequency, and period
-   * @param description - Optional custom description for the Jira ticket
-   * @returns Promise resolving to created Jira ticket details
-   * @throws Error if Jira project not found or ticket creation fails
-   */
-  async createAuditJiraTicket(
-    auditData: { app_name: string; frequency: string; period: string },
-    description?: string,
-  ) {
-    const jiraUrl = this.config.getString('auditCompliance.jiraUrl');
-    const jiraToken = this.config.getString('auditCompliance.jiraToken');
-    this.logger.info('Creating Jira ticket for audit initiation', auditData);
-
-    const { app_name, frequency, period } = auditData;
-    const titleCaseAppName = this.toTitleCase(app_name);
-    const formattedPeriod = period.toUpperCase().replace('-', ' ');
-    const formattedFrequency =
-      frequency.charAt(0).toUpperCase() + frequency.slice(1);
-
-    const summary = `[${formattedPeriod}] ${titleCaseAppName} ${formattedFrequency} Access Review Audit`;
-    const ticketDescription =
-      description ||
-      `Parent Epic for ${titleCaseAppName} ${formattedPeriod} ${formattedFrequency} Access Review Audit. This audit covers user access reviews, service account reviews, and compliance checks.`;
-
-    // Fetch jira_metadata from applications table
-    const appDetails = await this.db('applications')
-      .select('jira_project', 'app_owner', 'app_owner_email', 'jira_metadata')
-      .where({ app_name })
-      .first();
-
-    if (!appDetails?.jira_project) {
-      this.logger.error(`Jira project not found for app_name: ${app_name}`);
-      throw new Error(`Jira project not found for app_name: ${app_name}`);
-    }
-
-    // Get jira_metadata from database
-    const jira_metadata = appDetails.jira_metadata || {};
-
-    // Handle components and labels for Epic tickets
-    const components = jira_metadata.components;
-    let extraLabels = [];
-
-    if (jira_metadata.labels) {
-      extraLabels = Array.isArray(jira_metadata.labels)
-        ? jira_metadata.labels
-        : [jira_metadata.labels];
-    }
-
-    // Remove components and labels from jira_metadata to avoid duplication
-    const { components: _c, labels: _l, ...otherFields } = jira_metadata;
-
-    const requestBody: JiraRequestBody = {
-      fields: {
-        project: { key: appDetails.jira_project },
-        summary,
-        description: ticketDescription,
-        issuetype: { name: 'Epic' as JiraIssueType },
-        labels: [
-          `${app_name}-${period}-${frequency}-Epic`,
-          'audit-compliance-plugin',
-          ...extraLabels,
-        ],
-        customfield_12311141: summary, // Epic Name (same as summary)
-        ...(components ? { components } : {}),
-        ...otherFields,
-      },
-    };
-
-    this.logger.info('EPIC: Jira ticket request body', { requestBody });
-
-    let createResp;
-    try {
-      createResp = await axios.post(
-        `${jiraUrl}/rest/api/latest/issue`,
-        requestBody,
-        {
-          headers: {
-            Authorization: `Bearer ${jiraToken}`,
-            'Content-Type': CONTENT_TYPE_JSON,
-          },
-        },
-      );
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        this.logger.error('Jira ticket creation failed', {
-          data: error.response?.data,
-          status: error.response?.status,
-        });
-      } else {
-        this.logger.error('Jira ticket creation failed', {
-          error: String(error),
-        });
-      }
-      throw error;
-    }
-
-    const { key: issueKey, id: issueId } = createResp.data;
-
-    const detailsResp = await axios
-      .get<JiraIssueStatusResponse>(
-        `${jiraUrl}/rest/api/latest/issue/${issueKey}`,
-        {
-          headers: {
-            Authorization: `Bearer ${jiraToken}`,
-            Accept: 'application/json',
-          },
-        },
-      )
-      .catch(error => {
-        this.logger.error('Failed to get Jira ticket status', {
-          error: error.response?.data || error.message,
-          status: error.response?.status,
-        });
-        throw new Error(
-          `Failed to get Jira ticket status: ${
-            error.response?.data?.errorMessages?.join(', ') ||
-            error.response?.data?.errors?.join(', ') ||
-            error.message
-          }`,
-        );
-      });
-
-    const status = detailsResp.data.fields.status.name;
-
-    // Store the epic key in application_audits table
-    await this.db('application_audits')
-      .where({ app_name, frequency, period })
-      .update({
-        jira_key: issueKey,
-        jira_status: status,
-        updated_at: this.db.fn.now(),
-      });
-
-    return {
-      id: issueId,
-      key: issueKey,
-      status,
-      self: `${jiraUrl}/rest/api/latest/issue/${issueKey}`,
-    };
-  }
-  /*
-   * Converts a hyphen-separated string to Title Case with spaces
-   * @param str - The string to convert
-   * @returns The string in Title Case format with spaces
-   */
-  private toTitleCase(str: string): string {
-    return str
-      .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
   }
 }
