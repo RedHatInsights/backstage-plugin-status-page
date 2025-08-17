@@ -1,5 +1,3 @@
-import { JsonObject } from '@backstage/types';
-
 /**
  * Types used across operations files
  */

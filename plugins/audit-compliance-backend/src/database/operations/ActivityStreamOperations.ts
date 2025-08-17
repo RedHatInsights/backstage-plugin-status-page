@@ -1,5 +1,4 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
 import { EventType } from './operations.types';
@@ -8,7 +7,6 @@ export class ActivityStreamOperations {
   constructor(
     private readonly db: Knex,
     private readonly logger: LoggerService,
-    private readonly config: Config,
   ) {}
 
   /**

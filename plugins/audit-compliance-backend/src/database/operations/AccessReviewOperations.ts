@@ -15,7 +15,7 @@ export class AccessReviewOperations {
     private readonly logger: LoggerService,
     private readonly config: Config,
   ) {
-    this.activityStreamOps = new ActivityStreamOperations(db, logger, config);
+    this.activityStreamOps = new ActivityStreamOperations(db, logger);
     this.jiraOps = new JiraOperations(db, logger, config);
   }
   /**

@@ -1,5 +1,4 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
 import { ActivityStreamOperations } from './ActivityStreamOperations';
@@ -11,9 +10,8 @@ export class AuditOperations {
   constructor(
     private readonly db: Knex,
     private readonly logger: LoggerService,
-    private readonly config: Config,
   ) {
-    this.activityStreamOps = new ActivityStreamOperations(db, logger, config);
+    this.activityStreamOps = new ActivityStreamOperations(db, logger);
   }
 
   /**

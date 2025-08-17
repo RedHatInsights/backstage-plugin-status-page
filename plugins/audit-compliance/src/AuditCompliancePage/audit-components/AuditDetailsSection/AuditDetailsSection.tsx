@@ -68,9 +68,7 @@ export const AuditDetailsSection = () => {
   const [isAppOwner, setIsAppOwner] = useState(false);
   const [isAppDelegate, setIsAppDelegate] = useState(false);
   const [currentUser, setCurrentUser] = useState('');
-  const [appOwners, setAppOwners] = useState<string[]>([]);
   const [appOwnerEmail, setAppOwnerEmail] = useState<string>('');
-  const [appDelegate, setAppDelegate] = useState<string>('');
   const [signOffDialogOpen, setSignOffDialogOpen] = useState(false);
   const [emailReminderDialogOpen, setEmailReminderDialogOpen] = useState(false);
   const [isAuditCompleted, setIsAuditCompleted] = useState(false);
@@ -119,13 +117,8 @@ export const AuditDetailsSection = () => {
           )}`,
         );
         const data = await response.json();
-        const owners = [
-          data.app_owner,
-          data.app_owner_email?.split('@')[0],
-        ].filter(Boolean);
-        setAppOwners(owners);
+          const owners = [data.app_owner].filter(Boolean);
         setAppOwnerEmail(data.app_owner_email || '');
-        setAppDelegate(data.app_delegate || '');
 
         const identity = await identityApi.getBackstageIdentity();
         const currentUserRef = identity.userEntityRef;

@@ -1,6 +1,5 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
-import { Config } from '@backstage/config';
 
 /**
  * Delete operations for audit compliance database.
@@ -10,7 +9,6 @@ export class DeleteOperations {
   constructor(
     private readonly db: Knex,
     private readonly logger: LoggerService,
-    private readonly config: Config,
   ) {}
   /**
    * Deletes all audit data for a specific app/frequency/period combination.

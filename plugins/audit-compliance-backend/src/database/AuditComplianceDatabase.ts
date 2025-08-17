@@ -25,7 +25,6 @@ const migrationsDir = resolvePackagePath(
 );
 
 export class AuditComplianceDatabase {
-  private readonly db: Knex;
   private readonly logger: LoggerService;
   private readonly config: Config;
 
@@ -38,17 +37,16 @@ export class AuditComplianceDatabase {
   private readonly deleteOps: DeleteOperations;
 
   private constructor(knex: Knex, logger: LoggerService, config: Config) {
-    this.db = knex;
     this.logger = logger;
     this.config = config;
 
     // Initialize operation instances
     this.applicationOps = new ApplicationOperations(knex, logger, config);
-    this.auditOps = new AuditOperations(knex, logger, config);
+    this.auditOps = new AuditOperations(knex, logger);
     this.accessReviewOps = new AccessReviewOperations(knex, logger, config);
     this.jiraOps = new JiraOperations(knex, logger, config);
-    this.activityStreamOps = new ActivityStreamOperations(knex, logger, config);
-    this.deleteOps = new DeleteOperations(knex, logger, config);
+    this.activityStreamOps = new ActivityStreamOperations(knex, logger);
+    this.deleteOps = new DeleteOperations(knex, logger);
   }
 
   static async create(options: {
