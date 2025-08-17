@@ -65,10 +65,14 @@ export const AuditDetailsSection = () => {
     rejected: 0,
   });
   const [isFinalSignedOff, setIsFinalSignedOff] = useState(false);
-  const [isAppOwnerOrDelegate, setIsAppOwnerOrDelegate] = useState(false);
+  const [isAppOwner, setIsAppOwner] = useState(false);
+  const [isAppDelegate, setIsAppDelegate] = useState(false);
   const [currentUser, setCurrentUser] = useState('');
   const [appOwners, setAppOwners] = useState<string[]>([]);
+  const [appOwnerEmail, setAppOwnerEmail] = useState<string>('');
+  const [appDelegate, setAppDelegate] = useState<string>('');
   const [signOffDialogOpen, setSignOffDialogOpen] = useState(false);
+  const [emailReminderDialogOpen, setEmailReminderDialogOpen] = useState(false);
   const [isAuditCompleted, setIsAuditCompleted] = useState(false);
   const [statusChecked, setStatusChecked] = useState(false);
   const [ownerChecked, setOwnerChecked] = useState(false);
@@ -118,18 +122,29 @@ export const AuditDetailsSection = () => {
         const owners = [
           data.app_owner,
           data.app_owner_email?.split('@')[0],
-          data.app_delegate,
         ].filter(Boolean);
         setAppOwners(owners);
+        setAppOwnerEmail(data.app_owner_email || '');
+        setAppDelegate(data.app_delegate || '');
 
         const identity = await identityApi.getBackstageIdentity();
         const currentUserRef = identity.userEntityRef;
         setCurrentUser(currentUserRef);
 
+        // Check if current user is the application owner
         const isOwner = owners.some(owner =>
           currentUserRef.toLowerCase().includes(owner?.toLowerCase() || ''),
         );
-        setIsAppOwnerOrDelegate(isOwner);
+        setIsAppOwner(isOwner);
+
+        // Check if current user is the application delegate
+        const isDelegate =
+          data.app_delegate &&
+          currentUserRef
+            .toLowerCase()
+            .includes(data.app_delegate.toLowerCase());
+        setIsAppDelegate(isDelegate);
+
         setOwnerChecked(true);
       } catch (error) {
         // eslint-disable-next-line no-console
@@ -292,6 +307,120 @@ export const AuditDetailsSection = () => {
     }
   };
 
+  const handleSendEmailReminder = async () => {
+    try {
+      const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+      const response = await fetchApi.fetch(`${baseUrl}/send-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: appOwnerEmail,
+          subject: `Final Sign-off Required: ${app_name} ${frequency} ${period} Audit`,
+          html: `
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <meta charset="UTF-8">
+                <title>Red Hat Mail</title>
+              </head>
+              <body style="margin:0; padding:0; font-family:Arial, sans-serif; background-color:#ffffff;">
+                <!-- Header with background image and button -->
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#000000;">
+                  <tr>
+                    <td align="center">
+                      <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                        style="background-image: url('https://ci3.googleusercontent.com/meips/ADKq_NZxYt6HwBrhpEd1DXOcWtdVGJV5kcLH2pXVUfiZtMOals1vK1j1VW4rr9a28rMKuHiCAQYSRnNEMaZwtGUP-91zyb7nXCVQcrVodPHewe6Lo1S0M1aO2k9DxayVBkdE7OukG6ffhmmxTkX86R7HrwHVtlM-fEDObpIlBpPVsrNAuo6gnSsDkqbn9sJRd4bRUl9PrQxW0AT6c7rqu-xVKjRjidwUQbWf6AON2U_nIHiRRifXbUlTq4eNaCmqxZH-iD9gmiq6OKK_Uw=s0-d-e1-ft#https://wd5.myworkdaycdn.com/wday/image/redhat/292d280c-71cc-4f8c-b763-e3e546a6bcff?__token__=exp=1845366800~hmac=5676B44AEE7D641429F58BF8BC241D2C48ADDD4F246C1C1CF99F5A63DE51E758'); background-size: contain; background-position: center; height: 120px; text-align: center; background-repeat: no-repeat;">
+                        <tr>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+
+                <!-- Body content -->
+                <table width="100%" cellspacing="0" border="0">
+                  <tr>
+                    <td align="center">
+                      <table width="600" cellspacing="0" border="0">
+                        <tr>
+                          <td style="font-size: 16px; color: #333333; font-family: Red Hat Display">
+                            <p>Hi Application Owner,</p>
+                            <p>
+                              The <strong>${frequency} ${period}</strong> access review audit for application 
+                              <strong>${app_name}</strong> has been completed with all user and service account reviews finalized.
+                            </p>
+                            <p>
+                              As the application owner, you are now required to perform the final sign-off to complete this audit process.
+                            </p>
+                            <p>Please click the button below to access the audit system and complete your final sign-off:</p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="vertical-align: middle; text-align: center; font-family: Red Hat Display; padding-top: 10px;">
+                            <a href="${window.location.origin}/audit-access-manager/${app_name}/${frequency}/${period}/details"
+                              style="background-color: #CC0000; color: #FFFFFF; padding: 12px 24px; text-decoration: none; font-family: Red Hat Display; border-radius: 5px; display: inline-block;"
+                              target="_blank" rel="noopener noreferrer">
+                              Complete Final Sign-off
+                            </a>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="font-size: 16px; color: #333333; font-family: Red Hat Display; padding-top: 20px;">
+                            <p>Best regards,</p>
+                            <p>Audit Compliance System</p>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+
+                <!-- Footer -->
+                <table width="100%" cellpadding="20" cellspacing="0" border="0" style="background-color:#f4f4f4; margin-top:10px;">
+                  <tr>
+                    <td align="center">
+                      <table width="600" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td style="text-align:center; font-size: 12px; color: #888888;">
+                            © 2025 Red Hat, Inc. All rights reserved. <br />
+                            This is an automated message. Please do not reply.
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </body>
+            </html>
+          `,
+        }),
+      });
+
+      if (response.ok) {
+        alertApi.post({
+          message: 'Email reminder sent successfully to application owner',
+          severity: 'success',
+        });
+        setEmailReminderDialogOpen(false);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to send email reminder');
+      }
+    } catch (error) {
+      alertApi.post({
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Failed to send email reminder',
+        severity: 'error',
+      });
+      // eslint-disable-next-line no-console
+      console.error('Error sending email reminder:', error);
+    }
+  };
+
   const handleSummary = async () => {
     if (isAuditCompleted) {
       // If already completed, just navigate to summary page
@@ -403,10 +532,11 @@ export const AuditDetailsSection = () => {
     if (isFinalSignedOff) {
       return 'Audit has been finally signed off';
     }
-    if (!isAppOwnerOrDelegate) {
-      return `Only application owner (${appOwners.join(
-        ', ',
-      )}) can perform the final sign off`;
+    if (!isAppOwner && !isAppDelegate) {
+      return `Only application owner can perform the final sign off`;
+    }
+    if (isAppDelegate && !isAppOwner) {
+      return 'Send email reminder to application owner for final sign-off';
     }
     return 'Perform final sign-off';
   };
@@ -424,10 +554,16 @@ export const AuditDetailsSection = () => {
   // Add debug log for button state
   const isButtonReady = statusChecked && ownerChecked;
   const isFinalSignOffButtonDisabled =
+    !isButtonReady || !isAppOwner || isFinalSignedOff || isAuditCompleted;
+
+  const isEmailReminderButtonDisabled =
     !isButtonReady ||
-    !isAppOwnerOrDelegate ||
+    !isAppDelegate ||
+    isAppOwner ||
     isFinalSignedOff ||
-    isAuditCompleted;
+    isAuditCompleted ||
+    userCounts.pending > 0 ||
+    serviceCounts.pending > 0;
 
   return (
     <Page themeId="tool">
@@ -480,19 +616,38 @@ export const AuditDetailsSection = () => {
             {`${app_name} Quarterly Audit – ${period.toUpperCase()} Review`}
           </Typography>
           <Box display="flex" alignItems="center">
-            <Tooltip title={getTooltipTitle()}>
-              <span>
-                <Button
-                  variant="contained"
-                  className={classes.finalSignOffButton}
-                  onClick={handleFinalSignOff}
-                  disabled={isFinalSignOffButtonDisabled}
-                >
-                  Final Sign Off
-                  {isFinalSignedOff && ' (Completed)'}
-                </Button>
-              </span>
-            </Tooltip>
+            {/* Show Final Sign Off button only for application owners */}
+            {isAppOwner && (
+              <Tooltip title={getTooltipTitle()}>
+                <span>
+                  <Button
+                    variant="contained"
+                    className={classes.finalSignOffButton}
+                    onClick={handleFinalSignOff}
+                    disabled={isFinalSignOffButtonDisabled}
+                  >
+                    Final Sign Off
+                    {isFinalSignedOff && ' (Completed)'}
+                  </Button>
+                </span>
+              </Tooltip>
+            )}
+
+            {/* Show Email Reminder button for application delegates when all approvals are done */}
+            {isAppDelegate && !isAppOwner && (
+              <Tooltip title={getTooltipTitle()}>
+                <span>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => setEmailReminderDialogOpen(true)}
+                    disabled={isEmailReminderButtonDisabled}
+                  >
+                    Send Email Reminder
+                  </Button>
+                </span>
+              </Tooltip>
+            )}
             <Tooltip title={getSummaryTooltip()}>
               <span>
                 <Button
@@ -500,7 +655,11 @@ export const AuditDetailsSection = () => {
                   className={classes.summaryButton}
                   onClick={handleSummary}
                   startIcon={<AssessmentIcon />}
-                  disabled={userCounts.pending > 0 || serviceCounts.pending > 0}
+                  disabled={
+                    userCounts.pending > 0 ||
+                    serviceCounts.pending > 0 ||
+                    !isFinalSignedOff
+                  }
                 >
                   View Final Summary
                 </Button>
@@ -619,6 +778,38 @@ export const AuditDetailsSection = () => {
               variant="contained"
             >
               Confirm Sign-off
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Email Reminder Dialog */}
+        <Dialog
+          open={emailReminderDialogOpen}
+          onClose={() => setEmailReminderDialogOpen(false)}
+        >
+          <DialogTitle>Send Email Reminder</DialogTitle>
+          <DialogContent className={classes.dialogContent}>
+            <Typography variant="body1" style={{ marginBottom: 16 }}>
+              This will send an email reminder to the application owner
+              requesting them to complete the final sign-off for this audit.
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              The email will be sent to: {appOwnerEmail}
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setEmailReminderDialogOpen(false)}
+              color="primary"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSendEmailReminder}
+              color="primary"
+              variant="contained"
+            >
+              Send Email Reminder
             </Button>
           </DialogActions>
         </Dialog>
