@@ -1,5 +1,18 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.20.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.19.0...@appdev/backstage-plugin-audit-compliance@1.20.0) (2025-08-18)
+
+
+### Features
+
+* **audit-access-manager:** Adding Send email reminder functionality to the application owner ([c90d714](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/c90d71481716bb4860a5e939a3b9f253bb93885e))
+* **audit-access-manager:** Color coded the buttons ([8042ea4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/8042ea497116f5cd68ef19003ebbcdf7d302fde5))
+
+
+### Bug Fixes
+
+* **audit-access-manager:** Fixing app owner logic ([05892d7](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/05892d7662a4af0f26f8fd453fb02378a0418c7d))
+
 ## @appdev/backstage-plugin-audit-compliance [1.19.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.18.1...@appdev/backstage-plugin-audit-compliance@1.19.0) (2025-08-04)
 
 
