@@ -7,7 +7,7 @@ import {
   JiraRequestBody,
 } from '../AuditComplianceDatabase.types';
 import { addJiraComment } from '../integrations/JiraIntegration';
-import {  JiraIssueType } from './operations.types';
+import { CONTENT_TYPE_JSON, JiraIssueType } from './operations.types';
 
 export class JiraOperations {
   constructor(
@@ -89,35 +89,34 @@ export class JiraOperations {
 
     this.logger.info('EPIC: Jira ticket request body', { requestBody });
 
-    // let createResp;
-    // try {
-    //   createResp = await axios.post(
-    //     `${jiraUrl}/rest/api/latest/issue`,
-    //     requestBody,
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${jiraToken}`,
-    //         'Content-Type': CONTENT_TYPE_JSON,
-    //       },
-    //     },
-    //   );
-    // } catch (error) {
-    //   if (axios.isAxiosError(error)) {
-    //     this.logger.error('Jira ticket creation failed', {
-    //       data: error.response?.data,
-    //       status: error.response?.status,
-    //     });
-    //   } else {
-    //     this.logger.error('Jira ticket creation failed', {
-    //       error: String(error),
-    //     });
-    //   }
-    //   throw error;
-    // }
+    let createResp;
+    try {
+      createResp = await axios.post(
+        `${jiraUrl}/rest/api/latest/issue`,
+        requestBody,
+        {
+          headers: {
+            Authorization: `Bearer ${jiraToken}`,
+            'Content-Type': CONTENT_TYPE_JSON,
+          },
+        },
+      );
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        this.logger.error('Jira ticket creation failed', {
+          data: error.response?.data,
+          status: error.response?.status,
+        });
+      } else {
+        this.logger.error('Jira ticket creation failed', {
+          error: String(error),
+        });
+      }
+      throw error;
+    }
 
-    // const { key: issueKey, id: issueId } = createResp.data;
-    const issueKey = 'APD-1092';
-    const issueId = 'APD-1092';
+    const { key: issueKey, id: issueId } = createResp.data;
+
     const detailsResp = await axios
       .get<JiraIssueStatusResponse>(
         `${jiraUrl}/rest/api/latest/issue/${issueKey}`,
@@ -267,28 +266,27 @@ export class JiraOperations {
       }
 
       // Create Jira ticket
-      // const createResp = await axios
-      //   .post(`${jiraUrl}/rest/api/latest/issue`, requestBody, {
-      //     headers: {
-      //       Authorization: `Bearer ${jiraToken}`,
-      //       'Content-Type': CONTENT_TYPE_JSON,
-      //     },
-      //   })
-      //   .catch(error => {
-      //     this.logger.error('Failed to create Jira ticket', {
-      //       error: error.response?.data || error.message,
-      //       status: error.response?.status,
-      //     });
-      //     throw new Error(
-      //       `Failed to create Jira ticket: ${
-      //         error.response?.data?.message || error.message
-      //       }`,
-      //     );
-      //   });
+      const createResp = await axios
+        .post(`${jiraUrl}/rest/api/latest/issue`, requestBody, {
+          headers: {
+            Authorization: `Bearer ${jiraToken}`,
+            'Content-Type': CONTENT_TYPE_JSON,
+          },
+        })
+        .catch(error => {
+          this.logger.error('Failed to create Jira ticket', {
+            error: error.response?.data || error.message,
+            status: error.response?.status,
+          });
+          throw new Error(
+            `Failed to create Jira ticket: ${
+              error.response?.data?.message || error.message
+            }`,
+          );
+        });
 
-      // const { key: issueKey, id: issueId } = createResp.data;
-      const issueKey = 'APD-1094';
-      const issueId = 'APD-1094';
+      const { key: issueKey, id: issueId } = createResp.data;
+
       console.log('TASK:JIRA - service account', requestBody);
       // Get ticket status
       const detailsResp = await axios
@@ -465,29 +463,28 @@ export class JiraOperations {
       }
 
       // Create Jira ticket
-      // const createResp = await axios
-      //   .post(`${jiraUrl}/rest/api/latest/issue`, requestBody, {
-      //     headers: {
-      //       Authorization: `Bearer ${jiraToken}`,
-      //       'Content-Type': CONTENT_TYPE_JSON,
-      //     },
-      //   })
-      //   .catch(error => {
-      //     this.logger.error('Failed to create Jira ticket', {
-      //       error: error instanceof Error ? error.message : String(error),
-      //       status: (error as any)?.response?.status,
-      //       requestBody,
-      //     });
-      //     throw new Error(
-      //       `Failed to create Jira ticket: ${
-      //         error.response?.data?.message || error.message
-      //       }`,
-      //     );
-      //   });
+      const createResp = await axios
+        .post(`${jiraUrl}/rest/api/latest/issue`, requestBody, {
+          headers: {
+            Authorization: `Bearer ${jiraToken}`,
+            'Content-Type': CONTENT_TYPE_JSON,
+          },
+        })
+        .catch(error => {
+          this.logger.error('Failed to create Jira ticket', {
+            error: error instanceof Error ? error.message : String(error),
+            status: (error as any)?.response?.status,
+            requestBody,
+          });
+          throw new Error(
+            `Failed to create Jira ticket: ${
+              error.response?.data?.message || error.message
+            }`,
+          );
+        });
 
-      // const { key: issueKey, id: issueId } = createResp.data;
-      const issueKey = 'APD-1093';
-      const issueId = 'APD-1093';
+      const { key: issueKey, id: issueId } = createResp.data;
+
       // Get ticket status
       const detailsResp = await axios
         .get<JiraIssueStatusResponse>(
