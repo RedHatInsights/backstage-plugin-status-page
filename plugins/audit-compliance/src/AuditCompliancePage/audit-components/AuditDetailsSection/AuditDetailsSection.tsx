@@ -117,8 +117,13 @@ export const AuditDetailsSection = () => {
           )}`,
         );
         const data = await response.json();
-          const owners = [data.app_owner].filter(Boolean);
+        const owners = [
+          data.app_owner,
+          data.app_owner_email?.split('@')[0],
+        ].filter(Boolean);
+
         setAppOwnerEmail(data.app_owner_email || '');
+
 
         const identity = await identityApi.getBackstageIdentity();
         const currentUserRef = identity.userEntityRef;
