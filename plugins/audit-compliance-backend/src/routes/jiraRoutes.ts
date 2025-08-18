@@ -5,7 +5,7 @@ import { AuditComplianceDatabase } from '../database/AuditComplianceDatabase';
 import {
   fetchJiraFieldSchemas,
   transformJiraMetadataForStorage,
-} from '../database/JiraIntegration';
+} from '../database/integrations/JiraIntegration';
 
 /**
  * Creates the plugin router with all endpoint definitions.

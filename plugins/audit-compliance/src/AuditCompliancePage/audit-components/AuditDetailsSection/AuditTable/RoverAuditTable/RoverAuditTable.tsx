@@ -293,11 +293,11 @@ export default function RoverAuditTable({
       const result = await response.json();
       const { key: ticketId, status } = result;
 
-      // Determine which users to update - if selectedRows has multiple users, update all of them
+      // Determine which users to update - only the selected rows
       const usersToUpdate =
-        selectedRows.length > 1 ? selectedRows : [selectedUser];
+        selectedRows.length > 0 ? selectedRows : [selectedUser];
 
-      // Update all users with the same ticket information
+      // Update only the selected users with the same ticket information
       const updatedUsers = usersToUpdate.map(user => {
         const { tableData, ...cleanUser } = user as any;
         return {
@@ -312,7 +312,7 @@ export default function RoverAuditTable({
         };
       });
 
-      // Update the database for all users
+      // Update the database for only the selected users
       await postAuditUpdate(updatedUsers, discoveryApi, fetchApi);
 
       alertApi.post({
@@ -321,7 +321,7 @@ export default function RoverAuditTable({
         display: 'transient',
       });
 
-      // Update the local state for all users
+      // Update the local state for only the selected users
       setUserData(prev =>
         prev.map(d => {
           const updatedUser = updatedUsers.find(u => u.id === d.id);
@@ -560,9 +560,12 @@ export default function RoverAuditTable({
     render: row => (
       <Box display="flex" margin={2}>
         <Button
-          variant="contained"
-          color="primary"
-          style={{ margin: '0 10px' }}
+          variant="outlined"
+          style={{
+            margin: '0 10px',
+            borderColor: '#4caf50',
+            color: '#4caf50',
+          }}
           size="small"
           onClick={() => handleApprove(row)}
           disabled={isAuditCompleted || isFinalSignedOff}
@@ -570,8 +573,12 @@ export default function RoverAuditTable({
           Approve
         </Button>
         <Button
-          variant="contained"
-          color="secondary"
+          variant="outlined"
+          style={{
+            margin: '0 10px',
+            borderColor: '#f44336',
+            color: '#f44336',
+          }}
           size="small"
           onClick={() => handleReject(row)}
           disabled={isAuditCompleted || isFinalSignedOff}
@@ -665,7 +672,10 @@ export default function RoverAuditTable({
           <Grid item>
             <Button
               variant="outlined"
-              color="primary"
+              style={{
+                borderColor: '#4caf50',
+                color: '#4caf50',
+              }}
               disabled={
                 selectedRows.length === 0 ||
                 isAuditCompleted ||
@@ -679,7 +689,10 @@ export default function RoverAuditTable({
           <Grid item>
             <Button
               variant="outlined"
-              color="secondary"
+              style={{
+                borderColor: '#f44336',
+                color: '#f44336',
+              }}
               disabled={
                 selectedRows.length === 0 ||
                 isAuditCompleted ||

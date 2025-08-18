@@ -2,8 +2,9 @@ import { Knex } from 'knex';
 import express from 'express';
 import Router from 'express-promise-router';
 import { AuditComplianceDatabase } from '../database/AuditComplianceDatabase';
-import { RoverDatabase } from '../database/RoverIntegration';
-import { GitLabDatabase } from '../database/GitLabIntegration';
+import { RoverDatabase } from '../database/integrations/RoverIntegration';
+import { GitLabDatabase } from '../database/integrations/GitLabIntegration';
+import { EventType } from '../database/operations/operations.types';
 
 /**
  * Creates the plugin router with all endpoint definitions.
@@ -574,7 +575,7 @@ export async function createAuditInitiationRouter(
 
       // Create activity stream event for data refresh
       await database.createActivityEvent({
-        event_type: 'data_refresh',
+        event_type: 'AUDIT_DATA_REFRESHED' as EventType,
         app_name,
         frequency,
         period,

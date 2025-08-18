@@ -2,6 +2,7 @@ import { Knex } from 'knex';
 import express from 'express';
 import Router from 'express-promise-router';
 import { AuditComplianceDatabase } from '../database/AuditComplianceDatabase';
+import { EventType } from '../database/operations/operations.types';
 
 /**
  * Creates the plugin router with all endpoint definitions.
@@ -568,7 +569,7 @@ export async function createAuditSummaryRouter(
 
         // Create activity stream event for metadata update
         await database.createActivityEvent({
-          event_type: 'AUDIT_METADATA_UPDATED',
+          event_type: 'AUDIT_METADATA_UPDATED' as EventType,
           app_name,
           frequency,
           period,
