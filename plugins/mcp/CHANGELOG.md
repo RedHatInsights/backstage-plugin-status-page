@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-mcp [1.0.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-mcp@1.0.1...@compass/backstage-plugin-mcp@1.0.2) (2025-08-19)
+
+
+### Bug Fixes
+
+* **PULSE-954:** stitching multiple repo and package links together ([f4d6f7c](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/f4d6f7cf1c0b9ca48312c56e919074902964394f))
+
 ## @compass/backstage-plugin-mcp [1.0.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-mcp@1.0.0...@compass/backstage-plugin-mcp@1.0.1) (2025-07-23)
 
 
