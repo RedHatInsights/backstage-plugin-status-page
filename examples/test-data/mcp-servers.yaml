@@ -39,19 +39,19 @@ metadata:
   name: compass-mcp-server
   namespace: compass
   title: Compass MCP Server
- 
+
   tags:
     - mcp
     - backstage
     - catalog
- 
+
   annotations:
     gitlab.com/instance: gitlab.cee.redhat.com
     gitlab.com/project-slug: app-dev-platform/backstage-mcp-server
     npm/registry: npmjs.com
     npm/package: '@backstage/cli'
     backstage.io/techdocs-ref: dir:.
- 
+
 spec:
   type: local # / remote
   lifecycle: beta
@@ -73,12 +73,23 @@ spec:
   packages:
     - type: npm
       registry_name: nexus.corp.redhat.com
-      name: "@compass/backstage-mcp-server"
+      name: '@compass/backstage-mcp-server'
       version: 1.0.0
       package_arguments:
         - description: specify services and permissions
           is_required: true
-          value: "-s"
+          value: '-s'
+      environment_variables:
+        - description: API Key to access the server
+          name: API_KEY
+    - type: npm
+      registry_name: nexus.corp.redhat.com
+      name: '@compass/backstage-mcp'
+      version: 1.0.0
+      package_arguments:
+        - description: specify services and permissions
+          is_required: true
+          value: '-s'
       environment_variables:
         - description: API Key to access the server
           name: API_KEY

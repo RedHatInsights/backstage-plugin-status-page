@@ -4,21 +4,21 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { OverflowTooltip, TableColumn } from '@backstage/core-components';
+import { useApp } from '@backstage/core-plugin-api';
 import { CatalogTableRow } from '@backstage/plugin-catalog';
 import {
-  humanizeEntityRef,
   EntityRefLink,
   EntityRefLinks,
+  humanizeEntityRef,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
-import { useApp } from '@backstage/core-plugin-api';
-import { makeStyles, Theme } from '@material-ui/core/styles';
+import { JsonArray } from '@backstage/types';
 import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import BookmarkBorderTwoTone from '@material-ui/icons/BookmarkBorderTwoTone';
 import BookmarkTwoTone from '@material-ui/icons/BookmarkTwoTone';
-import IconButton from '@material-ui/core/IconButton';
 import { Tags } from './components/Tags';
-import { JsonArray } from '@backstage/types';
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'center',
   },
   icon: {
-    marginRight: theme.spacing(0.6),
+    marginRight: theme.spacing(2),
     color: theme.palette.text.secondary,
     lineHeight: 0,
   },
@@ -60,7 +60,7 @@ const TypeIcon = (props: { entity: Entity }) => {
     <>
       {Icon ? (
         <Box component="span" className={classes.icon}>
-          <Icon fontSize="inherit" />
+          <Icon fontSize="small" />
         </Box>
       ) : null}
     </>

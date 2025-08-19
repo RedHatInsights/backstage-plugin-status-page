@@ -1,22 +1,12 @@
-import { PropsWithChildren, useState } from 'react';
-import { Chip, Grid, makeStyles } from '@material-ui/core';
-import HomeIcon from '@material-ui/icons/Home';
-import ExtensionIcon from '@material-ui/icons/Extension';
-import Report from '@material-ui/icons/Report';
-import DataUsageIcon from '@material-ui/icons/DataUsage';
-import MapIcon from '@material-ui/icons/MyLocation';
-import SpashipIcon from '@material-ui/icons/FlightTakeoff';
-import LibraryBooks from '@material-ui/icons/LibraryBooks';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import LogoFull from './LogoFull';
-import LogoIcon from './LogoIcon';
 import {
-  Settings as SidebarSettings,
-  UserSettingsSignInAvatar,
-} from '@backstage/plugin-user-settings';
-import { SidebarSearchModal } from '@backstage/plugin-search';
+  DocsBotButton,
+  DocsBotIcon,
+  DocsBotPanel,
+} from '@appdev/backstage-plugin-docsbot';
+import { HydraProxyIcon } from '@appdev/backstage-plugin-proxy-manager';
+import { ReportPortalIcon } from '@backstage-community/plugin-report-portal';
 import {
+  Link,
   Sidebar,
   sidebarConfig,
   SidebarDivider,
@@ -26,22 +16,32 @@ import {
   SidebarScrollWrapper,
   SidebarSpace,
   useSidebarOpenState,
-  Link,
   WarningIcon,
 } from '@backstage/core-components';
-import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
-import { HydraProxyIcon } from '@appdev/backstage-plugin-proxy-manager';
-import { ReportPortalIcon } from '@backstage-community/plugin-report-portal';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { FeedbackIcon } from '@janus-idp/backstage-plugin-feedback';
+import { SidebarSearchModal } from '@backstage/plugin-search';
 import {
-  DocsBotPanel,
-  DocsBotButton,
-  DocsBotIcon,
-} from '@appdev/backstage-plugin-docsbot';
-import DoneAllIcon from '@material-ui/icons/DoneAll';
+  Settings as SidebarSettings,
+  UserSettingsSignInAvatar,
+} from '@backstage/plugin-user-settings';
+import { FeedbackIcon } from '@janus-idp/backstage-plugin-feedback';
+import { Chip, Grid, makeStyles } from '@material-ui/core';
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import BuildIcon from '@material-ui/icons/Build';
+import DataUsageIcon from '@material-ui/icons/DataUsage';
+import DoneAllIcon from '@material-ui/icons/DoneAll';
+import ExtensionIcon from '@material-ui/icons/Extension';
+import SpashipIcon from '@material-ui/icons/FlightTakeoff';
+import HomeIcon from '@material-ui/icons/Home';
+import LibraryBooks from '@material-ui/icons/LibraryBooks';
+import MenuIcon from '@material-ui/icons/Menu';
+import MenuBookIcon from '@material-ui/icons/MenuBook';
+import MapIcon from '@material-ui/icons/MyLocation';
+import Report from '@material-ui/icons/Report';
+import SearchIcon from '@material-ui/icons/Search';
+import { PropsWithChildren, useState } from 'react';
+import LogoFull from './LogoFull';
+import LogoIcon from './LogoIcon';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -192,15 +192,6 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
                 icon={Report as IconComponent}
                 to="hydra-permission-management"
                 text="Permission Management"
-              />
-            </Grid>
-          </Grid>
-          <Grid container>
-            <Grid item xs={8}>
-              <SidebarItem
-                icon={ExtensionIcon as IconComponent}
-                to="mcp"
-                text="MCP Server"
               />
             </Grid>
           </Grid>
