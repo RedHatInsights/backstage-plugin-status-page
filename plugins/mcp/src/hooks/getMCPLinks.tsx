@@ -11,15 +11,15 @@ export const useMCPLinks = (entity: MCPServerEntity | undefined) => {
   const groupedLinks = groupBy(entity.metadata.links || [], 'type');
 
   /* Get gitlab link from the MCPServer entity */
+  let repositoryLinks = groupedLinks.repository || [];
   const gitlabHost = entity.metadata.annotations?.['gitlab.com/instance'];
   const gitlabSlug = entity.metadata.annotations?.['gitlab.com/project-slug'];
   if (gitlabHost && gitlabSlug) {
     try {
       const gitlabUrl = new URL(gitlabSlug, `https://${gitlabHost}`).toString();
 
-      const repositoryLinks = groupedLinks.repository || [];
-      if (!repositoryLinks?.find(link => link.url.includes(gitlabUrl))) {
-        groupedLinks.repository = [
+      if (!repositoryLinks?.find(link => link.url.startsWith(gitlabUrl))) {
+        repositoryLinks = [
           ...repositoryLinks,
           {
             url: gitlabUrl,
@@ -36,7 +36,7 @@ export const useMCPLinks = (entity: MCPServerEntity | undefined) => {
   }
 
   /* Get Packages from spec.packages links from MCPServer Entity */
-  const packageLinks = groupedLinks.package || [];
+  let packageLinks = groupedLinks.package || [];
   (entity.spec.packages as Package[])?.forEach(pkg => {
     const registry = pkg.registry_name;
     const name = pkg.name;
@@ -47,8 +47,8 @@ export const useMCPLinks = (entity: MCPServerEntity | undefined) => {
           ? getNexusUrl(registry, name)
           : getNPMUrl(registry, config, name);
 
-        if (!packageLinks?.find(link => link.url.includes(url))) {
-          groupedLinks.package = [
+        if (!packageLinks?.find(link => link.url === url)) {
+          packageLinks = [
             ...packageLinks,
             {
               url,
@@ -67,7 +67,11 @@ export const useMCPLinks = (entity: MCPServerEntity | undefined) => {
     /* TODO: Add urls for other package types */
   });
 
-  return groupedLinks;
+  return {
+    ...groupedLinks,
+    repository: repositoryLinks,
+    package: packageLinks,
+  };
 };
 
 export function sortMCPLinks(groupedLinks: Record<string, EntityLink[]>) {
@@ -112,7 +116,9 @@ function getNexusUrl(registry: string, name: string) {
   const registryHost = registry.startsWith('http')
     ? registry
     : `https://${registry}`;
-  const pkgScope = name.startsWith('@') ? name.slice(1).split('/')[0] : undefined;
+  const pkgScope = name.startsWith('@')
+    ? name.slice(1).split('/')[0]
+    : undefined;
   const pkgName = name.startsWith('@')
     ? name.split('/').slice(1).join('/')
     : name;

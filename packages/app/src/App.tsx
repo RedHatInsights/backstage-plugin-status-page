@@ -26,11 +26,6 @@ import { Root } from './components/Root';
 import { entityPage } from './components/catalog/EntityPage';
 import { searchPage } from './components/search/SearchPage';
 
-import { PermissionManagementPage } from '@appdev/backstage-plugin-permission-management';
-import {
-  RedirectsProvider,
-  redirectsPlugin,
-} from '@compass/backstage-plugin-redirects';
 import {
   AuditCompliancePage,
   AuditDetailsSection,
@@ -49,6 +44,7 @@ import {
   OutageTemplatePage,
   UpdateIncident,
 } from '@appdev/backstage-plugin-outages';
+import { PermissionManagementPage } from '@appdev/backstage-plugin-permission-management';
 import { ProxyManagerPage } from '@appdev/backstage-plugin-proxy-manager';
 import { SpashipGlobalPage } from '@appdev/backstage-plugin-spaship';
 import { ReportPortalGlobalPage } from '@backstage-community/plugin-report-portal';
@@ -68,6 +64,11 @@ import {
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { RequirePermission } from '@backstage/plugin-permission-react';
+import { DockerIcon, MCPServerIcon, MistralIcon, NPMIcon, PythonIcon } from '@compass/backstage-plugin-mcp';
+import {
+  RedirectsProvider,
+  redirectsPlugin,
+} from '@compass/backstage-plugin-redirects';
 import {
   JiraIcon,
   SlackIcon,
@@ -128,6 +129,11 @@ const app = createApp({
     slack_contact: SlackIcon,
     jira: JiraIcon,
     link: WebLinkIcon,
+    'kind:mcpserver': MCPServerIcon,
+    npm: NPMIcon,
+    python: PythonIcon,
+    docker: DockerIcon,
+    mistral: MistralIcon,
   },
   themes: getThemes(),
 });

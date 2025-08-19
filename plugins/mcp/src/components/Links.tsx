@@ -20,7 +20,7 @@ import {
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMoreOutlined';
 import { startCase } from 'lodash';
-import { useMCPLinks, sortMCPLinks } from '../hooks/getMCPLinks';
+import { sortMCPLinks, useMCPLinks } from '../hooks/getMCPLinks';
 import { MCPServerEntity } from '../types';
 
 const useStyles = makeStyles(theme => ({
@@ -90,11 +90,11 @@ export const MCPLinks = (props: {
                   {link.icon ? (
                     <ListItemIcon
                       style={{
-                        marginRight: '1rem',
+                        marginRight: '0.5rem',
                         minWidth: '1.5rem',
                       }}
                     >
-                      {link.icon ? <AppIcon id={link.icon} /> : <></>}
+                      {link.icon ? <AppIcon id={link.icon} fontSize='small' /> : <></>}
                     </ListItemIcon>
                   ) : null}
                   <ListItemText
