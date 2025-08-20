@@ -445,13 +445,7 @@ export class RoverDatabase implements RoverStore {
         ? managerInfoCache[row.managerUid]
         : null;
 
-      let managerName: string;
-      if (row.isServiceAccount) {
-        managerName = managerInfo?.cn || row.managerUid || row.app_owner || '';
-      } else {
-        // For regular users, calculate managerName without logging
-        managerName = managerInfo?.cn || row.managerUid || row.app_owner || '';
-      }
+      const managerName = managerInfo?.cn || row.managerUid || row.app_owner || '';
 
       let managerUidFinal = row.managerUid || '';
       if (

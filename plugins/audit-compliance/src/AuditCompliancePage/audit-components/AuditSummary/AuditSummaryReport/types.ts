@@ -2,7 +2,7 @@ export interface AccessReviewSummary {
   app_name: string;
   app_owner: string;
   app_delegate: string;
-  cmdb_id?: string; // Comma-separated CMDB codes
+  cmdb_id?: string;
   environment?: string;
   jira_project?: string;
   frequency: string;

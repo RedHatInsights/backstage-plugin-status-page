@@ -8,7 +8,7 @@ export type JiraMetadataArrayItem = { id: string; key: string; value: string };
 
 export type ApplicationFormData = {
   app_name: string;
-  cmdb_id: string; // Comma-separated CMDB codes
+  cmdb_id: string;
   environment: string;
   app_owner: string;
   app_owner_email: string;
