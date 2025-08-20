@@ -1,5 +1,13 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.21.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.20.0...@appdev/backstage-plugin-audit-compliance@1.21.0) (2025-08-20)
+
+
+### Features
+
+* **audit-access-manager:** Fixed the review ([63d4355](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/63d4355b4b3eeed0d0676ddb0ea5eb706a30492b))
+* **audit-access-manager:** Modifying onboarding form and adding docs icons and links ([3aac7e5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/3aac7e5cf2f4bae65774f3e3276091093d25bc11))
+
 ## @appdev/backstage-plugin-audit-compliance [1.20.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.19.0...@appdev/backstage-plugin-audit-compliance@1.20.0) (2025-08-18)
 
 
