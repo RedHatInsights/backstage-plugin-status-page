@@ -7,6 +7,7 @@ import {
 } from '../integrations/JiraIntegration';
 import { AccountType, AccountSource, EventType } from './operations.types';
 import { ActivityStreamOperations } from './ActivityStreamOperations';
+import { RbacRepository } from '../RbacRepository';
 
 export class ApplicationOperations {
   private readonly activityStreamOps: ActivityStreamOperations;
@@ -153,6 +154,40 @@ export class ApplicationOperations {
       const insertedIds = await trx('applications')
         .insert(entries)
         .returning('id');
+
+      // Automatically create RBAC roles for app_owner and app_delegate
+      const rbacRepo = new RbacRepository(trx);
+      const requester = appData.performed_by || 'system';
+      
+      this.logger.info(`[RBAC] Auto-creating roles for app onboarding: ${appData.app_name}`, {
+        app_owner: appData.app_owner,
+        app_delegate: appData.app_delegate,
+        requester,
+      });
+
+      // Create app_owner role
+      if (appData.app_owner) {
+        try {
+          await rbacRepo.assign(appData.app_name, appData.app_owner, 'app_owner', requester);
+          this.logger.info(`[RBAC] Assigned app_owner role to ${appData.app_owner} for ${appData.app_name}`);
+        } catch (error) {
+          this.logger.warn(`[RBAC] Failed to assign app_owner role to ${appData.app_owner}`, {
+            error: error instanceof Error ? error.message : String(error),
+          });
+        }
+      }
+
+      // Create delegate role
+      if (appData.app_delegate && appData.app_delegate !== appData.app_owner) {
+        try {
+          await rbacRepo.assign(appData.app_name, appData.app_delegate, 'delegate', requester);
+          this.logger.info(`[RBAC] Assigned delegate role to ${appData.app_delegate} for ${appData.app_name}`);
+        } catch (error) {
+          this.logger.warn(`[RBAC] Failed to assign delegate role to ${appData.app_delegate}`, {
+            error: error instanceof Error ? error.message : String(error),
+          });
+        }
+      }
 
       await trx.commit();
 
