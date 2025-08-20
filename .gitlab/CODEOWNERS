@@ -1,4 +1,4 @@
-# Required for all files
+[Default Maintainers]
 *                                             @mdeshmuk @yoswal @roommen
 
 [Compass Plugins]                             @mdeshmuk @yoswal
@@ -18,4 +18,3 @@ plugins/permission-management/
 plugins/permission-management-backend/
 plugins/permission-managementnager/
 plugins/spaship/
-
