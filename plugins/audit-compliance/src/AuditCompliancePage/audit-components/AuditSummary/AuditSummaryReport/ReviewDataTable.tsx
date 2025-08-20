@@ -4,6 +4,7 @@ import {
   Page,
   TableColumn,
 } from '@backstage/core-components';
+import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 import {
   configApiRef,
   discoveryApiRef,
@@ -154,6 +155,18 @@ export const ReviewDataTable: React.FC<ReviewDataTableProps> = ({
             title: 'Custom Reviewer',
             field: 'app_delegate',
             hidden: !showDetails,
+            render: rowData => {
+              if (!rowData.app_delegate) return null;
+              return (
+                <EntityDisplayName
+                  entityRef={{
+                    name: rowData.app_delegate,
+                    kind: 'User',
+                    namespace: 'redhat',
+                  }}
+                />
+              );
+            },
           },
           {
             title: 'Account Source',
@@ -235,6 +248,18 @@ export const ReviewDataTable: React.FC<ReviewDataTableProps> = ({
             title: 'Custom Reviewer',
             field: 'app_delegate',
             hidden: !showDetails,
+            render: rowData => {
+              if (!rowData.app_delegate) return null;
+              return (
+                <EntityDisplayName
+                  entityRef={{
+                    name: rowData.app_delegate,
+                    kind: 'User',
+                    namespace: 'redhat',
+                  }}
+                />
+              );
+            },
           },
           {
             title: 'Account Source',

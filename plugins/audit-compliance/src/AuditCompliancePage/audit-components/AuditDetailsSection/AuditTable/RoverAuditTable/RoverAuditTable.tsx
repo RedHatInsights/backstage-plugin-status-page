@@ -5,6 +5,7 @@ import {
   Page,
   TableColumn,
 } from '@backstage/core-components';
+import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 import {
   alertApiRef,
   configApiRef,
@@ -446,7 +447,22 @@ export default function RoverAuditTable({
     { title: 'Environment', field: 'environment' },
     { title: 'User Role', field: 'user_role' },
     { title: 'Manager', field: 'manager' },
-    { title: 'Custom Reviewer', field: 'app_delegate' },
+    {
+      title: 'Custom Reviewer',
+      field: 'app_delegate',
+      render: rowData => {
+        if (!rowData.app_delegate) return null;
+        return (
+          <EntityDisplayName
+            entityRef={{
+              name: rowData.app_delegate,
+              kind: 'User',
+              namespace: 'redhat',
+            }}
+          />
+        );
+      },
+    },
     {
       title: 'Status',
       field: 'sign_off_status',

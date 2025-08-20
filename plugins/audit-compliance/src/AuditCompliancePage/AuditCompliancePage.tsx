@@ -5,9 +5,10 @@ import {
   HeaderLabel,
   Page,
 } from '@backstage/core-components';
-import { Box, Typography } from '@material-ui/core';
+import { Box, Typography, Link } from '@material-ui/core';
 import { AuditApplicationList } from './audit-components/AuditApplicationList';
 import Group from '@material-ui/icons/Group';
+import DescriptionIcon from '@material-ui/icons/Description';
 
 export const AuditCompliancePage = () => {
   return (
@@ -34,6 +35,28 @@ export const AuditCompliancePage = () => {
           }
         />
         <HeaderLabel label="Lifecycle" value="Alpha" />
+        <HeaderLabel
+          label="Documentation"
+          value={
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Link
+                href="https://console.one.redhat.com/docs/compass/component/audit-compliance-plugin/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  color: 'inherit',
+                  textDecoration: 'none',
+                }}
+              >
+                <DescriptionIcon fontSize="small" />
+                Docs
+              </Link>
+            </span>
+          }
+        />
       </Header>
 
       <Content>

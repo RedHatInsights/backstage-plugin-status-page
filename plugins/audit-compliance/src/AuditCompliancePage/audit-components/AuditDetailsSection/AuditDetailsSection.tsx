@@ -124,7 +124,6 @@ export const AuditDetailsSection = () => {
 
         setAppOwnerEmail(data.app_owner_email || '');
 
-
         const identity = await identityApi.getBackstageIdentity();
         const currentUserRef = identity.userEntityRef;
         setCurrentUser(currentUserRef);
@@ -315,7 +314,7 @@ export const AuditDetailsSection = () => {
         },
         body: JSON.stringify({
           to: appOwnerEmail,
-          subject: `Final Sign-off Required: ${app_name} ${frequency} ${period} Audit`,
+          subject: `Final Sign-Off Required: ${frequency?.toUpperCase()} Audit (${period}) for Application: ${app_name}`,
           html: `
             <!DOCTYPE html>
             <html>
@@ -656,7 +655,7 @@ export const AuditDetailsSection = () => {
                   disabled={
                     userCounts.pending > 0 ||
                     serviceCounts.pending > 0 ||
-                    !isFinalSignedOff
+                    (!isFinalSignedOff && !isAuditCompleted)
                   }
                 >
                   View Final Summary

@@ -13,6 +13,7 @@ export type ApplicationFormData = {
   app_owner: string;
   app_owner_email: string;
   app_delegate: string;
+  app_delegate_email: string;
   jira_project: string;
   accounts: AccountEntry[];
   jira_metadata?: { [key: string]: string } | JiraMetadataArrayItem[];

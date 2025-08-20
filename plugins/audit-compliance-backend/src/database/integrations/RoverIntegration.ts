@@ -401,15 +401,19 @@ export class RoverDatabase implements RoverStore {
         }
       } else if (type === 'service-account') {
         const serviceAccountInfo = await this.getUserInfo(rover_group_name);
+
         let managerUid = '';
 
         if (serviceAccountInfo && serviceAccountInfo.manager) {
           managerUid = extractUid(serviceAccountInfo.manager) || '';
           if (managerUid) allManagerUids.add(managerUid);
         }
+        // Use email username as managerUid, not the full app_owner name
         if (!managerUid && app_owner_email && app_owner_email.includes('@')) {
           managerUid = app_owner_email.split('@')[0];
         }
+        if (managerUid) allManagerUids.add(managerUid);
+
         allRows.push({
           environment,
           full_name: serviceAccountInfo?.cn || rover_group_name,
@@ -440,8 +444,9 @@ export class RoverDatabase implements RoverStore {
       const managerInfo = row.managerUid
         ? managerInfoCache[row.managerUid]
         : null;
-      const managerName =
-        managerInfo?.cn || row.managerUid || row.app_owner || '';
+
+      const managerName = managerInfo?.cn || row.managerUid || row.app_owner || '';
+
       let managerUidFinal = row.managerUid || '';
       if (
         !managerInfo &&

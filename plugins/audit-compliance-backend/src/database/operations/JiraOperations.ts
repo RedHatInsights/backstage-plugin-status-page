@@ -287,7 +287,6 @@ export class JiraOperations {
 
       const { key: issueKey, id: issueId } = createResp.data;
 
-      console.log('TASK:JIRA - service account', requestBody);
       // Get ticket status
       const detailsResp = await axios
         .get<JiraIssueStatusResponse>(

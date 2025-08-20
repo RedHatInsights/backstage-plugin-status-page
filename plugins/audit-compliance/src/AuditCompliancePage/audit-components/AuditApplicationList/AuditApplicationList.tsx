@@ -26,15 +26,18 @@ import {
   Divider,
   Box,
   CircularProgress,
+  Tooltip,
 } from '@material-ui/core';
 import Group from '@material-ui/icons/Group';
 import AddIcon from '@material-ui/icons/Add';
 import CloseIcon from '@material-ui/icons/Close';
 import InfoIcon from '@material-ui/icons/Info';
 import EditIcon from '@material-ui/icons/Edit';
+import HelpIcon from '@material-ui/icons/Help';
 import { useStyles } from './AuditApplicationList.styles';
 import { useApi } from '@backstage/core-plugin-api';
 import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
+import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 import { Application } from './types';
 import { capitalize } from 'lodash';
 import { AuditApplicationOnboardingForm } from './AuditApplicationOnboardingForm/AuditApplicationOnboardingForm';
@@ -68,6 +71,7 @@ interface ApplicationDetails {
   app_delegate: string;
   jira_project: string;
   app_owner_email: string;
+  app_delegate_email: string;
   accounts: AccountEntry[];
   jira_metadata?: Record<string, string>;
 }
@@ -93,6 +97,38 @@ export function AuditApplicationList() {
 
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
+
+  // Utility to render multiple CMDB codes as chips
+  const renderCMDBCodes = (cmdbId: string) => {
+    if (!cmdbId) return null;
+    const codes = cmdbId
+      .split(',')
+      .map(code => code.trim())
+      .filter(code => code);
+
+    if (codes.length === 1) {
+      return (
+        <Chip
+          label={capitalize(codes[0])}
+          className={classes.chip}
+          size="small"
+        />
+      );
+    }
+
+    return (
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+        {codes.map((code, index) => (
+          <Chip
+            key={index}
+            label={capitalize(code)}
+            className={classes.chip}
+            size="small"
+          />
+        ))}
+      </div>
+    );
+  };
 
   const fetchApplications = async () => {
     try {
@@ -203,6 +239,7 @@ export function AuditApplicationList() {
       app_owner: apiData.app_owner,
       app_owner_email: apiData.app_owner_email,
       app_delegate: apiData.app_delegate,
+      app_delegate_email: apiData.app_delegate_email,
       jira_project: apiData.jira_project,
       accounts:
         apiData.accounts && apiData.accounts.length > 0
@@ -377,8 +414,8 @@ export function AuditApplicationList() {
         </ListItem>
         <ListItem>
           <ListItemText
-            primary="CMDB ID"
-            secondary={selectedAppDetails.cmdb_id}
+            primary="CMDB Codes"
+            secondary={renderCMDBCodes(selectedAppDetails.cmdb_id)}
           />
         </ListItem>
         <ListItem>
@@ -390,13 +427,36 @@ export function AuditApplicationList() {
         <ListItem>
           <ListItemText
             primary="Application Owner"
-            secondary={selectedAppDetails.app_owner}
+            secondary={
+              selectedAppDetails.app_owner
+                ? selectedAppDetails.app_owner
+                    .split(' ')
+                    .map(
+                      word =>
+                        word.charAt(0).toUpperCase() +
+                        word.slice(1).toLowerCase(),
+                    )
+                    .join(' ')
+                : 'Not specified'
+            }
           />
         </ListItem>
         <ListItem>
           <ListItemText
             primary="Application Delegate"
-            secondary={selectedAppDetails.app_delegate}
+            secondary={
+              selectedAppDetails.app_delegate ? (
+                <EntityDisplayName
+                  entityRef={{
+                    name: selectedAppDetails.app_delegate,
+                    kind: 'User',
+                    namespace: 'redhat',
+                  }}
+                />
+              ) : (
+                'Not specified'
+              )
+            }
           />
         </ListItem>
         <ListItem>
@@ -547,14 +607,26 @@ export function AuditApplicationList() {
           title="Applications for Audit"
           variant="fullHeight"
           action={
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              onClick={() => setIsModalOpen(true)}
-            >
-              Add Application
-            </Button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={() => setIsModalOpen(true)}
+              >
+                Add Application
+              </Button>
+              <Tooltip title="FAQ">
+                <IconButton
+                  color="primary"
+                  href="https://console.one.redhat.com/docs/compass/component/audit-compliance-plugin/faq/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <HelpIcon />
+                </IconButton>
+              </Tooltip>
+            </div>
           }
         >
           {applications.length === 0 ? (
@@ -590,11 +662,7 @@ export function AuditApplicationList() {
                         Owner: {capitalize(app.app_owner)}
                       </Typography>
 
-                      <Chip
-                        label={capitalize(app.cmdb_id)}
-                        className={classes.chip}
-                        size="small"
-                      />
+                      {renderCMDBCodes(app.cmdb_id)}
 
                       <div className={classes.spacer} />
 
@@ -613,9 +681,10 @@ export function AuditApplicationList() {
                           color="primary"
                           size="small"
                           onClick={() => handleViewDetails(app.app_name)}
-                          title="View Onboarded Details"
                         >
-                          <InfoIcon />
+                          <Tooltip title="Application Details">
+                            <InfoIcon />
+                          </Tooltip>
                         </IconButton>
                       </div>
                     </CardContent>
@@ -658,12 +727,10 @@ export function AuditApplicationList() {
           <Box className={classes.drawerHeader}>
             <Typography variant="h6">Application Details</Typography>
             <div style={{ display: 'flex', gap: '8px' }}>
-              <IconButton
-                onClick={handleEditApplication}
-                title="Edit Application"
-                color="primary"
-              >
-                <EditIcon />
+              <IconButton onClick={handleEditApplication} color="primary">
+                <Tooltip title="Edit Details">
+                  <EditIcon />
+                </Tooltip>
               </IconButton>
               <IconButton onClick={handleCloseSidePanel}>
                 <CloseIcon />
