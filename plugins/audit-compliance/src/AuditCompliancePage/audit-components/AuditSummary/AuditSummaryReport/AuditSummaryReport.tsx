@@ -6,9 +6,11 @@ import {
   identityApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
+import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 import {
   Box,
   Button,
+  Chip,
   CircularProgress,
   Grid,
   Link,
@@ -172,6 +174,7 @@ interface ApplicationDetails {
   app_delegate: string;
   jira_project: string;
   app_owner_email?: string;
+  app_delegate_email?: string;
   accounts: AccountEntry[];
   jira_metadata?: Record<string, string>;
 }
@@ -820,11 +823,20 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
                       gutterBottom
                       style={{ marginTop: '16px' }}
                     >
-                      CMDB ID
+                      CMDB Codes
                     </Typography>
-                    <Typography variant="body1">
-                      {(applicationDetails.cmdb_id || '').toUpperCase()}
-                    </Typography>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                      {applicationDetails.cmdb_id
+                        .split(',')
+                        .map((code, index) => (
+                          <Chip
+                            key={index}
+                            label={code.trim().toUpperCase()}
+                            size="small"
+                            variant="outlined"
+                          />
+                        ))}
+                    </div>
                   </>
                 )}
               </Grid>
@@ -837,9 +849,16 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
                   Application Owner
                 </Typography>
                 <Typography variant="body1">
-                  {(
-                    applicationDetails?.app_owner || 'Not specified'
-                  ).toUpperCase()}
+                  {applicationDetails?.app_owner
+                    ? applicationDetails.app_owner
+                        .split(' ')
+                        .map(
+                          word =>
+                            word.charAt(0).toUpperCase() +
+                            word.slice(1).toLowerCase(),
+                        )
+                        .join(' ')
+                    : 'Not specified'}
                 </Typography>
                 <Typography
                   variant="subtitle2"
@@ -850,9 +869,17 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
                   Application Delegate
                 </Typography>
                 <Typography variant="body1">
-                  {(
-                    applicationDetails?.app_delegate || 'Not specified'
-                  ).toUpperCase()}
+                  {applicationDetails?.app_delegate ? (
+                    <EntityDisplayName
+                      entityRef={{
+                        name: applicationDetails.app_delegate,
+                        kind: 'User',
+                        namespace: 'redhat',
+                      }}
+                    />
+                  ) : (
+                    'Not specified'
+                  )}
                 </Typography>
               </Grid>
               <Grid item xs={12} md={4}>

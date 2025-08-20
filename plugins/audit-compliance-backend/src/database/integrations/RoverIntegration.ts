@@ -400,16 +400,32 @@ export class RoverDatabase implements RoverStore {
           });
         }
       } else if (type === 'service-account') {
+        console.log('=== ROVER SERVICE ACCOUNT DATA ===');
+        console.log('app_owner from applications table:', app_owner);
+        console.log(
+          'app_owner_email from applications table:',
+          app_owner_email,
+        );
+        console.log('rover_group_name:', rover_group_name);
+
         const serviceAccountInfo = await this.getUserInfo(rover_group_name);
+        console.log('serviceAccountInfo from Rover API:', serviceAccountInfo);
+
         let managerUid = '';
 
         if (serviceAccountInfo && serviceAccountInfo.manager) {
           managerUid = extractUid(serviceAccountInfo.manager) || '';
+          console.log('managerUid extracted from Rover:', managerUid);
           if (managerUid) allManagerUids.add(managerUid);
         }
+        // Use email username as managerUid, not the full app_owner name
         if (!managerUid && app_owner_email && app_owner_email.includes('@')) {
           managerUid = app_owner_email.split('@')[0];
+          console.log('managerUid set to email username:', managerUid);
         }
+        if (managerUid) allManagerUids.add(managerUid);
+        console.log('Final managerUid for this service account:', managerUid);
+
         allRows.push({
           environment,
           full_name: serviceAccountInfo?.cn || rover_group_name,
@@ -440,8 +456,30 @@ export class RoverDatabase implements RoverStore {
       const managerInfo = row.managerUid
         ? managerInfoCache[row.managerUid]
         : null;
-      const managerName =
-        managerInfo?.cn || row.managerUid || row.app_owner || '';
+
+      // Only show console logs for service accounts
+      let managerName: string;
+      if (row.isServiceAccount) {
+        console.log('=== MANAGER NAME LOGIC FOR SERVICE ACCOUNT ===');
+        console.log('row.managerUid:', row.managerUid);
+        console.log('row.app_owner:', row.app_owner);
+        console.log('managerInfo from cache:', managerInfo);
+        console.log('managerInfo?.cn:', managerInfo?.cn);
+
+        managerName = managerInfo?.cn || row.managerUid || row.app_owner || '';
+        console.log('managerInfo in generateRoverData', managerInfo);
+        console.log('Final managerName calculated:', managerName);
+        console.log('Priority breakdown:');
+        console.log('  1. managerInfo?.cn:', managerInfo?.cn || 'undefined');
+        console.log('  2. row.managerUid:', row.managerUid || 'undefined');
+        console.log('  3. row.app_owner:', row.app_owner || 'undefined');
+        console.log('  4. empty string: ""');
+        console.log('================================');
+      } else {
+        // For regular users, calculate managerName without logging
+        managerName = managerInfo?.cn || row.managerUid || row.app_owner || '';
+      }
+
       let managerUidFinal = row.managerUid || '';
       if (
         !managerInfo &&

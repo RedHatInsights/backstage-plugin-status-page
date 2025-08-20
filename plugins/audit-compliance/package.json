@@ -28,6 +28,7 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
+    "@backstage/catalog-model": "^1.7.5",
     "@backstage/core-components": "^0.17.3",
     "@backstage/core-plugin-api": "^1.10.8",
     "@backstage/plugin-catalog-react": "^1.19.0",
@@ -40,8 +41,7 @@
     "date-fns": "^4.1.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.1",
-    "lodash": "^4.17.21",
-    "react-use": "^17.2.4"
+    "lodash": "^4.17.21"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",

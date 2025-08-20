@@ -1,6 +1,6 @@
-site_name: Audit Compliance Plugin for Backstage
+site_name: Audit Access Manager Plugin for Backstage
 repo_url: https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/
-site_description: A Plugin that displays audit compliance in panel and main component for audit compliance plugin.
+site_description: A plugin for conducting audit access reviews, supporting both quarterly and yearly compliance cycles.
 
 nav:
   - Introduction: index.md

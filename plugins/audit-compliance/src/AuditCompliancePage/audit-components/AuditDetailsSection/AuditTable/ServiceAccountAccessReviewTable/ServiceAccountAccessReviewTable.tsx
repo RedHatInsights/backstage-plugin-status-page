@@ -4,6 +4,7 @@ import {
   Page,
   TableColumn,
 } from '@backstage/core-components';
+import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 import {
   alertApiRef,
   configApiRef,
@@ -437,7 +438,22 @@ export default function ServiceAccountAccessReviewTable({
     { title: 'Environment', field: 'environment' },
     { title: 'Role', field: 'user_role' },
     { title: 'Manager', field: 'manager' },
-    { title: 'Custom Reviewer', field: 'app_delegate' },
+    {
+      title: 'Custom Reviewer',
+      field: 'app_delegate',
+      render: rowData => {
+        if (!rowData.app_delegate) return 'No delegate assigned';
+        return (
+          <EntityDisplayName
+            entityRef={{
+              name: rowData.app_delegate,
+              kind: 'User',
+              namespace: 'redhat',
+            }}
+          />
+        );
+      },
+    },
     {
       title: 'Account Source',
       field: 'source',

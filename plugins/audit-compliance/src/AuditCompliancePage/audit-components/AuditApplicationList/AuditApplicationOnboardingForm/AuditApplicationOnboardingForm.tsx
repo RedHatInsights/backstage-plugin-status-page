@@ -10,6 +10,7 @@ import {
   Button,
   Card,
   CardContent,
+  Chip,
   CircularProgress,
   Divider,
   Grid,
@@ -21,7 +22,7 @@ import {
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
-import DeleteIcon from '@material-ui/icons/Delete';
+import CloseIcon from '@material-ui/icons/Close';
 import InfoIcon from '@material-ui/icons/Info';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { Fragment, useEffect, useRef, useState } from 'react';
@@ -30,10 +31,88 @@ import {
   ApplicationFormData,
   AuditApplicationOnboardingFormProps,
 } from './types';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { UserEntity } from '@backstage/catalog-model';
 
 const RequiredAsterisk = () => (
   <span style={{ color: 'red', marginLeft: 2 }}>*</span>
 );
+
+// CMDB Codes Input Component
+const CMDBCodesInput = ({
+  value,
+  onChange,
+  required = false,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  required?: boolean;
+}) => {
+  const [inputValue, setInputValue] = useState('');
+
+  // Parse comma-separated string into array
+  const cmdbCodes = value
+    ? value
+        .split(',')
+        .map(code => code.trim())
+        .filter(code => code)
+    : [];
+
+  const handleAddCode = (code: string) => {
+    const trimmedCode = code.trim();
+    if (trimmedCode && !cmdbCodes.includes(trimmedCode)) {
+      const newCodes = [...cmdbCodes, trimmedCode];
+      onChange(newCodes.join(', '));
+    }
+    setInputValue('');
+  };
+
+  const handleRemoveCode = (codeToRemove: string) => {
+    const newCodes = cmdbCodes.filter(code => code !== codeToRemove);
+    onChange(newCodes.join(', '));
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === ',') {
+      event.preventDefault();
+      if (inputValue.trim()) {
+        handleAddCode(inputValue);
+      }
+    }
+  };
+
+  return (
+    <div>
+      <TextField
+        label=""
+        fullWidth
+        required={required}
+        value={inputValue}
+        onChange={e => setInputValue(e.target.value)}
+        onKeyPress={handleKeyPress}
+        placeholder="Type CMDB code and press Enter or comma"
+        helperText="Press Enter or comma to add a code"
+        error={required && cmdbCodes.length === 0}
+      />
+      {cmdbCodes.length > 0 && (
+        <div
+          style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 4 }}
+        >
+          {cmdbCodes.map((code, index) => (
+            <Chip
+              key={index}
+              label={code}
+              onDelete={() => handleRemoveCode(code)}
+              deleteIcon={<CloseIcon />}
+              color="primary"
+              variant="outlined"
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const AuditApplicationOnboardingForm = ({
   onSuccess,
@@ -70,6 +149,7 @@ export const AuditApplicationOnboardingForm = ({
       app_owner: '',
       app_owner_email: '',
       app_delegate: '',
+      app_delegate_email: '',
       jira_project: '',
       accounts: [
         { type: 'rover-group-name', source: 'rover', account_name: '' },
@@ -98,6 +178,7 @@ export const AuditApplicationOnboardingForm = ({
   const discoveryApi = useApi(discoveryApiRef);
   const alertApi = useApi(alertApiRef);
   const identityApi = useApi(identityApiRef);
+  const catalogApi = useApi(catalogApiRef);
 
   // Change groupOptions type to array of arrays of group objects
   const [groupOptions, setGroupOptions] = useState<string[][]>([]); // Array of options for each account entry
@@ -142,6 +223,16 @@ export const AuditApplicationOnboardingForm = ({
   >([]);
   const [jiraFieldsLoading, setJiraFieldsLoading] = useState(false);
   const [jiraFieldsError, setJiraFieldsError] = useState<string | null>(null);
+
+  // Jira projects state
+  const [jiraProjects, setJiraProjects] = useState<
+    Array<{ key: string; name: string }>
+  >([]);
+  const [jiraProjectsLoading, setJiraProjectsLoading] = useState(false);
+  const [jiraProjectsError, setJiraProjectsError] = useState<string | null>(
+    null,
+  );
+
   useEffect(() => {
     async function fetchJiraFields() {
       setJiraFieldsLoading(true);
@@ -169,8 +260,314 @@ export const AuditApplicationOnboardingForm = ({
         setJiraFieldsLoading(false);
       }
     }
+
+    async function fetchJiraProjects() {
+      setJiraProjectsLoading(true);
+      setJiraProjectsError(null);
+      try {
+        const proxyUrl = await discoveryApi.getBaseUrl('proxy');
+        const response = await fetchApi.fetch(
+          `${proxyUrl}/jira/rest/api/2/project`,
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setJiraProjects(data);
+        } else {
+          setJiraProjectsError('Failed to fetch Jira projects');
+          alertApi.post({
+            message: 'Failed to fetch Jira projects',
+            severity: 'error',
+          });
+        }
+      } catch (err) {
+        setJiraProjectsError('Error fetching Jira projects');
+        alertApi.post({
+          message: 'Error fetching Jira projects',
+          severity: 'error',
+        });
+      } finally {
+        setJiraProjectsLoading(false);
+      }
+    }
+
     fetchJiraFields();
+    fetchJiraProjects();
   }, [fetchApi, discoveryApi, alertApi]);
+
+  // User search state for application owner and delegate
+  const [ownerSearchValue, setOwnerSearchValue] = useState('');
+  const [delegateSearchValue, setDelegateSearchValue] = useState('');
+  const [ownerOptions, setOwnerOptions] = useState<UserEntity[]>([]);
+  const [delegateOptions, setDelegateOptions] = useState<UserEntity[]>([]);
+  const [ownerLoading, setOwnerLoading] = useState(false);
+  const [delegateLoading, setDelegateLoading] = useState(false);
+
+  // Store selected users separately to maintain persistence
+  const [selectedOwner, setSelectedOwner] = useState<UserEntity | null>(null);
+  const [selectedDelegate, setSelectedDelegate] = useState<UserEntity | null>(
+    null,
+  );
+
+  // Initialize selected users from form data
+  useEffect(() => {
+    const initializeUsers = async () => {
+      if (initialData?.app_owner) {
+        try {
+          // Fetch the owner entity directly from catalog
+          const ownerResponse = await catalogApi.queryEntities({
+            filter: [{ kind: 'User' }],
+            fullTextFilter: {
+              term: initialData.app_owner,
+              fields: ['metadata.name', 'spec.profile.displayName'],
+            },
+          });
+          // Try to find by metadata.name first, then by displayName
+          let owner = ownerResponse.items.find(
+            (item: any) => item.metadata.name === initialData.app_owner,
+          ) as UserEntity;
+
+          if (!owner) {
+            // If not found by metadata.name, try by displayName
+            owner = ownerResponse.items.find(
+              (item: any) =>
+                item.spec.profile?.displayName?.toLowerCase() ===
+                initialData.app_owner.toLowerCase(),
+            ) as UserEntity;
+          }
+
+          if (owner) {
+            setSelectedOwner(owner);
+            setOwnerOptions([owner]);
+            // Set the search value to show the selected user
+            setOwnerSearchValue(
+              owner.spec.profile?.displayName || owner.metadata.name,
+            );
+          }
+        } catch (err) {
+          // If fetch fails, create a placeholder entity for display
+          const placeholderOwner: UserEntity = {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'User',
+            metadata: {
+              name: initialData.app_owner,
+              namespace: 'redhat',
+            },
+            spec: {
+              profile: {
+                displayName: initialData.app_owner,
+                email: initialData.app_owner_email || '',
+              },
+            },
+          } as UserEntity;
+          setSelectedOwner(placeholderOwner);
+          setOwnerOptions([placeholderOwner]);
+          setOwnerSearchValue(
+            placeholderOwner.spec.profile?.displayName ||
+              placeholderOwner.metadata.name,
+          );
+        }
+      }
+
+      if (initialData?.app_delegate) {
+        try {
+          // Fetch the delegate entity directly from catalog
+          const delegateResponse = await catalogApi.queryEntities({
+            filter: [{ kind: 'User' }],
+            fullTextFilter: {
+              term: initialData.app_delegate,
+              fields: ['metadata.name', 'spec.profile.displayName'],
+            },
+          });
+          // Try to find by metadata.name first, then by displayName
+          let delegate = delegateResponse.items.find(
+            (item: any) => item.metadata.name === initialData.app_delegate,
+          ) as UserEntity;
+
+          if (!delegate) {
+            // If not found by metadata.name, try by displayName
+            delegate = delegateResponse.items.find(
+              (item: any) =>
+                item.spec.profile?.displayName?.toLowerCase() ===
+                initialData.app_delegate.toLowerCase(),
+            ) as UserEntity;
+          }
+
+          if (delegate) {
+            setSelectedDelegate(delegate);
+            setDelegateOptions([delegate]);
+            // Set the search value to show the selected user
+            setDelegateSearchValue(
+              delegate.spec.profile?.displayName || delegate.metadata.name,
+            );
+          }
+        } catch (err) {
+          // If fetch fails, create a placeholder entity for display
+          const placeholderDelegate: UserEntity = {
+            apiVersion: 'backstage.io/v1alpha1',
+            kind: 'User',
+            metadata: {
+              name: initialData.app_delegate,
+              namespace: 'redhat',
+            },
+            spec: {
+              profile: {
+                displayName: initialData.app_delegate,
+                email: initialData.app_delegate_email || '',
+              },
+            },
+          } as UserEntity;
+          setSelectedDelegate(placeholderDelegate);
+          setDelegateOptions([placeholderDelegate]);
+          setDelegateSearchValue(
+            placeholderDelegate.spec.profile?.displayName ||
+              placeholderDelegate.metadata.name,
+          );
+        }
+      }
+    };
+
+    if (initialData && (initialData.app_owner || initialData.app_delegate)) {
+      initializeUsers();
+    }
+  }, [initialData, catalogApi]);
+
+  // Search for users when owner search value changes
+  useEffect(() => {
+    // Only search if user is actually typing and we have 3+ characters
+    if (
+      ownerSearchValue.length >= 3 &&
+      ownerSearchValue !== selectedOwner?.spec.profile?.displayName
+    ) {
+      setOwnerLoading(true);
+      catalogApi
+        .queryEntities({
+          filter: [{ kind: 'User' }],
+          fullTextFilter: {
+            term: ownerSearchValue,
+            fields: [
+              'spec.profile.displayName',
+              'metadata.name',
+              'spec.profile.email',
+            ],
+          },
+        })
+        .then((res: any) => {
+          const searchResults = res.items as UserEntity[];
+          // Always include the selected owner in options if it exists
+          const allOptions =
+            selectedOwner &&
+            !searchResults.find(
+              u => u.metadata.name === selectedOwner.metadata.name,
+            )
+              ? [selectedOwner, ...searchResults]
+              : searchResults;
+          setOwnerOptions(allOptions);
+        })
+        .catch(() => {
+          alertApi.post({
+            message: 'Failed to search users',
+            severity: 'error',
+          });
+        })
+        .finally(() => {
+          setOwnerLoading(false);
+        });
+    } else if (ownerSearchValue.length === 0) {
+      // Keep the selected owner in options if it exists
+      if (selectedOwner) {
+        setOwnerOptions([selectedOwner]);
+      } else {
+        setOwnerOptions([]);
+      }
+    }
+  }, [ownerSearchValue, catalogApi, alertApi, selectedOwner]);
+
+  // Search for users when delegate search value changes
+  useEffect(() => {
+    // Only search if user is actually typing and we have 3+ characters
+    if (
+      delegateSearchValue.length >= 3 &&
+      delegateSearchValue !== selectedDelegate?.spec.profile?.displayName
+    ) {
+      setDelegateLoading(true);
+      catalogApi
+        .queryEntities({
+          filter: [{ kind: 'User' }],
+          fullTextFilter: {
+            term: delegateSearchValue,
+            fields: [
+              'spec.profile.displayName',
+              'metadata.name',
+              'spec.profile.email',
+            ],
+          },
+        })
+        .then((res: any) => {
+          const searchResults = res.items as UserEntity[];
+          // Always include the selected delegate in options if it exists
+          const allOptions =
+            selectedDelegate &&
+            !searchResults.find(
+              u => u.metadata.name === selectedDelegate.metadata.name,
+            )
+              ? [selectedDelegate, ...searchResults]
+              : searchResults;
+          setDelegateOptions(allOptions);
+        })
+        .catch(() => {
+          alertApi.post({
+            message: 'Failed to search users',
+            severity: 'error',
+          });
+        })
+        .finally(() => {
+          setDelegateLoading(false);
+        });
+    } else if (delegateSearchValue.length === 0) {
+      // Keep the selected delegate in options if it exists
+      if (selectedDelegate) {
+        setDelegateOptions([selectedDelegate]);
+      } else {
+        setDelegateOptions([]);
+      }
+    }
+  }, [delegateSearchValue, catalogApi, alertApi, selectedDelegate]);
+
+  // Get display name for user options
+  const getUserDisplayName = (user: UserEntity) => {
+    return user.spec.profile?.displayName || user.metadata.name;
+  };
+
+  // Handle owner selection
+  const handleOwnerChange = (selectedUser: UserEntity | null) => {
+    if (selectedUser) {
+      // Store the full display name for owner
+      formData.app_owner = getUserDisplayName(selectedUser);
+      formData.app_owner_email = selectedUser.spec.profile?.email || '';
+      // Trigger form update
+      setFormData({ ...formData });
+      setSelectedOwner(selectedUser); // Update selected user state
+    }
+  };
+
+  // Handle delegate selection
+  const handleDelegateChange = (selectedUser: UserEntity | null) => {
+    if (selectedUser) {
+      // Store the metadata name for delegate
+      formData.app_delegate = selectedUser.metadata.name;
+      formData.app_delegate_email = selectedUser.spec.profile?.email || '';
+      // Trigger form update
+      setFormData({ ...formData });
+      setSelectedDelegate(selectedUser); // Update selected user state
+    }
+  };
+
+  // Get user option label with email
+  const getUserOptionLabel = (user: UserEntity) => {
+    const displayName = getUserDisplayName(user);
+    const email = user.spec.profile?.email;
+    return email ? `${displayName} (${email})` : displayName;
+  };
 
   const handleMainFieldChange =
     (field: keyof Omit<ApplicationFormData, 'accounts'>) =>
@@ -436,6 +833,7 @@ export const AuditApplicationOnboardingForm = ({
           app_owner: '',
           app_owner_email: '',
           app_delegate: '',
+          app_delegate_email: '',
           jira_project: '',
           accounts: [
             { type: 'rover-group-name', source: 'rover', account_name: '' },
@@ -538,7 +936,7 @@ export const AuditApplicationOnboardingForm = ({
               onClick={() => handleRemoveJiraMetadata(idx)}
               size="small"
             >
-              <DeleteIcon />
+              <CloseIcon />
             </IconButton>
           </Grid>
         </Grid>
@@ -578,19 +976,19 @@ export const AuditApplicationOnboardingForm = ({
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle2" style={{ marginBottom: 4 }}>
-                    CMDB ID <RequiredAsterisk />
-                    <Tooltip title="Enter the unique CMDB identifier for this application.">
+                    CMDB Codes <RequiredAsterisk />
+                    <Tooltip title="Enter one or more CMDB identifiers for this application. Press Enter or comma to add multiple codes.">
                       <InfoIcon
                         fontSize="small"
                         style={{ marginLeft: 4, verticalAlign: 'middle' }}
                       />
                     </Tooltip>
                   </Typography>
-                  <TextField
-                    label=""
-                    fullWidth
+                  <CMDBCodesInput
                     value={formData.cmdb_id}
-                    onChange={handleMainFieldChange('cmdb_id')}
+                    onChange={value =>
+                      setFormData(prev => ({ ...prev, cmdb_id: value }))
+                    }
                     required
                   />
                 </Grid>
@@ -614,6 +1012,59 @@ export const AuditApplicationOnboardingForm = ({
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle2" style={{ marginBottom: 4 }}>
+                    Jira Project <RequiredAsterisk />
+                    <Tooltip title="Select a Jira project from the available projects.">
+                      <InfoIcon
+                        fontSize="small"
+                        style={{ marginLeft: 4, verticalAlign: 'middle' }}
+                      />
+                    </Tooltip>
+                  </Typography>
+                  <Autocomplete
+                    options={jiraProjects}
+                    getOptionLabel={option =>
+                      `${option.name?.trim()} (${option.key})`
+                    }
+                    getOptionSelected={(option, val) => option.key === val.key}
+                    value={
+                      jiraProjects.find(
+                        project => project.key === formData.jira_project,
+                      ) || null
+                    }
+                    onChange={(_event, newValue) => {
+                      if (newValue) {
+                        setFormData(prev => ({
+                          ...prev,
+                          jira_project: newValue.key,
+                        }));
+                      } else {
+                        setFormData(prev => ({ ...prev, jira_project: '' }));
+                      }
+                    }}
+                    loading={jiraProjectsLoading}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        label=""
+                        variant="outlined"
+                        required
+                        fullWidth
+                        size="small"
+                        error={!!jiraProjectsError}
+                        helperText={
+                          jiraProjectsError || 'Select a Jira project'
+                        }
+                      />
+                    )}
+                    renderOption={option => (
+                      <li>
+                        {option.name} ({option.key})
+                      </li>
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Typography variant="subtitle2" style={{ marginBottom: 4 }}>
                     Application Owner <RequiredAsterisk />
                     <Tooltip title="Enter the name or ID of the primary owner for this application.">
                       <InfoIcon
@@ -622,31 +1073,33 @@ export const AuditApplicationOnboardingForm = ({
                       />
                     </Tooltip>
                   </Typography>
-                  <TextField
-                    label=""
-                    fullWidth
-                    value={formData.app_owner}
-                    onChange={handleMainFieldChange('app_owner')}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle2" style={{ marginBottom: 4 }}>
-                    Application Owner Email <RequiredAsterisk />
-                    <Tooltip title="Enter the email address of the application owner.">
-                      <InfoIcon
-                        fontSize="small"
-                        style={{ marginLeft: 4, verticalAlign: 'middle' }}
+                  <Autocomplete
+                    options={ownerOptions}
+                    getOptionLabel={getUserOptionLabel}
+                    value={selectedOwner || null}
+                    onChange={(_event, newValue) => handleOwnerChange(newValue)}
+                    onInputChange={(_event, newInputValue) => {
+                      setOwnerSearchValue(newInputValue);
+                      // Only clear options if search is empty and no user is selected
+                      if (!newInputValue && !selectedOwner) {
+                        setOwnerOptions([]);
+                      }
+                    }}
+                    loading={ownerLoading}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        label=""
+                        variant="outlined"
+                        required
+                        fullWidth
+                        size="small"
+                        helperText="Enter at least 3 characters to search (email will be auto-captured)"
                       />
-                    </Tooltip>
-                  </Typography>
-                  <TextField
-                    label=""
-                    fullWidth
-                    value={formData.app_owner_email}
-                    onChange={handleMainFieldChange('app_owner_email')}
-                    required
-                    type="email"
+                    )}
+                    renderOption={(option: UserEntity, state) => (
+                      <li {...state}>{getUserOptionLabel(option)}</li>
+                    )}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -659,30 +1112,35 @@ export const AuditApplicationOnboardingForm = ({
                       />
                     </Tooltip>
                   </Typography>
-                  <TextField
-                    label=""
-                    fullWidth
-                    value={formData.app_delegate}
-                    onChange={handleMainFieldChange('app_delegate')}
-                    required
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="subtitle2" style={{ marginBottom: 4 }}>
-                    Jira Project <RequiredAsterisk />
-                    <Tooltip title="Jira Project should match exactly (case-sensitive) as it appears in the Jira board. Otherwise, the Epic will not be created.">
-                      <InfoIcon
-                        fontSize="small"
-                        style={{ marginLeft: 4, verticalAlign: 'middle' }}
+                  <Autocomplete
+                    options={delegateOptions}
+                    getOptionLabel={getUserOptionLabel}
+                    value={selectedDelegate || null}
+                    onChange={(_event, newValue) =>
+                      handleDelegateChange(newValue)
+                    }
+                    onInputChange={(_event, newInputValue) => {
+                      setDelegateSearchValue(newInputValue);
+                      // Only clear options if search is empty and no user is selected
+                      if (!newInputValue && !selectedDelegate) {
+                        setDelegateOptions([]);
+                      }
+                    }}
+                    loading={delegateLoading}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        label=""
+                        variant="outlined"
+                        required
+                        fullWidth
+                        size="small"
+                        helperText="Enter at least 3 characters to search (email will be auto-captured)"
                       />
-                    </Tooltip>
-                  </Typography>
-                  <TextField
-                    label=""
-                    fullWidth
-                    value={formData.jira_project}
-                    onChange={handleMainFieldChange('jira_project')}
-                    required
+                    )}
+                    renderOption={(option: UserEntity, state) => (
+                      <li {...state}>{getUserOptionLabel(option)}</li>
+                    )}
                   />
                 </Grid>
               </Grid>
@@ -823,6 +1281,7 @@ export const AuditApplicationOnboardingForm = ({
                             }
                             required
                             autoComplete="off"
+                            placeholder="Enter at least 3 characters to search"
                             InputProps={{
                               endAdornment: loadingGroups[index] ? (
                                 <CircularProgress size={18} />
@@ -886,7 +1345,7 @@ export const AuditApplicationOnboardingForm = ({
                         onClick={() => handleRemoveAccountEntry(index)}
                         disabled={formData.accounts.length === 1}
                       >
-                        <DeleteIcon />
+                        <CloseIcon />
                       </IconButton>
                     </Grid>
                   </Grid>
