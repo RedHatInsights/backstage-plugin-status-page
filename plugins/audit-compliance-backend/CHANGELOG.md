@@ -1,5 +1,13 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance-backend [1.21.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance-backend@1.20.0...@appdev/backstage-plugin-audit-compliance-backend@1.21.0) (2025-08-21)
+
+
+### Features
+
+* api to get all the roles for user ([e7b532c](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/e7b532cb964b19aa9f4a43034acaa312775fdc0c))
+* implement rbac backend for audit compliance plugin ([571b2b1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/571b2b19cc1a98fc6624487e443fcf4380979311))
+
 ## @appdev/backstage-plugin-audit-compliance-backend [1.20.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance-backend@1.19.0...@appdev/backstage-plugin-audit-compliance-backend@1.20.0) (2025-08-20)
 
 
