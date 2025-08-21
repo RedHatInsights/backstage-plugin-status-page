@@ -10,7 +10,8 @@ import {
   checkRbacPermission, 
   validateAppExists, 
   createPermissionDeniedResponse, 
-  createAppNotFoundResponse 
+  createAppNotFoundResponse,
+  ROLE_PERMISSIONS 
 } from '../api/rbac';
 
 
@@ -241,6 +242,73 @@ export async function createRoleManagementRouter(
       return res.status(500).json({
         success: false,
         error: 'Internal server error while retrieving roles'
+      });
+    }
+  });
+
+  // Get user's apps and roles - new endpoint for user-specific role information
+  router.get('/rbac/users/:username/apps', async (req, res) => {
+    try {
+      const username = req.params.username;
+
+      if (!username) {
+        return res.status(400).json({ 
+          success: false,
+          error: 'username is required' 
+        });
+      }
+
+      // Get all apps and roles for the user
+      const userAppsAndRoles = await repo.listAppsAndRolesForUser(username);
+      
+      // Enhance with permission details
+      const appsWithPermissions = userAppsAndRoles.map(appData => ({
+        app_name: appData.app_name,
+        roles: appData.roles.map(roleData => ({
+          role_name: roleData.role_name,
+          permissions: ROLE_PERMISSIONS[roleData.role_name] || [],
+          created_by: roleData.created_by,
+          created_at: roleData.created_at,
+          updated_by: roleData.updated_by,
+          updated_at: roleData.updated_at,
+        })),
+        // Summary of all permissions across all roles for this app
+        all_permissions: [
+          ...new Set(
+            appData.roles.flatMap(roleData => 
+              ROLE_PERMISSIONS[roleData.role_name] || []
+            )
+          )
+        ].sort(),
+      }));
+
+      const totalApps = appsWithPermissions.length;
+      const totalRoles = appsWithPermissions.reduce((sum, app) => sum + app.roles.length, 0);
+      const allUniquePermissions = [
+        ...new Set(
+          appsWithPermissions.flatMap(app => app.all_permissions)
+        )
+      ].sort();
+
+      return res.status(200).json({
+        success: true,
+        message: `Successfully retrieved apps and roles for user ${username}`,
+        data: {
+          username,
+          summary: {
+            total_apps: totalApps,
+            total_role_assignments: totalRoles,
+            unique_permissions: allUniquePermissions.length,
+            all_permissions: allUniquePermissions,
+          },
+          apps: appsWithPermissions,
+        }
+      });
+    } catch (error) {
+      logger.error(`[rbac] Error retrieving user apps and roles: ${error}`);
+      return res.status(500).json({
+        success: false,
+        error: 'Internal server error while retrieving user apps and roles'
       });
     }
   });
