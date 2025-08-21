@@ -2,8 +2,12 @@ import { Knex } from 'knex';
 import express from 'express';
 import Router from 'express-promise-router';
 import { AuditComplianceDatabase } from '../database/AuditComplianceDatabase';
+import { CustomAuthorizer } from '../types/permissions';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { RoverDatabase } from '../database/integrations/RoverIntegration';
 import { GitLabDatabase } from '../database/integrations/GitLabIntegration';
+import { normalizeAppName } from '../api/authz';
+import { requireCustomPermission } from '../api/rbac';
 import { EventType } from '../database/operations/operations.types';
 
 /**
@@ -17,6 +21,8 @@ export async function createAuditInitiationRouter(
   knex: Knex,
   config: any,
   logger: any,
+  _permissions?: CustomAuthorizer,
+  _httpAuth?: HttpAuthService,
 ): Promise<express.Router> {
   const database = await AuditComplianceDatabase.create({
     knex,
@@ -26,6 +32,7 @@ export async function createAuditInitiationRouter(
   });
 
   const auditInitiationRouter = Router();
+  const rbacEnabled = (config?.getOptionalBoolean?.('auditCompliance.rbac.enabled') ?? true) as boolean;
 
   // Initialize Rover integrations database
   const roverStore = await RoverDatabase.create({
@@ -105,6 +112,30 @@ export async function createAuditInitiationRouter(
   auditInitiationRouter.post('/audits', async (req, res) => {
     try {
       const audit = req.body;
+
+      if (!audit.app_name) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing required field: app_name',
+        });
+      }
+
+      const appName = normalizeAppName(audit.app_name);
+      
+      // Check RBAC permissions
+      const authResult = await requireCustomPermission({
+        req,
+        res,
+        appName,
+        requiredPermission: 'initiate_audits',
+        knex,
+        database,
+        httpAuth: _httpAuth,
+        logger,
+        rbacEnabled,
+      });
+
+      if (!authResult.allowed) return undefined;
       const db = await knex;
 
       // First clear any existing data for this app/period combination
@@ -250,10 +281,27 @@ export async function createAuditInitiationRouter(
   auditInitiationRouter.put(
     '/audits/:app_name/:frequency/:period',
     async (req, res) => {
-      const { app_name, frequency, period } = req.params;
+      const { app_name } = req.params;
+      const appName = normalizeAppName(app_name);
+      
+      // Check RBAC permissions
+      const authResult = await requireCustomPermission({
+        req,
+        res,
+        appName,
+        requiredPermission: 'initiate_audits',
+        knex,
+        database,
+        httpAuth: _httpAuth,
+        logger,
+        rbacEnabled,
+      });
+
+      if (!authResult.allowed) return undefined;
+      const { frequency, period } = req.params;
       try {
         await database.updateAudit(app_name, frequency, period, req.body);
-        res.sendStatus(204);
+        return res.sendStatus(204);
       } catch (error) {
         logger.error('Failed to update audit', {
           error: error instanceof Error ? error.message : String(error),
@@ -261,7 +309,7 @@ export async function createAuditInitiationRouter(
           frequency,
           period,
         });
-        res.status(500).json({
+        return res.status(500).json({
           error: 'Failed to update audit',
           message: error instanceof Error ? error.message : String(error),
         });
@@ -288,46 +336,79 @@ export async function createAuditInitiationRouter(
       const { app_name, frequency, period } = req.params;
       const { jira_key, user } = req.body;
       try {
-        // Fetch the audit and application details
-        const audit = await database.findAuditByAppNamePeriod(
-          app_name,
-          frequency,
-          period,
-        );
-        const appDetails = await database.getApplicationDetails(app_name);
-        if (!audit || !appDetails) {
-          return res
-            .status(404)
-            .json({ error: 'Audit or application not found' });
-        }
-        // Check if the user is the application owner (compare username part)
-        let userName = '';
-        if (user && typeof user === 'string') {
-          if (user.includes('@')) {
-            userName = user.split('@')[0] || '';
+        // RBAC check: Only app owners can update jira key (strict requirement)
+        if (rbacEnabled && _permissions && _httpAuth) {
+          const credentials = await _httpAuth.credentials(req);
+          const requesterIdentity = (credentials.principal as any)?.userEntityRef ?? '';
+          
+          // Fetch application details to check ownership
+          const appDetails = await database.getApplicationDetails(app_name);
+          if (!appDetails) {
+            res.status(404).json({ error: 'Application not found' });
+            return undefined;
+          }
+
+          // Extract username from requester identity for comparison
+          let requesterUserName = '';
+          if (requesterIdentity.includes('@')) {
+            requesterUserName = requesterIdentity.split('@')[0] || '';
           } else {
-            userName = user.split('/').pop() || '';
+            requesterUserName = requesterIdentity.split('/').pop() || '';
+          }
+
+          // Extract owner name for comparison  
+          let ownerName = '';
+          if (appDetails.app_owner_email && typeof appDetails.app_owner_email === 'string') {
+            ownerName = appDetails.app_owner_email.split('@')[0] || '';
+          } else if (appDetails.app_owner && typeof appDetails.app_owner === 'string') {
+            ownerName = appDetails.app_owner.split('@')[0] || '';
+          }
+
+          if (!requesterUserName || !ownerName || requesterUserName !== ownerName) {
+            res.status(403).json({
+              error: 'Only the application owner can update the Jira Epic key.',
+            });
+            return undefined;
+          }
+        } else {
+          // Fallback to legacy user check if RBAC disabled
+          const appDetails = await database.getApplicationDetails(app_name);
+          if (!appDetails) {
+            res.status(404).json({ error: 'Application not found' });
+            return undefined;
+          }
+          
+          let userName = '';
+          if (user && typeof user === 'string') {
+            if (user.includes('@')) {
+              userName = user.split('@')[0] || '';
+            } else {
+              userName = user.split('/').pop() || '';
+            }
+          }
+          let ownerName = '';
+          if (appDetails.app_owner_email && typeof appDetails.app_owner_email === 'string') {
+            ownerName = appDetails.app_owner_email.split('@')[0] || '';
+          } else if (appDetails.app_owner && typeof appDetails.app_owner === 'string') {
+            ownerName = appDetails.app_owner.split('@')[0] || '';
+          }
+          if (!user || !userName || !ownerName || userName !== ownerName) {
+            res.status(403).json({
+              error: 'Only the application owner can update the Jira Epic key.',
+            });
+            return undefined;
           }
         }
-        let ownerName = '';
-        if (
-          appDetails.app_owner_email &&
-          typeof appDetails.app_owner_email === 'string'
-        ) {
-          ownerName = appDetails.app_owner_email.split('@')[0] || '';
-        } else if (
-          appDetails.app_owner &&
-          typeof appDetails.app_owner === 'string'
-        ) {
-          ownerName = appDetails.app_owner.split('@')[0] || '';
+
+        // Fetch the audit details
+        const audit = await database.findAuditByAppNamePeriod(app_name, frequency, period);
+        if (!audit) {
+          res.status(404).json({ error: 'Audit not found' });
+          return undefined;
         }
-        if (!user || !userName || !ownerName || userName !== ownerName) {
-          return res.status(403).json({
-            error: 'Only the application owner can update the Jira Epic key.',
-          });
-        }
+
         await database.updateAudit(app_name, frequency, period, { jira_key });
-        return res.sendStatus(204);
+        res.sendStatus(204);
       } catch (error) {
         logger.error('Failed to update Jira Epic key', {
           error: error instanceof Error ? error.message : String(error),
@@ -335,10 +416,11 @@ export async function createAuditInitiationRouter(
           frequency,
           period,
         });
-        return res
+        res
           .status(500)
           .json({ error: 'Failed to update Jira Epic key' });
       }
+      return undefined;
     },
   );
 
@@ -376,10 +458,28 @@ export async function createAuditInitiationRouter(
 
     if (!app_name || !frequency || !period || !progress) {
       res.status(400).json({
+        success: false,
         error: 'app_name, frequency, period, and progress are required',
       });
       return;
     }
+
+    const appName = normalizeAppName(app_name);
+    
+    // Check RBAC permissions
+    const authResult = await requireCustomPermission({
+      req,
+      res,
+      appName,
+      requiredPermission: 'initiate_audits',
+      knex,
+      database,
+      httpAuth: _httpAuth,
+      logger,
+      rbacEnabled,
+    });
+
+    if (!authResult.allowed) return;
 
     // Validate progress value
     const validProgressStates = [
@@ -432,9 +532,27 @@ export async function createAuditInitiationRouter(
 
     if (!app_name || !frequency || !period) {
       return res.status(400).json({
+        success: false,
         error: 'Missing required parameters: app_name, frequency, period',
       });
     }
+
+    const appName = normalizeAppName(app_name);
+    
+    // Check RBAC permissions
+    const authResult = await requireCustomPermission({
+      req,
+      res,
+      appName,
+      requiredPermission: 'initiate_audits',
+      knex,
+      database,
+      httpAuth: _httpAuth,
+      logger,
+      rbacEnabled,
+    });
+
+    if (!authResult.allowed) return undefined;
 
     try {
       // First, delete all existing data for this app/frequency/period combination

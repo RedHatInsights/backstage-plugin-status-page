@@ -44,12 +44,12 @@ export class ActivityStreamOperations {
     // Only filter by frequency and period if they are provided AND not null/undefined
     // This allows application-level events (without frequency/period) to be included
     if (frequency && frequency.trim() !== '') {
-      query = query.andWhere(function () {
+      query = query.andWhere(function frequencyFilter() {
         this.where('frequency', frequency).orWhereNull('frequency');
       });
     }
     if (period && period.trim() !== '') {
-      query = query.andWhere(function () {
+      query = query.andWhere(function periodFilter() {
         this.where('period', period).orWhereNull('period');
       });
     }

@@ -13,8 +13,6 @@ import { AuditOperations } from './operations/AuditOperations';
 import { DeleteOperations } from './operations/DeleteOperations';
 import { JiraOperations } from './operations/JiraOperations';
 import {
-  AccountType,
-  AccountSource,
   AuditProgress,
   EventType,
 } from './operations/operations.types';
@@ -91,45 +89,18 @@ export class AuditComplianceDatabase {
   async getDistinctAppOwners(appName: string): Promise<string[]> {
     return this.applicationOps.getDistinctAppOwners(appName);
   }
+
   // Implementation: ApplicationOperations.ts
-  async createApplicationWithAccounts(appData: {
-    app_name: string;
-    cmdb_id: string;
-    environment: string;
-    app_owner: string;
-    app_owner_email: string;
-    app_delegate: string;
-    jira_project: string;
-    accounts: Array<{
-      type: AccountType;
-      source: AccountSource;
-      account_name: string;
-    }>;
-    jira_metadata?: Record<string, string | { value: string; schema?: any }>;
-    performed_by?: string;
-  }) {
+  async createApplicationWithAccounts(appData: any) {
     return this.applicationOps.createApplicationWithAccounts(appData);
   }
 
   // Implementation: ApplicationOperations.ts
-  async updateApplicationWithAccounts(appData: {
-    app_name: string;
-    cmdb_id: string;
-    environment: string;
-    app_owner: string;
-    app_owner_email: string;
-    app_delegate: string;
-    jira_project: string;
-    accounts: Array<{
-      type: AccountType;
-      source: AccountSource;
-      account_name: string;
-    }>;
-    jira_metadata?: Record<string, string | { value: string; schema?: any }>;
-    performed_by?: string;
-  }) {
+  async updateApplicationWithAccounts(appData: any) {
     return this.applicationOps.updateApplicationWithAccounts(appData);
   }
+
+  // Delegate methods that properly use operation instances
 
   // Implementation: AuditOperations.ts
   async getAllAudits(params?: {
