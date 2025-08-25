@@ -342,7 +342,7 @@ export const AuditDetailsSection = () => {
                     <td align="center">
                       <table width="600" cellspacing="0" border="0">
                         <tr>
-                          <td style="font-size: 16px; color: #333333; font-family: Red Hat Display">
+                          <td style="font-size: 16px;  font-family: Red Hat Display">
                             <p>Hi Application Owner,</p>
                             <p>
                               The <strong>${frequency} ${period}</strong> access review audit for application 
@@ -364,7 +364,7 @@ export const AuditDetailsSection = () => {
                           </td>
                         </tr>
                         <tr>
-                          <td style="font-size: 16px; color: #333333; font-family: Red Hat Display; padding-top: 20px;">
+                          <td style="font-size: 16px;  font-family: Red Hat Display; padding-top: 20px;">
                             <p>Best regards,</p>
                             <p>Audit Compliance System</p>
                           </td>
@@ -380,7 +380,7 @@ export const AuditDetailsSection = () => {
                     <td align="center">
                       <table width="600" cellpadding="0" cellspacing="0" border="0">
                         <tr>
-                          <td style="text-align:center; font-size: 12px; color: #888888;">
+                          <td style="text-align:center; font-size: 12px;">
                             © 2025 Red Hat, Inc. All rights reserved. <br />
                             This is an automated message. Please do not reply.
                           </td>

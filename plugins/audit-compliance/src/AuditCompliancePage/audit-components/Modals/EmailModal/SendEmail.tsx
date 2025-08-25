@@ -135,7 +135,7 @@ export const Email = forwardRef<EmailRef, EmailProps>(
                     <td align="center">
                       <table width="600" cellspacing="0" border="0">
                         <tr>
-                          <td style="font-size: 16px; color: #333333; font-family: Red Hat Display">
+                          <td style="font-size: 16px; font-family: Red Hat Display">
                             <p>Hi ${manager},</p>
                             <p>
                               You are requested to review the access of the user(s) listed below for the 
@@ -143,7 +143,7 @@ export const Email = forwardRef<EmailRef, EmailProps>(
                               <strong>${frequency} ${auditPeriod}</strong> access review.
                             </p>
                             <table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-                              <thead style="background-color: #f4f4f4;">
+                              <thead>
                                 <tr>
                                   <th style="text-align: left;">User</th>
                                   <th style="text-align: left;">Environment</th>
@@ -167,7 +167,7 @@ export const Email = forwardRef<EmailRef, EmailProps>(
                           </td>
                         </tr>
                         <tr>
-                          <td style="font-size: 16px; color: #333333; font-family: Red Hat Display; padding-top: 20px;">
+                          <td style="font-size: 16px;  font-family: Red Hat Display; padding-top: 20px;">
                             <p>Best regards,</p>
                             <p>${displayName}</p>
                           </td>
@@ -178,7 +178,7 @@ export const Email = forwardRef<EmailRef, EmailProps>(
                 </table>
 
                 <!-- Footer -->
-                <table width="100%" cellpadding="20" cellspacing="0" border="0" style="background-color:#f4f4f4; margin-top:10px;">
+                <table width="100%" cellpadding="20" cellspacing="0" border="0"  margin-top:10px;">
                   <tr>
                     <td align="center">
                       <table width="600" cellpadding="0" cellspacing="0" border="0">
