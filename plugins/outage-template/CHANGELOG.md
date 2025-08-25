@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-outages [1.9.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-outages@1.9.0...@appdev/backstage-plugin-outages@1.9.1) (2025-08-25)
+
+
+### Bug Fixes
+
+* **APD-743:** Update incidents due to undifined incidentId and AUTO chip color change ([8f2c8b0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/8f2c8b0fe9784e7c818473c025e51dee2622ac36))
+
 ## @appdev/backstage-plugin-outages [1.9.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-outages@1.8.1...@appdev/backstage-plugin-outages@1.9.0) (2025-08-08)
 
 
