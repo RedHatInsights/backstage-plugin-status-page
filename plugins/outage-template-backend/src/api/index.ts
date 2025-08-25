@@ -1,22 +1,21 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   StatusPageIncident,
-  UpdateIncidentProps,
   PostmortemBody,
 } from '../constants';
 
 export const fetchIncidents = async (
   statusPageUrl: string,
-  _token: string,
+  token: string,
   logger: LoggerService,
-  cookie: any,
+  _cookie: any,
 ) => {
   try {
     const response = await fetch(`${statusPageUrl}/incidents.json`, {
       method: 'GET',
       headers: {
         'Content-type': 'application/json',
-        Cookie: cookie,
+        Authorization: `${token}`,
       },
     });
 
@@ -36,16 +35,16 @@ export const fetchIncidents = async (
 export const fetchIncident = async (
   id: string,
   statusPageUrl: string,
-  _token: string,
+  token: string,
   logger: LoggerService,
-  cookie: any,
+  _cookie: any,
 ) => {
   try {
     const response = await fetch(`${statusPageUrl}/incidents/${id}`, {
       method: 'GET',
       headers: {
         'Content-type': 'application/json',
-        Cookie: cookie,
+        Authorization: `${token}`,
       },
     });
     if (!response.ok) {
@@ -63,10 +62,10 @@ export const fetchIncident = async (
 
 export const fetchComponents = async (
   statusPageUrl: string,
-  _token: string,
+  token: string,
   logger: LoggerService,
   page: number,
-  cookie: any,
+  _cookie: any,
 ) => {
   try {
     const response = await fetch(
@@ -75,7 +74,7 @@ export const fetchComponents = async (
         method: 'GET',
         headers: {
           'Content-type': 'application/json',
-          Cookie: cookie,
+          Authorization: `${token}`,
         },
       },
     );
@@ -96,16 +95,16 @@ export const fetchComponents = async (
 export const createIncident = async (
   incidentData: StatusPageIncident,
   statusPageUrl: string,
-  _token: string,
+  token: string,
   logger: LoggerService,
-  cookie: any,
+  _cookie: any,
 ) => {
   try {
     await fetch(`${statusPageUrl}/incidents`, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
-        Cookie: cookie,
+        Authorization: `${token}`,
       },
       body: JSON.stringify({ incident: incidentData }),
     });
@@ -118,49 +117,49 @@ export const createIncident = async (
 
 export const updateIncident = async (
   incidentId: string,
-  updatedData: UpdateIncidentProps,
+  updatedData: StatusPageIncident,
   statusPageUrl: string,
-  _token: string,
+  token: string,
   logger: LoggerService,
-  cookie: any,
+  _cookie: any,
 ) => {
   try {
     const response = await fetch(`${statusPageUrl}/incidents/${incidentId}`, {
       method: 'PATCH',
       headers: {
         'Content-type': 'application/json',
-        Cookie: cookie,
+        Authorization: `${token}`,
       },
       body: JSON.stringify({ incident: updatedData }),
     });
     if (response.status === 422) {
-      return { success: true };
+      return { success: true, message: 'Incident updated successfully' };
     }
     if (!response.ok) {
       throw new Error(
         `Failed to update incident: ${response.status} ${response.statusText}`,
       );
     }
-    return { success: true };
+    return { success: true, message: 'Incident updated successfully' };
   } catch (error) {
     logger.error(String(`Error updating incident:', ${error}`));
-    return { message: 'Error: failed to update incident' };
+    return { error: 'Error: failed to update incident' };
   }
 };
 
 export const deleteIncident = async (
   incidentId: string,
   statusPageUrl: string,
-  _token: string,
+  token: string,
   logger: LoggerService,
-  cookie: any,
+  _cookie: any,
 ) => {
   try {
     await fetch(`${statusPageUrl}/incidents/${incidentId}.json`, {
       method: 'DELETE',
       headers: {
         'Content-type': 'application/json',
-        Cookie: cookie,
+        Authorization: `${token}`,
       },
     });
     return {};
@@ -173,10 +172,10 @@ export const deleteIncident = async (
 export const draftPostmortem = async (
   incidentId: string,
   statusPageUrl: string,
-  _token: string,
+  token: string,
   logger: LoggerService,
   postmortemBody: PostmortemBody,
-  cookie: any,
+  _cookie: any,
 ) => {
   try {
     const response = await fetch(
@@ -185,7 +184,7 @@ export const draftPostmortem = async (
         method: 'PUT',
         headers: {
           'Content-type': 'application/json',
-          Cookie: cookie,
+          Authorization: `${token}`,
         },
         body: JSON.stringify(postmortemBody),
       },
@@ -206,17 +205,17 @@ export const draftPostmortem = async (
 export const publishPostmortem = async (
   incidentId: string,
   statusPageUrl: string,
-  _token: string,
+  token: string,
   logger: LoggerService,
   postmortemBody: PostmortemBody,
-  cookie: any,
+  _cookie: any,
 ) => {
   try {
     await fetch(`${statusPageUrl}/incidents/${incidentId}/postmortem/publish`, {
       method: 'PUT',
       headers: {
         'Content-type': 'application/json',
-        Cookie: cookie,
+        Authorization: `${token}`,
       },
       body: JSON.stringify({ postmortem: postmortemBody }),
     });
