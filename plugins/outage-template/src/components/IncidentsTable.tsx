@@ -25,7 +25,7 @@ const IncidentsTable = ({
   refreshTemplates,
   onEditTemplate,
   onSetTabIndex,
-  searchTermForTemplates
+  searchTermForTemplates,
 }: IncidentsTableProps) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -51,16 +51,22 @@ const IncidentsTable = ({
 
   return (
     <>
-      <Tabs value={tabIndex} onChange={(_, newValue) => {setTabIndex(newValue); onSetTabIndex(newValue)}}>
+      <Tabs
+        value={tabIndex}
+        onChange={(_, newValue) => {
+          setTabIndex(newValue);
+          onSetTabIndex(newValue);
+        }}
+      >
         <Tab label="Incidents" />
         <Tab label="Maintenance" />
         <Tab label="Templates" />
       </Tabs>
 
       {tabIndex === 2 ? (
-        <TemplatesTable 
+        <TemplatesTable
           refreshTemplates={refreshTemplates}
-          onEditTemplate={(template) => onEditTemplate(template)}
+          onEditTemplate={template => onEditTemplate(template)}
           searchTermForTemplates={searchTermForTemplates}
         />
       ) : (
@@ -94,11 +100,26 @@ const IncidentsTable = ({
                         <Chip
                           variant="outlined"
                           label={incident.status.toLocaleUpperCase()}
-                          style={{ margin: '4px', color: 'white', borderColor: getStatusColor(incident.status) }}
+                          style={{
+                            margin: '4px',
+                            borderColor: getStatusColor(incident.status),
+                          }}
                           size="small"
                         />
                       </TableCell>
-                      <TableCell>{incident.impactOverride}</TableCell>
+                      <TableCell>
+                        <Chip
+                          variant="outlined"
+                          label={incident.impactOverride.toLocaleUpperCase()}
+                          style={{
+                            margin: '4px',
+                            backgroundColor: getStatusColor(
+                              incident.impactOverride,
+                            ),
+                          }}
+                          size="small"
+                        />
+                      </TableCell>
                       <TableCell>
                         {new Date(incident.createdAt).toISOString()}
                       </TableCell>
@@ -157,7 +178,11 @@ const IncidentsTable = ({
                             variant="outlined"
                             color="secondary"
                             onClick={() => onDelete(incident.id)}
-                            style={{ margin: '5px', color: 'red', fontWeight: 'lighter' }}
+                            style={{
+                              margin: '5px',
+                              color: 'red',
+                              fontWeight: 'lighter',
+                            }}
                           >
                             Delete
                           </Button>

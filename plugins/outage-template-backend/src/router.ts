@@ -67,7 +67,7 @@ export async function createRouter({
   router.patch('/incidents/:id', async (req, res) => {
     try {
       const cookie = req.headers?.cookie;
-      const incidentId = req.body.id;
+      const incidentId = req.params.id;
       const body = req.body.incident;
       const response = await incidentFetchService.updateIncident(
         incidentId,
@@ -76,7 +76,7 @@ export async function createRouter({
       );
       res.json({ data: response });
     } catch (err) {
-      res.json({ data: [], message: 'Error: Failed to create incident!' });
+      res.json({ data: [], message: 'Error: Failed to update incident!' });
     }
   });
 
@@ -90,7 +90,7 @@ export async function createRouter({
       );
       res.json({ data: response });
     } catch (err) {
-      res.json({ data: [], message: 'Error: Failed to create incident!' });
+      res.json({ data: [], message: 'Error: Failed to delete incident!' });
     }
   });
   router.get('/health', (_, res) => res.json({ status: 'ok' }));
@@ -107,7 +107,7 @@ export async function createRouter({
       );
       res.json({ data: response });
     } catch (err) {
-      res.json({ data: [], message: 'Error: Failed to create incident!' });
+      res.json({ data: [], message: 'Error: Failed to save postmortem!' });
     }
   });
 
@@ -123,7 +123,7 @@ export async function createRouter({
       );
       res.json({ data: response });
     } catch (err) {
-      res.json({ data: [], message: 'Error: Failed to create incident!' });
+      res.json({ data: [], message: 'Error: Failed to publish postmortem!' });
     }
   });
 

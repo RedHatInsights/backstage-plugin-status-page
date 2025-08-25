@@ -214,10 +214,15 @@ export const CreateIncident = () => {
 
       analytics.captureEvent('create', 'Maintenance created');
     } else {
-      if (!incidentName || !status || !impactOverride) {
+      if (
+        !incidentName ||
+        !status ||
+        !impactOverride ||
+        !body ||
+        !selectedComponents
+      ) {
         alertApi.post({
-          message:
-            'Incident name, status, impact level, and components are required.',
+          message: 'Please fill in all required fields.',
           severity: 'error',
         });
         return;

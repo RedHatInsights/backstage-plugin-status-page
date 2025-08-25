@@ -9,7 +9,7 @@ import {
   updateIncident,
 } from '../api';
 
-import { StatusPageIncident, UpdateIncidentProps } from '../constants';
+import { StatusPageIncident } from '../constants';
 
 export async function IncidentFetchService({
   logger,
@@ -52,7 +52,7 @@ export async function IncidentFetchService({
     },
     async updateIncident(
       id: string,
-      incidentData: UpdateIncidentProps,
+      incidentData: StatusPageIncident,
       cookie: any,
     ) {
       return updateIncident(

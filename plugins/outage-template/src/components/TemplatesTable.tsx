@@ -125,7 +125,6 @@ const TemplatesTable = (props: {
                           label={template.status.toLocaleUpperCase()}
                           style={{
                             margin: '4px',
-                            color: 'white',
                             borderColor: getStatusColor(template.status),
                           }}
                           size="small"

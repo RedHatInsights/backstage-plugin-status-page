@@ -612,10 +612,9 @@ export const UpdateIncident = () => {
                         (isResolved && !postmortemBody) || savingPostmortemDraft
                       }
                     >
-                      {isResolved && savingPostmortemDraft
-                        ? 'Drafting'
-                        : 'Publish'}
-                      {!isResolved && 'Submit'}
+                      {isResolved
+                        ? `${savingPostmortemDraft ? 'Drafting' : 'Publish'}`
+                        : 'Submit'}
                     </Button>
                   </Grid>
                 </Grid>
