@@ -8,8 +8,6 @@ import {
 import { RoverDatabase } from '../database/integrations/RoverIntegration';
 import { GitLabDatabase } from '../database/integrations/GitLabIntegration';
 import { Knex } from 'knex';
-import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { CustomAuthorizer } from '../types/permissions';
 
 /**
  * Creates the plugin router with all endpoint definitions.
@@ -21,8 +19,6 @@ export async function createDataSyncRouter(
   knex: Knex,
   config: any,
   logger: any,
-  _permissions?: CustomAuthorizer,
-  _httpAuth?: HttpAuthService,
 ): Promise<express.Router> {
   // Initialize Rover integrations database
   const roverStore = await RoverDatabase.create({

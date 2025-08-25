@@ -2,16 +2,6 @@ import { Knex } from 'knex';
 import express from 'express';
 import Router from 'express-promise-router';
 import { AuditComplianceDatabase } from '../database/AuditComplianceDatabase';
-import { CustomAuthorizer } from '../types/permissions';
-import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { normalizeAppName } from '../api/authz';
-import { 
-  requireCustomPermission,
-  checkRbacPermission,
-  validateAppExists,
-  createPermissionDeniedResponse,
-  createAppNotFoundResponse
-} from '../api/rbac';
 
 /**
  * Creates the plugin router with all endpoint definitions.
@@ -23,8 +13,6 @@ export async function createDetailsRouter(
   knex: Knex,
   logger: any,
   config: any,
-  _permissions?: CustomAuthorizer,
-  _httpAuth?: HttpAuthService,
 ): Promise<express.Router> {
   const database = await AuditComplianceDatabase.create({
     knex,
@@ -34,7 +22,6 @@ export async function createDetailsRouter(
   });
 
   const auditDetailsRouter = Router();
-  const rbacEnabled = (config?.getOptionalBoolean?.('auditCompliance.rbac.enabled') ?? true) as boolean;
 
   /**
    * GET /access-reviews
@@ -89,38 +76,6 @@ export async function createDetailsRouter(
       }
 
       const dataArray = Array.isArray(payload) ? payload : [payload];
-      
-      // Extract app_name from first item for RBAC check
-      const firstItem = dataArray[0];
-      if (!firstItem || !firstItem.app_name) {
-        return res.status(400).json({ error: 'app_name is required in payload' });
-      }
-
-      const normalizedAppName = normalizeAppName(firstItem.app_name);
-
-      // Validate app exists
-      const appExists = await validateAppExists(normalizedAppName, database);
-      if (!appExists) {
-        return res.status(404).json(createAppNotFoundResponse(normalizedAppName));
-      }
-
-      // Check RBAC permissions for access review operations
-      if (rbacEnabled && _httpAuth) {
-        const rbacCheck = await checkRbacPermission({
-          req,
-          appName: normalizedAppName,
-          requiredPermission: 'audit_access',
-          knex,
-          httpAuth: _httpAuth,
-          logger,
-          rbacEnabled,
-        });
-
-        if (!rbacCheck.hasPermission) {
-          return res.status(403).json(createPermissionDeniedResponse('audit_access', rbacCheck.username, rbacCheck.userRoles));
-        }
-      }
-
       const results = await database.updateAccessReview(dataArray);
       return res.status(200).json({ success: true, data: results });
     } catch (error) {
@@ -196,27 +151,9 @@ export async function createDetailsRouter(
 
     if (!event_type || !app_name || !performed_by) {
       return res.status(400).json({
-        success: false,
         error: 'Missing required fields: event_type, app_name, performed_by',
       });
     }
-
-    const appName = normalizeAppName(app_name);
-    
-    // Check RBAC permissions
-    const authResult = await requireCustomPermission({
-      req,
-      res,
-      appName,
-      requiredPermission: 'view_audit_details',
-      knex,
-      database,
-      httpAuth: _httpAuth,
-      logger,
-      rbacEnabled,
-    });
-
-    if (!authResult.allowed) return undefined;
 
     try {
       const event = await database.createActivityEvent({
@@ -346,39 +283,6 @@ export async function createDetailsRouter(
       try {
         if (!payload || (Array.isArray(payload) && payload.length === 0)) {
           return res.status(400).json({ error: 'No data provided' });
-        }
-
-        const dataArray = Array.isArray(payload) ? payload : [payload];
-        
-        // Extract app_name from first item for RBAC check
-        const firstItem = dataArray[0];
-        if (!firstItem || !firstItem.app_name) {
-          return res.status(400).json({ error: 'app_name is required in payload' });
-        }
-
-        const normalizedAppName = normalizeAppName(firstItem.app_name);
-
-        // Validate app exists
-        const appExists = await validateAppExists(normalizedAppName, database);
-        if (!appExists) {
-          return res.status(404).json(createAppNotFoundResponse(normalizedAppName));
-        }
-
-        // Check RBAC permissions for service account access review operations
-        if (rbacEnabled && _httpAuth) {
-          const rbacCheck = await checkRbacPermission({
-            req,
-            appName: normalizedAppName,
-            requiredPermission: 'audit_access',
-            knex,
-            httpAuth: _httpAuth,
-            logger,
-            rbacEnabled,
-          });
-
-          if (!rbacCheck.hasPermission) {
-            return res.status(403).json(createPermissionDeniedResponse('audit_access', rbacCheck.username, rbacCheck.userRoles));
-          }
         }
 
         const result = await database.updateServiceAccountAccessReviewData(

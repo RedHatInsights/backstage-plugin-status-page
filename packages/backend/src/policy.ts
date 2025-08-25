@@ -48,8 +48,6 @@ type PermissionConfig = {
   admins: AllowedUsers[];
 };
 
-
-
 class CustomPermissionPolicy implements PermissionPolicy {
   private readonly workstreamPolicy: WorkstreamPolicy;
 
@@ -100,7 +98,6 @@ const createPermissionsModule = createBackendModule({
         cache: coreServices.cache,
         schdeuler: coreServices.scheduler,
         catalog: catalogServiceRef,
-        database: coreServices.database,
       },
       async init({ policy, config, auth, schdeuler, catalog }) {
         const permissionConfig =

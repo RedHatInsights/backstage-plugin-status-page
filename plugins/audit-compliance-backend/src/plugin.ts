@@ -18,17 +18,15 @@ export const auditCompliancePlugin = createBackendPlugin({
         database: coreServices.database,
         httpRouter: coreServices.httpRouter,
         config: coreServices.rootConfig,
-        permissions: coreServices.permissions,
-        httpAuth: coreServices.httpAuth,
       },
-      async init({ logger, database, httpRouter, config, permissions, httpAuth }) {
+      async init({ logger, database, httpRouter, config }) {
         logger.info('[audit-compliance] Plugin initialization started');
         try {
           httpRouter.addAuthPolicy({
             allow: 'unauthenticated',
-             path: '/health',
+            path: '/health',
           });
-          const router = await createRouter(database, config, logger, permissions, httpAuth);
+          const router = await createRouter(database, config, logger);
           httpRouter.use(router);
         } catch (err) {
           logger.error(`Failed to initialize audit-compliance plugin: ${err}`);
