@@ -2,16 +2,6 @@ import { Knex } from 'knex';
 import express from 'express';
 import Router from 'express-promise-router';
 import { AuditComplianceDatabase } from '../database/AuditComplianceDatabase';
-import { CustomAuthorizer } from '../types/permissions';
-import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { normalizeAppName } from '../api/authz';
-import { 
-  checkRbacPermission, 
-  validateAppExists, 
-  createPermissionDeniedResponse, 
-  createAppNotFoundResponse,
-  requireCustomPermission
-} from '../api/rbac';
 import { EventType } from '../database/operations/operations.types';
 
 /**
@@ -25,8 +15,6 @@ export async function createAuditSummaryRouter(
   knex: Knex,
   logger: any,
   config: any,
-  _permissions?: CustomAuthorizer,
-  _httpAuth?: HttpAuthService,
 ): Promise<express.Router> {
   const database = await AuditComplianceDatabase.create({
     knex,
@@ -35,7 +23,6 @@ export async function createAuditSummaryRouter(
     config,
   });
 
-  const rbacEnabled = (config?.getOptionalBoolean?.('auditCompliance.rbac.enabled') ?? true) as boolean;
   const auditSummaryRouter = Router();
 
   /**
@@ -53,53 +40,27 @@ export async function createAuditSummaryRouter(
 
     if (!app_name || !frequency || !period || !performed_by) {
       return res.status(400).json({
-        success: false,
-        error: 'Missing required fields: app_name, frequency, period, performed_by',
+        error:
+          'Missing required fields: app_name, frequency, period, performed_by',
       });
     }
 
     try {
-      const normalizedAppName = normalizeAppName(app_name);
-
-      // Validate app exists
-      const appExists = await validateAppExists(normalizedAppName, database);
-      if (!appExists) {
-        return res.status(404).json(createAppNotFoundResponse(normalizedAppName));
-      }
-
-      // Check RBAC permissions for generating audit summary  
-      const rbacCheck = await checkRbacPermission({
-        req,
-        appName: normalizedAppName,
-        requiredPermission: 'update_audit_metadata',
-        knex,
-        httpAuth: _httpAuth,
-        logger,
-        rbacEnabled,
-      });
-
-      if (!rbacCheck.hasPermission) {
-        return res.status(403).json(createPermissionDeniedResponse('update_audit_metadata', rbacCheck.username, rbacCheck.userRoles));
-      }
-
       // Get the audit record
       const audit = await database.findAuditByAppNamePeriod(
-        normalizedAppName,
+        app_name,
         frequency,
         period,
       );
 
       if (!audit) {
-        return res.status(404).json({ 
-          success: false,
-          error: 'Audit not found' 
-        });
+        return res.status(404).json({ error: 'Audit not found' });
       }
 
       // Create the summary generated event
       await database.createActivityEvent({
         event_type: 'AUDIT_SUMMARY_GENERATED',
-        app_name: normalizedAppName,
+        app_name,
         frequency,
         period,
         performed_by,
@@ -110,7 +71,6 @@ export async function createAuditSummaryRouter(
       });
 
       return res.status(200).json({
-        success: true,
         message: 'Summary generated successfully',
         audit_id: audit.id,
       });
@@ -118,11 +78,7 @@ export async function createAuditSummaryRouter(
       logger.error('Failed to generate summary', {
         error: error instanceof Error ? error.message : String(error),
       });
-      return res.status(500).json({ 
-        success: false,
-        error: 'Failed to generate summary',
-        details: error instanceof Error ? error.message : String(error),
-      });
+      return res.status(500).json({ error: 'Failed to generate summary' });
     }
   });
   /**
@@ -139,22 +95,6 @@ export async function createAuditSummaryRouter(
   auditSummaryRouter.get(
     '/audits/:app_name/:frequency/:period/statistics',
     async (req, res) => {
-      const appName = normalizeAppName(req.params.app_name);
-      
-      // Check RBAC permissions
-      const authResult = await requireCustomPermission({
-        req,
-        res,
-        appName,
-        requiredPermission: 'view_audit_summary',
-        knex,
-        database,
-        httpAuth: _httpAuth,
-        logger,
-        rbacEnabled,
-      });
-
-      if (!authResult.allowed) return;
       const { app_name, frequency, period } = req.params;
 
       try {
@@ -521,7 +461,7 @@ export async function createAuditSummaryRouter(
         if (totalReviews.change > 0) totalReviews.status = 'positive';
         else if (totalReviews.change < 0) totalReviews.status = 'negative';
 
-        res.json({
+        return res.json({
           app_name,
           frequency,
           period,
@@ -543,7 +483,7 @@ export async function createAuditSummaryRouter(
           frequency,
           period,
         });
-        res.status(500).json({ error: errorMessage });
+        return res.status(500).json({ error: errorMessage });
       }
     },
   );
@@ -563,22 +503,6 @@ export async function createAuditSummaryRouter(
     '/audits/:app_name/:frequency/:period/metadata',
     async (req, res) => {
       const { app_name, frequency, period } = req.params;
-      const appName = normalizeAppName(app_name);
-      
-      // Check RBAC permissions
-      const authResult = await requireCustomPermission({
-        req,
-        res,
-        appName,
-        requiredPermission: 'view_audit_summary',
-        knex,
-        database,
-        httpAuth: _httpAuth,
-        logger,
-        rbacEnabled,
-      });
-
-      if (!authResult.allowed) return;
 
       try {
         // First get the audit to get its ID
@@ -589,18 +513,18 @@ export async function createAuditSummaryRouter(
         );
 
         if (!audit) {
-          res.status(404).json({ error: 'Audit not found' });
+          return res.status(404).json({ error: 'Audit not found' });
         }
 
         const metadata = await database.getAuditMetadata(audit.id);
-        res.json(
+        return res.json(
           metadata || { documentation_evidence: {}, auditor_notes: {} },
         );
       } catch (error) {
         logger.error('Failed to fetch audit metadata', {
           error: error instanceof Error ? error.message : String(error),
         });
-        res
+        return res
           .status(500)
           .json({ error: 'Failed to fetch audit metadata' });
       }
@@ -625,22 +549,6 @@ export async function createAuditSummaryRouter(
     async (req, res) => {
       const { app_name, frequency, period } = req.params;
       const { documentation_evidence, auditor_notes } = req.body;
-      const appName = normalizeAppName(app_name);
-      
-      // Check RBAC permissions
-      const authResult = await requireCustomPermission({
-        req,
-        res,
-        appName,
-        requiredPermission: 'update_audit_metadata',
-        knex,
-        database,
-        httpAuth: _httpAuth,
-        logger,
-        rbacEnabled,
-      });
-
-      if (!authResult.allowed) return;
 
       try {
         // First get the audit to get its ID
@@ -651,7 +559,7 @@ export async function createAuditSummaryRouter(
         );
 
         if (!audit) {
-          res.status(404).json({ error: 'Audit not found' });
+          return res.status(404).json({ error: 'Audit not found' });
         }
 
         const metadata = await database.updateAuditMetadata(audit.id, {
@@ -672,12 +580,12 @@ export async function createAuditSummaryRouter(
           },
         });
 
-        res.json(metadata);
+        return res.json(metadata);
       } catch (error) {
         logger.error('Failed to update audit metadata', {
           error: error instanceof Error ? error.message : String(error),
         });
-        res
+        return res
           .status(500)
           .json({ error: 'Failed to update audit metadata' });
       }
@@ -701,29 +609,12 @@ export async function createAuditSummaryRouter(
     '/audits/:app_name/:frequency/:period/complete',
     async (req, res) => {
       const { app_name, frequency, period } = req.params;
-      const appName = normalizeAppName(app_name);
-      
-      // Check RBAC permissions
-      const authResult = await requireCustomPermission({
-        req,
-        res,
-        appName,
-        requiredPermission: 'update_audit_metadata',
-        knex,
-        database,
-        httpAuth: _httpAuth,
-        logger,
-        rbacEnabled,
-      });
-
-      if (!authResult.allowed) return undefined;
       const { performed_by } = req.body;
 
       if (!performed_by) {
-        res.status(400).json({
+        return res.status(400).json({
           error: 'Missing required field: performed_by',
         });
-        return undefined;
       }
 
       try {

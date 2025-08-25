@@ -2,15 +2,6 @@ import express from 'express';
 import Router from 'express-promise-router';
 import { Knex } from 'knex';
 import { AuditComplianceDatabase } from '../database/AuditComplianceDatabase';
-import { CustomAuthorizer } from '../types/permissions';
-import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { normalizeAppName } from '../api/authz';
-import { 
-  checkRbacPermission,
-  validateAppExists,
-  createPermissionDeniedResponse,
-  createAppNotFoundResponse
-} from '../api/rbac';
 import {
   fetchJiraFieldSchemas,
   transformJiraMetadataForStorage,
@@ -27,8 +18,6 @@ export async function createJiraRouter(
   knex: Knex,
   logger: any,
   config: any,
-  _permissions?: CustomAuthorizer,
-  _httpAuth?: HttpAuthService,
 ): Promise<express.Router> {
   const database = await AuditComplianceDatabase.create({
     knex,
@@ -38,7 +27,6 @@ export async function createJiraRouter(
   });
 
   const jiraRouter = Router();
-  const rbacEnabled = (config?.getOptionalBoolean?.('auditCompliance.rbac.enabled') ?? true) as boolean;
 
   /**
    * POST /create-aqr-ticket
@@ -51,47 +39,17 @@ export async function createJiraRouter(
    */
   jiraRouter.post('/create-aqr-ticket', async (req, res) => {
     try {
-      // Extract app_name from request body for RBAC check
-      const { app_name } = req.body;
-      if (!app_name) {
-        return res.status(400).json({ error: 'app_name is required in request body' });
-      }
-
-      const normalizedAppName = normalizeAppName(app_name);
-
-      // Validate app exists
-      const appExists = await validateAppExists(normalizedAppName, database);
-      if (!appExists) {
-        return res.status(404).json(createAppNotFoundResponse(normalizedAppName));
-      }
-
-      // Check RBAC permissions for Jira operations
-      if (rbacEnabled && _httpAuth) {
-        const rbacCheck = await checkRbacPermission({
-          req,
-          appName: normalizedAppName,
-          requiredPermission: 'manage_jira',
-          knex,
-          httpAuth: _httpAuth,
-          logger,
-          rbacEnabled,
-        });
-
-        if (!rbacCheck.hasPermission) {
-          return res.status(403).json(createPermissionDeniedResponse('manage_jira', rbacCheck.username, rbacCheck.userRoles));
-        }
-      }
       const result = await database.createAqrJiraTicketAndUpdateStatus(
         req.body,
       );
 
-      return res.status(201).json({
+      res.status(201).json({
         message: 'Jira ticket created and status updated.',
         ...result,
       });
     } catch (err: any) {
       logger.error('AQR ticket error:', err.message);
-      return res.status(500).json({ error: err.message || 'Unknown error occurred.' });
+      res.status(500).json({ error: err.message || 'Unknown error occurred.' });
     }
   });
 
@@ -106,53 +64,23 @@ export async function createJiraRouter(
    */
   jiraRouter.post('/create-service-account-ticket', async (req, res) => {
     try {
-      // Extract app_name from request body for RBAC check
-      const { app_name } = req.body;
-      if (!app_name) {
-        return res.status(400).json({ error: 'app_name is required in request body' });
-      }
-
-      const normalizedAppName = normalizeAppName(app_name);
-
-      // Validate app exists
-      const appExists = await validateAppExists(normalizedAppName, database);
-      if (!appExists) {
-        return res.status(404).json(createAppNotFoundResponse(normalizedAppName));
-      }
-
-      // Check RBAC permissions for Jira operations
-      if (rbacEnabled && _httpAuth) {
-        const rbacCheck = await checkRbacPermission({
-          req,
-          appName: normalizedAppName,
-          requiredPermission: 'manage_jira',
-          knex,
-          httpAuth: _httpAuth,
-          logger,
-          rbacEnabled,
-        });
-
-        if (!rbacCheck.hasPermission) {
-          return res.status(403).json(createPermissionDeniedResponse('manage_jira', rbacCheck.username, rbacCheck.userRoles));
-        }
-      }
-      // Map frontend parameters to backend function parameters  
-      const { user_id, ...rest } = req.body;
+      // Map frontend parameters to backend function parameters
+      const { user_id, app_name, ...rest } = req.body;
       const mappedData = {
         service_account: user_id,
-        appName: normalizedAppName,
+        appName: app_name,
         ...rest,
       };
 
       const result = await database.createServiceAccountJiraTicket(mappedData);
 
-      return res.status(201).json({
+      res.status(201).json({
         message: 'Service account Jira ticket created and status updated.',
         ...result,
       });
     } catch (err: any) {
       logger.error('Service account ticket error:', err.message);
-      return res.status(500).json({ error: err.message || 'Unknown error occurred.' });
+      res.status(500).json({ error: err.message || 'Unknown error occurred.' });
     }
   });
 
@@ -166,43 +94,14 @@ export async function createJiraRouter(
    * @returns {Object} 500 - Error response
    */
   jiraRouter.post('/jira/comment', async (req, res) => {
+    const { id, comments, ticket_reference } = req.body;
+
     try {
-      const { id, comments, ticket_reference, app_name } = req.body;
-
-      if (!app_name) {
-        return res.status(400).json({ error: 'app_name is required in request body' });
-      }
-
-      const normalizedAppName = normalizeAppName(app_name);
-
-      // Validate app exists
-      const appExists = await validateAppExists(normalizedAppName, database);
-      if (!appExists) {
-        return res.status(404).json(createAppNotFoundResponse(normalizedAppName));
-      }
-
-      // Check RBAC permissions for Jira operations
-      if (rbacEnabled && _httpAuth) {
-        const rbacCheck = await checkRbacPermission({
-          req,
-          appName: normalizedAppName,
-          requiredPermission: 'manage_jira',
-          knex,
-          httpAuth: _httpAuth,
-          logger,
-          rbacEnabled,
-        });
-
-        if (!rbacCheck.hasPermission) {
-          return res.status(403).json(createPermissionDeniedResponse('manage_jira', rbacCheck.username, rbacCheck.userRoles));
-        }
-      }
-
       await database.addJiraCommentAndUpdateDb(id, comments, ticket_reference);
-      return res.status(200).json({ message: 'Comment added successfully.' });
+      res.status(200).json({ message: 'Comment added successfully.' });
     } catch (err: any) {
       logger.error('Error adding Jira comment:', err.message);
-      return res.status(500).json({ error: err.message || 'Unknown error occurred.' });
+      res.status(500).json({ error: err.message || 'Unknown error occurred.' });
     }
   });
 
@@ -216,47 +115,18 @@ export async function createJiraRouter(
    * @returns {Object} 500 - Error response
    */
   jiraRouter.post('/jira/service-account/comment', async (req, res) => {
+    const { id, comments, ticket_reference } = req.body;
+
     try {
-      const { id, comments, ticket_reference, app_name } = req.body;
-
-      if (!app_name) {
-        return res.status(400).json({ error: 'app_name is required in request body' });
-      }
-
-      const normalizedAppName = normalizeAppName(app_name);
-
-      // Validate app exists
-      const appExists = await validateAppExists(normalizedAppName, database);
-      if (!appExists) {
-        return res.status(404).json(createAppNotFoundResponse(normalizedAppName));
-      }
-
-      // Check RBAC permissions for Jira operations
-      if (rbacEnabled && _httpAuth) {
-        const rbacCheck = await checkRbacPermission({
-          req,
-          appName: normalizedAppName,
-          requiredPermission: 'manage_jira',
-          knex,
-          httpAuth: _httpAuth,
-          logger,
-          rbacEnabled,
-        });
-
-        if (!rbacCheck.hasPermission) {
-          return res.status(403).json(createPermissionDeniedResponse('manage_jira', rbacCheck.username, rbacCheck.userRoles));
-        }
-      }
-
       await database.addServiceAccountJiraCommentAndUpdateDb(
         id,
         comments,
         ticket_reference,
       );
-      return res.status(200).json({ message: 'Comment added successfully.' });
+      res.status(200).json({ message: 'Comment added successfully.' });
     } catch (err: any) {
       logger.error('Error adding Jira comment (service account):', err.message);
-      return res.status(500).json({ error: err.message || 'Unknown error occurred.' });
+      res.status(500).json({ error: err.message || 'Unknown error occurred.' });
     }
   });
 

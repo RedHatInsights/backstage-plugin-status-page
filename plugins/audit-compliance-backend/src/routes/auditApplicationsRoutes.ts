@@ -2,14 +2,6 @@ import { Knex } from 'knex';
 import express from 'express';
 import Router from 'express-promise-router';
 import { AuditComplianceDatabase } from '../database/AuditComplianceDatabase';
-import { CustomAuthorizer } from '../types/permissions';
-import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { NotAllowedError } from '@backstage/errors';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
-import {
-  applicationEditPermission,
-} from '../permissions';
-import { resolveAppName } from '../api/authz';
 
 interface AccountEntry {
   type: string;
@@ -70,8 +62,6 @@ export async function createAuditApplicationsRouter(
   knex: Knex,
   logger: any,
   config: any,
-  _permissions?: CustomAuthorizer,
-  _httpAuth?: HttpAuthService,
 ): Promise<express.Router> {
   const database = await AuditComplianceDatabase.create({
     knex,
@@ -81,7 +71,6 @@ export async function createAuditApplicationsRouter(
   });
 
   const auditApplicationsRouter = Router();
-  const rbacEnabled = (config?.getOptionalBoolean?.('auditCompliance.rbac.enabled') ?? true) as boolean;
   /**
    * GET /applications
    * Retrieves either all applications or distinct app owners for a specific application.
@@ -148,24 +137,6 @@ export async function createAuditApplicationsRouter(
    * @returns {Object} 500 - Error response
    */
   auditApplicationsRouter.put('/applications/:id', async (req, res) => {
-    if (rbacEnabled && _permissions && _httpAuth) {
-      const credentials = await _httpAuth.credentials(req);
-      const appName = await resolveAppName(knex, req);
-      const decision = (
-        await _permissions.authorize(
-          [
-            {
-              permission: applicationEditPermission,
-              resourceRef: `application:default/${appName}`,
-            },
-          ],
-          { credentials },
-        )
-      )[0];
-      if (decision.result !== AuthorizeResult.ALLOW) {
-        throw new NotAllowedError('Unauthorized');
-      }
-    }
     const { id } = req.params;
     const normalizedApp = normalizeApplicationData(req.body);
     await database.updateApplication(Number(id), normalizedApp);
@@ -187,24 +158,6 @@ export async function createAuditApplicationsRouter(
   auditApplicationsRouter.put(
     '/applications/onboarding/:app_name',
     async (req, res): Promise<void> => {
-      if (rbacEnabled && _permissions && _httpAuth) {
-        const credentials = await _httpAuth.credentials(req);
-        const appName = await resolveAppName(knex, req);
-        const decision = (
-          await _permissions.authorize(
-            [
-              {
-                permission: applicationEditPermission,
-                resourceRef: `application:default/${appName}`,
-              },
-            ],
-            { credentials },
-          )
-        )[0];
-        if (decision.result !== AuthorizeResult.ALLOW) {
-          throw new NotAllowedError('Unauthorized');
-        }
-      }
       try {
         const normalizedAppName = req.params.app_name
           .toLowerCase()

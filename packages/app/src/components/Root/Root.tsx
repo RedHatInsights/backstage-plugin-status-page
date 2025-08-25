@@ -195,16 +195,6 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
               />
             </Grid>
           </Grid>
-
-          <Grid container>
-            <Grid item xs={8}>
-              <SidebarItem
-                icon={ExtensionIcon as IconComponent}
-                to="audit-access-manager"
-                text="Audit & Compliance"
-              />
-            </Grid>
-          </Grid>
           <Grid container>
             <Grid item xs={8}>
               <SidebarItem

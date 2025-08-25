@@ -2,15 +2,6 @@ import { Knex } from 'knex';
 import express from 'express';
 import Router from 'express-promise-router';
 import { AuditComplianceDatabase } from '../database/AuditComplianceDatabase';
-import { CustomAuthorizer } from '../types/permissions';
-import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { normalizeAppName } from '../api/authz';
-import { 
-  checkRbacPermission, 
-  validateAppExists, 
-  createPermissionDeniedResponse, 
-  createAppNotFoundResponse 
-} from '../api/rbac';
 
 /**
  * Creates the data deletion router with all endpoint definitions.
@@ -23,8 +14,6 @@ export async function createDataDeletionRouter(
   knex: Knex,
   logger: any,
   config: any,
-  _permissions?: CustomAuthorizer,
-  _httpAuth?: HttpAuthService,
 ): Promise<express.Router> {
   const database = await AuditComplianceDatabase.create({
     knex,
@@ -33,7 +22,6 @@ export async function createDataDeletionRouter(
     config,
   });
 
-  const rbacEnabled = (config?.getOptionalBoolean?.('auditCompliance.rbac.enabled') ?? true) as boolean;
   const dataDeletionRouter = Router();
 
   /**
@@ -54,42 +42,7 @@ export async function createDataDeletionRouter(
         const applicationId = parseInt(id, 10);
 
         if (isNaN(applicationId)) {
-          res.status(400).json({ 
-            success: false,
-            error: 'Invalid application ID' 
-          });
-          return;
-        }
-
-        // Get app_name from application ID for RBAC check
-        const appInfo = await knex('applications')
-          .select('app_name')
-          .where({ id: applicationId })
-          .first();
-
-        if (!appInfo) {
-          res.status(404).json({ 
-            success: false,
-            error: 'Application not found' 
-          });
-          return;
-        }
-
-        const appName = appInfo.app_name;
-
-        // Check RBAC permissions for data deletion
-        const rbacCheck = await checkRbacPermission({
-          req,
-          appName,
-          requiredPermission: 'delete_data',
-          knex,
-          httpAuth: _httpAuth,
-          logger,
-          rbacEnabled,
-        });
-
-        if (!rbacCheck.hasPermission) {
-          res.status(403).json(createPermissionDeniedResponse('delete_data', rbacCheck.username, rbacCheck.userRoles));
+          res.status(400).json({ error: 'Invalid application ID' });
           return;
         }
 
@@ -98,15 +51,11 @@ export async function createDataDeletionRouter(
         );
 
         if (deletedCount === 0) {
-          res.status(404).json({ 
-            success: false,
-            error: 'Application not found' 
-          });
+          res.status(404).json({ error: 'Application not found' });
           return;
         }
 
         res.json({
-          success: true,
           message: 'Application deleted successfully',
           deletedCount,
         });
@@ -116,7 +65,6 @@ export async function createDataDeletionRouter(
           applicationId: req.params.id,
         });
         res.status(500).json({
-          success: false,
           error: 'Failed to delete application',
           details: error instanceof Error ? error.message : String(error),
         });
@@ -138,30 +86,7 @@ export async function createDataDeletionRouter(
     async (req, res): Promise<void> => {
       try {
         const { appName } = req.params;
-        const normalizedAppName = normalizeAppName(appName);
-
-        // Validate app exists
-        const appExists = await validateAppExists(normalizedAppName, database);
-        if (!appExists) {
-          res.status(404).json(createAppNotFoundResponse(normalizedAppName));
-          return;
-        }
-
-        // Check RBAC permissions for data deletion
-        const rbacCheck = await checkRbacPermission({
-          req,
-          appName: normalizedAppName,
-          requiredPermission: 'delete_data',
-          knex,
-          httpAuth: _httpAuth,
-          logger,
-          rbacEnabled,
-        });
-
-        if (!rbacCheck.hasPermission) {
-          res.status(403).json(createPermissionDeniedResponse('delete_data', rbacCheck.username, rbacCheck.userRoles));
-          return;
-        }
+        const normalizedAppName = appName.toLowerCase().replace(/\s+/g, '-');
 
         const deletionSummary = await database.deleteApplicationByName(
           normalizedAppName,
@@ -202,57 +127,18 @@ export async function createDataDeletionRouter(
         const auditId = parseInt(id, 10);
 
         if (isNaN(auditId)) {
-          res.status(400).json({ 
-            success: false,
-            error: 'Invalid audit ID' 
-          });
-          return;
-        }
-
-        // Get audit info to determine app_name for RBAC check
-        const auditInfo = await knex('application_audits')
-          .select('app_name')
-          .where({ id: auditId })
-          .first();
-
-        if (!auditInfo) {
-          res.status(404).json({ 
-            success: false,
-            error: 'Audit not found' 
-          });
-          return;
-        }
-
-        const appName = auditInfo.app_name;
-
-        // Check RBAC permissions for data deletion
-        const rbacCheck = await checkRbacPermission({
-          req,
-          appName,
-          requiredPermission: 'delete_data',
-          knex,
-          httpAuth: _httpAuth,
-          logger,
-          rbacEnabled,
-        });
-
-        if (!rbacCheck.hasPermission) {
-          res.status(403).json(createPermissionDeniedResponse('delete_data', rbacCheck.username, rbacCheck.userRoles));
+          res.status(400).json({ error: 'Invalid audit ID' });
           return;
         }
 
         const deletedCount = await database.deleteAuditById(auditId);
 
         if (deletedCount === 0) {
-          res.status(404).json({ 
-            success: false,
-            error: 'Audit not found' 
-          });
+          res.status(404).json({ error: 'Audit not found' });
           return;
         }
 
         res.json({
-          success: true,
           message: 'Audit deleted successfully',
           deletedCount,
         });
@@ -289,36 +175,15 @@ export async function createDataDeletionRouter(
 
         if (!app_name || !frequency || !period) {
           res.status(400).json({
-            success: false,
-            error: 'Missing required parameters: app_name, frequency, and period are required',
+            error:
+              'Missing required parameters: app_name, frequency, and period are required',
           });
           return;
         }
 
-        const normalizedAppName = normalizeAppName(app_name as string);
-
-        // Validate app exists
-        const appExists = await validateAppExists(normalizedAppName, database);
-        if (!appExists) {
-          res.status(404).json(createAppNotFoundResponse(normalizedAppName));
-          return;
-        }
-
-        // Check RBAC permissions for data deletion
-        const rbacCheck = await checkRbacPermission({
-          req,
-          appName: normalizedAppName,
-          requiredPermission: 'delete_data',
-          knex,
-          httpAuth: _httpAuth,
-          logger,
-          rbacEnabled,
-        });
-
-        if (!rbacCheck.hasPermission) {
-          res.status(403).json(createPermissionDeniedResponse('delete_data', rbacCheck.username, rbacCheck.userRoles));
-          return;
-        }
+        const normalizedAppName = (app_name as string)
+          .toLowerCase()
+          .replace(/\s+/g, '-');
 
         const deletionSummary = await database.deleteAuditData(
           normalizedAppName,
@@ -361,57 +226,21 @@ export async function createDataDeletionRouter(
         const recordId = parseInt(id, 10);
 
         if (isNaN(recordId)) {
-          res.status(400).json({ 
-            success: false,
-            error: 'Invalid record ID' 
-          });
+          res.status(400).json({ error: 'Invalid record ID' });
           return;
         }
 
-        // Get app_name from service account record for RBAC check
-        const recordInfo = await knex('service_account_access_review')
-          .select('app_name')
-          .where({ id: recordId })
-          .first();
-
-        if (!recordInfo) {
-          res.status(404).json({ 
-            success: false,
-            error: 'Service account access review not found' 
-          });
-          return;
-        }
-
-        const appName = recordInfo.app_name;
-
-        // Check RBAC permissions for data deletion
-        const rbacCheck = await checkRbacPermission({
-          req,
-          appName,
-          requiredPermission: 'delete_data',
-          knex,
-          httpAuth: _httpAuth,
-          logger,
-          rbacEnabled,
-        });
-
-        if (!rbacCheck.hasPermission) {
-          res.status(403).json(createPermissionDeniedResponse('delete_data', rbacCheck.username, rbacCheck.userRoles));
-          return;
-        }
-
-        const deletedCount = await database.deleteServiceAccountAccessReviewById(recordId);
+        const deletedCount =
+          await database.deleteServiceAccountAccessReviewById(recordId);
 
         if (deletedCount === 0) {
-          res.status(404).json({ 
-            success: false,
-            error: 'Service account access review not found' 
-          });
+          res
+            .status(404)
+            .json({ error: 'Service account access review not found' });
           return;
         }
 
         res.json({
-          success: true,
           message: 'Service account access review deleted successfully',
           deletedCount,
         });
@@ -446,42 +275,7 @@ export async function createDataDeletionRouter(
         const recordId = parseInt(id, 10);
 
         if (isNaN(recordId)) {
-          res.status(400).json({ 
-            success: false,
-            error: 'Invalid record ID' 
-          });
-          return;
-        }
-
-        // Get app_name from group access record for RBAC check
-        const recordInfo = await knex('group_access_reports')
-          .select('app_name')
-          .where({ id: recordId })
-          .first();
-
-        if (!recordInfo) {
-          res.status(404).json({ 
-            success: false,
-            error: 'Group access record not found' 
-          });
-          return;
-        }
-
-        const appName = recordInfo.app_name;
-
-        // Check RBAC permissions for data deletion
-        const rbacCheck = await checkRbacPermission({
-          req,
-          appName,
-          requiredPermission: 'delete_data',
-          knex,
-          httpAuth: _httpAuth,
-          logger,
-          rbacEnabled,
-        });
-
-        if (!rbacCheck.hasPermission) {
-          res.status(403).json(createPermissionDeniedResponse('delete_data', rbacCheck.username, rbacCheck.userRoles));
+          res.status(400).json({ error: 'Invalid record ID' });
           return;
         }
 
@@ -531,36 +325,15 @@ export async function createDataDeletionRouter(
 
         if (!app_name || !frequency || !period) {
           res.status(400).json({
-            success: false,
-            error: 'Missing required parameters: app_name, frequency, and period are required',
+            error:
+              'Missing required parameters: app_name, frequency, and period are required',
           });
           return;
         }
 
-        const normalizedAppName = normalizeAppName(app_name as string);
-
-        // Validate app exists
-        const appExists = await validateAppExists(normalizedAppName, database);
-        if (!appExists) {
-          res.status(404).json(createAppNotFoundResponse(normalizedAppName));
-          return;
-        }
-
-        // Check RBAC permissions for data deletion
-        const rbacCheck = await checkRbacPermission({
-          req,
-          appName: normalizedAppName,
-          requiredPermission: 'delete_data',
-          knex,
-          httpAuth: _httpAuth,
-          logger,
-          rbacEnabled,
-        });
-
-        if (!rbacCheck.hasPermission) {
-          res.status(403).json(createPermissionDeniedResponse('delete_data', rbacCheck.username, rbacCheck.userRoles));
-          return;
-        }
+        const normalizedAppName = (app_name as string)
+          .toLowerCase()
+          .replace(/\s+/g, '-');
 
         const deletionSummary = await database.deleteFreshData(
           normalizedAppName,
@@ -603,52 +376,16 @@ export async function createDataDeletionRouter(
         const eventId = parseInt(id, 10);
 
         if (isNaN(eventId)) {
-          res.status(400).json({ 
-            success: false,
-            error: 'Invalid event ID' 
-          });
+          res.status(400).json({ error: 'Invalid event ID' });
           return;
         }
 
-        // Get app_name from activity stream event for RBAC check
-        const eventInfo = await knex('activity_stream')
-          .select('app_name')
-          .where({ id: eventId })
-          .first();
-
-        if (!eventInfo) {
-          res.status(404).json({ 
-            success: false,
-            error: 'Activity stream event not found' 
-          });
-          return;
-        }
-
-        const appName = eventInfo.app_name;
-
-        // Check RBAC permissions for data deletion
-        const rbacCheck = await checkRbacPermission({
-          req,
-          appName,
-          requiredPermission: 'delete_data',
-          knex,
-          httpAuth: _httpAuth,
-          logger,
-          rbacEnabled,
-        });
-
-        if (!rbacCheck.hasPermission) {
-          res.status(403).json(createPermissionDeniedResponse('delete_data', rbacCheck.username, rbacCheck.userRoles));
-          return;
-        }
-
-        const deletedCount = await database.deleteActivityStreamEventById(eventId);
+        const deletedCount = await database.deleteActivityStreamEventById(
+          eventId,
+        );
 
         if (deletedCount === 0) {
-          res.status(404).json({ 
-            success: false,
-            error: 'Activity stream event not found' 
-          });
+          res.status(404).json({ error: 'Activity stream event not found' });
           return;
         }
 
@@ -687,52 +424,14 @@ export async function createDataDeletionRouter(
         const metadataId = parseInt(id, 10);
 
         if (isNaN(metadataId)) {
-          res.status(400).json({ 
-            success: false,
-            error: 'Invalid metadata ID' 
-          });
-          return;
-        }
-
-        // Get app_name from audit metadata for RBAC check
-        const metadataInfo = await knex('application_audits')
-          .select('app_name')
-          .where({ id: metadataId })
-          .first();
-
-        if (!metadataInfo) {
-          res.status(404).json({ 
-            success: false,
-            error: 'Audit metadata not found' 
-          });
-          return;
-        }
-
-        const appName = metadataInfo.app_name;
-
-        // Check RBAC permissions for data deletion
-        const rbacCheck = await checkRbacPermission({
-          req,
-          appName,
-          requiredPermission: 'delete_data',
-          knex,
-          httpAuth: _httpAuth,
-          logger,
-          rbacEnabled,
-        });
-
-        if (!rbacCheck.hasPermission) {
-          res.status(403).json(createPermissionDeniedResponse('delete_data', rbacCheck.username, rbacCheck.userRoles));
+          res.status(400).json({ error: 'Invalid metadata ID' });
           return;
         }
 
         const deletedCount = await database.deleteAuditMetadataById(metadataId);
 
         if (deletedCount === 0) {
-          res.status(404).json({ 
-            success: false,
-            error: 'Audit metadata not found' 
-          });
+          res.status(404).json({ error: 'Audit metadata not found' });
           return;
         }
 
@@ -764,10 +463,6 @@ export async function createDataDeletionRouter(
   dataDeletionRouter.delete(
     '/delete/all-data',
     async (_req, res): Promise<void> => {
-      if (_permissions && _httpAuth) {
-        // No app context here; skip requireAppPermission as it expects app_name.
-        // Data delete is global; handled by policy config or another guard if added later.
-      }
       try {
         const deletionSummary = await database.deleteAllData();
 
