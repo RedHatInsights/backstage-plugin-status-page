@@ -179,9 +179,15 @@ export const AuditDetailsSection = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [app_name, frequency, period, discoveryApi, fetchApi, identityApi]);
 
-  const handleFinalSignOff = async () => {
+  const checkAllApprovalsComplete = async (): Promise<{
+    canProceed: boolean;
+    totalPending: number;
+    userCounts: any;
+    serviceCounts: any;
+  }> => {
     try {
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+
       // Fetch user access reviews
       const userRes = await fetchApi.fetch(
         `${baseUrl}/access-reviews?app_name=${encodeURIComponent(
@@ -211,7 +217,6 @@ export const AuditDetailsSection = () => {
         approved: userApproved,
         rejected: userRejected,
       };
-      setUserCounts(userCountsFresh);
 
       // Fetch service account reviews
       const serviceRes = await fetchApi.fetch(
@@ -242,20 +247,40 @@ export const AuditDetailsSection = () => {
         approved: serviceApproved,
         rejected: serviceRejected,
       };
-      setServiceCounts(serviceCountsFresh);
 
       const totalPending = userPending + servicePending;
-      if (totalPending > 0) {
+      return {
+        canProceed: totalPending === 0,
+        totalPending,
+        userCounts: userCountsFresh,
+        serviceCounts: serviceCountsFresh,
+      };
+    } catch (error) {
+      throw new Error('Failed to fetch review counts');
+    }
+  };
+
+  const handleFinalSignOff = async () => {
+    try {
+      const approvalCheck = await checkAllApprovalsComplete();
+
+      if (!approvalCheck.canProceed) {
         alertApi.post({
-          message: `Cannot perform final sign-off. There are ${totalPending} pending reviews.`,
-          severity: 'error',
+          message: `Cannot proceed with final sign-off. ${approvalCheck.totalPending} review(s) still pending. Please complete all reviews first.`,
+          severity: 'warning',
         });
         return;
       }
+
+      // Update the counts state
+      setUserCounts(approvalCheck.userCounts);
+      setServiceCounts(approvalCheck.serviceCounts);
+
       setSignOffDialogOpen(true);
     } catch (error) {
       alertApi.post({
-        message: 'Failed to fetch review counts. Please try again.',
+        message:
+          'Unable to verify review status. Please refresh the page and try again.',
         severity: 'error',
       });
     }
@@ -283,7 +308,8 @@ export const AuditDetailsSection = () => {
       if (response.ok) {
         setIsFinalSignedOff(true);
         alertApi.post({
-          message: 'Final sign-off completed successfully',
+          message:
+            'Final sign-off completed successfully! Audit is now in read-only mode.',
           severity: 'success',
         });
         setSignOffDialogOpen(false);
@@ -296,7 +322,7 @@ export const AuditDetailsSection = () => {
         message:
           error instanceof Error
             ? error.message
-            : 'Failed to perform final sign-off',
+            : 'Failed to perform final sign-off. Please try again.',
         severity: 'error',
       });
       // eslint-disable-next-line no-console
@@ -306,6 +332,18 @@ export const AuditDetailsSection = () => {
 
   const handleSendEmailReminder = async () => {
     try {
+      // Check if all approvals are done using the reusable function
+      const approvalCheck = await checkAllApprovalsComplete();
+
+      if (!approvalCheck.canProceed) {
+        alertApi.post({
+          message: `Cannot send email reminder. ${approvalCheck.totalPending} review(s) still pending. Please complete all reviews first.`,
+          severity: 'warning',
+        });
+        return;
+      }
+
+      // If all approvals are done, proceed with sending email
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
       const response = await fetchApi.fetch(`${baseUrl}/send-email`, {
         method: 'POST',
@@ -397,7 +435,7 @@ export const AuditDetailsSection = () => {
 
       if (response.ok) {
         alertApi.post({
-          message: 'Email reminder sent successfully to application owner',
+          message: 'Email reminder sent successfully to the application owner',
           severity: 'success',
         });
         setEmailReminderDialogOpen(false);
@@ -410,7 +448,7 @@ export const AuditDetailsSection = () => {
         message:
           error instanceof Error
             ? error.message
-            : 'Failed to send email reminder',
+            : 'Failed to send email reminder. Please try again.',
         severity: 'error',
       });
       // eslint-disable-next-line no-console
