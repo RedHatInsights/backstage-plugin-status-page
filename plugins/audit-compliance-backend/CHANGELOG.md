@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance-backend [1.22.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance-backend@1.21.0...@appdev/backstage-plugin-audit-compliance-backend@1.22.0) (2025-08-26)
+
+
+### Features
+
+* **audit-access-manager:** Adding check before email reminder to app owner ([0b493d1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/0b493d1ad583480871aa59e47ecb5f565ec5ee1c))
+
 ## @appdev/backstage-plugin-audit-compliance-backend [1.21.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance-backend@1.20.0...@appdev/backstage-plugin-audit-compliance-backend@1.21.0) (2025-08-21)
 
 
