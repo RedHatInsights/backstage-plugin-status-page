@@ -5947,7 +5947,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/plugin-catalog-common@npm:^1.1.3, @backstage/plugin-catalog-common@npm:^1.1.4, @backstage/plugin-catalog-common@npm:^1.1.5":
+"@backstage/plugin-catalog-common@npm:^1.1.0, @backstage/plugin-catalog-common@npm:^1.1.3, @backstage/plugin-catalog-common@npm:^1.1.4, @backstage/plugin-catalog-common@npm:^1.1.5":
   version: 1.1.5
   resolution: "@backstage/plugin-catalog-common@npm:1.1.5"
   dependencies:
@@ -7570,6 +7570,19 @@ __metadata:
   checksum: 10/66d00284a3a9a21e5e853b256942e17edbb295f4bd7b9aa7ef06bbb603568d5173eb41b0f64c1e51748bc29d382a23a67d99956e57e7431c64e47e74324182d9
   languageName: node
   linkType: hard
+
+"@compass/backstage-plugin-catalog-backend-module-aixway@workspace:plugins/catalog-backend-module-aixway":
+  version: 0.0.0-use.local
+  resolution: "@compass/backstage-plugin-catalog-backend-module-aixway@workspace:plugins/catalog-backend-module-aixway"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.4.0"
+    "@backstage/backend-test-utils": "npm:^1.6.0"
+    "@backstage/catalog-model": "npm:^1.7.4"
+    "@backstage/cli": "npm:^0.33.0"
+    "@backstage/plugin-catalog-common": "npm:^1.1.0"
+    "@backstage/plugin-catalog-node": "npm:^1.17.1"
+  languageName: unknown
+  linkType: soft
 
 "@compass/backstage-plugin-catalog-backend-module-cmdb@npm:*, @compass/backstage-plugin-catalog-backend-module-cmdb@workspace:plugins/catalog-backend-module-cmdb":
   version: 0.0.0-use.local
