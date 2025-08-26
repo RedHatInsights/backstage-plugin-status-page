@@ -1,5 +1,13 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.22.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.21.0...@appdev/backstage-plugin-audit-compliance@1.22.0) (2025-08-26)
+
+
+### Features
+
+* **audit-access-manager:** Adding check before email reminder to app owner ([0b493d1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/0b493d1ad583480871aa59e47ecb5f565ec5ee1c))
+* **audit-access-manager:** Fixing email body colors for dark theme ([2dfba35](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/2dfba357ecc87e8668293e4688d4be8ff2def6b0))
+
 ## @appdev/backstage-plugin-audit-compliance [1.21.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.20.0...@appdev/backstage-plugin-audit-compliance@1.21.0) (2025-08-20)
 
 
