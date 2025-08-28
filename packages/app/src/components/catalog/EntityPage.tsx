@@ -106,6 +106,7 @@ import {
   GroupSoundcheckContent,
 } from '@spotify/backstage-plugin-soundcheck';
 import { MCPPrimitives, MCPLinks } from '@compass/backstage-plugin-mcp';
+import { AIExpresswayCard, isXEAIXWayAvailable } from '@compass/backstage-plugin-ai-expressway';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -221,6 +222,14 @@ const overviewContent = (
       <EntitySwitch.Case if={isReportPortalAvailable}>
         <Grid item lg={4} md={6} xs={12}>
           <ReportPortalOverviewCard variant="gridItem" />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+
+    <EntitySwitch>
+      <EntitySwitch.Case if={isXEAIXWayAvailable}>
+        <Grid item lg={6} md={8} xs={12}>
+          <AIExpresswayCard />
         </Grid>
       </EntitySwitch.Case>
     </EntitySwitch>
@@ -659,6 +668,13 @@ const MCPEntityPage = (
             <EntitySwitch.Case if={isReportPortalAvailable}>
               <Grid item xs={12}>
                 <ReportPortalOverviewCard variant="gridItem" />
+              </Grid>
+            </EntitySwitch.Case>
+          </EntitySwitch>
+          <EntitySwitch>
+            <EntitySwitch.Case if={isXEAIXWayAvailable}>
+              <Grid item xs={12}>
+                <AIExpresswayCard />
               </Grid>
             </EntitySwitch.Case>
           </EntitySwitch>

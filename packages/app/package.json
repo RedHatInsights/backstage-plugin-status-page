@@ -58,6 +58,7 @@
     "@backstage/plugin-user-settings": "^0.8.23",
     "@backstage/theme": "^0.6.6",
     "@backstage/types": "^1.2.1",
+    "@compass/backstage-plugin-ai-expressway": "*",
     "@compass/backstage-plugin-catalog-index": "*",
     "@compass/backstage-plugin-cmdb": "*",
     "@compass/backstage-plugin-contact-details": "*",
