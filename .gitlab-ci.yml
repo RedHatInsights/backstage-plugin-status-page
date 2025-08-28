@@ -201,6 +201,10 @@ deploy-dev:
   extends: .mpp_deploy
   stage: deploy-dev
   needs: ['image-build']
+  environment:
+    name: plugin-dev
+    url: $DEV_ENV_URL
+    deployment_tier: development
 
 deploy-qa:
   variables:
@@ -212,3 +216,7 @@ deploy-qa:
   stage: deploy-qa
   needs: ['deploy-dev']
   when: manual
+  environment:
+    name: plugin-qa
+    url: $QA_ENV_URL
+    deployment_tier: testing
