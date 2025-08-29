@@ -40,10 +40,19 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   groupName: {
     fontFamily: 'monospace',
-    backgroundColor: theme.palette.grey[100],
     padding: theme.spacing(0.5, 1),
     borderRadius: theme.shape.borderRadius,
-    color: theme.palette.text.primary,
+    backgroundColor:
+      theme.palette.type === 'dark'
+        ? theme.palette.grey[800]
+        : theme.palette.grey[100],
+    color:
+      theme.palette.type === 'dark'
+        ? theme.palette.grey[100]
+        : theme.palette.text.primary,
+    border: `1px solid ${
+      theme.palette.type === 'dark' ? theme.palette.grey[700] : theme.palette.grey[300]
+    }`,
   },
   buttonContainer: {
     marginTop: theme.spacing(3),
