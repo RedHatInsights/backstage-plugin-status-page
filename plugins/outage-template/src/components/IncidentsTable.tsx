@@ -13,9 +13,44 @@ import {
   Box,
   Tabs,
   Tab,
+  makeStyles,
 } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import AssignmentIcon from '@material-ui/icons/Assignment';
 import TemplatesTable from './TemplatesTable';
 import { getStatusColor } from '../utils';
+
+const useStyles = makeStyles((theme) => ({
+  updateButton: {
+    color: '#1976d2',
+    borderColor: '#1976d2',
+    '&:hover': {
+      backgroundColor: 'rgba(25, 118, 210, 0.04)',
+      borderColor: '#1976d2',
+    },
+  },
+  postmortemButton: {
+    color: '#757575',
+    borderColor: '#757575',
+    '&:hover': {
+      backgroundColor: 'rgba(117, 117, 117, 0.04)',
+      borderColor: '#757575',
+    },
+  },
+  deleteButton: {
+    color: '#d32f2f',
+    borderColor: '#d32f2f',
+    '&:hover': {
+      backgroundColor: 'rgba(211, 47, 47, 0.04)',
+      borderColor: '#d32f2f',
+    },
+  },
+  buttonIcon: {
+    marginRight: theme.spacing(0.5),
+    fontSize: '1rem',
+  },
+}));
 
 const IncidentsTable = ({
   incidents,
@@ -27,6 +62,7 @@ const IncidentsTable = ({
   onSetTabIndex,
   searchTermForTemplates,
 }: IncidentsTableProps) => {
+  const classes = useStyles();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [tabIndex, setTabIndex] = useState(0);
@@ -109,8 +145,8 @@ const IncidentsTable = ({
                       </TableCell>
                       <TableCell>
                         <Chip
-                          variant="outlined"
                           label={incident.impactOverride.toLocaleUpperCase()}
+                          variant="outlined"
                           style={{
                             margin: '4px',
                             backgroundColor: getStatusColor(
@@ -161,28 +197,36 @@ const IncidentsTable = ({
                         </Button>
                       </TableCell>
                       <TableCell>
-                        <Box display="flex">
+                        <Box display="flex" style={{ gap: '16px' }}>
+                          {incident.status === 'resolved' || incident.status === 'completed' ? (
+                            <Button
+                              variant="outlined"
+                              className={classes.postmortemButton}
+                              onClick={() => onUpdate(incident.id)}
+                              disabled={false}
+                              size="small"
+                              startIcon={<AssignmentIcon className={classes.buttonIcon} />}
+                            >
+                              Postmortem
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outlined"
+                              className={classes.updateButton}
+                              onClick={() => onUpdate(incident.id)}
+                              disabled={false}
+                              size="small"
+                              startIcon={<EditIcon className={classes.buttonIcon} />}
+                            >
+                              Update
+                            </Button>
+                          )}
                           <Button
                             variant="outlined"
-                            color="primary"
-                            onClick={() => onUpdate(incident.id)}
-                            style={{ margin: '5px' }}
-                            disabled={incident.status === 'postmortem'}
-                          >
-                            {incident.status === 'resolved' ||
-                            incident.status === 'completed'
-                              ? 'Postmortem'
-                              : 'Update'}
-                          </Button>
-                          <Button
-                            variant="outlined"
-                            color="secondary"
+                            className={classes.deleteButton}
                             onClick={() => onDelete(incident.id)}
-                            style={{
-                              margin: '5px',
-                              color: 'red',
-                              fontWeight: 'lighter',
-                            }}
+                            size="small"
+                            startIcon={<DeleteIcon className={classes.buttonIcon} />}
                           >
                             Delete
                           </Button>
