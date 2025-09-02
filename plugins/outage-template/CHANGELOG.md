@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-outages [1.9.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-outages@1.9.1...@appdev/backstage-plugin-outages@1.9.2) (2025-09-02)
+
+
+### Other changes
+
+* **APD-390:** Added button icons for edit, delete and postmortem ([f771c54](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/f771c54a0701516a5247d7917659a00f191a98a7))
+
 ## @appdev/backstage-plugin-outages [1.9.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-outages@1.9.0...@appdev/backstage-plugin-outages@1.9.1) (2025-08-25)
 
 
