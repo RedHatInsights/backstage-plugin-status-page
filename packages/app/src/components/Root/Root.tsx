@@ -109,6 +109,13 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
           {/* End global nav */}
           <SidebarDivider />
           <SidebarScrollWrapper>
+            <SidebarItem
+              icon={ReportPortalIcon as IconComponent}
+              to="audit-access-manager"
+              text="Audit Access Manager"
+            />
+          </SidebarScrollWrapper>
+          <SidebarScrollWrapper>
             <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
             <SidebarItem
               icon={ReportPortalIcon as IconComponent}

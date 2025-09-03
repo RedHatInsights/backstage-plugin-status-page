@@ -8,6 +8,8 @@ import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import WarningIcon from '@material-ui/icons/Warning';
 import { useStyles } from './AuditSummaryReport.styles';
 
+export { useAuditReportPDF } from './components/AuditReportPDF';
+
 interface StatCardProps {
   title: string;
   value: number;

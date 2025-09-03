@@ -177,6 +177,60 @@ export async function createDetailsRouter(
   });
 
   /**
+   * GET /activity-stream/export
+   * Retrieves all activity stream events for PDF export.
+   *
+   * @route GET /activity-stream/export
+   * @param {string} req.query.app_name - Application name
+   * @param {string} req.query.frequency - Review frequency
+   * @param {string} req.query.period - Review period
+   * @returns {Object} 200 - All activity events with summary
+   * @returns {Object} 400 - Missing parameters error
+   * @returns {Object} 500 - Error response
+   */
+  auditDetailsRouter.get('/activity-stream/export', async (req, res) => {
+    const { app_name, frequency, period } = req.query;
+
+    if (!app_name || !frequency || !period) {
+      return res.status(400).json({
+        error: 'Missing required query parameters: app_name, frequency, period',
+      });
+    }
+
+    try {
+      // Get all events for this specific audit (no pagination)
+      const events = await database.getActivityStreamEvents({
+        app_name: app_name as string,
+        frequency: frequency as string,
+        period: period as string,
+        limit: 1000, // High limit to get all events
+        offset: 0,
+      });
+
+      // Filter to only include events that match the exact audit
+      const filteredEvents = events.filter(
+        event =>
+          event.app_name === app_name &&
+          event.frequency === frequency &&
+          event.period === period,
+      );
+
+      // Return the raw events array to match /activity-stream response shape
+      return res.json(filteredEvents);
+    } catch (error) {
+      logger.error('Failed to fetch activity stream events for export', {
+        error: error instanceof Error ? error.message : String(error),
+        app_name,
+        frequency,
+        period,
+      });
+      return res
+        .status(500)
+        .json({ error: 'Failed to fetch activity stream events for export' });
+    }
+  });
+
+  /**
    * GET /audits/:app_name/:frequency/:period/details
    * Retrieves detailed information about an audit.
    *
