@@ -1,49 +1,45 @@
 import { Avatar, Chip, Grid } from '@material-ui/core';
 import { EntityPeekAheadPopover } from '@backstage/plugin-catalog-react';
-import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import Skeleton from '@material-ui/lab/Skeleton/Skeleton';
 import { Link } from '@backstage/core-components';
 
 import { DetailsField } from './DetailsField';
 
 const STATUS_COLORS = {
-  DONE: '#14892C',
-  RESOLVED: '#14892C',
-  CLOSED: '#14892C',
-  IN_PROGRESS: '#0052CC',
-  ACTIVE: '#0052CC',
-  DEVELOPMENT: '#0052CC',
-  REVIEW: '#FF8B00',
-  TESTING: '#FF8B00',
-  QA: '#FF8B00',
-  BLOCKED: '#DE350B',
-  FAILED: '#DE350B',
-  REJECTED: '#DE350B',
-  TODO: '#42526E',
-  OPEN: '#42526E',
-  NEW: '#42526E',
-  BACKLOG: '#42526E',
-  PENDING: '#FF991F',
-  WAITING: '#FF991F',
-  HOLD: '#FF991F',
-  DEFAULT: '#6B778C',
+  DONE: "#14892C",
+  RESOLVED: "#14892C",
+  CLOSED: "#14892C",
+
+  IN_PROGRESS: "#0052CC",
+  ACTIVE: "#0052CC",
+  DEVELOPMENT: "#0052CC",
+
+  REVIEW: "#FF8B00",
+  TESTING: "#FF8B00",
+  QA: "#FF8B00",
+
+  BLOCKED: "#DE350B",
+  FAILED: "#DE350B",
+  REJECTED: "#DE350B",
+
+  TODO: "#42526E",
+  TO_DO: "#42526E", // Jira uses "To Do"
+  OPEN: "#42526E",
+  NEW: "#42526E",
+  BACKLOG: "#42526E",
+
+  PENDING: "#FF991F",
+  WAITING: "#FF991F",
+  HOLD: "#FF991F",
+
+  DEFAULT: "#6B778C",
 } as const;
 
 const getStatusColor = (status: string): string => {
-  const statusUpper = status.toUpperCase();
-  
-  if (statusUpper in STATUS_COLORS) {
-    return STATUS_COLORS[statusUpper as keyof typeof STATUS_COLORS];
-  }
-  
-  for (const [key, color] of Object.entries(STATUS_COLORS)) {
-    if (key !== 'DEFAULT' && statusUpper.includes(key)) {
-      return color;
-    }
-  }
-  
-  return STATUS_COLORS.DEFAULT;
+  const key = status.toUpperCase().replace(/[\s-]+/g, "_");
+  return STATUS_COLORS[key as keyof typeof STATUS_COLORS] ?? STATUS_COLORS.DEFAULT;
 };
+  
 
 export interface DetailsContentProps {
   id?: string;
@@ -54,7 +50,6 @@ export interface DetailsContentProps {
   ownerName?: string;
   ownerEmail?: string;
   assignee?: string;
-  namespace?: string;
 }
 
 export const DetailsContent = ({
@@ -65,7 +60,6 @@ export const DetailsContent = ({
   tags,
   ownerName,
   ownerEmail,
-  namespace,
 }: DetailsContentProps) => {
   const getOwnerEntityRef = (): string => {
     let username: string | undefined;
@@ -78,7 +72,7 @@ export const DetailsContent = ({
       username = ownerName;
     }
     
-    return `user:${namespace ?? DEFAULT_NAMESPACE}/${username}`;
+    return `user:redhat/${username}`;
   };
 
   const renderTags = (): React.ReactNode => {

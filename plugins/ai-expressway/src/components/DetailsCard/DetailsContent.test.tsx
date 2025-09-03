@@ -21,7 +21,6 @@ describe('<DetailsContent />', () => {
         status={x.status}
         tags={x.tags}
         ownerName={x.owner}
-        namespace="default"
       />,
     );
 
