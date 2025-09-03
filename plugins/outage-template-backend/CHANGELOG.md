@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-outage-template-backend [1.2.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-outage-template-backend@1.2.1...@appdev/backstage-plugin-outage-template-backend@1.2.2) (2025-09-03)
+
+
+### Bug Fixes
+
+* **APD-1008:** Altered templates body attribute to text ([34ea0e8](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/34ea0e853b55853ea07f39c928e1a86e333a94b9))
+
 ## @appdev/backstage-plugin-outage-template-backend [1.2.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-outage-template-backend@1.2.0...@appdev/backstage-plugin-outage-template-backend@1.2.1) (2025-08-25)
 
 
