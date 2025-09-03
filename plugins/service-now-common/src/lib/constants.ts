@@ -31,6 +31,11 @@ export const CMDB_SIA_RECORD_FIELDS = [
   "recovery_time_objective.name",
   "recovery_point_objective.name",
 ]
+export const CMDB_PIA_RECORD_FIELDS = [
+  "number",
+  "state",
+  "sys_created_on",
+]
 export const DEFAULT_CMDB_RECORD_FIELDS = [
   'sys_id',
   'name',
