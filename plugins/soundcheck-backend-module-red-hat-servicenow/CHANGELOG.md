@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.4.4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.4.3...@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.4.4) (2025-09-03)
+
+
+### Bug Fixes
+
+* update the dependency of plugin to latest version ([bed2fcf](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/bed2fcf8217f6f4dbe53ef6fd38f0561909173bb))
+
 ## @compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.4.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.4.2...@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.4.3) (2025-09-03)
 
 
