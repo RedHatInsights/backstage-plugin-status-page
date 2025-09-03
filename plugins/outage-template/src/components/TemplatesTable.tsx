@@ -10,13 +10,36 @@ import {
   Chip,
   LinearProgress,
   TablePagination,
+  makeStyles,
 } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import { outageApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
-import { getStatusColor } from '../utils';
+import { getBackstageChipStyle } from '../utils';
 import DeleteTemplateModal from './DeleteTemplateModal';
 import TemplateViewDrawer from './TemplateViewDrawer';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
+
+const useStyles = makeStyles(() => ({
+  updateButton: {
+    color: '#1976d2',
+    borderColor: '#1976d2',
+    '&:hover': {
+      backgroundColor: 'rgba(25, 118, 210, 0.04)',
+      borderColor: '#1976d2',
+    },
+  },
+  deleteButton: {
+    color: '#d32f2f',
+    borderColor: '#d32f2f',
+    '&:hover': {
+      backgroundColor: 'rgba(211, 47, 47, 0.04)',
+      borderColor: '#d32f2f',
+    },
+  },
+}));
+
 
 const TemplatesTable = (props: {
   refreshTemplates: boolean;
@@ -36,6 +59,7 @@ const TemplatesTable = (props: {
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
+  const classes = useStyles();
 
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -125,21 +149,17 @@ const TemplatesTable = (props: {
                           label={template.status.toLocaleUpperCase()}
                           style={{
                             margin: '4px',
-                            borderColor: getStatusColor(template.status),
+                            ...getBackstageChipStyle(template.status, 'outlined'),
                           }}
                           size="small"
                         />
                       </TableCell>
                       <TableCell>
                         <Chip
-                          variant="outlined"
                           label={template.impactOverride.toLocaleUpperCase()}
                           style={{
                             margin: '4px',
-                            color: 'white',
-                            backgroundColor: getStatusColor(
-                              template.impactOverride,
-                            ),
+                            ...getBackstageChipStyle(template.impactOverride, 'default'),
                           }}
                           size="small"
                         />
@@ -163,6 +183,7 @@ const TemplatesTable = (props: {
                           color="primary"
                           style={{ margin: '5px' }}
                           onClick={() => handleEditTemplate(template)}
+                          startIcon={<EditIcon className={classes.updateButton} />}
                         >
                           Update
                         </Button>
@@ -178,6 +199,7 @@ const TemplatesTable = (props: {
                             setTemplateToDelete(template);
                             setOpenDeleteTemplateModal(true);
                           }}
+                          startIcon={<DeleteIcon className={classes.deleteButton} />}
                         >
                           Delete
                         </Button>
