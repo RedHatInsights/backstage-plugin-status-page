@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.23.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.22.0...@appdev/backstage-plugin-audit-compliance@1.23.0) (2025-09-03)
+
+
+### Features
+
+* **audit-access-manager:** Improve tables and reports with entity display, full pagination, and complete PDF export ([4a67116](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/4a6711666fbee3df7f90581144a38fc2d2f1cf4f))
+
 ## @appdev/backstage-plugin-audit-compliance [1.22.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.21.0...@appdev/backstage-plugin-audit-compliance@1.22.0) (2025-08-26)
 
 
