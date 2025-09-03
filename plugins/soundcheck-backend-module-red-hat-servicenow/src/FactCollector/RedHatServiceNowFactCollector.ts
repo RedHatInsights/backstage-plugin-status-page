@@ -180,20 +180,21 @@ export class RedHatServiceNowFactCollector implements FactCollector {
           }
 
           case stringifyFactRef(PIA_STATE_FACT_REFERENCE): {
-            const piaData = await serviceNowClient.getComplianceControlsByTriggerId(
-              cmdbSysId,
-            );
+            const piaData =
+              await serviceNowClient.getPIAAssessmentInstancesBySysId(
+                cmdbSysId,
+              );
             if (!piaData || !piaData.items || !Array.isArray(piaData.items)) {
               this.logger.error(
-                `Invalid response from ServiceNow PIA controls for entity ${entity.metadata.namespace}/${entity.metadata.name}`,
+                `Invalid response from ServiceNow PIA assessment instances for entity ${entity.metadata.namespace}/${entity.metadata.name}`,
               );
             } else {
-              const piaResponseState = piaData.items.map(item => item?.state);
+              const filteredItems = piaData.items.filter(item => item);
 
               facts.push({
                 factRef: PIA_STATE_FACT_REFERENCE,
                 entityRef: stringifyEntityRef(entity),
-                data: { pia_state: piaResponseState } as JsonObject,
+                data: { pia_state: filteredItems } as unknown as JsonObject,
                 timestamp: new Date().toISOString(),
               });
             }
@@ -295,12 +296,22 @@ export class RedHatServiceNowFactCollector implements FactCollector {
 
       case PIA_STATE_FACT_REFERENCE.split('/')[1]:
         return JSON.stringify({
-          title: 'PIA State',
+          title: 'PIA Assessment Instances',
+          description: 'Privacy Impact Assessment (PIA) assessment instances.',
           type: 'object',
           properties: {
             pia_state: {
               type: 'array',
-              items: { type: 'string' },
+              items: {
+                type: 'object',
+                properties: {
+                  number: { type: 'string' },
+                  state: { type: 'string' },
+                  sys_created_on: { type: 'string', format: 'date-time' },
+                },
+                required: ['number', 'state', 'sys_created_on'],
+              },
+              description: 'Array of PIA assessment instances',
             },
           },
           required: ['pia_state'],

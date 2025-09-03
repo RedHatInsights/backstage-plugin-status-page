@@ -5,8 +5,8 @@ import {
   ServiceNowIntegrationConfig,
   CommonListOptions,
   ServiceNowComplianceControlsResponse,
-  ServiceNowPIAComplianceControlsResponse,
   ServiceNowSIAComplianceControlsResponse,
+  ServiceNowPIAAssessmentInstanceResponse,
 } from './types';
 
 import {
@@ -14,6 +14,7 @@ import {
   DEFAULT_CMDB_QUERY_SIZE,
   CMDB_ESS_RECORD_FIELDS,
   CMDB_PIA_TABLE_NAME,
+  CMDB_PIA_RECORD_FIELDS,
   CMDB_SIA_RECORD_FIELDS,
   CMDB_SIA_TABLE_NAME,
 } from './constants';
@@ -51,19 +52,6 @@ export class ServiceNowClient {
     });
   }
 
-  async getComplianceControlsByTriggerId(
-    triggerId: string,
-    options?: CommonListOptions,
-  ) {
-    const uri = `/api/now/table/${CMDB_PIA_TABLE_NAME}`;
-
-    const sysparmQuery = `trigger_id=${triggerId}`;
-    return this.pagedRequest<ServiceNowPIAComplianceControlsResponse>(uri, {
-      ...options,
-      sysparm_query: sysparmQuery,
-    });
-  }
-
   async getSIAComplianceControlsBySysId(
     sysId: string,
     options?: CommonListOptions,
@@ -79,6 +67,22 @@ export class ServiceNowClient {
     });
   }
 
+  async getPIAAssessmentInstancesBySysId(
+    sysId: string,
+    options?: CommonListOptions,
+  ) {
+    const uri = `/api/now/v2/table/${CMDB_PIA_TABLE_NAME}`;
+    const sysparmQuery = `sn_grc_profile.applies_to=${sysId}`;
+    const sysparm_fields = options?.sysparm_fields?.split?.(',') ?? [];
+  
+    return this.pagedRequest<ServiceNowPIAAssessmentInstanceResponse>(uri, {
+      ...options,
+      sysparm_query: sysparmQuery,
+      "metric_type.nameSTARTSWITHPrivacy": "",
+      sysparm_fields: [...CMDB_PIA_RECORD_FIELDS, ...sysparm_fields].join(','),
+    });
+  }
+  
   async pagedRequest<T = any>(
     endpoint: string,
     options?: CommonListOptions,
@@ -93,7 +97,7 @@ export class ServiceNowClient {
         request.searchParams.append(key, options[key]!.toString());
       }
     }
-
+    
     this.logger.debug(`Fetching: ${request.toString()}`);
     const response = await fetch(
       request.toString(),

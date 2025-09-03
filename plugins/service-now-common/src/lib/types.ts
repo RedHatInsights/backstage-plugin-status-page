@@ -120,9 +120,6 @@ export interface ServiceNowComplianceControlItem {
 export interface ServiceNowComplianceControlsResponse {
   result: ServiceNowComplianceControlItem[];
 }
-export interface ServiceNowPIAComplianceControlsResponse {
-  state: string;
-}
 
 export interface ServiceNowSIAComplianceControlsResponse {
   sys_created_on: string;
@@ -134,4 +131,14 @@ export interface ServiceNowSIAComplianceControlsResponse {
   // API response fields (dot notation)
   'recovery_time_objective.name'?: string;
   'recovery_point_objective.name'?: string;
+}
+
+export interface ServiceNowPIAAssessmentInstanceItem {
+  number: string;
+  state: string;
+  sys_created_on: string;
+}
+
+export interface ServiceNowPIAAssessmentInstanceResponse {
+  result: ServiceNowPIAAssessmentInstanceItem[];
 }
