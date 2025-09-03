@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-outages [1.9.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-outages@1.9.2...@appdev/backstage-plugin-outages@1.9.3) (2025-09-03)
+
+
+### Bug Fixes
+
+* **APD-1008:** Standardized status chips color theme ([717c9d3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/717c9d3ea09e86b9fa587b488afb008445440c7e))
+
 ## @appdev/backstage-plugin-outages [1.9.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-outages@1.9.1...@appdev/backstage-plugin-outages@1.9.2) (2025-09-02)
 
 
