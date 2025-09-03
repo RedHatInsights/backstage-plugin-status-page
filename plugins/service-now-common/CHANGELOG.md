@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-service-now-common [1.5.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-service-now-common@1.5.0...@compass/backstage-plugin-service-now-common@1.5.1) (2025-09-03)
+
+
+### Bug Fixes
+
+* **PULSE-873:** updated the pia url api to fetch the PIA details ([590f187](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/590f1874dff62b9dbb5e3223b0543751c8ff81da))
+
 ## @compass/backstage-plugin-service-now-common [1.5.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-service-now-common@1.4.0...@compass/backstage-plugin-service-now-common@1.5.0) (2025-08-05)
 
 
