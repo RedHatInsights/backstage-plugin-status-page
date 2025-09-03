@@ -1,5 +1,5 @@
 import { Box, Chip, Drawer, Paper, Typography } from '@material-ui/core';
-import { getStatusColor } from '../utils';
+import { getBackstageChipStyle } from '../utils';
 
 const TemplateViewDrawer = ({ open, onClose, template }: any) => {
   return (
@@ -22,8 +22,7 @@ const TemplateViewDrawer = ({ open, onClose, template }: any) => {
               label={template.impactOverride.toLocaleUpperCase()}
               style={{
                 margin: '4px',
-                color: 'white',
-                backgroundColor: getStatusColor(template.impactOverride),
+                ...getBackstageChipStyle(template.impactOverride, 'default'),
               }}
             />
           </Paper>
@@ -38,8 +37,7 @@ const TemplateViewDrawer = ({ open, onClose, template }: any) => {
               label={template.status.toLocaleUpperCase()}
               style={{
                 margin: '4px',
-                color: 'white',
-                borderColor: getStatusColor(template.status),
+                ...getBackstageChipStyle(template.status, 'outlined'),
               }}
             />
           </Paper>

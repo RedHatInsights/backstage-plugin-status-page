@@ -19,7 +19,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import TemplatesTable from './TemplatesTable';
-import { getStatusColor } from '../utils';
+import { getBackstageChipStyle } from '../utils';
 
 const useStyles = makeStyles((theme) => ({
   updateButton: {
@@ -138,7 +138,7 @@ const IncidentsTable = ({
                           label={incident.status.toLocaleUpperCase()}
                           style={{
                             margin: '4px',
-                            borderColor: getStatusColor(incident.status),
+                            ...getBackstageChipStyle(incident.status, 'outlined'),
                           }}
                           size="small"
                         />
@@ -146,12 +146,9 @@ const IncidentsTable = ({
                       <TableCell>
                         <Chip
                           label={incident.impactOverride.toLocaleUpperCase()}
-                          variant="outlined"
                           style={{
                             margin: '4px',
-                            backgroundColor: getStatusColor(
-                              incident.impactOverride,
-                            ),
+                            ...getBackstageChipStyle(incident.impactOverride, 'default'),
                           }}
                           size="small"
                         />
@@ -198,7 +195,7 @@ const IncidentsTable = ({
                       </TableCell>
                       <TableCell>
                         <Box display="flex" style={{ gap: '16px' }}>
-                          {incident.status === 'resolved' || incident.status === 'completed' ? (
+                          {['resolved', 'completed', 'postmortem'].includes(incident.status) ? (
                             <Button
                               variant="outlined"
                               className={classes.postmortemButton}
