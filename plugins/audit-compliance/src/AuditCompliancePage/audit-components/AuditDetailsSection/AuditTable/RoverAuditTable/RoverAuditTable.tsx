@@ -506,7 +506,34 @@ export default function RoverAuditTable({
     { title: 'Account Name', field: 'account_name' },
     { title: 'Frequency', field: 'frequency' },
     { title: 'Approval Date', field: 'sign_off_date' },
-    { title: 'Approved By', field: 'sign_off_by' },
+    {
+      title: 'Approved By',
+      field: 'sign_off_by',
+      render: rowData => {
+        if (
+          !rowData.sign_off_by ||
+          rowData.sign_off_by === '' ||
+          rowData.sign_off_by === 'N/A'
+        ) {
+          return rowData.sign_off_by || 'N/A';
+        }
+
+        // Extract username from entity reference (e.g., "user:redhat/yoswal" -> "yoswal")
+        const username = rowData.sign_off_by.includes('user:redhat/')
+          ? rowData.sign_off_by.replace('user:redhat/', '')
+          : rowData.sign_off_by;
+
+        return (
+          <EntityDisplayName
+            entityRef={{
+              name: username,
+              kind: 'User',
+              namespace: 'redhat',
+            }}
+          />
+        );
+      },
+    },
     { title: 'Created At', field: 'created_at' },
     {
       title: 'Ticket ID',
@@ -752,6 +779,7 @@ export default function RoverAuditTable({
               options={{
                 paging: true,
                 pageSize: 5,
+                pageSizeOptions: [5, 10, 25, 50, userData.length],
                 selection: !isAuditCompleted && !isFinalSignedOff,
                 exportAllData: true,
                 exportMenu: [

@@ -4,13 +4,8 @@ import {
   Page,
   TableColumn,
 } from '@backstage/core-components';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import { EntityDisplayName } from '@backstage/plugin-catalog-react';
-import {
-  configApiRef,
-  discoveryApiRef,
-  fetchApiRef,
-  useApi,
-} from '@backstage/core-plugin-api';
 import {
   ExportCsv as exportCsv,
   ExportPdf as exportPdf,
@@ -27,96 +22,33 @@ import {
 } from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import PersonIcon from '@material-ui/icons/Person';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useStyles } from './AuditSummaryReport.styles';
-import { ReviewDataItem } from './types';
 
 interface ReviewDataTableProps {
   app_name: string;
   frequency: string;
   period: string;
   type: 'user_access' | 'service_account';
+  pdfMode?: boolean;
+  data?: any[];
+  loading?: boolean;
 }
 
 export const ReviewDataTable: React.FC<ReviewDataTableProps> = ({
-  app_name,
-  frequency,
-  period,
   type,
+  pdfMode = false,
+  data: propData,
+  loading: propLoading,
 }) => {
-  const [data, setData] = useState<ReviewDataItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showDetails, setShowDetails] = useState(false);
-  const discoveryApi = useApi(discoveryApiRef);
-  const fetchApi = useApi(fetchApiRef);
   const configApi = useApi(configApiRef);
   const jiraUrl = configApi.getString('auditCompliance.jiraUrl');
   const classes = useStyles();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
-
-        if (type === 'user_access') {
-          // Fetch user access reviews
-          const response = await fetchApi.fetch(
-            `${baseUrl}/access-reviews?app_name=${encodeURIComponent(
-              app_name || '',
-            )}&frequency=${encodeURIComponent(
-              frequency || '',
-            )}&period=${encodeURIComponent(period || '')}`,
-            {
-              method: 'GET',
-              headers: { 'Content-Type': 'application/json' },
-            },
-          );
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch user access reviews');
-          }
-
-          const reviews = await response.json();
-          // Filter to include rover, gitlab, and ldap sources
-          const filteredReviews = reviews.filter(
-            (review: any) =>
-              review.source === 'rover' ||
-              review.source === 'gitlab' ||
-              review.source === 'ldap',
-          );
-          setData(filteredReviews);
-        } else {
-          // Fetch service account reviews
-          const response = await fetchApi.fetch(
-            `${baseUrl}/service_account_access_review?app_name=${encodeURIComponent(
-              app_name || '',
-            )}&frequency=${encodeURIComponent(
-              frequency || '',
-            )}&period=${encodeURIComponent(period || '')}`,
-            {
-              method: 'GET',
-              headers: { 'Content-Type': 'application/json' },
-            },
-          );
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch service account reviews');
-          }
-
-          const reviews = await response.json();
-          setData(reviews);
-        }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error(`Error fetching ${type} reviews:`, error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [app_name, frequency, period, type, discoveryApi, fetchApi]);
+  // Use props data if provided, otherwise use empty array
+  const tableData = propData || [];
+  const tableLoading = propLoading !== undefined ? propLoading : false;
 
   // Define columns based on type
   const columns: TableColumn<any>[] =
@@ -212,7 +144,34 @@ export const ReviewDataTable: React.FC<ReviewDataTableProps> = ({
           },
           { title: 'Created At', field: 'created_at', hidden: !showDetails },
           { title: 'Approval Date', field: 'sign_off_date' },
-          { title: 'Approved By', field: 'sign_off_by' },
+          {
+            title: 'Approved By',
+            field: 'sign_off_by',
+            render: rowData => {
+              if (
+                !rowData.sign_off_by ||
+                rowData.sign_off_by === '' ||
+                rowData.sign_off_by === 'N/A'
+              ) {
+                return rowData.sign_off_by || 'N/A';
+              }
+
+              // Extract username from entity reference (e.g., "user:redhat/yoswal" -> "yoswal")
+              const username = rowData.sign_off_by.includes('user:redhat/')
+                ? rowData.sign_off_by.replace('user:redhat/', '')
+                : rowData.sign_off_by;
+
+              return (
+                <EntityDisplayName
+                  entityRef={{
+                    name: username,
+                    kind: 'User',
+                    namespace: 'redhat',
+                  }}
+                />
+              );
+            },
+          },
         ]
       : [
           { title: 'Full Name', field: 'full_name' },
@@ -309,7 +268,34 @@ export const ReviewDataTable: React.FC<ReviewDataTableProps> = ({
           },
           { title: 'Created At', field: 'created_at', hidden: !showDetails },
           { title: 'Approval Date', field: 'sign_off_date' },
-          { title: 'Approved By', field: 'sign_off_by' },
+          {
+            title: 'Approved By',
+            field: 'sign_off_by',
+            render: rowData => {
+              if (
+                !rowData.sign_off_by ||
+                rowData.sign_off_by === '' ||
+                rowData.sign_off_by === 'N/A'
+              ) {
+                return rowData.sign_off_by || 'N/A';
+              }
+
+              // Extract username from entity reference (e.g., "user:redhat/yoswal" -> "yoswal")
+              const username = rowData.sign_off_by.includes('user:redhat/')
+                ? rowData.sign_off_by.replace('user:redhat/', '')
+                : rowData.sign_off_by;
+
+              return (
+                <EntityDisplayName
+                  entityRef={{
+                    name: username,
+                    kind: 'User',
+                    namespace: 'redhat',
+                  }}
+                />
+              );
+            },
+          },
         ];
 
   return (
@@ -318,10 +304,10 @@ export const ReviewDataTable: React.FC<ReviewDataTableProps> = ({
         <Box mb={2}>
           <Typography variant="h6">
             {type === 'user_access' ? 'User Access' : 'Service Accounts'}{' '}
-            Reviews ({data.length})
+            Reviews ({tableData.length})
           </Typography>
         </Box>
-        {loading ? (
+        {tableLoading ? (
           <Box display="flex" justifyContent="center" p={3}>
             <CircularProgress />
           </Box>
@@ -347,32 +333,38 @@ export const ReviewDataTable: React.FC<ReviewDataTableProps> = ({
             </Grid>
             <BackstageTable
               options={{
-                paging: true,
-                pageSize: 5,
+                paging: !pdfMode, // Disable pagination in PDF mode
+                pageSize: pdfMode ? 1000 : 5, // Show all data in PDF mode
+                pageSizeOptions: pdfMode
+                  ? []
+                  : [5, 10, 25, 50, tableData.length], // Add "Show All" option
                 exportAllData: true,
-                exportMenu: [
-                  {
-                    label: 'Export to PDF',
-                    exportFunc: (cols, renderData) =>
-                      exportPdf(
-                        cols,
-                        renderData,
-                        `${type}_access_reviews_${new Date().getTime()}`,
-                      ),
-                  },
-                  {
-                    label: 'Export to CSV',
-                    exportFunc: (cols, renderData) =>
-                      exportCsv(
-                        cols,
-                        renderData,
-                        `${type}_access_reviews_${new Date().getTime()}`,
-                      ),
-                  },
-                ],
+                exportMenu: pdfMode
+                  ? []
+                  : [
+                      // Hide export menu in PDF mode
+                      {
+                        label: 'Export to PDF',
+                        exportFunc: (cols, renderData) =>
+                          exportPdf(
+                            cols,
+                            renderData,
+                            `${type}_access_reviews_${new Date().getTime()}`,
+                          ),
+                      },
+                      {
+                        label: 'Export to CSV',
+                        exportFunc: (cols, renderData) =>
+                          exportCsv(
+                            cols,
+                            renderData,
+                            `${type}_access_reviews_${new Date().getTime()}`,
+                          ),
+                      },
+                    ],
               }}
               columns={columns}
-              data={data}
+              data={tableData}
             />
           </>
         )}

@@ -29,8 +29,6 @@ import {
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import SaveIcon from '@material-ui/icons/Save';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
-import html2canvas from 'html2canvas';
-import { jsPDF as JsPDF } from 'jspdf';
 import { useEffect, useState } from 'react';
 import { formatDisplayName } from '../../AuditApplicationList/AuditApplicationList';
 import { useStyles } from './AuditSummaryReport.styles';
@@ -38,10 +36,12 @@ import {
   AccountList as AccountListComponent,
   DataInconsistencyWarning,
   StatCard,
+  useAuditReportPDF,
 } from './components';
 import { ReviewDataTable } from './ReviewDataTable';
 import { StatisticsData, SummaryReportProps } from './types';
 import { calculateTotals } from './utils';
+import { AuditActivityStream } from '../../AuditDetailsSection/AuditActivityStream/AuditActivityStream';
 
 const StatisticsTable: React.FC<{
   statistics: StatisticsData;
@@ -205,6 +205,69 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const [userRef, setUserRef] = useState<string>('');
   const [isCompleting, setIsCompleting] = useState(false);
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
+  const [pdfMode] = useState(false);
+  const [userAccessData, setUserAccessData] = useState<any[]>([]);
+  const [serviceAccountData, setServiceAccountData] = useState<any[]>([]);
+  const [tableLoading, setTableLoading] = useState(false);
+
+  // Get PDF generation function from hook
+  const { generateComprehensivePDF: generatePDFFromHook } = useAuditReportPDF();
+
+  // Function to fetch table data
+  const fetchTableData = async () => {
+    setTableLoading(true);
+    try {
+      const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+
+      // Fetch user access reviews
+      const userResponse = await fetchApi.fetch(
+        `${baseUrl}/access-reviews?app_name=${encodeURIComponent(
+          data.app_name || '',
+        )}&frequency=${encodeURIComponent(
+          data.frequency || '',
+        )}&period=${encodeURIComponent(data.period || '')}`,
+        {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+
+      if (userResponse.ok) {
+        const userReviews = await userResponse.json();
+        const filteredUserReviews = userReviews.filter(
+          (review: any) =>
+            review.source === 'rover' ||
+            review.source === 'gitlab' ||
+            review.source === 'ldap',
+        );
+        setUserAccessData(filteredUserReviews);
+      }
+
+      // Fetch service account reviews
+      const serviceResponse = await fetchApi.fetch(
+        `${baseUrl}/service_account_access_review?app_name=${encodeURIComponent(
+          data.app_name || '',
+        )}&frequency=${encodeURIComponent(
+          data.frequency || '',
+        )}&period=${encodeURIComponent(data.period || '')}`,
+        {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        },
+      );
+
+      if (serviceResponse.ok) {
+        const serviceReviews = await serviceResponse.json();
+        setServiceAccountData(serviceReviews);
+      }
+    } catch (tableError) {
+      // eslint-disable-next-line no-console
+      console.error('Error fetching table data:', tableError);
+    } finally {
+      setTableLoading(false);
+    }
+  };
 
   // Helper function to filter accounts by type and source
   const getFilteredAccounts = (
@@ -343,16 +406,17 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
     getUserIdentity();
   }, [identityApi]);
 
-  // Effect to fetch data (fetch statistics)
+  // Effect to fetch data (fetch statistics and table data)
   useEffect(() => {
     const fetchData = async () => {
       if (!data || isAuditCompleted) return;
 
       try {
         await fetchStatistics();
+        await fetchTableData();
       } catch (err) {
         // eslint-disable-next-line no-console
-        console.error('Failed to fetch statistics:', err);
+        console.error('Failed to fetch data:', err);
       }
     };
 
@@ -654,6 +718,9 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
               frequency={data.frequency}
               period={data.period}
               type="user_access"
+              pdfMode={pdfMode}
+              data={userAccessData}
+              loading={tableLoading}
             />
           )}
           {tabValue === 1 && (
@@ -662,6 +729,9 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
               frequency={data.frequency}
               period={data.period}
               type="service_account"
+              pdfMode={pdfMode}
+              data={serviceAccountData}
+              loading={tableLoading}
             />
           )}
         </Box>
@@ -677,70 +747,56 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
     );
   }
 
-  const exportPDF = async () => {
-    const sections = [
-      'application-details',
-      'access-review-statistics',
-      'documentation-evidence',
-      'auditor-notes',
-    ];
-
-    // Create a wrapper container with styles
-    const wrapper = document.createElement('div');
-    wrapper.style.padding = '20px';
-    wrapper.style.background = 'white';
-    wrapper.style.width = 'fit-content';
-
-    // Add title section
-    const titleDiv = document.createElement('div');
-    titleDiv.style.textAlign = 'center';
-    titleDiv.style.marginBottom = '30px';
-    titleDiv.style.padding = '20px';
-    titleDiv.style.borderBottom = '2px solid #333';
-    titleDiv.innerHTML = `
-      <h1 style="margin: 0; font-size: 24px; color: #333;">${data.frequency.toUpperCase()} Access Review</h1>
-      <h2 style="margin: 10px 0; font-size: 20px; color: #666;">${data.app_name.toUpperCase()} - ${
-      data.period
-    }</h2>
-    `;
-    wrapper.appendChild(titleDiv);
-
-    sections.forEach(id => {
-      const original = document.getElementById(id);
-      if (!original) return;
-
-      const clone = original.cloneNode(true) as HTMLElement;
-      clone.style.border = '1px solid #ccc';
-      clone.style.padding = '16px';
-      clone.style.marginBottom = '20px';
-      clone.style.boxSizing = 'border-box';
-      wrapper.appendChild(clone);
-    });
-
-    document.body.appendChild(wrapper);
-
-    // Capture the styled wrapper
-    const canvas = await html2canvas(wrapper, {
-      scale: 2,
-      useCORS: true,
-    });
-
-    const imgData = canvas.toDataURL('image/png');
-    const pdfWidth = 595.28;
-    const scaleFactor = pdfWidth / canvas.width;
-    const pdfHeight = canvas.height * scaleFactor;
-
-    const PDF = new JsPDF('p', 'pt', [pdfWidth, pdfHeight]);
-
-    PDF.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    PDF.save(`${data.frequency}-${data.app_name}-${data.period}.pdf`);
-    document.body.removeChild(wrapper);
+  const generateComprehensivePDF = async () => {
+    setIsExportingPDF(true);
+    try {
+      await generatePDFFromHook({
+        data,
+        statistics,
+        userAccessData,
+        serviceAccountData,
+        applicationDetails,
+        documentationEvidence,
+        auditorNotes,
+        userRef,
+        isAuditCompleted: isAuditCompleted || false,
+        onSuccess: () => {
+          alertApi.post({
+            message: 'PDF generated successfully!',
+            severity: 'success',
+          });
+        },
+        onError: (message: string) => {
+          alertApi.post({
+            message,
+            severity: 'error',
+          });
+        },
+      });
+    } catch (pdfError) {
+      // eslint-disable-next-line no-console
+      console.error('Error generating PDF:', pdfError);
+      alertApi.post({
+        message: 'Failed to generate PDF. Please try again.',
+        severity: 'error',
+      });
+    } finally {
+      setIsExportingPDF(false);
+    }
   };
   return (
     <div className={classes.root}>
       {/* Add download button at the top */}
       <Box display="flex" justifyContent="flex-end" mb={2} className="no-print">
-        <Button onClick={exportPDF}>Download PDF</Button>
+        <Button
+          onClick={generateComprehensivePDF}
+          disabled={isExportingPDF}
+          startIcon={
+            isExportingPDF ? <CircularProgress size={20} /> : undefined
+          }
+        >
+          {isExportingPDF ? 'Generating PDF...' : 'Generate PDF'}
+        </Button>
       </Box>
 
       {!isAuditCompleted && (
@@ -1008,7 +1064,7 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
       </div>
 
       {/* Access Review Details Section */}
-      <div className={classes.section}>
+      <div className={classes.section} id="access-review-details">
         <Typography variant="h5" gutterBottom>
           Access Review Details
         </Typography>
@@ -1064,13 +1120,26 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
           <TextField
             fullWidth
             multiline
-            rows={6}
             variant="outlined"
             value={auditorNotes}
             onChange={e => setAuditorNotes(e.target.value)}
             placeholder="Enter auditor notes..."
             className={classes.metadataField}
             disabled={isAuditCompleted}
+          />
+        </Paper>
+      </div>
+      {/* Activity Stream Section - Full Data for PDF */}
+      <div className={classes.section} id="activity-stream">
+        <Typography variant="h5" gutterBottom>
+          Activity Stream
+        </Typography>
+        <Paper className={classes.metadataPaper}>
+          <AuditActivityStream
+            app_name={data.app_name}
+            frequency={data.frequency}
+            period={data.period}
+            showAll
           />
         </Paper>
       </div>

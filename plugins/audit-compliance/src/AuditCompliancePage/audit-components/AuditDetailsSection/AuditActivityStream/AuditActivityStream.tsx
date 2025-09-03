@@ -9,7 +9,7 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import InfoIcon from '@material-ui/icons/Info';
 import { format } from 'date-fns';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useStyles } from './AuditActivityStream.styles';
 import { AuditEvent } from './types';
 
@@ -18,6 +18,7 @@ interface Props {
   app_name: string;
   frequency: string;
   period: string;
+  showAll?: boolean; // When true, shows all data without pagination/scrolling
 }
 
 const getActivityIcon = (eventType: string) => {
@@ -52,6 +53,7 @@ const ACTIVITY_MESSAGES = {
   ),
   AUDIT_SUMMARY_GENERATED: (event: AuditEvent) => (
     <Typography className="activityStream">
+      [{event.period}], {event.frequency?.toUpperCase()}{' '}
       <b>Audit summary generated</b> for <b>{event.app_name}</b> by{' '}
       <b>{event.performed_by}</b>
     </Typography>
@@ -92,7 +94,7 @@ const ACTIVITY_MESSAGES = {
   AUDIT_PROGRESS_UPDATED: (event: AuditEvent) => (
     <Typography className="activityStream">
       [{event.period}], {event.frequency?.toUpperCase()}{' '}
-      <b>audit progress updated</b> for <b>{event.app_name}</b>
+      <b>Audit progress updated</b> for <b>{event.app_name}</b>
       {event.metadata?.previous_progress && event.metadata?.new_progress && (
         <>
           {' '}
@@ -147,6 +149,7 @@ export const AuditActivityStream: React.FC<Props> = ({
   app_name,
   frequency,
   period,
+  showAll = false,
 }) => {
   const classes = useStyles();
   const [events, setEvents] = useState<AuditEvent[]>([]);
@@ -158,43 +161,64 @@ export const AuditActivityStream: React.FC<Props> = ({
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
 
-  const fetchEvents = async (currentOffset: number) => {
-    try {
-      setLoading(true);
-      const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
-      const response = await fetchApi.fetch(
-        `${baseUrl}/activity-stream?app_name=${encodeURIComponent(
-          app_name,
-        )}&frequency=${encodeURIComponent(
-          frequency,
-        )}&period=${encodeURIComponent(
-          period,
-        )}&limit=10&offset=${currentOffset}`,
-      );
+  const fetchEvents = useCallback(
+    async (currentOffset: number) => {
+      try {
+        setLoading(true);
+        const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch activity events');
+        // Use export endpoint when showAll is true, regular endpoint otherwise
+        const endpoint = showAll
+          ? `/activity-stream/export?app_name=${encodeURIComponent(
+              app_name,
+            )}&frequency=${encodeURIComponent(
+              frequency,
+            )}&period=${encodeURIComponent(period)}`
+          : `/activity-stream?app_name=${encodeURIComponent(
+              app_name,
+            )}&frequency=${encodeURIComponent(
+              frequency,
+            )}&period=${encodeURIComponent(
+              period,
+            )}&limit=10&offset=${currentOffset}`;
+
+        const response = await fetchApi.fetch(`${baseUrl}${endpoint}`);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch activity events');
+        }
+
+        const data = await response.json();
+
+        if (showAll) {
+          // For showAll mode, set all events at once
+          setEvents(data);
+          setHasMore(false);
+        } else {
+          // For paginated mode, append to existing events
+          setEvents(prev => [...prev, ...data]);
+          setHasMore(data.length === 10); // If we got 10 items, there might be more
+          setOffset(currentOffset + data.length);
+        }
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Failed to fetch activity events',
+        );
+      } finally {
+        setLoading(false);
       }
-
-      const data = await response.json();
-      setEvents(prev => [...prev, ...data]);
-      setHasMore(data.length === 10); // If we got 10 items, there might be more
-      setOffset(currentOffset + data.length);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to fetch activity events',
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [app_name, frequency, period, showAll, discoveryApi, fetchApi],
+  );
 
   useEffect(() => {
     fetchEvents(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [app_name, frequency, period]);
 
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     const el = ref.current;
     if (
       el &&
@@ -204,20 +228,24 @@ export const AuditActivityStream: React.FC<Props> = ({
     ) {
       fetchEvents(offset);
     }
-  };
+  }, [loading, hasMore, offset, fetchEvents]);
 
   useEffect(() => {
-    const el = ref.current;
-    if (el) {
-      el.addEventListener('scroll', handleScroll);
-    }
-    return () => {
+    // Only add scroll listeners when not in showAll mode
+    if (!showAll) {
+      const el = ref.current;
       if (el) {
-        el.removeEventListener('scroll', handleScroll);
+        el.addEventListener('scroll', handleScroll);
       }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loading, hasMore, offset]);
+      return () => {
+        if (el) {
+          el.removeEventListener('scroll', handleScroll);
+        }
+      };
+    }
+    // Return undefined for showAll mode
+    return undefined;
+  }, [loading, hasMore, offset, showAll, handleScroll]);
 
   if (error) {
     return (
@@ -229,54 +257,67 @@ export const AuditActivityStream: React.FC<Props> = ({
     );
   }
 
+  const containerClassName = showAll ? undefined : classes.cardContainer;
+  const containerStyle = showAll ? { padding: '20px' } : undefined;
+
+  const activityContent = (
+    <div ref={ref} className={containerClassName} style={containerStyle}>
+      {events.map(event => {
+        const eventType = event.event_type || event.event_name;
+        const dateString =
+          event.created_at || event.performed_at || new Date().toISOString();
+        const dateObj = new Date(dateString);
+
+        return (
+          <Grid
+            key={event.id}
+            container
+            spacing={2}
+            style={{ marginBottom: '8px' }}
+          >
+            <Grid item xs={2}>
+              <div>
+                <Typography className={classes.timestamp}>
+                  {format(dateObj, 'hh:mm a')}
+                </Typography>
+                <Typography className={classes.date}>
+                  {format(dateObj, 'MMM dd yyyy')}
+                </Typography>
+              </div>
+            </Grid>
+
+            <Grid item xs={1} style={{ marginTop: '4px' }}>
+              {getActivityIcon(eventType)}
+            </Grid>
+
+            <Grid item xs={8}>
+              <Box mb={1}>
+                {ACTIVITY_MESSAGES[
+                  eventType as keyof typeof ACTIVITY_MESSAGES
+                ]?.(event) || ACTIVITY_MESSAGES.default(event)}
+              </Box>
+            </Grid>
+          </Grid>
+        );
+      })}
+
+      {loading && (
+        <Box display="flex" justifyContent="center" mt={2}>
+          <CircularProgress size={20} />
+        </Box>
+      )}
+    </div>
+  );
+
+  // For showAll mode, render without InfoCard wrapper
+  if (showAll) {
+    return activityContent;
+  }
+
+  // For regular mode, wrap in InfoCard
   return (
     <InfoCard title="Activity Stream" noPadding>
-      <div ref={ref} className={classes.cardContainer}>
-        {events.map(event => {
-          const eventType = event.event_type || event.event_name;
-          const dateString =
-            event.created_at || event.performed_at || new Date().toISOString();
-          const dateObj = new Date(dateString);
-
-          return (
-            <Grid
-              key={event.id}
-              container
-              spacing={2}
-              style={{ marginBottom: '8px' }}
-            >
-              <Grid item xs={2}>
-                <div>
-                  <Typography className={classes.timestamp}>
-                    {format(dateObj, 'hh:mm a')}
-                  </Typography>
-                  <Typography className={classes.date}>
-                    {format(dateObj, 'MMM dd yyyy')}
-                  </Typography>
-                </div>
-              </Grid>
-
-              <Grid item xs={1} style={{ marginTop: '4px' }}>
-                {getActivityIcon(eventType)}
-              </Grid>
-
-              <Grid item xs={8}>
-                <Box mb={1}>
-                  {ACTIVITY_MESSAGES[
-                    eventType as keyof typeof ACTIVITY_MESSAGES
-                  ]?.(event) || ACTIVITY_MESSAGES.default(event)}
-                </Box>
-              </Grid>
-            </Grid>
-          );
-        })}
-
-        {loading && (
-          <Box display="flex" justifyContent="center" mt={2}>
-            <CircularProgress size={20} />
-          </Box>
-        )}
-      </div>
+      {activityContent}
     </InfoCard>
   );
 };
