@@ -77,7 +77,6 @@ export const DetailsCard = () => {
           ownerName={xeaiwayData.owner}
           ownerEmail={xeaiwayData.ownerEmail}
           assignee={xeaiwayData.assignee}
-          namespace={entity.metadata.namespace}
         />
       )}
     </InfoCard>
