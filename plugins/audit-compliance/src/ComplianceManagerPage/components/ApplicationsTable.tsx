@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Card,
@@ -9,7 +9,7 @@ import {
   Typography,
   InputAdornment,
 } from '@material-ui/core';
-import { Table } from '@backstage/core-components';
+import { Table, Link } from '@backstage/core-components';
 import {
   discoveryApiRef,
   fetchApiRef,
@@ -60,7 +60,7 @@ export const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
 
-  const fetchAuditData = async () => {
+  const fetchAuditData = useCallback(async () => {
     try {
       setLoading(true);
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
@@ -71,6 +71,7 @@ export const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
       }
 
       const audits = await response.json();
+      // eslint-disable-next-line no-console
       console.log('Fetched audits from API:', audits);
 
       // Group audits by application name
@@ -92,27 +93,28 @@ export const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
 
       setAuditData(groupedAudits);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error fetching audit data:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [discoveryApi, fetchApi]);
 
   useEffect(() => {
     fetchAuditData();
-  }, []);
+  }, [fetchAuditData]);
 
   // Refresh audit data when applications change (new audits added)
   useEffect(() => {
     fetchAuditData();
-  }, [applications]);
+  }, [applications, fetchAuditData]);
 
   // Refresh audit data when refreshTrigger changes
   useEffect(() => {
     if (refreshTrigger) {
       fetchAuditData();
     }
-  }, [refreshTrigger]);
+  }, [refreshTrigger, fetchAuditData]);
 
   const getAuditInfo = (appName: string): AuditInfo[] => {
     return auditData[appName] || [];
@@ -179,14 +181,13 @@ export const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
         borderColor: '#42A5F5',
         fontWeight: 600,
       };
-    } else {
-      return {
-        backgroundColor: '#F5F5F5',
-        color: '#666666',
-        borderColor: '#CCCCCC',
-        fontWeight: 600,
-      };
     }
+    return {
+      backgroundColor: '#F5F5F5',
+      color: '#666666',
+      borderColor: '#CCCCCC',
+      fontWeight: 600,
+    };
   };
 
   const getProgressChipStyle = (progress?: string) => {
@@ -223,14 +224,13 @@ export const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
         borderColor: '#AB47BC',
         fontWeight: 600,
       };
-    } else {
-      return {
-        backgroundColor: '#F5F5F5',
-        color: '#666666',
-        borderColor: '#CCCCCC',
-        fontWeight: 600,
-      };
     }
+    return {
+      backgroundColor: '#F5F5F5',
+      color: '#666666',
+      borderColor: '#CCCCCC',
+      fontWeight: 600,
+    };
   };
 
   return (
@@ -278,7 +278,6 @@ export const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
           }}
         >
           <Table
-            title={`${applications.length} applications with audit status`}
             options={{
               selection: false,
               search: false,
@@ -295,22 +294,14 @@ export const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                 title: 'Application Name',
                 field: 'app_name',
                 render: (row: any) => (
-                  <Typography variant="body2" style={{ fontWeight: 500 }}>
-                    {row.app_name}
-                  </Typography>
+                  <Link to={`/audit-access-manager/${row.app_name}`}>
+                    <Typography variant="body2" style={{ fontWeight: 500 }}>
+                      {row.app_name}
+                    </Typography>
+                  </Link>
                 ),
               },
-              {
-                title: 'Owner',
-                field: 'app_owner',
-              },
-              {
-                title: 'CMDB ID',
-                field: 'cmdb_id',
-                render: (row: any) => (
-                  <Chip size="small" label={row.cmdb_id} variant="outlined" />
-                ),
-              },
+
               {
                 title: 'Frequency',
                 field: 'frequency',
@@ -329,22 +320,7 @@ export const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                   </Typography>
                 ),
               },
-              {
-                title: 'Audit Status',
-                field: 'status',
-                render: (row: any) =>
-                  row.status ? (
-                    <Chip
-                      size="small"
-                      label={row.status}
-                      style={getStatusChipStyle(row.status)}
-                    />
-                  ) : (
-                    <Typography variant="caption" color="textSecondary">
-                      No audits
-                    </Typography>
-                  ),
-              },
+
               {
                 title: 'Progress',
                 field: 'progress',
@@ -382,6 +358,17 @@ export const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
                       No ticket
                     </Typography>
                   ),
+              },
+              {
+                title: 'Owner',
+                field: 'app_owner',
+              },
+              {
+                title: 'CMDB ID',
+                field: 'cmdb_id',
+                render: (row: any) => (
+                  <Chip size="small" label={row.cmdb_id} variant="outlined" />
+                ),
               },
             ]}
             style={{ height: '100%' }}

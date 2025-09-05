@@ -138,6 +138,7 @@ export const ComplianceManagerPage = () => {
         setAuditHistory(data);
       }
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('Failed to fetch activity stream:', err);
     }
   };
@@ -152,64 +153,9 @@ export const ComplianceManagerPage = () => {
         setComplianceSummary(data);
       }
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('Failed to fetch compliance summary:', err);
     }
-  };
-
-  const calculateComplianceSummary = (history: AuditEvent[]) => {
-    const summary: ComplianceSummary = {
-      totalApplications: applications.length,
-      compliant: 0,
-      nonCompliant: 0,
-      inProgress: 0,
-      pending: 0,
-    };
-
-    // Group by application and get latest status
-    const appStatuses = new Map<string, string>();
-    history.forEach(event => {
-      const existing = appStatuses.get(event.app_name);
-      if (!existing || new Date(event.created_at) > new Date(existing)) {
-        // Map event_type to status for compliance calculation
-        let status = 'UNKNOWN';
-        switch (event.event_type) {
-          case 'AUDIT_COMPLETED':
-          case 'AUDIT_FINAL_SIGNOFF_COMPLETED':
-            status = 'COMPLETED';
-            break;
-          case 'AUDIT_SUMMARY_GENERATED':
-            status = 'IN_PROGRESS';
-            break;
-          case 'AUDIT_INITIATED':
-            status = 'AUDIT_STARTED';
-            break;
-          default:
-            status = 'UNKNOWN';
-        }
-        appStatuses.set(event.app_name, status);
-      }
-    });
-
-    appStatuses.forEach(status => {
-      switch (status.toUpperCase()) {
-        case 'COMPLETED':
-        case 'FINAL_SIGN_OFF_DONE':
-          summary.compliant++;
-          break;
-        case 'IN_PROGRESS':
-        case 'DETAILS_UNDER_REVIEW':
-        case 'SUMMARY_GENERATED':
-          summary.inProgress++;
-          break;
-        case 'AUDIT_STARTED':
-          summary.pending++;
-          break;
-        default:
-          summary.nonCompliant++;
-      }
-    });
-
-    setComplianceSummary(summary);
   };
 
   // Fetch applications on component mount
@@ -281,7 +227,9 @@ export const ComplianceManagerPage = () => {
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
 
       const period =
-        frequency === 'quarterly' ? selectedQuarter : selectedYear.toString();
+        frequency === 'quarterly'
+          ? `${selectedQuarter}-${selectedYear}`
+          : selectedYear.toString();
 
       const auditRequests = selectedApplications.map(applicationId => {
         const application = applications.find(app => app.id === applicationId);
