@@ -9,7 +9,6 @@ import {
   Chip,
   Button,
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import RefreshIcon from '@material-ui/icons/Refresh';
@@ -17,82 +16,8 @@ import CancelIcon from '@material-ui/icons/Cancel';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import InfoIcon from '@material-ui/icons/Info';
 import { format } from 'date-fns';
-import { AuditEvent } from '../../AuditCompliancePage/audit-components/AuditDetailsSection/AuditActivityStream/types';
-
-const useStyles = makeStyles(theme => ({
-  card: {
-    borderRadius: '12px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-  },
-  cardContent: {
-    padding: theme.spacing(3),
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: theme.spacing(2),
-  },
-  title: {
-    fontSize: '24px',
-    fontWeight: 600,
-    color: '#333',
-  },
-  expandButton: {
-    borderRadius: '8px',
-    textTransform: 'none',
-  },
-  activityItem: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    padding: theme.spacing(2),
-    borderBottom: '1px solid #f0f0f0',
-    '&:last-child': {
-      borderBottom: 'none',
-    },
-  },
-  timestamp: {
-    minWidth: '120px',
-    marginRight: theme.spacing(2),
-  },
-  timeText: {
-    fontSize: '12px',
-    fontWeight: 600,
-    color: '#666',
-  },
-  dateText: {
-    fontSize: '11px',
-    color: '#999',
-  },
-  iconContainer: {
-    marginRight: theme.spacing(2),
-    marginTop: '2px',
-  },
-  activityContent: {
-    flex: 1,
-  },
-  activityText: {
-    fontSize: '14px',
-    lineHeight: 1.4,
-    color: '#333',
-  },
-  emptyState: {
-    textAlign: 'center',
-    padding: theme.spacing(4),
-    color: '#666',
-  },
-  showMoreButton: {
-    marginTop: theme.spacing(2),
-    borderRadius: '8px',
-    textTransform: 'none',
-  },
-}));
-
-interface CollapsibleActivityStreamProps {
-  auditHistory: AuditEvent[];
-  onRefresh: () => void;
-  getStatusChipStyle: (status: string) => any;
-}
+import { useStyles } from './styles';
+import { CollapsibleActivityStreamProps } from './types';
 
 const getActivityIcon = (eventType: string) => {
   switch (eventType) {

@@ -1,5 +1,5 @@
-export { SummaryCardsNew } from './SummaryCardsNew';
-export { BulkActionsBar } from './BulkActionsBar';
-export { OngoingAuditsSection } from './OngoingAuditsSection';
-export { CollapsibleActivityStream } from './CollapsibleActivityStream';
-export { InitiateAuditDialog } from './InitiateAuditDialog';
+export { SummaryCardsNew } from './SummaryCardsNew/SummaryCardsNew';
+export { BulkActionsBar } from './BulkActionsBar/BulkActionsBar';
+export { OngoingAuditsSection } from './OngoingAuditsSection/OngoingAuditsSection';
+export { CollapsibleActivityStream } from './CollapsibleActivityStream/CollapsibleActivityStream';
+export { InitiateAuditDialog } from './InitiateAuditDialog/InitiateAuditDialog';

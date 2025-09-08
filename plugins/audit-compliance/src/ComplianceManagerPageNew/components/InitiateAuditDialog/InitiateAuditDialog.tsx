@@ -26,42 +26,8 @@ import {
   IconButton,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-
-interface Application {
-  id: string;
-  app_name: string;
-  app_owner: string;
-  cmdb_id: string;
-}
-
-interface InitiateAuditDialogProps {
-  open: boolean;
-  onClose: () => void;
-  applications: Application[];
-  selectedApplications: string[];
-  frequency: 'quarterly' | 'yearly' | '';
-  selectedQuarter: string;
-  selectedYear: number;
-  onFrequencyChange: (frequency: 'quarterly' | 'yearly' | '') => void;
-  onQuarterChange: (quarter: string) => void;
-  onYearChange: (year: number) => void;
-  onApplicationsChange: (applicationIds: string[]) => void;
-  onInitiate: () => void;
-  initiating: boolean;
-  getQuarterOptions: () => Array<{ value: string; label: string }>;
-  getYearOptions: () => number[];
-}
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
+import { useStyles, MenuProps } from './styles';
+import { Application, InitiateAuditDialogProps } from './types';
 
 export const InitiateAuditDialog: React.FC<InitiateAuditDialogProps> = ({
   open,
@@ -80,6 +46,7 @@ export const InitiateAuditDialog: React.FC<InitiateAuditDialogProps> = ({
   getQuarterOptions,
   getYearOptions,
 }) => {
+  const classes = useStyles();
   const [localSelectedApplications, setLocalSelectedApplications] =
     useState<string[]>(selectedApplications);
 
@@ -139,7 +106,7 @@ export const InitiateAuditDialog: React.FC<InitiateAuditDialogProps> = ({
             {/* Applications Multi-Select */}
             <Grid item xs={12}>
               <Box>
-                <Box display="flex" alignItems="center" gap={2} mb={1}>
+                <Box display="flex" alignItems="center" mb={1}>
                   <Typography variant="subtitle2" color="textSecondary">
                     {localSelectedApplications.length} application(s) selected
                   </Typography>
@@ -152,7 +119,7 @@ export const InitiateAuditDialog: React.FC<InitiateAuditDialogProps> = ({
                     />
                   )}
                 </Box>
-                <Box display="flex" alignItems="center" gap={2}>
+                <Box display="flex" alignItems="center">
                   <FormControl fullWidth>
                     <InputLabel>Select Applications</InputLabel>
                     <Select
@@ -161,7 +128,7 @@ export const InitiateAuditDialog: React.FC<InitiateAuditDialogProps> = ({
                       onChange={handleApplicationsChange}
                       input={<OutlinedInput label="Select Applications" />}
                       renderValue={selected => (
-                        <Box display="flex" flexWrap="wrap" gap={0.5}>
+                        <Box display="flex" flexWrap="wrap">
                           {(selected as string[]).map(value => {
                             const app = applications.find(a => a.id === value);
                             return (
