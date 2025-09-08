@@ -130,6 +130,13 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
         borderColor: '#42A5F5',
         fontWeight: 600,
       };
+    } else if (statusUpper === 'DETAILS_UNDER_REVIEW') {
+      return {
+        backgroundColor: '#F3E5F5',
+        color: '#7B1FA2',
+        borderColor: '#BA68C8',
+        fontWeight: 600,
+      };
     }
     return {
       backgroundColor: '#F5F5F5',
@@ -212,6 +219,7 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
           statusUpper === 'IN_PROGRESS' ||
           statusUpper === 'AUDIT_STARTED' ||
           statusUpper === 'ACCESS_REVIEW_COMPLETE' ||
+          statusUpper === 'DETAILS_UNDER_REVIEW' ||
           (audit.progress &&
             audit.progress !== 'COMPLETED' &&
             audit.progress !== 'NOT_STARTED')
@@ -231,7 +239,9 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
         const inProgressCount = ongoingAudits.filter(audit => {
           const statusUpper = audit.status?.toUpperCase() || '';
           return (
-            statusUpper === 'IN_PROGRESS' || statusUpper === 'AUDIT_STARTED'
+            statusUpper === 'IN_PROGRESS' ||
+            statusUpper === 'AUDIT_STARTED' ||
+            statusUpper === 'DETAILS_UNDER_REVIEW'
           );
         }).length;
 
@@ -324,6 +334,9 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
             <MenuItem value="all">All Status</MenuItem>
             <MenuItem value="in_progress">In Progress</MenuItem>
             <MenuItem value="audit_started">Audit Started</MenuItem>
+            <MenuItem value="details_under_review">
+              Details Under Review
+            </MenuItem>
             <MenuItem value="completed">Completed</MenuItem>
           </Select>
         </FormControl>
