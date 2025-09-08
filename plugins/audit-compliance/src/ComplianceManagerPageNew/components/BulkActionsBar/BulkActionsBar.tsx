@@ -1,13 +1,11 @@
 import React from 'react';
 import { Box, Button, Paper, Typography } from '@material-ui/core';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import EmailIcon from '@material-ui/icons/Email';
 import { useStyles } from './styles';
 import { BulkActionsBarProps } from './types';
 
 export const BulkActionsBar: React.FC<BulkActionsBarProps> = ({
   onInitiateAudit,
-  onSendEmail,
 }) => {
   const classes = useStyles();
 
@@ -32,16 +30,6 @@ export const BulkActionsBar: React.FC<BulkActionsBarProps> = ({
           size="large"
         >
           Initiate Audit
-        </Button>
-
-        <Button
-          variant="contained"
-          startIcon={<EmailIcon />}
-          onClick={onSendEmail}
-          className={classes.secondaryButton}
-          size="large"
-        >
-          Send Email
         </Button>
       </Box>
     </Paper>

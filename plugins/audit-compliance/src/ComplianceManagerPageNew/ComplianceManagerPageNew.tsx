@@ -349,13 +349,6 @@ export const ComplianceManagerPageNew = () => {
           <Box mb={4}>
             <BulkActionsBar
               onInitiateAudit={() => setInitiateDialogOpen(true)}
-              onSendEmail={() => {
-                // TODO: Implement email functionality
-                alertApi.post({
-                  message: 'Email functionality coming soon',
-                  severity: 'info',
-                });
-              }}
             />
           </Box>
 

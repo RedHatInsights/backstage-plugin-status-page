@@ -5,6 +5,13 @@ export interface Application {
   cmdb_id: string;
 }
 
+export interface EmailFormData {
+  to: string[];
+  cc: string[];
+  subject: string;
+  body: string;
+}
+
 export interface InitiateAuditDialogProps {
   open: boolean;
   onClose: () => void;
@@ -17,7 +24,7 @@ export interface InitiateAuditDialogProps {
   onQuarterChange: (quarter: string) => void;
   onYearChange: (year: number) => void;
   onApplicationsChange: (applicationIds: string[]) => void;
-  onInitiate: () => void;
+  onInitiate: (emailData?: EmailFormData) => void;
   initiating: boolean;
   getQuarterOptions: () => Array<{ value: string; label: string }>;
   getYearOptions: () => number[];

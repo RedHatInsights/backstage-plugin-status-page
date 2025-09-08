@@ -24,10 +24,19 @@ import {
   Checkbox,
   ListItemText,
   IconButton,
+  TextField,
+  Divider,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
+import AddIcon from '@material-ui/icons/Add';
 import { useStyles, MenuProps } from './styles';
-import { Application, InitiateAuditDialogProps } from './types';
+import { InitiateAuditDialogProps, EmailFormData } from './types';
+import {
+  discoveryApiRef,
+  fetchApiRef,
+  alertApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
 
 export const InitiateAuditDialog: React.FC<InitiateAuditDialogProps> = ({
   open,
@@ -47,15 +56,59 @@ export const InitiateAuditDialog: React.FC<InitiateAuditDialogProps> = ({
   getYearOptions,
 }) => {
   const classes = useStyles();
+  const alertApi = useApi(alertApiRef);
+  const discoveryApi = useApi(discoveryApiRef);
+  const fetchApi = useApi(fetchApiRef);
+
   const [localSelectedApplications, setLocalSelectedApplications] =
     useState<string[]>(selectedApplications);
+
+  // Email form state
+  const [emailData, setEmailData] = useState<EmailFormData>({
+    to: [],
+    cc: [],
+    subject: 'Compliance Audit Notification',
+    body: '',
+  });
+  const [newToEmail, setNewToEmail] = useState('');
+  const [newCcEmail, setNewCcEmail] = useState('');
 
   // Sync local state with props when dialog opens
   useEffect(() => {
     if (open) {
       setLocalSelectedApplications(selectedApplications);
+
+      // Pre-populate email data based on selected applications
+      const selectedApps = applications.filter(app =>
+        selectedApplications.includes(app.id),
+      );
+
+      if (selectedApps.length > 0) {
+        const appNames = selectedApps.map(app => app.app_name).join(', ');
+        const appOwners = selectedApps
+          .map(app => app.app_owner)
+          .filter((owner, index, arr) => arr.indexOf(owner) === index);
+
+        const defaultBody = `Hi Team,
+
+This is a notification regarding compliance audit for the following applications:
+
+${selectedApps.map(app => `• ${app.app_name}`).join('\n')}
+
+Please review and take necessary actions.
+
+Best regards,
+Compliance Team`;
+
+        setEmailData({
+          to: appOwners,
+          cc: [],
+          subject: `Compliance Audit Notification for ${appNames}`,
+          body: defaultBody,
+        });
+      }
     }
-  }, [open, selectedApplications]);
+  }, [open, selectedApplications, applications]);
 
   const handleApplicationsChange = (
     event: React.ChangeEvent<{ value: unknown }>,
@@ -91,6 +144,91 @@ export const InitiateAuditDialog: React.FC<InitiateAuditDialogProps> = ({
       return selectedYear.toString();
     }
     return 'Not specified';
+  };
+
+  // Email helper functions
+  const isValidEmail = (email: string) => /\S+@\S+\.\S+/.test(email);
+
+  const handleAddRecipient = (type: 'to' | 'cc') => {
+    const email = type === 'to' ? newToEmail : newCcEmail;
+    if (email && isValidEmail(email) && !emailData[type].includes(email)) {
+      setEmailData(prev => ({ ...prev, [type]: [...prev[type], email] }));
+      if (type === 'to') {
+        setNewToEmail('');
+      } else {
+        setNewCcEmail('');
+      }
+    } else if (email && !isValidEmail(email)) {
+      alertApi.post({
+        message: `Invalid email address: ${email}`,
+        severity: 'error',
+      });
+    }
+  };
+
+  const handleDeleteRecipient = (type: 'to' | 'cc', emailToDelete: string) => {
+    setEmailData(prev => ({
+      ...prev,
+      [type]: prev[type].filter(email => email !== emailToDelete),
+    }));
+  };
+
+  const handleInitiateWithEmail = async () => {
+    // Validate email data
+    if (emailData.to.length === 0) {
+      alertApi.post({
+        message: 'Please add at least one recipient to the "To" field.',
+        severity: 'warning',
+      });
+      return;
+    }
+    if (!emailData.subject.trim()) {
+      alertApi.post({
+        message: 'Subject cannot be empty.',
+        severity: 'warning',
+      });
+      return;
+    }
+    if (!emailData.body.trim()) {
+      alertApi.post({
+        message: 'Email body cannot be empty.',
+        severity: 'warning',
+      });
+      return;
+    }
+
+    // Send email first
+    try {
+      const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+      const response = await fetchApi.fetch(`${baseUrl}/send-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: emailData.to.join(','),
+          cc: emailData.cc.join(','),
+          subject: emailData.subject,
+          html: emailData.body.replace(/\n/g, '<br />'),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send email');
+      }
+
+      alertApi.post({
+        message: 'Email sent successfully!',
+        severity: 'success',
+      });
+    } catch (error) {
+      alertApi.post({
+        message: 'Failed to send email. Please try again.',
+        severity: 'error',
+      });
+      return;
+    }
+
+    // Then initiate audit
+    onInitiate(emailData);
   };
 
   return (
@@ -317,23 +455,156 @@ export const InitiateAuditDialog: React.FC<InitiateAuditDialogProps> = ({
             </Box>
           )}
         </Box>
+
+        {/* Email Section */}
+        <Divider style={{ margin: '24px 0' }} />
+
+        <Box>
+          <Typography variant="h6" gutterBottom>
+            Email Notification
+          </Typography>
+          <Typography variant="body2" color="textSecondary" gutterBottom>
+            Email will be sent automatically when audit is initiated
+          </Typography>
+
+          <Grid container spacing={3}>
+            {/* Recipients */}
+            <Grid item xs={12}>
+              <Typography variant="subtitle2" gutterBottom>
+                Recipients
+              </Typography>
+
+              <Box mb={2}>
+                <Typography variant="body2" color="textSecondary" gutterBottom>
+                  To:
+                </Typography>
+                <Box display="flex" alignItems="center" mb={1}>
+                  <TextField
+                    size="small"
+                    variant="outlined"
+                    placeholder="Add email address"
+                    value={newToEmail}
+                    onChange={e => setNewToEmail(e.target.value)}
+                    onKeyPress={e => {
+                      if (e.key === 'Enter') {
+                        handleAddRecipient('to');
+                        e.preventDefault();
+                      }
+                    }}
+                    style={{ flex: 1 }}
+                  />
+                  <IconButton
+                    onClick={() => handleAddRecipient('to')}
+                    size="small"
+                    disabled={!newToEmail}
+                    style={{ marginLeft: 8 }}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Box>
+                <Box display="flex" flexWrap="wrap" style={{ gap: 8 }}>
+                  {emailData.to.map(email => (
+                    <Chip
+                      key={email}
+                      label={email}
+                      onDelete={() => handleDeleteRecipient('to', email)}
+                      size="small"
+                    />
+                  ))}
+                </Box>
+              </Box>
+
+              <Box mb={2}>
+                <Typography variant="body2" color="textSecondary" gutterBottom>
+                  Cc:
+                </Typography>
+                <Box display="flex" alignItems="center" mb={1}>
+                  <TextField
+                    size="small"
+                    variant="outlined"
+                    placeholder="Add email address"
+                    value={newCcEmail}
+                    onChange={e => setNewCcEmail(e.target.value)}
+                    onKeyPress={e => {
+                      if (e.key === 'Enter') {
+                        handleAddRecipient('cc');
+                        e.preventDefault();
+                      }
+                    }}
+                    style={{ flex: 1 }}
+                  />
+                  <IconButton
+                    onClick={() => handleAddRecipient('cc')}
+                    size="small"
+                    disabled={!newCcEmail}
+                    style={{ marginLeft: 8 }}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Box>
+                <Box display="flex" flexWrap="wrap" style={{ gap: 8 }}>
+                  {emailData.cc.map(email => (
+                    <Chip
+                      key={email}
+                      label={email}
+                      onDelete={() => handleDeleteRecipient('cc', email)}
+                      size="small"
+                    />
+                  ))}
+                </Box>
+              </Box>
+            </Grid>
+
+            {/* Subject */}
+            <Grid item xs={12}>
+              <TextField
+                label="Subject"
+                variant="outlined"
+                fullWidth
+                size="small"
+                value={emailData.subject}
+                onChange={e =>
+                  setEmailData(prev => ({ ...prev, subject: e.target.value }))
+                }
+              />
+            </Grid>
+
+            {/* Body */}
+            <Grid item xs={12}>
+              <TextField
+                label="Email Body"
+                variant="outlined"
+                fullWidth
+                multiline
+                rows={6}
+                value={emailData.body}
+                onChange={e =>
+                  setEmailData(prev => ({ ...prev, body: e.target.value }))
+                }
+              />
+            </Grid>
+          </Grid>
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancel</Button>
         <Button
           variant="contained"
           color="primary"
-          onClick={onInitiate}
+          onClick={handleInitiateWithEmail}
           disabled={
             initiating ||
             localSelectedApplications.length === 0 ||
             !frequency ||
-            (frequency === 'quarterly' && !selectedQuarter)
+            (frequency === 'quarterly' && !selectedQuarter) ||
+            emailData.to.length === 0 ||
+            !emailData.subject.trim() ||
+            !emailData.body.trim()
           }
         >
           {initiating
-            ? 'Initiating Bulk Audits...'
-            : `Initiate ${localSelectedApplications.length} Audit(s)`}
+            ? 'Initiating Audit & Sending Email...'
+            : `Initiate ${localSelectedApplications.length} Audit(s) & Send Email`}
         </Button>
       </DialogActions>
     </Dialog>
