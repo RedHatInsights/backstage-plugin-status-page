@@ -34,9 +34,14 @@ import CloseIcon from '@material-ui/icons/Close';
 import InfoIcon from '@material-ui/icons/Info';
 import EditIcon from '@material-ui/icons/Edit';
 import HelpIcon from '@material-ui/icons/Help';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { useStyles } from './AuditApplicationList.styles';
 import { useApi } from '@backstage/core-plugin-api';
-import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
+import {
+  discoveryApiRef,
+  fetchApiRef,
+  identityApiRef,
+} from '@backstage/core-plugin-api';
 import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 import { Application } from './types';
 import { capitalize } from 'lodash';
@@ -94,9 +99,22 @@ export function AuditApplicationList() {
   const [jiraFields, setJiraFields] = useState<{ [id: string]: string }>({});
   const [jiraFieldsLoading, setJiraFieldsLoading] = useState(false);
   const [jiraFieldsError, setJiraFieldsError] = useState<string | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [appToDelete, setAppToDelete] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [currentUser, setCurrentUser] = useState<string>('');
 
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
+  const identityApi = useApi(identityApiRef);
+
+  const isCurrentUserOwner = (appOwnerEmail?: string) => {
+    if (!currentUser || !appOwnerEmail) return false;
+    const currentUsername = currentUser.split('/').pop();
+    const emailUsername = appOwnerEmail.split('@')[0];
+
+    return currentUsername === emailUsername;
+  };
 
   // Utility to render multiple CMDB codes as chips
   const renderCMDBCodes = (cmdbId: string) => {
@@ -277,6 +295,47 @@ export function AuditApplicationList() {
     setIsEditModalOpen(false);
     setEditFormData(null);
     fetchApplications(); // Refresh the applications list
+  };
+
+  const handleDeleteApplication = async () => {
+    if (!appToDelete) return;
+
+    try {
+      setDeleting(true);
+      const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
+      const response = await fetchApi.fetch(
+        `${baseUrl}/delete/application/name/${appToDelete}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete application: ${response.statusText}`);
+      }
+
+      // Close dialog and refresh applications list
+      setDeleteDialogOpen(false);
+      setAppToDelete(null);
+      fetchApplications();
+    } catch (err) {
+      setError(err as Error);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleDeleteClick = (appName: string) => {
+    setAppToDelete(appName);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setAppToDelete(null);
   };
 
   useEffect(() => {
@@ -587,6 +646,19 @@ export function AuditApplicationList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [discoveryApi, fetchApi]);
 
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      try {
+        const identity = await identityApi.getBackstageIdentity();
+        setCurrentUser(identity.userEntityRef);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching current user:', err);
+      }
+    };
+    getCurrentUser();
+  }, [identityApi]);
+
   const handleFormSuccess = () => {
     setIsModalOpen(false); // Close the modal
     fetchApplications(); // Refresh the applications list
@@ -732,6 +804,19 @@ export function AuditApplicationList() {
                   <EditIcon />
                 </Tooltip>
               </IconButton>
+              {selectedAppDetails &&
+                isCurrentUserOwner(selectedAppDetails.app_owner_email) && (
+                  <IconButton
+                    onClick={() =>
+                      handleDeleteClick(selectedAppDetails.app_name)
+                    }
+                    color="secondary"
+                  >
+                    <Tooltip title="Delete Application">
+                      <DeleteIcon />
+                    </Tooltip>
+                  </IconButton>
+                )}
               <IconButton onClick={handleCloseSidePanel}>
                 <CloseIcon />
               </IconButton>
@@ -778,6 +863,75 @@ export function AuditApplicationList() {
               />
             )}
           </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog
+          open={deleteDialogOpen}
+          onClose={handleDeleteCancel}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>
+            Delete Application
+            <IconButton
+              aria-label="close"
+              onClick={handleDeleteCancel}
+              style={{ position: 'absolute', right: 8, top: 8 }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+          <DialogContent>
+            <Box p={2}>
+              <Typography variant="h6" gutterBottom>
+                Are you sure you want to delete this application?
+              </Typography>
+              <Typography variant="body1" color="textSecondary" paragraph>
+                <strong>Application:</strong>{' '}
+                {appToDelete && formatDisplayName(appToDelete)}
+              </Typography>
+              <Typography variant="body2" color="error" paragraph>
+                <strong>Warning:</strong> This action will permanently delete:
+              </Typography>
+              <Box component="ul" pl={2}>
+                <Typography component="li" variant="body2">
+                  The application record
+                </Typography>
+                <Typography component="li" variant="body2">
+                  All audit data and history
+                </Typography>
+                <Typography component="li" variant="body2">
+                  All access reports and reviews
+                </Typography>
+                <Typography component="li" variant="body2">
+                  All activity stream events
+                </Typography>
+                <Typography component="li" variant="body2">
+                  All related metadata
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="error">
+                This action cannot be undone.
+              </Typography>
+            </Box>
+          </DialogContent>
+          <Box p={2} display="flex" justifyContent="flex-end">
+            <Button onClick={handleDeleteCancel} disabled={deleting}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDeleteApplication}
+              color="secondary"
+              variant="contained"
+              disabled={deleting}
+              startIcon={
+                deleting ? <CircularProgress size={16} /> : <DeleteIcon />
+              }
+            >
+              {deleting ? 'Deleting...' : 'Delete Application'}
+            </Button>
+          </Box>
         </Dialog>
       </Content>
     </Page>
