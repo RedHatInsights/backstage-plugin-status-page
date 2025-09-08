@@ -31,7 +31,13 @@ export class ApplicationOperations {
    */
   async getAllApplications() {
     return this.db
-      .select('app_name', 'app_owner', 'app_delegate', 'cmdb_id')
+      .select(
+        'app_name',
+        'app_owner',
+        'app_owner_email',
+        'app_delegate',
+        'cmdb_id',
+      )
       .from(
         this.db('applications')
           .distinctOn('app_name')

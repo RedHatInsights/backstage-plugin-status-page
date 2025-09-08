@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Breadcrumbs,
   Content,
@@ -8,19 +8,18 @@ import {
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { Box, Button, Grid, Typography } from '@material-ui/core';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import { Box, Typography } from '@material-ui/core';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   discoveryApiRef,
   fetchApiRef,
   alertApiRef,
 } from '@backstage/core-plugin-api';
-import { useStyles } from './styles';
 import {
-  ComplianceSummaryCards,
-  ApplicationsTable,
-  ActivityStream,
+  SummaryCardsNew,
+  BulkActionsBar,
+  OngoingAuditsSection,
+  CollapsibleActivityStream,
   InitiateAuditDialog,
 } from './components';
 import { AuditEvent } from '../AuditCompliancePage/audit-components/AuditDetailsSection/AuditActivityStream/types';
@@ -31,8 +30,6 @@ interface Application {
   app_owner: string;
   cmdb_id: string;
 }
-
-// Using AuditEvent from existing component
 
 interface ComplianceSummary {
   totalApplications: number;
@@ -54,21 +51,18 @@ const getYearOptions = () => {
   return [currentYear, currentYear + 1];
 };
 
-export const ComplianceManagerPage = () => {
-  const classes = useStyles();
+export const ComplianceManagerPageNew = () => {
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
   const alertApi = useApi(alertApiRef);
 
   // Application selection state
   const [applications, setApplications] = useState<Application[]>([]);
-  const [filteredApplications, setFilteredApplications] = useState<
-    Application[]
-  >([]);
   const [selectedApplications, setSelectedApplications] = useState<string[]>(
     [],
   );
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   // Audit configuration state
   const [frequency, setFrequency] = useState<'quarterly' | 'yearly' | ''>('');
@@ -96,7 +90,7 @@ export const ComplianceManagerPage = () => {
   const [initiateDialogOpen, setInitiateDialogOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  const fetchApplications = async () => {
+  const fetchApplications = useCallback(async () => {
     try {
       setLoading(true);
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
@@ -115,7 +109,6 @@ export const ComplianceManagerPage = () => {
         id: app.id?.toString() || index.toString(),
       }));
       setApplications(applicationsWithIds);
-      setFilteredApplications(applicationsWithIds);
     } catch (err) {
       setError(
         err instanceof Error ? err : new Error('Failed to fetch applications'),
@@ -123,9 +116,9 @@ export const ComplianceManagerPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [discoveryApi, fetchApi]);
 
-  const fetchAuditHistory = async () => {
+  const fetchAuditHistory = useCallback(async () => {
     try {
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
       // Use existing activity stream API without app_name to get all events
@@ -141,9 +134,9 @@ export const ComplianceManagerPage = () => {
       // eslint-disable-next-line no-console
       console.error('Failed to fetch activity stream:', err);
     }
-  };
+  }, [discoveryApi, fetchApi]);
 
-  const fetchComplianceSummary = async () => {
+  const fetchComplianceSummary = useCallback(async () => {
     try {
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
       const response = await fetchApi.fetch(`${baseUrl}/compliance/summary`);
@@ -156,29 +149,14 @@ export const ComplianceManagerPage = () => {
       // eslint-disable-next-line no-console
       console.error('Failed to fetch compliance summary:', err);
     }
-  };
+  }, [discoveryApi, fetchApi]);
 
   // Fetch applications on component mount
   useEffect(() => {
     fetchApplications();
     fetchAuditHistory();
     fetchComplianceSummary();
-  }, []);
-
-  // Filter applications based on search term
-  useEffect(() => {
-    if (!searchTerm.trim()) {
-      setFilteredApplications(applications);
-    } else {
-      const filtered = applications.filter(
-        app =>
-          app.app_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          app.app_owner.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          app.cmdb_id.toLowerCase().includes(searchTerm.toLowerCase()),
-      );
-      setFilteredApplications(filtered);
-    }
-  }, [searchTerm, applications]);
+  }, [fetchApplications, fetchAuditHistory, fetchComplianceSummary]);
 
   const handleApplicationSelection = (applicationId: string) => {
     setSelectedApplications(prev => {
@@ -190,10 +168,10 @@ export const ComplianceManagerPage = () => {
   };
 
   const handleSelectAll = () => {
-    if (selectedApplications.length === filteredApplications.length) {
+    if (selectedApplications.length === applications.length) {
       setSelectedApplications([]);
     } else {
-      setSelectedApplications(filteredApplications.map(app => app.id));
+      setSelectedApplications(applications.map(app => app.id));
     }
   };
 
@@ -291,7 +269,8 @@ export const ComplianceManagerPage = () => {
         borderColor: '#4CAF50',
         fontWeight: 600,
       };
-    } else if (
+    }
+    if (
       statusUpper === 'IN_PROGRESS' ||
       statusUpper === 'ACCESS_REVIEW_COMPLETE'
     ) {
@@ -301,21 +280,21 @@ export const ComplianceManagerPage = () => {
         borderColor: '#FF9800',
         fontWeight: 600,
       };
-    } else if (statusUpper === 'AUDIT_STARTED') {
+    }
+    if (statusUpper === 'AUDIT_STARTED') {
       return {
         backgroundColor: '#E3F2FD',
         color: '#1565C0',
         borderColor: '#42A5F5',
         fontWeight: 600,
       };
-    } else {
-      return {
-        backgroundColor: '#F5F5F5',
-        color: '#666666',
-        borderColor: '#CCCCCC',
-        fontWeight: 600,
-      };
     }
+    return {
+      backgroundColor: '#F5F5F5',
+      color: '#666666',
+      borderColor: '#CCCCCC',
+      fontWeight: 600,
+    };
   };
 
   if (loading) {
@@ -347,7 +326,7 @@ export const ComplianceManagerPage = () => {
         subtitle={
           <Box>
             <Typography variant="subtitle1" style={{ marginBottom: '8px' }}>
-              Bulk Audit Management & Compliance Overview
+              Clean & Minimal Audit Management Dashboard
             </Typography>
             <Breadcrumbs aria-label="breadcrumb">
               <Typography color="textPrimary">Compliance Manager</Typography>
@@ -360,60 +339,46 @@ export const ComplianceManagerPage = () => {
       </Header>
 
       <Content>
-        <Box padding={3}>
-          {/* Compliance Dashboard Overview - Numbers at Top */}
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            mb={3}
-          >
-            <Typography variant="h4">Compliance Overview</Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<PlayArrowIcon />}
-              onClick={() => setInitiateDialogOpen(true)}
-              size="large"
-              style={{
-                borderRadius: '24px',
-                padding: '12px 24px',
-                fontWeight: 600,
-                textTransform: 'none',
-                boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
-              }}
-            >
-              Initiate Audit →
-            </Button>
+        <Box padding={4}>
+          {/* Top Summary Cards - Large and Centered */}
+          <Box mb={6}>
+            <SummaryCardsNew summary={complianceSummary} />
           </Box>
 
-          {/* Compliance Summary Cards */}
-          <ComplianceSummaryCards summary={complianceSummary} />
+          {/* Bulk Actions Bar */}
+          <Box mb={4}>
+            <BulkActionsBar
+              onInitiateAudit={() => setInitiateDialogOpen(true)}
+              onSendEmail={() => {
+                // TODO: Implement email functionality
+                alertApi.post({
+                  message: 'Email functionality coming soon',
+                  severity: 'info',
+                });
+              }}
+            />
+          </Box>
 
-          {/* Two Sections: Table and Activity Stream */}
-          <Grid container spacing={3} style={{ minHeight: '700px' }}>
-            {/* Applications Table Section */}
-            <Grid item xs={12} md={6} style={{ height: '700px' }}>
-              <ApplicationsTable
-                applications={filteredApplications}
-                selectedApplications={selectedApplications}
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-                onSelectionChange={setSelectedApplications}
-                onRefresh={fetchApplications}
-                refreshTrigger={refreshTrigger}
-              />
-            </Grid>
+          {/* Ongoing Audits Section */}
+          <Box mb={4}>
+            <OngoingAuditsSection
+              applications={applications}
+              refreshTrigger={refreshTrigger}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              statusFilter={statusFilter}
+              onStatusFilterChange={setStatusFilter}
+            />
+          </Box>
 
-            {/* Activity Stream Section */}
-            <Grid item xs={12} md={6} style={{ height: '700px' }}>
-              <ActivityStream
-                auditHistory={auditHistory}
-                onRefresh={fetchAuditHistory}
-                getStatusChipStyle={getStatusChipStyle}
-              />
-            </Grid>
-          </Grid>
+          {/* Collapsible Activity Stream */}
+          <Box>
+            <CollapsibleActivityStream
+              auditHistory={auditHistory}
+              onRefresh={fetchAuditHistory}
+              getStatusChipStyle={getStatusChipStyle}
+            />
+          </Box>
         </Box>
 
         {/* Initiate Audit Dialog */}

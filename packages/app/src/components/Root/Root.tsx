@@ -114,6 +114,11 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
               to="audit-access-manager"
               text="Audit Access Manager"
             />
+            <SidebarItem
+              icon={DoneAllIcon as IconComponent}
+              to="audit-access-manager/compliance-manager"
+              text="Compliance Manager"
+            />
           </SidebarScrollWrapper>
           <SidebarScrollWrapper>
             <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />

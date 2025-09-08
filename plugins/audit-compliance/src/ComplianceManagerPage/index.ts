@@ -1,1 +1,0 @@
-export { ComplianceManagerPage } from './ComplianceManagerPage';

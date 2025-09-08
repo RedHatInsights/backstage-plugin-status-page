@@ -20,6 +20,10 @@ export const complianceManagerRouteRef = createRouteRef({
   id: 'compliance-manager',
 });
 
+export const complianceManagerNewRouteRef = createRouteRef({
+  id: 'compliance-manager-new',
+});
+
 export const auditCompliancePlugin = createPlugin({
   id: 'audit-compliance',
   routes: {
@@ -27,6 +31,7 @@ export const auditCompliancePlugin = createPlugin({
     details: detailsRouteRef,
     configurations: configRouteRef,
     complianceManager: complianceManagerRouteRef,
+    complianceManagerNew: complianceManagerNewRouteRef,
   },
 });
 
@@ -40,12 +45,14 @@ export const AuditCompliancePage = auditCompliancePlugin.provide(
   }),
 );
 
-// Compliance Manager page
-export const ComplianceManagerPage = auditCompliancePlugin.provide(
+// Compliance Manager New page
+export const ComplianceManagerPageNew = auditCompliancePlugin.provide(
   createRoutableExtension({
-    name: 'ComplianceManagerPage',
+    name: 'ComplianceManagerPageNew',
     component: () =>
-      import('./ComplianceManagerPage').then(m => m.ComplianceManagerPage),
-    mountPoint: complianceManagerRouteRef,
+      import('./ComplianceManagerPageNew').then(
+        m => m.ComplianceManagerPageNew,
+      ),
+    mountPoint: complianceManagerNewRouteRef,
   }),
 );

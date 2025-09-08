@@ -31,7 +31,7 @@ import {
   AuditDetailsSection,
   AuditInitiation,
   AuditSummary,
-  ComplianceManagerPage,
+  ComplianceManagerPageNew,
 } from '@appdev/backstage-plugin-audit-compliance';
 import {
   AppDevDashboardPage,
@@ -66,7 +66,13 @@ import {
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import { DockerIcon, MCPServerIcon, MistralIcon, NPMIcon, PythonIcon } from '@compass/backstage-plugin-mcp';
+import {
+  DockerIcon,
+  MCPServerIcon,
+  MistralIcon,
+  NPMIcon,
+  PythonIcon,
+} from '@compass/backstage-plugin-mcp';
 import {
   RedirectsProvider,
   redirectsPlugin,
@@ -220,7 +226,10 @@ const routes = (
     <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
     <Route path="/devtools" element={<DevToolsPage />} />
     <Route path="/audit-access-manager" element={<AuditCompliancePage />} />
-    <Route path="/compliance-manager" element={<ComplianceManagerPage />} />
+    <Route
+      path="/audit-access-manager/compliance-manager"
+      element={<ComplianceManagerPageNew />}
+    />
     <Route
       path="/audit-access-manager/:app_name"
       element={<AuditInitiation />}
