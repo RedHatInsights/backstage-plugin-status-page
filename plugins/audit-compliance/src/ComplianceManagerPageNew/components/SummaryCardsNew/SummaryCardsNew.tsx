@@ -10,10 +10,6 @@ export const SummaryCardsNew: React.FC<SummaryCardsNewProps> = ({
 
   return (
     <Box>
-      <Typography variant="h3" className={classes.title}>
-        Compliance Overview
-      </Typography>
-
       <Grid container spacing={4} justifyContent="center">
         <Grid item xs={12} sm={6} md={3}>
           <Card className={classes.card}>
