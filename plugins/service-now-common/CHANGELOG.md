@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-service-now-common [1.5.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-service-now-common@1.5.1...@compass/backstage-plugin-service-now-common@1.5.2) (2025-09-10)
+
+
+### Bug Fixes
+
+* **PULSE-873:** update API parameters as the API Access was updated ([c7c9584](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/c7c9584983a9296792cab0ce1185cf5b106acecf))
+
 ## @compass/backstage-plugin-service-now-common [1.5.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-service-now-common@1.5.0...@compass/backstage-plugin-service-now-common@1.5.1) (2025-09-03)
 
 
