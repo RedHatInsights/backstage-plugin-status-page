@@ -72,13 +72,12 @@ export class ServiceNowClient {
     options?: CommonListOptions,
   ) {
     const uri = `/api/now/v2/table/${CMDB_PIA_TABLE_NAME}`;
-    const sysparmQuery = `sn_grc_profile.applies_to=${sysId}`;
+    const sysparmQuery = `sn_grc_profile.applies_to=${sysId}^metric_type.nameSTARTSWITHPrivacy`;
     const sysparm_fields = options?.sysparm_fields?.split?.(',') ?? [];
   
     return this.pagedRequest<ServiceNowPIAAssessmentInstanceResponse>(uri, {
       ...options,
       sysparm_query: sysparmQuery,
-      "metric_type.nameSTARTSWITHPrivacy": "",
       sysparm_fields: [...CMDB_PIA_RECORD_FIELDS, ...sysparm_fields].join(','),
     });
   }
