@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
-  Card,
-  CardContent,
   Typography,
-  LinearProgress,
   Button,
   Chip,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  InputAdornment,
+  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -15,32 +19,23 @@ import {
   TableRow,
   Paper,
   Collapse,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  InputAdornment,
-  IconButton,
 } from '@material-ui/core';
-import { Link } from '@backstage/core-components';
+import { Table as BackstageTable } from '@backstage/core-components';
 import {
   discoveryApiRef,
   fetchApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
-import VisibilityIcon from '@material-ui/icons/Visibility';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
 import { useStyles } from './styles';
+import { AuditInfo, OngoingAuditsSectionProps, AppAuditSummary } from './types';
 import {
-  Application,
-  AuditInfo,
-  OngoingAuditsSectionProps,
-  AppAuditSummary,
-} from './types';
+  AuditProgressStepper,
+  AuditStep,
+} from '../../../AuditCompliancePage/audit-components/AuditProgressStepper/AuditProgressStepper';
 
 export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
   applications,
@@ -79,8 +74,8 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
           app_name: audit.app_name,
           frequency: audit.frequency,
           period: audit.period,
-          status: audit.progress || audit.status || 'UNKNOWN',
-          progress: audit.progress || 'NOT_STARTED',
+          status: audit.status || 'UNKNOWN',
+          progress: audit.progress || 'audit_started',
           jira_key: audit.jira_key || audit.jira_ticket || '',
           created_at: audit.created_at,
         });
@@ -103,88 +98,29 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
     }
   }, [refreshTrigger, fetchAuditData]);
 
-  const getStatusChipStyle = (status: string) => {
-    const statusUpper = status?.toUpperCase() || '';
-
-    if (statusUpper === 'COMPLETED') {
-      return {
-        backgroundColor: '#E8F5E8',
-        color: '#1B5E20',
-        borderColor: '#4CAF50',
-        fontWeight: 600,
-      };
-    } else if (
-      statusUpper === 'IN_PROGRESS' ||
-      statusUpper === 'ACCESS_REVIEW_COMPLETE'
-    ) {
-      return {
-        backgroundColor: '#FFF3E0',
-        color: '#E65100',
-        borderColor: '#FF9800',
-        fontWeight: 600,
-      };
-    } else if (statusUpper === 'AUDIT_STARTED') {
-      return {
-        backgroundColor: '#E3F2FD',
-        color: '#1565C0',
-        borderColor: '#42A5F5',
-        fontWeight: 600,
-      };
-    } else if (statusUpper === 'DETAILS_UNDER_REVIEW') {
-      return {
-        backgroundColor: '#F3E5F5',
-        color: '#7B1FA2',
-        borderColor: '#BA68C8',
-        fontWeight: 600,
-      };
-    }
-    return {
-      backgroundColor: '#F5F5F5',
-      color: '#666666',
-      borderColor: '#CCCCCC',
-      fontWeight: 600,
-    };
-  };
-
-  const getProgressValue = (progress: string) => {
-    const progressUpper = progress?.toUpperCase() || '';
-
-    switch (progressUpper) {
-      case 'NOT_STARTED':
-        return 0;
-      case 'AUDIT_STARTED':
-        return 20;
-      case 'DETAILS_UNDER_REVIEW':
-        return 40;
-      case 'SUMMARY_GENERATED':
-        return 70;
-      case 'FINAL_SIGN_OFF_DONE':
-      case 'COMPLETED':
-        return 100;
+  const mapProgressToAuditStep = (progress: string): AuditStep => {
+    // Map progress values to AuditStep enum (from AuditProgressStepper)
+    switch (progress) {
+      case 'audit_started':
+        return 'audit_started';
+      case 'details_under_review':
+        return 'details_under_review';
+      case 'final_sign_off_done':
+        return 'final_sign_off_done';
+      case 'summary_generated':
+        return 'summary_generated';
+      case 'completed':
+        return 'completed';
       default:
-        return 0;
+        return 'audit_started';
     }
   };
 
-  const getProgressLabel = (progress: string) => {
-    const progressUpper = progress?.toUpperCase() || '';
-
-    switch (progressUpper) {
-      case 'NOT_STARTED':
-        return 'Not Started';
-      case 'AUDIT_STARTED':
-        return 'Audit Started';
-      case 'DETAILS_UNDER_REVIEW':
-        return 'Under Review';
-      case 'SUMMARY_GENERATED':
-        return 'Summary Generated';
-      case 'FINAL_SIGN_OFF_DONE':
-        return 'Final Sign-off Done';
-      case 'COMPLETED':
-        return 'Completed';
-      default:
-        return 'Unknown';
-    }
+  const formatAppName = (appName: string): string => {
+    return appName
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
   };
 
   // Get ongoing audits (in progress, started, etc.)
@@ -215,14 +151,14 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
       // Filter for ongoing audits only
       let ongoingAudits = audits.filter(audit => {
         const statusUpper = audit.status?.toUpperCase() || '';
+        const progressLower = audit.progress?.toLowerCase() || '';
+
+        // Include audits that are not completed (by status or progress)
         return (
           statusUpper === 'IN_PROGRESS' ||
           statusUpper === 'AUDIT_STARTED' ||
           statusUpper === 'ACCESS_REVIEW_COMPLETE' ||
-          statusUpper === 'DETAILS_UNDER_REVIEW' ||
-          (audit.progress &&
-            audit.progress !== 'COMPLETED' &&
-            audit.progress !== 'NOT_STARTED')
+          (progressLower !== 'completed' && progressLower !== 'not_started')
         );
       });
 
@@ -236,23 +172,31 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
 
       // Only include applications that have ongoing audits after filtering
       if (ongoingAudits.length > 0) {
-        const inProgressCount = ongoingAudits.filter(audit => {
+        // Count all audits (not just ongoing ones) for status summary
+        const allAudits = audits;
+        const inProgressCount = allAudits.filter(audit => {
           const statusUpper = audit.status?.toUpperCase() || '';
           return (
             statusUpper === 'IN_PROGRESS' ||
             statusUpper === 'AUDIT_STARTED' ||
-            statusUpper === 'DETAILS_UNDER_REVIEW'
+            statusUpper === 'ACCESS_REVIEW_COMPLETE'
           );
         }).length;
 
-        const completedCount = ongoingAudits.filter(audit => {
+        const completedCount = allAudits.filter(audit => {
           const statusUpper = audit.status?.toUpperCase() || '';
           return statusUpper === 'COMPLETED';
         }).length;
 
-        const statusSummary = `${inProgressCount} in-progress${
-          completedCount > 0 ? `, ${completedCount} completed` : ''
-        }`;
+        const notStartedCount = allAudits.filter(audit => {
+          const statusUpper = audit.status?.toUpperCase() || '';
+          const progressLower = audit.progress?.toLowerCase() || '';
+          return (
+            statusUpper === 'NOT_STARTED' || progressLower === 'not_started'
+          );
+        }).length;
+
+        const statusSummary = `${inProgressCount} in-progress, ${completedCount} completed, ${notStartedCount} not started`;
 
         summaries.push({
           app,
@@ -332,12 +276,13 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
             onChange={e => handleStatusFilterChange(e.target.value as string)}
           >
             <MenuItem value="all">All Status</MenuItem>
-            <MenuItem value="in_progress">In Progress</MenuItem>
-            <MenuItem value="audit_started">Audit Started</MenuItem>
-            <MenuItem value="details_under_review">
-              Details Under Review
+            <MenuItem value="AUDIT_STARTED">Audit Started</MenuItem>
+            <MenuItem value="IN_PROGRESS">In Progress</MenuItem>
+            <MenuItem value="ACCESS_REVIEW_COMPLETE">
+              Access Review Complete
             </MenuItem>
-            <MenuItem value="completed">Completed</MenuItem>
+            <MenuItem value="COMPLETED">Completed</MenuItem>
+            <MenuItem value="NOT_STARTED">Not Started</MenuItem>
           </Select>
         </FormControl>
 
@@ -377,9 +322,6 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
                 <TableCell className={classes.tableHeaderCell}>
                   Status Summary
                 </TableCell>
-                <TableCell className={classes.tableHeaderCell}>
-                  Actions
-                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -388,11 +330,24 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
 
                 return (
                   <React.Fragment key={summary.app.id}>
-                    <TableRow className={classes.tableRow}>
+                    <TableRow
+                      className={classes.tableRow}
+                      onClick={() => toggleExpanded(summary.app.app_name)}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <TableCell>
-                        <Typography className={classes.appName}>
-                          {summary.app.app_name}
-                        </Typography>
+                        <Box display="flex" alignItems="center">
+                          <Typography className={classes.appName}>
+                            {formatAppName(summary.app.app_name)}
+                          </Typography>
+                          <Box ml={1}>
+                            {isExpanded ? (
+                              <ExpandLessIcon />
+                            ) : (
+                              <ExpandMoreIcon />
+                            )}
+                          </Box>
+                        </Box>
                       </TableCell>
                       <TableCell>
                         <Typography variant="body2">
@@ -404,105 +359,124 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
                           {summary.statusSummary}
                         </Typography>
                       </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => toggleExpanded(summary.app.app_name)}
-                          className={classes.expandButton}
-                          endIcon={
-                            isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />
-                          }
-                        >
-                          {isExpanded ? 'Collapse' : 'Expand'}
-                        </Button>
-                      </TableCell>
                     </TableRow>
 
                     <TableRow>
-                      <TableCell colSpan={4} style={{ padding: 0 }}>
+                      <TableCell colSpan={3} style={{ padding: 0 }}>
                         <Collapse in={isExpanded}>
                           <Box className={classes.collapsedContent}>
-                            {summary.audits.map((audit, index) => (
-                              <Card
-                                key={`${summary.app.id}-${audit.period}-${index}`}
-                                className={classes.auditCard}
-                              >
-                                <CardContent
-                                  className={classes.auditCardContent}
-                                >
-                                  <Box
-                                    display="flex"
-                                    justifyContent="space-between"
-                                    alignItems="flex-start"
-                                  >
-                                    <Box flex={1}>
-                                      <Box
-                                        display="flex"
-                                        alignItems="center"
-                                        style={{ marginBottom: 8 }}
+                            <BackstageTable
+                              title={`${formatAppName(
+                                summary.app.app_name,
+                              )} - Audit Details`}
+                              columns={[
+                                {
+                                  title: 'Jira Ticket',
+                                  field: 'jira_key',
+                                  render: (row: any) => {
+                                    if (
+                                      !row.jira_key ||
+                                      row.jira_key.toUpperCase() === 'N/A'
+                                    ) {
+                                      return 'N/A';
+                                    }
+                                    return (
+                                      <a
+                                        href={`https://issues.redhat.com/browse/${row.jira_key}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                       >
-                                        <Chip
-                                          size="small"
-                                          label={
-                                            audit.status?.replace(/_/g, ' ') ||
-                                            'Unknown'
-                                          }
-                                          style={getStatusChipStyle(
-                                            audit.status,
-                                          )}
-                                          className={classes.statusChip}
-                                        />
-                                        <Typography
-                                          variant="caption"
-                                          color="textSecondary"
-                                          style={{ marginLeft: 8 }}
-                                        >
-                                          {audit.period} • {audit.frequency}
-                                        </Typography>
-                                      </Box>
+                                        {row.jira_key}
+                                      </a>
+                                    );
+                                  },
+                                },
+                                { title: 'Frequency', field: 'frequency' },
+                                { title: 'Period', field: 'period' },
+                                {
+                                  title: 'Status',
+                                  render: (row: any) => {
+                                    const status =
+                                      row.status?.toUpperCase() || '';
+                                    let chipStyle: React.CSSProperties = {
+                                      fontWeight: 600,
+                                    };
 
-                                      <Box
-                                        className={classes.progressContainer}
-                                      >
-                                        <Typography
-                                          className={classes.progressLabel}
-                                        >
-                                          Progress:{' '}
-                                          {getProgressLabel(
-                                            audit.progress || 'NOT_STARTED',
-                                          )}
-                                        </Typography>
-                                        <LinearProgress
-                                          variant="determinate"
-                                          value={getProgressValue(
-                                            audit.progress || 'NOT_STARTED',
-                                          )}
-                                          className={classes.progressBar}
-                                          color="primary"
-                                        />
-                                      </Box>
-                                    </Box>
+                                    // Gradient color system: lighter colors for early stages, darker for completion
+                                    if (status === 'AUDIT_STARTED') {
+                                      // Blue for kickoff phase
+                                      chipStyle = {
+                                        backgroundColor: '#E3F2FD',
+                                        color: '#1565C0',
+                                        borderColor: '#42A5F5',
+                                        fontWeight: 600,
+                                      };
+                                    } else if (status === 'IN_PROGRESS') {
+                                      // Amber for midway/in progress
+                                      chipStyle = {
+                                        backgroundColor: '#FFF3E0',
+                                        color: '#E65100',
+                                        borderColor: '#FF9800',
+                                        fontWeight: 600,
+                                      };
+                                    } else if (
+                                      status === 'ACCESS_REVIEW_COMPLETE'
+                                    ) {
+                                      // Dark amber for review done
+                                      chipStyle = {
+                                        backgroundColor: '#E65100',
+                                        color: '#FFFFFF',
+                                        borderColor: '#E65100',
+                                        fontWeight: 600,
+                                      };
+                                    } else if (status === 'COMPLETED') {
+                                      // Green for success/fully complete
+                                      chipStyle = {
+                                        backgroundColor: '#E8F5E8',
+                                        color: '#1B5E20',
+                                        borderColor: '#4CAF50',
+                                        fontWeight: 600,
+                                      };
+                                    } else {
+                                      // Default gray for unknown statuses
+                                      chipStyle = {
+                                        backgroundColor: '#F5F5F5',
+                                        color: '#616161',
+                                        borderColor: '#9E9E9E',
+                                        fontWeight: 600,
+                                      };
+                                    }
 
-                                    <Box ml={2}>
-                                      <Link
-                                        to={`/audit-access-manager/${summary.app.app_name}`}
-                                      >
-                                        <Button
-                                          variant="outlined"
-                                          color="primary"
-                                          startIcon={<VisibilityIcon />}
-                                          className={classes.actionButton}
-                                          size="small"
-                                        >
-                                          View Details
-                                        </Button>
-                                      </Link>
-                                    </Box>
-                                  </Box>
-                                </CardContent>
-                              </Card>
-                            ))}
+                                    return (
+                                      <Chip
+                                        label={status}
+                                        size="small"
+                                        variant="outlined"
+                                        style={chipStyle}
+                                      />
+                                    );
+                                  },
+                                },
+                                {
+                                  title: 'Audit Progress',
+                                  field: 'progress',
+                                  render: (row: any) => (
+                                    <AuditProgressStepper
+                                      activeStep={mapProgressToAuditStep(
+                                        row.progress || 'audit_started',
+                                      )}
+                                    />
+                                  ),
+                                },
+                                { title: 'Created At', field: 'created_at' },
+                              ]}
+                              data={summary.audits}
+                              options={{
+                                paging: false,
+                                search: false,
+                                showTitle: false,
+                              }}
+                            />
                           </Box>
                         </Collapse>
                       </TableCell>

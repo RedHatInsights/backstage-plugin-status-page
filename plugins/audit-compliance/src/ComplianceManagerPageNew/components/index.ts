@@ -4,3 +4,4 @@ export { OngoingAuditsSection } from './OngoingAuditsSection/OngoingAuditsSectio
 export { CollapsibleActivityStream } from './CollapsibleActivityStream/CollapsibleActivityStream';
 export { InitiateAuditDialog } from './InitiateAuditDialog/InitiateAuditDialog';
 export { SendEmailDialog } from './SendEmailDialog/SendEmailDialog';
+export { TwoStepAuditDialog } from './TwoStepAuditDialog/TwoStepAuditDialog';

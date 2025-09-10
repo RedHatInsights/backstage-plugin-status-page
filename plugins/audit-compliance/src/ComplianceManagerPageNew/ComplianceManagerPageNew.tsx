@@ -20,7 +20,7 @@ import {
   BulkActionsBar,
   OngoingAuditsSection,
   CollapsibleActivityStream,
-  InitiateAuditDialog,
+  TwoStepAuditDialog,
 } from './components';
 import { AuditEvent } from '../AuditCompliancePage/audit-components/AuditDetailsSection/AuditActivityStream/types';
 
@@ -28,6 +28,7 @@ interface Application {
   id: string;
   app_name: string;
   app_owner: string;
+  app_owner_email?: string;
   cmdb_id: string;
 }
 
@@ -94,9 +95,7 @@ export const ComplianceManagerPageNew = () => {
     try {
       setLoading(true);
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
-      const response = await fetchApi.fetch(
-        `${baseUrl}/compliance/applications`,
-      );
+      const response = await fetchApi.fetch(`${baseUrl}/applications`);
 
       if (!response.ok) {
         throw new Error(`Failed to fetch applications: ${response.statusText}`);
@@ -374,8 +373,8 @@ export const ComplianceManagerPageNew = () => {
           </Box>
         </Box>
 
-        {/* Initiate Audit Dialog */}
-        <InitiateAuditDialog
+        {/* Two-Step Audit Dialog */}
+        <TwoStepAuditDialog
           open={initiateDialogOpen}
           onClose={() => setInitiateDialogOpen(false)}
           applications={applications}

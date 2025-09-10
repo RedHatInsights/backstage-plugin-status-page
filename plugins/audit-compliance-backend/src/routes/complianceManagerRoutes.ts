@@ -41,34 +41,34 @@ export async function createComplianceManagerRouter(
 
   const complianceManagerRouter = Router();
 
-  /**
-   * GET /compliance/applications
-   * Retrieves all applications for compliance manager.
-   *
-   * @route GET /compliance/applications
-   * @returns {Array} 200 - List of all applications
-   * @returns {Object} 500 - Error response
-   */
-  complianceManagerRouter.get('/compliance/applications', async (req, res) => {
-    try {
-      const applications = await database.getAllApplications();
+  // /**
+  //  * GET /compliance/applications
+  //  * Retrieves all applications for compliance manager.
+  //  *
+  //  * @route GET /compliance/applications
+  //  * @returns {Array} 200 - List of all applications
+  //  * @returns {Object} 500 - Error response
+  //  */
+  // complianceManagerRouter.get('/compliance/applications', async (req, res) => {
+  //   try {
+  //     const applications = await database.getAllApplications();
 
-      // Transform to include id field for frontend compatibility
-      const transformedApplications = applications.map((app, index) => ({
-        id: app.id || index.toString(), // Use existing id or generate one
-        app_name: app.app_name,
-        app_owner: app.app_owner,
-        cmdb_id: app.cmdb_id,
-      }));
+  //     // Transform to include id field for frontend compatibility
+  //     const transformedApplications = applications.map((app, index) => ({
+  //       id: app.id || index.toString(), // Use existing id or generate one
+  //       app_name: app.app_name,
+  //       app_owner: app.app_owner,
+  //       cmdb_id: app.cmdb_id,
+  //     }));
 
-      res.json(transformedApplications);
-    } catch (error) {
-      logger.error('Failed to fetch applications for compliance manager', {
-        error: error instanceof Error ? error.message : String(error),
-      });
-      res.status(500).json({ error: 'Failed to fetch applications' });
-    }
-  });
+  //     res.json(transformedApplications);
+  //   } catch (error) {
+  //     logger.error('Failed to fetch applications for compliance manager', {
+  //       error: error instanceof Error ? error.message : String(error),
+  //     });
+  //     res.status(500).json({ error: 'Failed to fetch applications' });
+  //   }
+  // });
 
   /**
    * GET /compliance/audit-history
