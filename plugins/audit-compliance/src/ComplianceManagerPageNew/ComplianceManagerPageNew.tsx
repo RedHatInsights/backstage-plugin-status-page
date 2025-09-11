@@ -19,10 +19,9 @@ import {
   SummaryCardsNew,
   BulkActionsBar,
   OngoingAuditsSection,
-  CollapsibleActivityStream,
   TwoStepAuditDialog,
 } from './components';
-import { AuditEvent } from '../AuditCompliancePage/audit-components/AuditDetailsSection/AuditActivityStream/types';
+import { AuditActivityStream } from '../AuditCompliancePage/audit-components/AuditDetailsSection/AuditActivityStream/AuditActivityStream';
 
 interface Application {
   id: string;
@@ -76,7 +75,6 @@ export const ComplianceManagerPageNew = () => {
   const [initiatingAudits, setInitiatingAudits] = useState(false);
 
   // Audit history and summary state
-  const [auditHistory, setAuditHistory] = useState<AuditEvent[]>([]);
   const [complianceSummary, setComplianceSummary] = useState<ComplianceSummary>(
     {
       totalApplications: 0,
@@ -117,24 +115,6 @@ export const ComplianceManagerPageNew = () => {
     }
   }, [discoveryApi, fetchApi]);
 
-  const fetchAuditHistory = useCallback(async () => {
-    try {
-      const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
-      // Use existing activity stream API without app_name to get all events
-      const response = await fetchApi.fetch(
-        `${baseUrl}/activity-stream?limit=20`,
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        setAuditHistory(data);
-      }
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to fetch activity stream:', err);
-    }
-  }, [discoveryApi, fetchApi]);
-
   const fetchComplianceSummary = useCallback(async () => {
     try {
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
@@ -153,9 +133,8 @@ export const ComplianceManagerPageNew = () => {
   // Fetch applications on component mount
   useEffect(() => {
     fetchApplications();
-    fetchAuditHistory();
     fetchComplianceSummary();
-  }, [fetchApplications, fetchAuditHistory, fetchComplianceSummary]);
+  }, [fetchApplications, fetchComplianceSummary]);
 
   const handleApplicationSelection = (applicationId: string) => {
     setSelectedApplications(prev => {
@@ -244,8 +223,8 @@ export const ComplianceManagerPageNew = () => {
       setFrequency('');
       setSelectedQuarter('');
       setInitiateDialogOpen(false);
-      fetchAuditHistory();
       fetchApplications(); // Refresh applications to show new audits
+      fetchComplianceSummary(); // Refresh compliance summary
       setRefreshTrigger(prev => prev + 1); // Trigger table refresh
     } catch (err) {
       alertApi.post({
@@ -363,13 +342,9 @@ export const ComplianceManagerPageNew = () => {
             />
           </Box>
 
-          {/* Collapsible Activity Stream */}
+          {/* Global Activity Stream */}
           <Box>
-            <CollapsibleActivityStream
-              auditHistory={auditHistory}
-              onRefresh={fetchAuditHistory}
-              getStatusChipStyle={getStatusChipStyle}
-            />
+            <AuditActivityStream global />
           </Box>
         </Box>
 

@@ -2,7 +2,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 export const useStyles = makeStyles(theme => ({
   card: {
-    height: '140px',
+    height: '160px',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',

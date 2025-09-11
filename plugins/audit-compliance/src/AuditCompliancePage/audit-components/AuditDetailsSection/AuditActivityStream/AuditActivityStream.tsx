@@ -15,10 +15,11 @@ import { AuditEvent } from './types';
 
 interface Props {
   key?: string;
-  app_name: string;
-  frequency: string;
-  period: string;
-  showAll?: boolean; // When true, shows all data without pagination/scrolling
+  app_name?: string;
+  frequency?: string;
+  period?: string;
+  showAll?: boolean; // When true, shows all data without pagination/scrolling for export
+  global?: boolean; // When true, shows activities from all applications
 }
 
 const getActivityIcon = (eventType: string) => {
@@ -150,6 +151,7 @@ export const AuditActivityStream: React.FC<Props> = ({
   frequency,
   period,
   showAll = false,
+  global = false,
 }) => {
   const classes = useStyles();
   const [events, setEvents] = useState<AuditEvent[]>([]);
@@ -167,20 +169,28 @@ export const AuditActivityStream: React.FC<Props> = ({
         setLoading(true);
         const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
 
-        // Use export endpoint when showAll is true, regular endpoint otherwise
-        const endpoint = showAll
-          ? `/activity-stream/export?app_name=${encodeURIComponent(
-              app_name,
-            )}&frequency=${encodeURIComponent(
-              frequency,
-            )}&period=${encodeURIComponent(period)}`
-          : `/activity-stream?app_name=${encodeURIComponent(
-              app_name,
-            )}&frequency=${encodeURIComponent(
-              frequency,
-            )}&period=${encodeURIComponent(
-              period,
-            )}&limit=10&offset=${currentOffset}`;
+        let endpoint: string;
+
+        if (global) {
+          // Global mode - fetch activities from all applications
+          endpoint = `/activity-stream?all=true&limit=20&offset=${currentOffset}`;
+        } else if (showAll) {
+          // ShowAll mode for specific app
+          endpoint = `/activity-stream/export?app_name=${encodeURIComponent(
+            app_name!,
+          )}&frequency=${encodeURIComponent(
+            frequency!,
+          )}&period=${encodeURIComponent(period!)}`;
+        } else {
+          // Regular paginated mode for specific app
+          endpoint = `/activity-stream?app_name=${encodeURIComponent(
+            app_name!,
+          )}&frequency=${encodeURIComponent(
+            frequency!,
+          )}&period=${encodeURIComponent(
+            period!,
+          )}&limit=10&offset=${currentOffset}`;
+        }
 
         const response = await fetchApi.fetch(`${baseUrl}${endpoint}`);
 
@@ -195,9 +205,9 @@ export const AuditActivityStream: React.FC<Props> = ({
           setEvents(data);
           setHasMore(false);
         } else {
-          // For paginated mode, append to existing events
+          // For paginated mode (including global), append to existing events
           setEvents(prev => [...prev, ...data]);
-          setHasMore(data.length === 10); // If we got 10 items, there might be more
+          setHasMore(data.length === (global ? 20 : 10)); // Global uses limit 20, regular uses 10
           setOffset(currentOffset + data.length);
         }
       } catch (err) {
@@ -210,13 +220,13 @@ export const AuditActivityStream: React.FC<Props> = ({
         setLoading(false);
       }
     },
-    [app_name, frequency, period, showAll, discoveryApi, fetchApi],
+    [app_name, frequency, period, showAll, global, discoveryApi, fetchApi],
   );
 
   useEffect(() => {
     fetchEvents(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [app_name, frequency, period]);
+  }, [app_name, frequency, period, global]);
 
   const handleScroll = useCallback(() => {
     const el = ref.current;
@@ -231,7 +241,7 @@ export const AuditActivityStream: React.FC<Props> = ({
   }, [loading, hasMore, offset, fetchEvents]);
 
   useEffect(() => {
-    // Only add scroll listeners when not in showAll mode
+    // Only add scroll listeners when not in showAll mode (global mode should allow scrolling)
     if (!showAll) {
       const el = ref.current;
       if (el) {

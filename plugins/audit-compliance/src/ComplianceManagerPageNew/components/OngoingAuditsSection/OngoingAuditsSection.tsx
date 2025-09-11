@@ -385,6 +385,11 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
                                         href={`https://issues.redhat.com/browse/${row.jira_key}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
+                                        style={{
+                                          color: '#1976d2',
+                                          textDecoration: 'underline',
+                                          cursor: 'pointer',
+                                        }}
                                       >
                                         {row.jira_key}
                                       </a>
@@ -469,6 +474,23 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
                                   ),
                                 },
                                 { title: 'Created At', field: 'created_at' },
+                                {
+                                  title: 'Actions',
+                                  render: (row: any) => (
+                                    <Button
+                                      variant="outlined"
+                                      size="small"
+                                      onClick={() => {
+                                        const url = `/audit-access-manager/${encodeURIComponent(
+                                          row.app_name,
+                                        )}`;
+                                        window.open(url, '_blank');
+                                      }}
+                                    >
+                                      View Details
+                                    </Button>
+                                  ),
+                                },
                               ]}
                               data={summary.audits}
                               options={{

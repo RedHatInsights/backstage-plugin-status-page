@@ -1,21 +1,48 @@
-import { Router } from 'express';
-import { Logger } from 'winston';
+import { Knex } from 'knex';
+import express from 'express';
+import Router from 'express-promise-router';
 import { AuditComplianceDatabase } from '../database/AuditComplianceDatabase';
 
-export interface RouterOptions {
-  logger: Logger;
-  database: AuditComplianceDatabase;
-}
+/**
+ * Creates the activity stream router with all endpoint definitions.
+ * @param knex - The Knex client
+ * @param logger - The logger service
+ * @param config - The root config service
+ * @returns An Express router instance with all activity stream routes
+ */
+export async function createActivityStreamRouter(
+  knex: Knex,
+  logger: any,
+  config: any,
+): Promise<express.Router> {
+  const database = await AuditComplianceDatabase.create({
+    knex,
+    skipMigrations: true,
+    logger,
+    config,
+  });
 
-export async function createRouter(options: RouterOptions): Promise<Router> {
-  const { logger, database } = options;
   const router = Router();
 
   // GET /activity-stream
   router.get('/activity-stream', async (req, res) => {
     try {
-      const { app_name, frequency, period, limit, offset } = req.query;
+      const { app_name, frequency, period, limit, offset, all } = req.query;
 
+      // If 'all' parameter is true, fetch activities from all applications
+      if (all === 'true') {
+        const events = await database.getActivityStreamEvents({
+          app_name: '%', // Wildcard to match all app names
+          frequency: frequency as string | undefined,
+          period: period as string | undefined,
+          limit: limit ? parseInt(limit as string, 10) : 20,
+          offset: offset ? parseInt(offset as string, 10) : 0,
+        });
+        res.json(events);
+        return;
+      }
+
+      // Original behavior - require app_name when 'all' is not specified
       if (!app_name) {
         res.status(400).json({ error: 'app_name is required' });
         return;

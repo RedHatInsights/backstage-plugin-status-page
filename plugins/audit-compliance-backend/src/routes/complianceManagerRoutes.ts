@@ -493,25 +493,13 @@ export async function createComplianceManagerRouter(
       // Calculate compliance statistics
       const totalApplications = applications.length;
 
-      // Group audits by application and get latest status
-      const appStatuses = new Map();
-      audits.forEach(audit => {
-        const key = audit.app_name;
-        const existing = appStatuses.get(key);
-        if (
-          !existing ||
-          new Date(audit.created_at) > new Date(existing.created_at)
-        ) {
-          appStatuses.set(key, audit);
-        }
-      });
-
+      // Count all audits by status (not grouped by application)
       let compliant = 0;
       let nonCompliant = 0;
       let inProgress = 0;
       let pending = 0;
 
-      appStatuses.forEach(audit => {
+      audits.forEach(audit => {
         const status = audit.progress?.toUpperCase() || 'AUDIT_STARTED';
         switch (status) {
           case 'COMPLETED':
