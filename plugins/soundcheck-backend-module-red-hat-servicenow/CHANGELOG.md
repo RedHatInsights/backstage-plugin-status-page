@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.4.5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.4.4...@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.4.5) (2025-09-12)
+
+
+### Bug Fixes
+
+* **PULSE-873:**  update the  service-now common to latest ([fcf9f6a](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/fcf9f6a465796fdf86113e1a2b14e7d725a853bd))
+
 ## @compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.4.4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.4.3...@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.4.4) (2025-09-03)
 
 
