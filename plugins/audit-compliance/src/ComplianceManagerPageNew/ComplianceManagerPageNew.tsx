@@ -216,11 +216,10 @@ export const ComplianceManagerPageNew = () => {
     }
   };
 
-
   if (loading) {
     return (
       <Page themeId="tool">
-        <Header title="Compliance Manager" />
+        <Header title="Audit Compliance Manager" />
         <Content>
           <Progress />
         </Content>
@@ -231,7 +230,7 @@ export const ComplianceManagerPageNew = () => {
   if (error) {
     return (
       <Page themeId="tool">
-        <Header title="Compliance Manager" />
+        <Header title="AuditCompliance Manager" />
         <Content>
           <ResponseErrorPanel error={error} />
         </Content>
@@ -242,15 +241,12 @@ export const ComplianceManagerPageNew = () => {
   return (
     <Page themeId="tool">
       <Header
-        title="Compliance Manager"
+        title="Audit Compliance Manager"
         subtitle={
           <Box>
             <Typography variant="subtitle1" style={{ marginBottom: '8px' }}>
               Clean & Minimal Audit Management Dashboard
             </Typography>
-            <Breadcrumbs aria-label="breadcrumb">
-              <Typography color="textPrimary">Compliance Manager</Typography>
-            </Breadcrumbs>
           </Box>
         }
       >
