@@ -70,7 +70,7 @@ export class ServiceNowClient implements ServiceNowApi {
     if (response.status >= 400 && response.status < 600) {
       throw new Error('Failed to fetch user details');
     }
-    
+
     return (await response.json()) as ServiceNowInfraResponse;
   }
 }

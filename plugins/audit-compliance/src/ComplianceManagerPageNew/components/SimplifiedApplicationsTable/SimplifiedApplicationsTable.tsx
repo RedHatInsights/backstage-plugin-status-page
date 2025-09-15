@@ -1,44 +1,38 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  Chip,
-  IconButton,
-  TextField,
-  Typography,
-  InputAdornment,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Button,
-} from '@material-ui/core';
-import { Table, Link } from '@backstage/core-components';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Link, Table } from '@backstage/core-components';
 import {
   discoveryApiRef,
   fetchApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
-import SearchIcon from '@material-ui/icons/Search';
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  FormControl,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from '@material-ui/core';
 import ClearIcon from '@material-ui/icons/Clear';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import SearchIcon from '@material-ui/icons/Search';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import { useStyles } from './styles';
-import {
-  Application,
-  AuditInfo,
-  SimplifiedApplicationsTableProps,
-} from './types';
+import { AuditInfo, SimplifiedApplicationsTableProps } from './types';
 
 export const SimplifiedApplicationsTable: React.FC<
   SimplifiedApplicationsTableProps
 > = ({
   applications,
-  selectedApplications,
   searchTerm,
   onSearchChange,
-  onSelectionChange,
   onRefresh,
   refreshTrigger,
 }) => {
@@ -231,7 +225,7 @@ export const SimplifiedApplicationsTable: React.FC<
     <Card className={classes.card}>
       <CardContent className={classes.cardContent}>
         <Typography className={classes.title}>
-          Applications ({filteredApplications.length})
+          Applications {loading ? '...' : `(${filteredApplications.length})`}
         </Typography>
 
         <Box className={classes.filtersContainer}>
@@ -277,8 +271,9 @@ export const SimplifiedApplicationsTable: React.FC<
             startIcon={<RefreshIcon />}
             onClick={onRefresh}
             className={classes.refreshButton}
+            disabled={loading}
           >
-            Refresh
+            {loading ? 'Refreshing...' : 'Refresh'}
           </Button>
         </Box>
 
@@ -293,7 +288,8 @@ export const SimplifiedApplicationsTable: React.FC<
             showSelectAllCheckbox: false,
             emptyRowsWhenPaging: false,
           }}
-          data={filteredApplications}
+          data={loading ? [] : filteredApplications}
+          isLoading={loading}
           columns={[
             {
               title: 'Application Name',

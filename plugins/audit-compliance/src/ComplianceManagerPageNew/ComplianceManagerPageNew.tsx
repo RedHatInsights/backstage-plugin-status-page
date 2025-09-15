@@ -1,4 +1,3 @@
-import React, { useState, useEffect, useCallback } from 'react';
 import {
   Breadcrumbs,
   Content,
@@ -8,20 +7,21 @@ import {
   Progress,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { Box, Typography } from '@material-ui/core';
-import { useApi } from '@backstage/core-plugin-api';
 import {
+  alertApiRef,
   discoveryApiRef,
   fetchApiRef,
-  alertApiRef,
+  useApi,
 } from '@backstage/core-plugin-api';
+import { Box, Typography } from '@material-ui/core';
+import { useCallback, useEffect, useState } from 'react';
+import { AuditActivityStream } from '../AuditCompliancePage/audit-components/AuditDetailsSection/AuditActivityStream/AuditActivityStream';
 import {
-  SummaryCardsNew,
   BulkActionsBar,
   OngoingAuditsSection,
+  SummaryCardsNew,
   TwoStepAuditDialog,
 } from './components';
-import { AuditActivityStream } from '../AuditCompliancePage/audit-components/AuditDetailsSection/AuditActivityStream/AuditActivityStream';
 
 interface Application {
   id: string;
@@ -136,27 +136,6 @@ export const ComplianceManagerPageNew = () => {
     fetchComplianceSummary();
   }, [fetchApplications, fetchComplianceSummary]);
 
-  const handleApplicationSelection = (applicationId: string) => {
-    setSelectedApplications(prev => {
-      if (prev.includes(applicationId)) {
-        return prev.filter(id => id !== applicationId);
-      }
-      return [...prev, applicationId];
-    });
-  };
-
-  const handleSelectAll = () => {
-    if (selectedApplications.length === applications.length) {
-      setSelectedApplications([]);
-    } else {
-      setSelectedApplications(applications.map(app => app.id));
-    }
-  };
-
-  const handleClearSelection = () => {
-    setSelectedApplications([]);
-  };
-
   const handleInitiateBulkAudits = async () => {
     if (selectedApplications.length === 0) {
       alertApi.post({
@@ -237,43 +216,6 @@ export const ComplianceManagerPageNew = () => {
     }
   };
 
-  const getStatusChipStyle = (status: string) => {
-    const statusUpper = status?.toUpperCase() || '';
-
-    if (statusUpper === 'COMPLETED') {
-      return {
-        backgroundColor: '#E8F5E8',
-        color: '#1B5E20',
-        borderColor: '#4CAF50',
-        fontWeight: 600,
-      };
-    }
-    if (
-      statusUpper === 'IN_PROGRESS' ||
-      statusUpper === 'ACCESS_REVIEW_COMPLETE'
-    ) {
-      return {
-        backgroundColor: '#FFF3E0',
-        color: '#E65100',
-        borderColor: '#FF9800',
-        fontWeight: 600,
-      };
-    }
-    if (statusUpper === 'AUDIT_STARTED') {
-      return {
-        backgroundColor: '#E3F2FD',
-        color: '#1565C0',
-        borderColor: '#42A5F5',
-        fontWeight: 600,
-      };
-    }
-    return {
-      backgroundColor: '#F5F5F5',
-      color: '#666666',
-      borderColor: '#CCCCCC',
-      fontWeight: 600,
-    };
-  };
 
   if (loading) {
     return (

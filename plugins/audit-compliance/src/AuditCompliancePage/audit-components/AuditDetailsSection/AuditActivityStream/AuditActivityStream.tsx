@@ -1,11 +1,10 @@
 import { InfoCard } from '@backstage/core-components';
 import { Box, CircularProgress, Typography } from '@material-ui/core';
 import { useCallback, useEffect, useRef } from 'react';
-import { useStyles } from './AuditActivityStream.styles';
-import { AuditEvent } from './types';
 import { ActivityItem } from './ActivityItem';
+import { useStyles } from './AuditActivityStream.styles';
 import { SearchBar } from './SearchBar';
-import { useActivityStreamData, useActivitySearch } from './hooks';
+import { useActivitySearch, useActivityStreamData } from './hooks';
 
 interface Props {
   key?: string;

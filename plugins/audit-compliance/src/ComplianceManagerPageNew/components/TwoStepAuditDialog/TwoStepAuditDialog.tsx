@@ -36,9 +36,13 @@ import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
 import EditIcon from '@material-ui/icons/Edit';
 import VisibilityIcon from '@material-ui/icons/Visibility';
-import EmailIcon from '@material-ui/icons/Email';
 import { useStyles, MenuProps } from './styles';
-import { TwoStepAuditDialogProps, EmailFormData, AuditResult } from './types';
+import {
+  TwoStepAuditDialogProps,
+  EmailFormData,
+  AuditResult,
+  RawAuditResult,
+} from './types';
 import {
   discoveryApiRef,
   fetchApiRef,
@@ -59,7 +63,6 @@ export const TwoStepAuditDialog: React.FC<TwoStepAuditDialogProps> = ({
   onYearChange,
   onApplicationsChange,
   onInitiate,
-  initiating,
   getQuarterOptions,
   getYearOptions,
 }) => {
@@ -71,8 +74,6 @@ export const TwoStepAuditDialog: React.FC<TwoStepAuditDialogProps> = ({
   const [activeTab, setActiveTab] = useState(0);
   const [localSelectedApplications, setLocalSelectedApplications] =
     useState<string[]>(selectedApplications);
-  const [auditResults, setAuditResults] = useState<AuditResult[]>([]);
-  const [mainJiraTicket, setMainJiraTicket] = useState<string>('');
   const [step1Completed, setStep1Completed] = useState(false);
   const [step1Error, setStep1Error] = useState<string>('');
 
@@ -88,7 +89,7 @@ export const TwoStepAuditDialog: React.FC<TwoStepAuditDialogProps> = ({
   const [sendingEmail, setSendingEmail] = useState(false);
   const [isEditingBody, setIsEditingBody] = useState(false);
   const [initiatingAudits, setInitiatingAudits] = useState(false);
-  const [emailTemplate, setEmailTemplate] = useState({
+  const [emailTemplate] = useState({
     greeting: 'Hello Team,',
     mainContent:
       'An audit activity has been successfully initiated. Please find the details below.',
@@ -118,7 +119,6 @@ export const TwoStepAuditDialog: React.FC<TwoStepAuditDialogProps> = ({
   const generateEmailTemplate = (userInput: {
     title?: string;
     body?: string;
-    cta?: string;
   }) => {
     const template = `
 <html>
@@ -126,30 +126,24 @@ export const TwoStepAuditDialog: React.FC<TwoStepAuditDialogProps> = ({
     <style>
       body { font-family: Arial, sans-serif; padding: 20px; }
       h1 { color: #2c3e50; }
-      .cta { display: inline-block; padding: 10px 20px; background: #3498db; color: #fff; text-decoration: none; border-radius: 4px; }
     </style>
   </head>
   <body>
-    <p>{{body}}</p>
-    <a href="#" class="cta">{{cta}}</a>
+    {{body}}
   </body>
 </html>`;
 
     const defaults = {
       title: 'Audit Activity Initiated',
       body: 'An audit activity has been successfully initiated. Please find the details below.',
-      cta: 'View Details',
     };
 
-    return template
-      .replace('{{body}}', userInput.body || defaults.body)
-      .replace('{{cta}}', userInput.cta || defaults.cta);
+    return template.replace('{{body}}', userInput.body || defaults.body);
   };
 
   const generateEmailBody = (
     results: AuditResult[],
     mainTicket: string,
-    emailTitle: string,
   ): string => {
     const jiraBaseUrl = 'https://jira.company.com/browse';
 
@@ -175,9 +169,9 @@ export const TwoStepAuditDialog: React.FC<TwoStepAuditDialogProps> = ({
                 index % 2 === 0 ? '#ffffff' : '#f8f9fa'
               };">
                 <td style="border: 1px solid #ddd; padding: 8px; font-weight: 500;">${
-                  result.jira_ticket !== 'N/A'
+                  result.jira_ticket && result.jira_ticket !== 'N/A'
                     ? `<a href="${jiraBaseUrl}/${result.jira_ticket}" style="color: #007bff; text-decoration: none;">${result.jira_ticket}</a>`
-                    : 'N/A'
+                    : '<span style="color: #666; font-style: italic;">N/A</span>'
                 }</td>
                 <td style="border: 1px solid #ddd; padding: 8px;">${
                   result.app_name
@@ -215,22 +209,29 @@ export const TwoStepAuditDialog: React.FC<TwoStepAuditDialogProps> = ({
 
     const emailContent = `Hi Leads,<br><br>
 
-This is a reminder to complete <strong>"${frequencyText} Access Reviews period - ${appNames}"</strong> by <strong>${formattedDueDate}</strong> (Including all the evidence and management sign-off). Thanks if you have already completed it.<br><br>
+Request you to please Initiate & complete the <strong>"${frequencyText} Access Review exercise for ${appNames}"</strong> for ${periodText} and maintain/document all the evidence accordingly (without any deviation) as we did for the last quarter. Reference guidelines and materials are attached to the ticket below. Request you to please complete this activity by <strong>${formattedDueDate}</strong> (Including all the evidence and management sign-off)<br><br>
 
-Important - Please make sure we are maintaining all the evidence as mentioned in the ticket description and original email below as that's what auditors observe and dig deeper.<br><br>
+<strong>Important</strong> - Recent audit experience shows auditors very keenly observe the below points. please double check them before closing the activity<br><br>
+
+<strong>1)</strong> Please use the <a href="http://localhost:3000/audit-access-manager" style="color: #007bff; text-decoration: none;"><strong>Audit Access Manager plugin</strong></a> to access and complete the audit activity<br>
+<strong>2)</strong> If you are rejecting an access of a user, then make sure that the <strong>user access is removed from both Rover and GitLab</strong> (or whatever sources) and the <strong>status is completed before final sign-off is being provided</strong>.<br>
+<strong>3)</strong> For each access deletion, there should be <strong>a ticket and proper documentation of the access removal process</strong>.<br><br>
 
 Tickets assigned to you can be found under the epic - ${
-      mainTicket !== 'N/A'
-        ? `<a href="${jiraBaseUrl}/${mainTicket}" style="color: #007bff; text-decoration: none;">${mainTicket}</a>`
-        : 'N/A'
+      mainTicket && mainTicket !== 'N/A'
+        ? `<a href="${jiraBaseUrl}/${mainTicket}" style="color: #007bff; text-decoration: none;"><strong>${mainTicket}</strong></a>`
+        : '<span style="color: #666; font-style: italic;">N/A (Jira creation failed)</span>'
     }<br><br>
 
 ${tableHtml}<br><br>
 
-Let me know in case of any questions.<br><br>
+<a href="https://docs.google.com/document/d/1WcwM71Xrlgrb9mTNhcrWISedzTJFyzNWArShW42wd8g/edit?usp=sharing" style="color: #007bff; text-decoration: none;"><strong>Key Links & Guidance for your reference</strong></a><br><br>
 
-Regards<br>
+<strong>Note for the Quarterly Database User Access reviews</strong> - Requesting DB owners to please wait for the DBA team (Krishna Maddula & Srini Are) to approve the same post which you can review the user access listing and take the next steps/approve accordingly. The <strong>Target Date is the same ${formattedDueDate}</strong><br><br>
 
+Feel free to reach out to me in case of any questions<br><br>
+
+Thanks & Regards<br>
 Audit and Compliance Team`;
 
     return generateEmailTemplate({
@@ -250,10 +251,18 @@ Audit and Compliance Team`;
       setActiveTab(0);
       setStep1Completed(false);
       setStep1Error('');
-      setAuditResults([]);
-      setMainJiraTicket('');
       setNewToEmail('');
       setNewCcEmail('');
+      setSendingEmail(false);
+      setIsEditingBody(false);
+      setInitiatingAudits(false);
+      // Reset email data to empty state
+      setEmailData({
+        to: [],
+        cc: [],
+        subject: '',
+        body: '',
+      });
     }
   }, [open, selectedApplications]);
 
@@ -315,20 +324,40 @@ Audit and Compliance Team`;
       const result = await response.json();
 
       // Extract audit results from the response
-      const createdAudits = result.created_audits || [];
-      const results: AuditResult[] = createdAudits.map((audit: any) => ({
-        app_name: audit.app_name,
-        frequency: audit.frequency,
-        period: audit.period,
-        jira_ticket: audit.jira_ticket?.key || 'N/A',
-        status: audit.status,
-      }));
+      const createdAudits: RawAuditResult[] = result.created_audits || [];
+      const results: AuditResult[] = createdAudits.map(
+        (audit: RawAuditResult) => {
+          // Handle Jira ticket extraction with proper fallbacks
+          let jiraTicketKey = 'N/A';
 
-      // Use the first Jira ticket as the main ticket, or generate a summary
-      const mainTicket = results.length > 0 ? results[0].jira_ticket : 'N/A';
+          if (audit.jira_creation_failed) {
+            jiraTicketKey = 'N/A';
+          } else if (audit.jira_ticket) {
+            // Handle both object format {key, id, status, self} and string format
+            if (typeof audit.jira_ticket === 'string') {
+              jiraTicketKey = audit.jira_ticket;
+            } else if (audit.jira_ticket.key) {
+              jiraTicketKey = audit.jira_ticket.key;
+            } else {
+              jiraTicketKey = 'N/A';
+            }
+          }
 
-      setAuditResults(results);
-      setMainJiraTicket(mainTicket);
+          return {
+            app_name: audit.app_name,
+            frequency: audit.frequency,
+            period: audit.period,
+            jira_ticket: jiraTicketKey,
+            status: audit.status,
+          };
+        },
+      );
+
+      // Use the first valid Jira ticket as the main ticket, or 'N/A' if none exist
+      const mainTicket =
+        results.find(auditResult => auditResult.jira_ticket !== 'N/A')
+          ?.jira_ticket || 'N/A';
+
       setStep1Completed(true);
 
       // Pre-populate email data
@@ -339,12 +368,17 @@ Audit and Compliance Team`;
         .map(app => (app as any).app_owner_email)
         .filter((email, index, arr) => email && arr.indexOf(email) === index);
 
-      const emailTitle = `${
+      const periodText =
+        frequency === 'quarterly'
+          ? `${selectedQuarter}-${selectedYear}`
+          : selectedYear.toString();
+
+      const emailTitle = `[Action Required] ${
         frequency === 'quarterly' ? 'Quarterly' : 'Yearly'
-      } Access Reviews period - ${selectedApps
+      } Access Reviews ${periodText} - ${selectedApps
         .map(app => app.app_name)
         .join(', ')}`;
-      const emailBody = generateEmailBody(results, mainTicket, emailTitle);
+      const emailBody = generateEmailBody(results, mainTicket);
 
       setEmailData({
         to: appOwners,
@@ -489,7 +523,7 @@ Audit and Compliance Team`;
         <Box mb={3}>
           <Tabs
             value={activeTab}
-            onChange={(e, newValue) => {
+            onChange={(_e, newValue) => {
               if (newValue === 1 && !step1Completed) return; // Prevent navigation to Tab 2
               setActiveTab(newValue);
             }}

@@ -20,6 +20,24 @@ export interface AuditResult {
   status: string;
 }
 
+// Interface for the raw audit data from backend
+export interface RawAuditResult {
+  id: number;
+  application_id: string;
+  app_name: string;
+  frequency: string;
+  period: string;
+  status: string;
+  reports_generated: number;
+  jira_creation_failed: boolean;
+  jira_ticket: {
+    id: string;
+    key: string;
+    status: string;
+    self: string;
+  } | null;
+}
+
 export interface TwoStepAuditDialogProps {
   open: boolean;
   onClose: () => void;

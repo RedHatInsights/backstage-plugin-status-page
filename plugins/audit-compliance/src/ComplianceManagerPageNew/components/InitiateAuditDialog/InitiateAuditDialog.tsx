@@ -1,42 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import {
+  alertApiRef,
+  discoveryApiRef,
+  fetchApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
 import {
   Box,
   Button,
+  Checkbox,
+  Chip,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   FormControl,
   Grid,
+  IconButton,
   InputLabel,
+  ListItemText,
   MenuItem,
+  OutlinedInput,
+  Paper,
   Select,
-  Typography,
-  Chip,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  OutlinedInput,
-  Checkbox,
-  ListItemText,
-  IconButton,
   TextField,
-  Divider,
+  Typography,
 } from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
 import AddIcon from '@material-ui/icons/Add';
-import { useStyles, MenuProps } from './styles';
-import { InitiateAuditDialogProps, EmailFormData } from './types';
-import {
-  discoveryApiRef,
-  fetchApiRef,
-  alertApiRef,
-  useApi,
-} from '@backstage/core-plugin-api';
+import CloseIcon from '@material-ui/icons/Close';
+import React, { useEffect, useState } from 'react';
+import { MenuProps } from './styles';
+import { EmailFormData, InitiateAuditDialogProps } from './types';
 
 export const InitiateAuditDialog: React.FC<InitiateAuditDialogProps> = ({
   open,
@@ -55,7 +55,6 @@ export const InitiateAuditDialog: React.FC<InitiateAuditDialogProps> = ({
   getQuarterOptions,
   getYearOptions,
 }) => {
-  const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
@@ -126,10 +125,6 @@ Compliance Team`;
     onApplicationsChange(updatedSelection);
   };
 
-  const handleClearAllApplications = () => {
-    setLocalSelectedApplications([]);
-    onApplicationsChange([]);
-  };
 
   const getSelectedApplicationDetails = () => {
     return applications.filter(app =>

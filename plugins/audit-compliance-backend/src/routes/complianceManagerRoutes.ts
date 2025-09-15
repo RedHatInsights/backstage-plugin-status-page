@@ -78,29 +78,32 @@ export async function createComplianceManagerRouter(
    * @returns {Array} 200 - List of recent audits
    * @returns {Object} 500 - Error response
    */
-  complianceManagerRouter.get('/compliance/audit-history', async (req, res) => {
-    try {
-      const audits = await database.getAllAudits();
+  complianceManagerRouter.get(
+    '/compliance/audit-history',
+    async (_req, res) => {
+      try {
+        const audits = await database.getAllAudits();
 
-      // Transform to include application details and format for frontend
-      const auditHistory = audits.map(audit => ({
-        application_id: audit.id?.toString() || '',
-        app_name: audit.app_name,
-        frequency: audit.frequency,
-        period: audit.period,
-        status: audit.progress || 'AUDIT_STARTED',
-        created_at: audit.created_at,
-        jira_key: audit.jira_key || 'N/A',
-      }));
+        // Transform to include application details and format for frontend
+        const auditHistory = audits.map(audit => ({
+          application_id: audit.id?.toString() || '',
+          app_name: audit.app_name,
+          frequency: audit.frequency,
+          period: audit.period,
+          status: audit.progress || 'AUDIT_STARTED',
+          created_at: audit.created_at,
+          jira_key: audit.jira_key || 'N/A',
+        }));
 
-      res.json(auditHistory);
-    } catch (error) {
-      logger.error('Failed to fetch audit history for compliance manager', {
-        error: error instanceof Error ? error.message : String(error),
-      });
-      res.status(500).json({ error: 'Failed to fetch audit history' });
-    }
-  });
+        res.json(auditHistory);
+      } catch (error) {
+        logger.error('Failed to fetch audit history for compliance manager', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+        res.status(500).json({ error: 'Failed to fetch audit history' });
+      }
+    },
+  );
 
   /**
    * POST /compliance/bulk-initiate-audits
@@ -428,7 +431,7 @@ export async function createComplianceManagerRouter(
    */
   complianceManagerRouter.post(
     '/compliance/test-applications',
-    async (req, res) => {
+    async (_req, res) => {
       try {
         const testApplications = [
           {
@@ -485,7 +488,7 @@ export async function createComplianceManagerRouter(
    * @returns {Object} 200 - Compliance summary statistics
    * @returns {Object} 500 - Error response
    */
-  complianceManagerRouter.get('/compliance/summary', async (req, res) => {
+  complianceManagerRouter.get('/compliance/summary', async (_req, res) => {
     try {
       const applications = await database.getAllApplications();
       const audits = await database.getAllAudits();
