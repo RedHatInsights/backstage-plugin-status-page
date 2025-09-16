@@ -1,5 +1,4 @@
 import {
-  Breadcrumbs,
   Content,
   Header,
   HeaderLabel,
