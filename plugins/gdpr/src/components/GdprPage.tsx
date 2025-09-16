@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
 import {
   TextField,
   Button,
@@ -175,13 +175,13 @@ export const GdprComponent = () => {
   });
 
   // Handle tab change
-  const handleTabChange = (_event: React.ChangeEvent<{}>, newIndex: number) => {
+  const handleTabChange = (_event: ChangeEvent<{}>, newIndex: number) => {
     setTabIndex(newIndex);
   };
   const [searchResults, setSearchResults] = useState<GdprTableData[]>([]); // Store search results
 
   // Handle dropdown change
-  const handleSearchTypeChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleSearchTypeChange = (event: ChangeEvent<{ value: unknown }>) => {
     setSearchType(event.target.value as string);
     setForm({
       email: '',
@@ -197,7 +197,7 @@ export const GdprComponent = () => {
   };
 
   // Handle input changes
-  const updateForm = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const updateForm = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setForm({
       ...form,
@@ -206,7 +206,7 @@ export const GdprComponent = () => {
   };
 
   // Handle form submission
-  const onSubmit = async (event: React.FormEvent) => {
+  const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
     if (searchType === "All System") {

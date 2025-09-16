@@ -1,5 +1,4 @@
-// @ts-ignore React is required for JSX in Material-UI v4
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Table, TableHead, TableRow, TableCell, TableBody,
   TableContainer, Paper, Button, Drawer, Typography,

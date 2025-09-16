@@ -1,4 +1,4 @@
-import { DiscoveryApi, fetchApiRef, useApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import {
   ServiceNowApi,
   ServiceNowCMDBResponse,
@@ -15,9 +15,11 @@ export class ServiceNowClient implements ServiceNowApi {
   private readonly cmdbTableName = 'cmdb_ci_business_app';
   private readonly userTableName = 'sys_user';
   private readonly cmdbCiRelTableName = 'cmdb_rel_ci';
-  private fetchApi = useApi(fetchApiRef);
 
-  constructor(private discoveryApi: DiscoveryApi) {}
+  constructor(
+    private discoveryApi: DiscoveryApi,
+    private fetchApi: FetchApi,
+  ) {}
 
   private async getBaseUrl() {
     return `${await this.discoveryApi.getBaseUrl('proxy')}/cmdb/api/now/table/`;

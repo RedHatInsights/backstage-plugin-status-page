@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo, ReactNode, ChangeEvent } from 'react';
 import {
   Table,
   TableHead,
@@ -48,7 +48,7 @@ export interface Column<T> {
   label: string;
   sortable?: boolean;
   filterable?: boolean;
-  render?: (value: any, row: T, index: number) => React.ReactNode;
+  render?: (value: any, row: T, index: number) => ReactNode;
   align?: 'left' | 'center' | 'right';
   minWidth?: number;
 }
@@ -138,7 +138,7 @@ export const DataTable = <T extends Record<string, any>>({
     setOrderBy(columnId);
   };
 
-  const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectAll = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       const newSelected = paginatedData.map((_, index) => page * rowsPerPage + index);
       setSelected(newSelected);
@@ -167,7 +167,7 @@ export const DataTable = <T extends Record<string, any>>({
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };

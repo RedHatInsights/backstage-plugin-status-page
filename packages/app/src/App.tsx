@@ -39,6 +39,7 @@ import {
 } from '@appdev/backstage-plugin-devex-dashboard';
 import { DocsBotPage } from '@appdev/backstage-plugin-docsbot';
 import { HydraSupportDashboardPage } from '@appdev/backstage-plugin-hydra-support-dashboard';
+import { SignalsDisplay } from '@backstage/plugin-signals';
 import {
   CreateIncident,
   OutageTemplatePage,
@@ -241,6 +242,7 @@ export default app.createRoot(
   <>
     <AlertDisplay />
     <OAuthRequestDialog />
+    <SignalsDisplay />
     <AppRouter>
       <RedirectsProvider>
         <Root>{routes}</Root>

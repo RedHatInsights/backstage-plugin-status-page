@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC, ChangeEvent } from 'react';
 import {
   TextField,
   FormControl,
@@ -11,7 +11,7 @@ export interface FormFieldProps {
   label: string;
   name: string;
   value: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   error?: string;
   helperText?: string;
   required?: boolean;
@@ -28,7 +28,7 @@ export interface FormFieldProps {
 /**
  * Enhanced form field component with built-in validation and consistent styling
  */
-export const FormField: React.FC<FormFieldProps> = ({
+export const FormField: FC<FormFieldProps> = ({
   label,
   name,
   value,
@@ -48,7 +48,7 @@ export const FormField: React.FC<FormFieldProps> = ({
   const hasError = Boolean(error);
   const displayHelperText = error || helperText;
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { value: inputValue } = event.target;
     
     // Apply maxLength constraint

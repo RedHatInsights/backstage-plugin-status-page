@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo, FC, ReactNode, ChangeEvent } from 'react';
 import {
   Table,
   TableHead,
@@ -105,7 +105,7 @@ interface Column {
   sortable: boolean;
   filterable: boolean;
   mobileHide?: boolean;
-  render?: (value: any, row: GdprTableData) => React.ReactNode;
+  render?: (value: any, row: GdprTableData) => ReactNode;
 }
 
 interface EnhancedDataTableProps {
@@ -129,7 +129,7 @@ const columns: Column[] = [
   { id: 'media', label: 'Media', sortable: true, filterable: true, mobileHide: true },
 ];
 
-export const EnhancedDataTable: React.FC<EnhancedDataTableProps> = ({
+export const EnhancedDataTable: FC<EnhancedDataTableProps> = ({
   data,
   searchType,
   onRowSelect,
@@ -205,7 +205,7 @@ export const EnhancedDataTable: React.FC<EnhancedDataTableProps> = ({
   }, [filteredAndSortedData, page, rowsPerPage]);
 
   // Selection handlers
-  const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectAll = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       setSelected(filteredAndSortedData);
       onRowSelect?.(filteredAndSortedData);
