@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-workstream-automation [1.20.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.19.5...@compass/backstage-plugin-workstream-automation@1.20.0) (2025-09-16)
+
+
+### Features
+
+* **PULSE-1068:** version bump to 1.42.5 in plugins repo ([d9ffcec](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/d9ffcec4d3efe63eedb97bce24a3791d498f5e8a))
+
 ## @compass/backstage-plugin-workstream-automation [1.19.5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.19.4...@compass/backstage-plugin-workstream-automation@1.19.5) (2025-08-05)
 
 
