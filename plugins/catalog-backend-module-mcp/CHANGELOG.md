@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-catalog-backend-module-mcp [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-catalog-backend-module-mcp@1.1.0...@compass/backstage-plugin-catalog-backend-module-mcp@1.2.0) (2025-09-16)
+
+
+### Features
+
+* **PULSE-1068:** version bump to 1.42.5 in plugins repo ([d9ffcec](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/d9ffcec4d3efe63eedb97bce24a3791d498f5e8a))
+
 ## @compass/backstage-plugin-catalog-backend-module-mcp [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-catalog-backend-module-mcp@1.0.0...@compass/backstage-plugin-catalog-backend-module-mcp@1.1.0) (2025-07-15)
 
 
