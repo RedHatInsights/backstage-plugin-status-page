@@ -1,6 +1,6 @@
 {
   "name": "@compass/backstage-plugin-catalog-backend-module-aixway",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "license": "Apache-2.0",
   "description": "The jira backend module for the catalog plugin.",
   "main": "src/index.ts",
