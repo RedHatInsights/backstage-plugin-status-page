@@ -25,8 +25,8 @@
     "postpack": "backstage-cli package postpack"
   },
   "dependencies": {
-    "@backstage/backend-plugin-api": "^1.4.0",
-    "@backstage/catalog-model": "^1.7.4",
+    "@backstage/backend-plugin-api": "^1.4.2",
+    "@backstage/catalog-model": "^1.7.5",
     "@gitbeaker/core": "^42.1.0",
     "@gitbeaker/rest": "^42.1.0",
     "@spotify/backstage-plugin-soundcheck-common": "^0.18.0",
@@ -34,8 +34,8 @@
     "luxon": "^3.5.0"
   },
   "devDependencies": {
-    "@backstage/backend-test-utils": "^1.6.0",
-    "@backstage/cli": "^0.33.0",
+    "@backstage/backend-test-utils": "^1.8.0",
+    "@backstage/cli": "^0.34.1",
     "@types/luxon": "^3"
   },
   "files": [

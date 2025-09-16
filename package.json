@@ -25,7 +25,7 @@
     "release": "multi-semantic-release"
   },
   "devDependencies": {
-    "@backstage/cli": "^0.33.0",
+    "@backstage/cli": "^0.34.1",
     "@playwright/test": "^1.43.1",
     "@reportportal/agent-js-playwright": "5.1.2",
     "@semantic-release/changelog": "^6.0.3",

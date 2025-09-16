@@ -1,11 +1,11 @@
-import React from 'react';
+import { FC, ReactNode } from 'react';
 import { Box, Typography } from '@material-ui/core';
 import { Progress } from '@backstage/core-components';
 
 export interface LoadingWrapperProps {
   isLoading: boolean;
   loadingText?: string;
-  children: React.ReactNode;
+  children: ReactNode;
   size?: 'small' | 'medium' | 'large';
   variant?: 'inline' | 'overlay' | 'fullscreen';
 }
@@ -13,7 +13,7 @@ export interface LoadingWrapperProps {
 /**
  * Reusable loading wrapper component for consistent loading UI across the GDPR plugin
  */
-export const LoadingWrapper: React.FC<LoadingWrapperProps> = ({
+export const LoadingWrapper: FC<LoadingWrapperProps> = ({
   isLoading,
   loadingText = 'Loading...',
   children,

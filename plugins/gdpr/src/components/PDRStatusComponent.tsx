@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
 
 interface PDRRecord {
   id: number;
@@ -39,7 +39,7 @@ export const PDRStatusComponent = () => {
     const [records, setRecords] = useState<PDRRecord[]>([]);
 
     // Handle input changes for PDR Status form
-    const updatePdrForm = (event: React.ChangeEvent<{ name?: string; value: unknown }>) => {
+    const updatePdrForm = (event: ChangeEvent<{ name?: string; value: unknown }>) => {
         const { name, value } = event.target;
         setPdrForm({
             ...pdrForm,
@@ -48,7 +48,7 @@ export const PDRStatusComponent = () => {
     };
 
     // Handle search submission (for PDR status)
-    const onPdrSearch = (event: React.FormEvent) => {
+    const onPdrSearch = (event: FormEvent) => {
         event.preventDefault();
         // PDR Status Search submitted
 

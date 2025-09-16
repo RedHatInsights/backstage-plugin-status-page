@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import {
   Box,
   Typography,
@@ -89,7 +89,7 @@ interface AccessDeniedProps {
  * AccessDenied component for GDPR plugin
  * Displays when user doesn't have required permissions
  */
-export const AccessDenied: React.FC<AccessDeniedProps> = ({
+export const AccessDenied: FC<AccessDeniedProps> = ({
   error,
   userInfo,
 }) => {

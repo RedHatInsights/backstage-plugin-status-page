@@ -3,6 +3,7 @@ import {
   createPlugin,
   createRoutableExtension,
   discoveryApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 
 import { infraDetailsRouteRef, rootRouteRef } from './routes';
@@ -19,8 +20,9 @@ export const cmdbPlugin = createPlugin({
       api: serviceNowApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
       },
-      factory: ({ discoveryApi }) => new ServiceNowClient(discoveryApi),
+      factory: ({ discoveryApi, fetchApi }) => new ServiceNowClient(discoveryApi, fetchApi),
     }),
   ],
 });

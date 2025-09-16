@@ -114,6 +114,9 @@ backend.add(import('@backstage-community/plugin-report-portal-backend'));
 
 backend.add(import('@spotify/backstage-plugin-soundcheck-backend'));
 backend.add(
+  import('@backstage/plugin-scaffolder-backend-module-notifications'),
+);
+backend.add(
   import(
     '@compass/backstage-plugin-soundcheck-backend-module-droperator'
   ),

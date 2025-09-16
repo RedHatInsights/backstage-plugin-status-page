@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, useMemo, MouseEvent, ChangeEvent } from 'react';
 import {
   Chip,
   Box,
@@ -96,10 +96,10 @@ const headCells: readonly HeadCell[] = [
 interface EnhancedTableProps {
   numSelected: number;
   onRequestSort: (
-    event: React.MouseEvent<unknown>,
+    event: MouseEvent<unknown>,
     property: keyof IData,
   ) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onSelectAllClick: (event: ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
   rowCount: number;
@@ -108,7 +108,7 @@ interface EnhancedTableProps {
 function EnhancedTableHead(props: EnhancedTableProps) {
   const { order, orderBy, onRequestSort } = props;
   const createSortHandler =
-    (property: keyof IData) => (event: React.MouseEvent<unknown>) => {
+    (property: keyof IData) => (event: MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
 
@@ -138,17 +138,17 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 export const SortableTable = (props: IProps) => {
-  const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<keyof IData>('key');
-  const [selected, setSelected] = React.useState<readonly number[]>([]);
-  const [page, setPage] = React.useState(0);
-  const [dense, _setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [order, setOrder] = useState<Order>('asc');
+  const [orderBy, setOrderBy] = useState<keyof IData>('key');
+  const [selected, setSelected] = useState<readonly number[]>([]);
+  const [page, setPage] = useState(0);
+  const [dense, _setDense] = useState(false);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const rows: IData[] = props.tableData;
 
   const handleRequestSort = (
-    _event: React.MouseEvent<unknown>,
+    _event: MouseEvent<unknown>,
     property: keyof IData,
   ) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -156,7 +156,7 @@ export const SortableTable = (props: IProps) => {
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectAllClick = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       const newSelected = rows.map(n => n.id);
       setSelected(newSelected);
@@ -170,7 +170,7 @@ export const SortableTable = (props: IProps) => {
   };
 
   const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: ChangeEvent<HTMLInputElement>,
   ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -182,7 +182,7 @@ export const SortableTable = (props: IProps) => {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-  const visibleRows = React.useMemo(
+  const visibleRows = useMemo(
     () =>
       [...rows]
         .sort(getComparator(order, orderBy))

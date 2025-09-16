@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -27,7 +27,7 @@ export interface ConfirmationDialogProps {
 /**
  * Reusable confirmation dialog component following Backstage design patterns
  */
-export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
+export const ConfirmationDialog: FC<ConfirmationDialogProps> = ({
   open,
   title,
   message,
