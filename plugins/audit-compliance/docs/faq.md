@@ -1,24 +1,48 @@
 # Frequently Asked Questions (FAQ)
 
-This document provides answers to common questions about the Audit Compliance Plugin.
+This document provides answers to common questions about the Audit Access Manager Plugin, including both the Compliance Manager and Audit Access Manager interfaces.
 
 ## General Questions
 
-### What is the Audit Compliance Plugin?
+### What is the Audit Access Manager Plugin?
 
-The Audit Compliance Plugin is a Backstage plugin designed to help organizations manage, track, and automate application audits and compliance workflows. It provides a structured approach to maintaining security standards and regulatory compliance through systematic access reviews and audit processes.
+The Audit Access Manager Plugin is a Backstage plugin designed to help organizations manage, track, and automate application audits and compliance workflows. It provides a structured approach to maintaining security standards and regulatory compliance through systematic access reviews and audit processes.
 
 ### What are the main components of the plugin?
 
 The plugin consists of two main components:
 
-- **Frontend Plugin** (`audit-compliance`): Provides the user interface, application management, and audit workflow
+- **Frontend Plugin** (`audit-compliance`): Provides two user interfaces:
+  - **Compliance Manager**: Bulk operations, compliance dashboard, and monitoring
+  - **Audit Access Manager**: Detailed individual application audit management
 - **Backend Plugin** (`audit-compliance-backend`): Handles API endpoints, database operations, and external system integrations
+
+### What are the two main interfaces?
+
+The plugin provides two complementary interfaces:
+
+#### Compliance Manager (`/compliance-manager-new`)
+- **Purpose**: Streamlined bulk audit operations and compliance oversight
+- **Target Users**: Compliance teams, administrators, and oversight personnel
+- **Key Features**: 
+  - Compliance dashboard with summary statistics
+  - Bulk audit initiation with quarterly/yearly scheduling
+  - Ongoing audits monitoring
+  - Global activity stream
+
+#### Audit Access Manager (`/audit-compliance`)
+- **Purpose**: Detailed individual application audit management
+- **Target Users**: Application owners, delegates, and auditors
+- **Key Features**:
+  - Application onboarding and management
+  - Detailed audit workflows
+  - User and service account reviews
+  - Progress tracking and activity monitoring
 
 ### What external systems does the plugin integrate with?
 
 The plugin integrates with:
-- **JIRA**: For ticket creation and tracking
+- **JIRA**: For ticket creation and tracking, including custom field integration
 - **GitLab**: For repository and service account information
 - **Rover**: For user and group management
 - **Email**: For automated notifications
@@ -29,6 +53,7 @@ The plugin supports different user roles:
 - **Application Owners**: Can perform final sign-off and manage their applications
 - **Application Delegates**: Can act on behalf of application owners
 - **Auditors**: Can review user and service account access
+- **Compliance Managers**: Can monitor compliance status and initiate bulk audits
 - **Administrators**: Can manage the overall audit process and configurations
 
 ## Installation & Setup
@@ -45,6 +70,16 @@ yarn add @appdev/backstage-plugin-audit-compliance
 ```bash
 # From your Backstage root directory
 yarn --cwd packages/backend add @appdev/backstage-plugin-audit-compliance-backend
+```
+
+#### Configure Both Interfaces
+```typescript
+// packages/app/src/App.tsx
+import { AuditCompliancePage, ComplianceManagerPageNew } from '@appdev/backstage-plugin-audit-compliance';
+
+// In your app's routing configuration
+<Route path="/audit-compliance" element={<AuditCompliancePage />} />
+<Route path="/compliance-manager-new" element={<ComplianceManagerPageNew />} />
 ```
 
 ### What configuration is required?
@@ -98,6 +133,40 @@ The plugin uses PostgreSQL for data storage. You need to:
 
 ## Usage Questions
 
+### How do I use the Compliance Manager?
+
+The Compliance Manager provides bulk operations and compliance oversight:
+
+1. **Access the Interface**: Navigate to `/compliance-manager-new`
+2. **View Dashboard**: Check summary cards for compliance statistics
+3. **Initiate Bulk Audits**: Use the bulk actions bar to start multiple audits
+4. **Configure Audits**: Use the two-step dialog to select applications and set frequency
+5. **Monitor Progress**: Track ongoing audits in the comprehensive table
+6. **View Activity**: Monitor global activity stream for all audit activities
+
+### How do I initiate bulk audits?
+
+1. **Access Compliance Manager**: Go to `/compliance-manager-new`
+2. **Click Initiate Audit**: Use the bulk actions bar
+3. **Select Applications**: Choose applications in the two-step dialog
+4. **Configure Frequency**: Set quarterly or yearly audit schedule
+5. **Set Period**: Choose specific quarter/year
+6. **Confirm**: Complete the bulk audit initiation
+
+### What are the audit frequency options?
+
+The plugin supports two frequency options:
+- **Quarterly**: Q1 (Jan-Mar), Q2 (Apr-Jun), Q3 (Jul-Sep), Q4 (Oct-Dec)
+- **Yearly**: Full year audit cycle
+
+### How do I monitor compliance status?
+
+Use the Compliance Manager dashboard:
+- **Summary Cards**: View total applications, completed audits, and in-progress audits
+- **Ongoing Audits Table**: See detailed status of all applications
+- **Global Activity Stream**: Monitor all audit activities across the organization
+- **Search and Filter**: Find specific applications or filter by status
+
 ### How do I add a new application for audit?
 
 1. Navigate to `/audit-compliance` in your Backstage app
@@ -111,6 +180,15 @@ The plugin uses PostgreSQL for data storage. You need to:
    - JIRA Project
 4. Configure account entries if needed
 5. Click "Submit"
+
+### How do I manage application details?
+
+In the Audit Access Manager:
+1. **View Details**: Click the info icon on any application card
+2. **Edit Application**: Click the edit icon in the side panel
+3. **Delete Application**: Click the delete icon (owner-only feature)
+4. **Update Information**: Modify any field in the edit modal
+5. **Save Changes**: Submit the form to save modifications
 
 ### What are the audit workflow steps?
 
@@ -168,6 +246,13 @@ Yes! The plugin supports bulk actions for:
 - The integration uses the configured JIRA URL and API token
 - Tickets include relevant audit information and status updates
 
+### How are Jira Epics and Tasks linked to audits?
+
+- When bulk audits are initiated, the system creates (or links to) a Jira Epic per application and period.
+- Follow-up work (e.g., access review rejections, service account actions) creates Tasks linked to the parent Epic.
+- Labels include the app name, period, and frequency (e.g., `my-app-Q1-2025-quarterly`).
+- Ticket keys and statuses are stored with audit records for display in the UI.
+
 ### How does GitLab integration work?
 
 - Provides access to repository information
@@ -185,11 +270,29 @@ Yes! The plugin supports bulk actions for:
 ### How do email notifications work?
 
 - Automated notifications are sent for important audit events
-- Notifications include audit status updates and required actions
-- Email configuration is handled in the backend settings
+- In the Compliance Manager two-step dialog, recipients and subject are pre-populated per selected apps and period; content is editable before sending
+- Email configuration is handled in backend settings (SMTP)
 - Templates can be customized for your organization
 
 ## Troubleshooting
+
+### What if the Compliance Manager interface doesn't load?
+
+Check that:
+- Both routes are properly configured in your App.tsx
+- ComplianceManagerPageNew component is imported correctly
+- Backend API endpoints are accessible
+- Database connections are working for compliance summary data
+- Check browser console for JavaScript errors
+
+### What if bulk audit initiation fails?
+
+Verify that:
+- Bulk operations configuration is correct in backend settings
+- maxConcurrentAudits setting is appropriate
+- All selected applications have valid data
+- Audit frequency configuration is properly set
+- Check backend logs for processing errors
 
 ### What if I get "Application already exists" error?
 
@@ -202,6 +305,14 @@ Check that:
 - All user and service account reviews are completed
 - The audit is in the correct stage for final sign-off
 - Your user identity matches the application's owner configuration
+
+### What if compliance dashboard shows incorrect data?
+
+Verify that:
+- Database connections are working properly
+- Compliance summary API endpoints are accessible
+- Data refresh intervals are configured correctly
+- Check for any data synchronization issues
 
 ### What if user data is missing?
 
@@ -261,6 +372,22 @@ The current version has a predefined workflow, but you can:
 - Modify integration endpoints
 - Adjust review criteria
 - Extend the plugin through the API
+- Configure bulk operations settings
+- Customize compliance dashboard refresh rates
+
+### What statuses are shown in Ongoing Audits?
+
+The UI surfaces statuses and progress for each audit:
+- Status chips: `AUDIT_STARTED`, `IN_PROGRESS`, `ACCESS_REVIEW_COMPLETE`, `COMPLETED`, `NOT_STARTED`
+- Progress stepper stages: Audit Started → Details Under Review → Final Sign‑off Done → Summary Generated → Completed
+
+### Can I export the activity stream or audit data?
+
+- Audit Summary: generate a PDF summary from the Audit Summary view.
+- Activity Stream: an export endpoint is available for programmatic export.
+- Tables: CSV export is not built-in in the Compliance Manager tables.
+
+ 
 
 ### How is data stored and secured?
 
@@ -354,29 +481,39 @@ Consider monitoring:
 
 ## Best Practices
 
+### For Compliance Managers
+
+- **Regular Monitoring**: Use compliance dashboard to track overall compliance status
+- **Bulk Operations**: Leverage bulk audit initiation for efficiency
+- **Scheduling**: Plan quarterly and yearly audit cycles
+- **Activity Monitoring**: Monitor global activity stream for compliance insights
+- **Dashboard Configuration**: Configure appropriate refresh rates for your environment
+
 ### For Application Owners
 
-- Schedule regular access reviews
-- Respond promptly to audit requests
-- Provide clear justification for decisions
-- Properly delegate responsibilities when needed
-- Keep application information up to date
+- **Regular Reviews**: Schedule regular access reviews
+- **Timely Responses**: Respond promptly to audit requests
+- **Clear Documentation**: Provide clear justification for decisions
+- **Properly Delegate**: Delegate responsibilities when needed
+- **Keep Information Updated**: Maintain current application details
+- **Use Application Management**: Leverage edit/delete features as needed
 
 ### For Auditors
 
-- Conduct comprehensive access reviews
-- Provide clear comments and justification
-- Use bulk operations for large user sets
-- Apply consistent criteria across reviews
-- Document any special circumstances
+- **Thorough Reviews**: Conduct comprehensive access reviews
+- **Documentation**: Provide clear comments and justification
+- **Efficiency**: Use bulk operations for large user sets
+- **Consistency**: Apply consistent criteria across reviews
+- **Document Special Circumstances**: Note any unusual situations
 
 ### For Administrators
 
-- Maintain proper integration configurations
-- Monitor audit completion and compliance rates
-- Ensure users understand the audit process
-- Continuously improve the audit workflow
-- Set up proper monitoring and alerting
+- **Configuration**: Maintain proper integration configurations
+- **Monitoring**: Monitor audit completion and compliance rates
+- **Training**: Ensure users understand both interfaces
+- **Continuous Improvement**: Continuously improve the audit workflow
+- **Set Up Monitoring**: Implement proper monitoring and alerting
+- **Bulk Operations**: Configure appropriate limits and settings
 
 ### For Developers
 
@@ -390,7 +527,7 @@ Consider monitoring:
 
 ### Where can I get help?
 
-1. **Documentation**: Review the [Installation Guide](installation.md) and [Introduction](introduction.md)
+1. **Documentation**: Review the [Installation Guide](installation.md) and [Usage Guide](usage_guide.md)
 2. **Logs**: Check application logs for detailed error information
 3. **Community**: Reach out to the Backstage community
 4. **Administrator**: Contact your system administrator for configuration issues
@@ -414,4 +551,4 @@ When seeking support, include:
 
 ---
 
-For additional information, see the [Installation Guide](installation.md) and [Introduction](introduction.md) documents. 
+For additional information, see the [Installation Guide](installation.md) and [Usage Guide](usage_guide.md) documents. 

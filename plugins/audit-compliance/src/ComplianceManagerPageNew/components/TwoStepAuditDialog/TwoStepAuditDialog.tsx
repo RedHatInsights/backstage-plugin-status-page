@@ -27,9 +27,6 @@ import {
   TextField,
   Tabs,
   Tab,
-  Stepper,
-  Step,
-  StepLabel,
   CircularProgress,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
@@ -503,18 +500,6 @@ Audit and Compliance Team`;
           <IconButton onClick={onClose} size="small">
             <CloseIcon />
           </IconButton>
-        </Box>
-
-        {/* Progress Stepper */}
-        <Box mt={2}>
-          <Stepper activeStep={activeTab} alternativeLabel>
-            <Step>
-              <StepLabel>Step 1: Initiate Audit</StepLabel>
-            </Step>
-            <Step>
-              <StepLabel>Step 2: Send Email</StepLabel>
-            </Step>
-          </Stepper>
         </Box>
       </DialogTitle>
 

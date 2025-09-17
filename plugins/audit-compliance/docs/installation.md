@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide provides detailed instructions for installing and configuring the Audit Compliance Plugin in your Backstage instance.
+This guide provides detailed instructions for installing and configuring the Audit Access Manager Plugin in your Backstage instance. The plugin provides two main interfaces: the Compliance Manager for bulk operations and the Audit Access Manager for detailed individual application management.
 
 ## Prerequisites
 
@@ -11,6 +11,7 @@ Before installing the plugin, ensure you have:
 - **Yarn**: Package manager for dependency management
 - **PostgreSQL**: Database for storing audit data
 - **External System Access**: Access to JIRA, GitLab, and Rover APIs
+- **SMTP Server**: For email notifications (optional but recommended)
 
 ## Installation Steps
 
@@ -58,15 +59,20 @@ backend.add(import('@appdev/backstage-plugin-audit-compliance-backend'));
 
 ### Step 4: Configure Frontend Plugin
 
-Add the frontend plugin to your app:
+Add the frontend plugin to your app with both interfaces:
 
 ```typescript
 // packages/app/src/App.tsx
-import { AuditCompliancePage } from '@appdev/backstage-plugin-audit-compliance';
+import { AuditCompliancePage, ComplianceManagerPageNew } from '@appdev/backstage-plugin-audit-compliance';
 
 // In your app's routing configuration
 <Route path="/audit-compliance" element={<AuditCompliancePage />} />
+<Route path="/compliance-manager-new" element={<ComplianceManagerPageNew />} />
 ```
+
+**Interface Routes:**
+- **Audit Access Manager**: `/audit-compliance` - Detailed individual application audit management
+- **Compliance Manager**: `/compliance-manager-new` - Bulk operations and compliance oversight
 
 ## Configuration
 
@@ -77,6 +83,11 @@ Add the following configuration to your `app-config.yaml`:
 ```yaml
 auditCompliance:
   jiraUrl: https://your-jira-instance.com
+  # Optional: Customize interface behavior
+  features:
+    bulkOperations: true
+    complianceDashboard: true
+    globalActivityStream: true
 ```
 
 ### Backend Configuration
@@ -105,6 +116,18 @@ auditCompliance:
     secure: true
     from: audit-compliance@your-company.com
     caCert: /path/to/your/ca-cert.pem
+  
+  # Bulk Operations Configuration
+  bulkOperations:
+    maxConcurrentAudits: 10
+    defaultFrequency: quarterly
+    allowedFrequencies: [quarterly, yearly]
+  
+  # Compliance Dashboard Configuration
+  complianceDashboard:
+    refreshInterval: 30000  # 30 seconds
+    enableRealTimeUpdates: true
+    summaryCardRefreshRate: 60000  # 1 minute
 ```
 
 ### Environment Variables
@@ -129,7 +152,7 @@ auditCompliance:
 
 ### Step 1: Create Database
 
-Create a PostgreSQL database for the audit compliance plugin:
+Create a PostgreSQL database for the Audit Access Manager Plugin:
 
 ```sql
 CREATE DATABASE audit_compliance;
@@ -226,24 +249,36 @@ yarn knex migrate:latest
 yarn start
 ```
 
-### Step 2: Access the Plugin
+### Step 2: Access Both Interfaces
 
 1. Open your browser and navigate to your Backstage instance
-2. Go to `/audit-compliance`
-3. Verify the plugin loads without errors
+2. **Test Audit Access Manager**: Go to `/audit-compliance`
+   - Verify the plugin loads without errors
+   - Check that the application list displays correctly
+   - Test the "Add Application" functionality
+3. **Test Compliance Manager**: Go to `/compliance-manager-new`
+   - Verify the compliance dashboard loads
+   - Check that summary cards display correctly
+   - Test the bulk actions bar functionality
 
 ### Step 3: Test Basic Functionality
 
 1. **Add Test Application**:
-   - Click "Add Application"
-   - Fill in test data
-   - Submit the form
-   - Verify the application appears in the list
+   - Click "Add Application" in the Audit Access Manager
+   - Fill in test data with all required fields
+   - Submit the form and verify the application appears in the list
 
-2. **Test Integrations**:
-   - Check that JIRA integration works
+2. **Test Compliance Manager Features**:
+   - View the compliance dashboard summary cards
+   - Test the bulk actions bar
+   - Verify the ongoing audits table displays applications
+   - Check the global activity stream
+
+3. **Test Integrations**:
+   - Check that JIRA integration works (ticket creation)
    - Verify GitLab data retrieval
    - Test Rover user information
+   - Test email notifications (if configured)
 
 ## Troubleshooting
 
@@ -287,6 +322,28 @@ yarn start
 - Check email server connectivity
 - Test email delivery manually
 - Verify "from" email address is valid
+
+#### Compliance Manager Issues
+
+**Symptoms**: Compliance Manager interface not loading or displaying incorrect data
+
+**Solutions**:
+- Verify both routes are properly configured in App.tsx
+- Check that ComplianceManagerPageNew component is imported
+- Ensure backend API endpoints are accessible
+- Verify database connections for compliance summary data
+- Check browser console for JavaScript errors
+
+#### Bulk Operations Not Working
+
+**Symptoms**: Bulk audit initiation fails or doesn't process applications
+
+**Solutions**:
+- Verify bulk operations configuration in backend
+- Check maxConcurrentAudits setting
+- Ensure all selected applications have valid data
+- Verify audit frequency configuration
+- Check backend logs for processing errors
 
 ### Logs and Debugging
 
@@ -403,10 +460,14 @@ For additional support:
 
 After successful installation:
 
-1. **User Training**: Train users on the audit workflow
+1. **User Training**: Train users on both interfaces:
+   - Compliance Manager for bulk operations and monitoring
+   - Audit Access Manager for detailed individual audits
 2. **Process Documentation**: Document your organization's audit processes
 3. **Integration Testing**: Test all integrations thoroughly
 4. **Go-Live**: Deploy to production environment
 5. **Monitoring**: Set up monitoring and alerting for the plugin
+6. **Compliance Workflow**: Establish quarterly/yearly audit schedules
+7. **User Access**: Configure appropriate user roles and permissions
 
-For detailed usage instructions, see the [Introduction](introduction.md) and [FAQ](faq.md) documents.
+For detailed usage instructions, see the [Usage Guide](usage_guide.md) and [FAQ](faq.md) documents.
