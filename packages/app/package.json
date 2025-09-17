@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@appdev/backstage-plugin-audit-compliance": "*",
+    "@appdev/backstage-plugin-compliance": "*",
     "@appdev/backstage-plugin-devex-dashboard": "*",
     "@appdev/backstage-plugin-docsbot": "*",
     "@appdev/backstage-plugin-gdpr": "*",

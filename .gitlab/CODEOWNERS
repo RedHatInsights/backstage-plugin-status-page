@@ -6,15 +6,15 @@ plugins/mcp-actions-example-backend/          @souchowd
 plugins/soundcheck-backend-module-*/          @deeprasa
 
 [AppDev Workstream]                           @souchowd @nmore
-plugins/audit-compliance/
-plugins/audit-compliance-backend/
+plugins/audit-compliance/                     @nmore
+plugins/audit-compliance-backend/             @nmore
 plugins/devex-dashboard/                      @goudas
 plugins/devex-data-layer-backend/             @goudas
-plugins/docsbot/
+plugins/docsbot/                              
 plugins/hydra-support-dashboard/              @goudas
-plugins/outage-template/
-plugins/outage-templatebackend/
-plugins/permission-management/
-plugins/permission-management-backend/
-plugins/permission-managementnager/
-plugins/spaship/
+plugins/outage-template/                      @souchowd
+plugins/outage-template-backend/              @souchowd
+plugins/permission-management/                @souchowd
+plugins/permission-management-backend/        @souchowd
+plugins/spaship/                              @souchowd
+plugins/compliance/                           @souchowd
