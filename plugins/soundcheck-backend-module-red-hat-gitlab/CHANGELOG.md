@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab [1.7.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.7.0...@compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.7.1) (2025-09-17)
+
+
+### Bug Fixes
+
+* **PULSE-957:** added try catch block for the error handling in the some gitlab factcollector ([2be1cef](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/2be1cef55b0ce3f3d7ecfa599ee07668255b35f1))
+
 ## @compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab [1.7.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.6.1...@compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@1.7.0) (2025-09-16)
 
 
