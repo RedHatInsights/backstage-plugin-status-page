@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.24.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.24.1...@appdev/backstage-plugin-audit-compliance@1.24.2) (2025-09-17)
+
+
+### Bug Fixes
+
+* **audit-access-manager:** Updating docs with images and new features information and videos ([28ff886](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/28ff88632477e51f034927f4460b547296a125a3))
+
 ## @appdev/backstage-plugin-audit-compliance [1.24.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.24.0...@appdev/backstage-plugin-audit-compliance@1.24.1) (2025-09-17)
 
 
