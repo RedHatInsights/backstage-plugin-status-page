@@ -1,5 +1,26 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.24.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.24.0...@appdev/backstage-plugin-audit-compliance@1.24.1) (2025-09-17)
+
+
+### Bug Fixes
+
+* **audit-access-manager:** Adding a button for application deletion ([cbc36f1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/cbc36f1e8eaa2c9acb7415b1e5298ebba24ddc59))
+* **audit-access-manager:** Adding cards and activity stream for compliance manager view ([821d0f4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/821d0f467f48e11ec6a92be57534b27cf9743cc2))
+* **audit-access-manager:** Adding Compliance Manager view ([3a0ff5d](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/3a0ff5d3030776ba3c883223fef8f1f8967b7d50))
+* **audit-access-manager:** Adding send email and edit functionality ([b848c6d](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/b848c6db873a9e1a75fb492fd668675b9ac2308c))
+* **audit-access-manager:** Adding the table and mkaing appname link ([b6225d7](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/b6225d71b2e73140eae7b393bf40f0c37a43dda4))
+* **audit-access-manager:** AddingDETAILS_UNDER_REVIEW status filter ([ce96e11](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/ce96e11843554fee3ba5cad26da59fffba7218b1))
+* **audit-access-manager:** Compliance Manager View ([cc98259](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/cc9825965cb6608d20a973f8971c1f1fa29bb994))
+* **audit-access-manager:** fixing build pipeline issue ([8061170](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/8061170b27da827533e131d25aaef3ff3153f3b8))
+* **audit-access-manager:** fixing the compliance manager send email body ([7489b1a](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/7489b1ab2148b03f3099db57fb2b68a1c7678997))
+* **audit-access-manager:** Refactor Activity Stream ([6113292](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/6113292807b3cc5150d1d477db6f3dc8c4c35a23))
+* **audit-access-manager:** Removing the title ([1512a04](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/1512a04ad3b823f659157466f25bff3c308d1816))
+* **audit-access-manager:** Renaming the header ([4f8e65a](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/4f8e65a9acdff4bdc6a42e9594d943eb083302ca))
+* **audit-access-manager:** Resuing Activity stream for compliance manager view ([4abc7fa](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/4abc7fa1352b7fbc9908e93488a0b6c1e07a035d))
+* **audit-access-manager:** Splitting them in styles ([e7c068f](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/e7c068f315620c41ea3ecb9852e988060763e95b))
+* **audit-access-manager:** Updating email body changes ([b58ec62](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/b58ec62e9b6382933140e9bc4ead3b5f3a487b0c))
+
 ## @appdev/backstage-plugin-audit-compliance [1.24.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.23.0...@appdev/backstage-plugin-audit-compliance@1.24.0) (2025-09-16)
 
 
