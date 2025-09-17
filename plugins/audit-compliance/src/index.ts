@@ -1,6 +1,7 @@
 export {
   auditCompliancePlugin,
   AuditCompliancePage,
+  ComplianceManagerPageNew,
 } from './plugin';
 export { AuditInitiation } from './AuditCompliancePage/audit-components/AuditInitiation';
 export { AuditSummary } from './AuditCompliancePage/audit-components/AuditSummary';

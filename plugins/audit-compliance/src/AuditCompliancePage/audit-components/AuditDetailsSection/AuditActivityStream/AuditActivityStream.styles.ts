@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 export const useStyles = makeStyles(theme => ({
   cardContainer: {
     maxHeight: '70vh',
+    minHeight: '400px', // Ensure minimum height for scrolling
     overflowY: 'auto',
     padding: theme.spacing(3),
   },
