@@ -1,5 +1,18 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance-backend [1.24.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance-backend@1.24.0...@appdev/backstage-plugin-audit-compliance-backend@1.24.1) (2025-09-17)
+
+
+### Bug Fixes
+
+* **audit-access-manager:** Adding cards and activity stream for compliance manager view ([821d0f4](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/821d0f467f48e11ec6a92be57534b27cf9743cc2))
+* **audit-access-manager:** Adding Compliance Manager view ([3a0ff5d](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/3a0ff5d3030776ba3c883223fef8f1f8967b7d50))
+* **audit-access-manager:** Compliance Manager View ([cc98259](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/cc9825965cb6608d20a973f8971c1f1fa29bb994))
+* **audit-access-manager:** fixing the compliance manager send email body ([7489b1a](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/7489b1ab2148b03f3099db57fb2b68a1c7678997))
+* **audit-access-manager:** Fixing the imports ([0a1c1e9](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/0a1c1e927b0e56bafb7a58db808cb15e1430912e))
+* **audit-access-manager:** Resuing Activity stream for compliance manager view ([4abc7fa](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/4abc7fa1352b7fbc9908e93488a0b6c1e07a035d))
+* **audit-access-manager:** Updating email body changes ([b58ec62](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/b58ec62e9b6382933140e9bc4ead3b5f3a487b0c))
+
 ## @appdev/backstage-plugin-audit-compliance-backend [1.24.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance-backend@1.23.0...@appdev/backstage-plugin-audit-compliance-backend@1.24.0) (2025-09-16)
 
 
