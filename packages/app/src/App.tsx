@@ -95,6 +95,7 @@ import { getThemes } from '@red-hat-developer-hub/backstage-plugin-theme';
 import { SoundcheckRoutingPage } from '@spotify/backstage-plugin-soundcheck';
 import { CatalogPage } from './components/CatalogPage/CatalogPage';
 import { GdprPage } from '@appdev/backstage-plugin-gdpr';
+import { CompliancePage } from '@appdev/backstage-plugin-compliance';
 
 const app = createApp({
   apis,
@@ -246,6 +247,8 @@ const routes = (
       path="/hydra-permission-management"
       element={<PermissionManagementPage />}
     />
+
+    <Route path="/compliance" element={<CompliancePage />} />
   </FlatRoutes>
 );
 

@@ -39,6 +39,7 @@ import MenuBookIcon from '@material-ui/icons/MenuBook';
 import MapIcon from '@material-ui/icons/MyLocation';
 import Report from '@material-ui/icons/Report';
 import SearchIcon from '@material-ui/icons/Search';
+import SecurityIcon from '@material-ui/icons/Security';
 import { PropsWithChildren, useState } from 'react';
 import LogoFull from './LogoFull';
 import LogoIcon from './LogoIcon';
@@ -204,6 +205,15 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
                 icon={Report as IconComponent}
                 to="hydra-permission-management"
                 text="Permission Management"
+              />
+            </Grid>
+          </Grid>
+          <Grid container>
+            <Grid item xs={8}>
+              <SidebarItem
+                icon={SecurityIcon as IconComponent}
+                to="compliance"
+                text="Compliance"
               />
             </Grid>
           </Grid>

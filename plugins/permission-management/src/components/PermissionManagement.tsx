@@ -55,7 +55,7 @@ export const PermissionManagement = () => {
     return (
       <Page themeId="tool">
         <Header title="Escalation Forecaster - Permission Management">
-          <HeaderLabel label="Maintainer" value="AppDev" />
+          <HeaderLabel label="Owner" value="AppDev" />
           <HeaderLabel label="Lifecycle" value="Alpha" />
         </Header>
         <Content>
