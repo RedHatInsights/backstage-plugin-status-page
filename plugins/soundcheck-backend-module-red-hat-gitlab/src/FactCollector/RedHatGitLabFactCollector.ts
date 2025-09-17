@@ -956,36 +956,43 @@ export class RedHatGitLabFactCollector implements FactCollector {
     entity: Entity,
     factRef: FactRef,
     gitlabProjectId: string | number,
-  ) {
-    const tree = await this.gitlab.Repositories.allRepositoryTrees(
-      gitlabProjectId,
-      {
-        perPage: 100,
-      },
-    );
-
-    if (tree === undefined) {
-      this.logger.error(
-        `Unable to get repository tree for GitLab project ${gitlabProjectId}`,
+  ): Promise<Fact | undefined> {
+    try {
+      const tree = await this.gitlab.Repositories.allRepositoryTrees(
+        gitlabProjectId,
+        {
+          perPage: 100,
+        },
       );
 
+      if (tree === undefined) {
+        this.logger.error(
+          `Unable to get repository tree for GitLab project ${gitlabProjectId}`,
+        );
+
+        return undefined;
+      }
+
+      return {
+        factRef: factRef,
+        entityRef: stringifyEntityRef(entity),
+        data: {
+          tree: tree.map(leaf => ({
+            id: leaf.id,
+            name: leaf.name,
+            type: leaf.type,
+            path: leaf.path,
+            mode: leaf.mode,
+          })),
+        },
+        timestamp: DateTime.utc().toISO(),
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch repository tree for project ${gitlabProjectId}: ${error}`,
+      );
       return undefined;
     }
-
-    return {
-      factRef: factRef,
-      entityRef: stringifyEntityRef(entity),
-      data: {
-        tree: tree.map(leaf => ({
-          id: leaf.id,
-          name: leaf.name,
-          type: leaf.type,
-          path: leaf.path,
-          mode: leaf.mode,
-        })),
-      },
-      timestamp: DateTime.utc().toISO(),
-    };
   }
 
   /**
@@ -1011,47 +1018,54 @@ export class RedHatGitLabFactCollector implements FactCollector {
     factRef: FactRef,
     gitlabProjectId: string | number,
   ): Promise<Fact | undefined> {
-    // Get approval rules from the GitLab API.
-    const rules = await this.gitlab.MergeRequestApprovals.allApprovalRules(
-      gitlabProjectId,
-    );
-
-    // It should just return an empty array if no rules were found, but just in
-    // case undefined comes up, handle it.
-    if (rules === undefined) {
-      this.logger.error(
-        `Unable to get merge request approval rules for GitLab project ${gitlabProjectId}`,
+    try {
+      // Get approval rules from the GitLab API.
+      const rules = await this.gitlab.MergeRequestApprovals.allApprovalRules(
+        gitlabProjectId,
       );
 
+      // It should just return an empty array if no rules were found, but just in
+      // case undefined comes up, handle it.
+      if (rules === undefined) {
+        this.logger.error(
+          `Unable to get merge request approval rules for GitLab project ${gitlabProjectId}`,
+        );
+
+        return undefined;
+      }
+
+      return {
+        factRef: factRef,
+        entityRef: stringifyEntityRef(entity),
+        data: {
+          // If no rules were found, this callback will produce an empty array.
+
+          rules: rules.map(rule => ({
+            id: rule.id,
+            name: rule.name,
+            rule_type: rule.rule_type,
+            eligible_approvers: rule.eligible_approvers?.map(
+              eligible_approver => eligible_approver.id,
+            ),
+            approvals_required: rule.approvals_required,
+            users: rule.users?.map(user => user.id),
+            groups: rule.groups?.map(group => group.id),
+            contains_hidden_groups: rule.contains_hidden_groups,
+            protected_branches: rule.protected_branches?.map(
+              protected_branch => protected_branch.name,
+            ),
+            applies_to_all_protected_branches:
+              !!rule.applies_to_all_protected_branches,
+          })),
+        },
+        timestamp: DateTime.utc().toISO(),
+      };
+    } catch (error) {
+      this.logger.error(
+        `Failed to fetch merge request approval rules for project ${gitlabProjectId}: ${error}`,
+      );
       return undefined;
     }
-
-    return {
-      factRef: factRef,
-      entityRef: stringifyEntityRef(entity),
-      data: {
-        // If no rules were found, this callback will produce an empty array.
-
-        rules: rules.map(rule => ({
-          id: rule.id,
-          name: rule.name,
-          rule_type: rule.rule_type,
-          eligible_approvers: rule.eligible_approvers?.map(
-            eligible_approver => eligible_approver.id,
-          ),
-          approvals_required: rule.approvals_required,
-          users: rule.users?.map(user => user.id),
-          groups: rule.groups?.map(group => group.id),
-          contains_hidden_groups: rule.contains_hidden_groups,
-          protected_branches: rule.protected_branches?.map(
-            protected_branch => protected_branch.name,
-          ),
-          applies_to_all_protected_branches:
-            !!rule.applies_to_all_protected_branches,
-        })),
-      },
-      timestamp: DateTime.utc().toISO(),
-    };
   }
 
   /**
