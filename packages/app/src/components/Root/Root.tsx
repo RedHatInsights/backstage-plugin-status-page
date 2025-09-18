@@ -35,7 +35,6 @@ import SpashipIcon from '@material-ui/icons/FlightTakeoff';
 import HomeIcon from '@material-ui/icons/Home';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import MenuIcon from '@material-ui/icons/Menu';
-import MenuBookIcon from '@material-ui/icons/MenuBook';
 import MapIcon from '@material-ui/icons/MyLocation';
 import Report from '@material-ui/icons/Report';
 import SearchIcon from '@material-ui/icons/Search';
@@ -109,18 +108,15 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
           />
           {/* End global nav */}
           <SidebarDivider />
-          <SidebarScrollWrapper>
-            <SidebarItem
-              icon={ReportPortalIcon as IconComponent}
-              to="audit-access-manager"
-              text="Audit Access Manager"
-            />
-            <SidebarItem
-              icon={DoneAllIcon as IconComponent}
-              to="audit-access-manager/compliance-manager"
-              text="Compliance Manager"
-            />
-          </SidebarScrollWrapper>
+          <Grid container>
+            <Grid item xs={8}>
+              <SidebarItem
+                icon={SecurityIcon as IconComponent}
+                to="compliance"
+                text="Compliance"
+              />
+            </Grid>
+          </Grid>
           <SidebarScrollWrapper>
             <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
             <SidebarItem
@@ -205,24 +201,6 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
                 icon={Report as IconComponent}
                 to="hydra-permission-management"
                 text="Permission Management"
-              />
-            </Grid>
-          </Grid>
-          <Grid container>
-            <Grid item xs={8}>
-              <SidebarItem
-                icon={SecurityIcon as IconComponent}
-                to="compliance"
-                text="Compliance"
-              />
-            </Grid>
-          </Grid>
-          <Grid container>
-            <Grid item xs={8}>
-              <SidebarItem
-                icon={MenuBookIcon as IconComponent}
-                to="gdpr"
-                text="GDPR"
               />
             </Grid>
           </Grid>

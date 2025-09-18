@@ -1,0 +1,1 @@
+export { PlatformDetailPage } from './PlatformDetailPage';

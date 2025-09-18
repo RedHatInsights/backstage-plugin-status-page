@@ -96,6 +96,7 @@ import { SoundcheckRoutingPage } from '@spotify/backstage-plugin-soundcheck';
 import { CatalogPage } from './components/CatalogPage/CatalogPage';
 import { GdprPage } from '@appdev/backstage-plugin-gdpr';
 import { CompliancePage } from '@appdev/backstage-plugin-compliance';
+import { EssPage, PlatformDetailPage } from '@appdev/backstage-plugin-ess';
 
 const app = createApp({
   apis,
@@ -247,8 +248,9 @@ const routes = (
       path="/hydra-permission-management"
       element={<PermissionManagementPage />}
     />
-
     <Route path="/compliance" element={<CompliancePage />} />
+    <Route path="/compliance/ess" element={<EssPage />} />
+    <Route path="/compliance/ess/platform/:name" element={<PlatformDetailPage />} />
   </FlatRoutes>
 );
 

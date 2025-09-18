@@ -22,6 +22,7 @@
     "@appdev/backstage-plugin-compliance": "*",
     "@appdev/backstage-plugin-devex-dashboard": "*",
     "@appdev/backstage-plugin-docsbot": "*",
+    "@appdev/backstage-plugin-ess": "*",
     "@appdev/backstage-plugin-gdpr": "*",
     "@appdev/backstage-plugin-hydra-support-dashboard": "*",
     "@appdev/backstage-plugin-outages": "*",
