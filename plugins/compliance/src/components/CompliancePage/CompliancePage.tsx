@@ -109,7 +109,6 @@ const tools: ComplianceTool[] = [
     description: 'A centralized compliance view would reduce overhead, eliminate duplication, and provide clearer ownership and lifecycle tracking across platforms and applications.',
     path: '/compliance/ess',
     tags: ['ESS', 'Compliance', 'Security Standards'],
-    disabled: true,
   },
   {
     name: 'GDPR Automation',

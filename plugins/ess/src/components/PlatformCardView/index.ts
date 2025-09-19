@@ -1,0 +1,1 @@
+export { PlatformCardView } from './PlatformCardView';

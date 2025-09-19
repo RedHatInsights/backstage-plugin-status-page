@@ -154,6 +154,16 @@ proxy:
       credentials: dangerously-allow-unauthenticated
       changeOrigin: true
       allowedMethods: ['GET']
+  '/gitlab-ess':
+      target: ${ESS_GITLAB_BASE_URL}
+      changeOrigin: true
+      secure: false  # Ignore SSL certificate errors
+      credentials: dangerously-allow-unauthenticated
+      pathRewrite:
+        '^/api/proxy/gitlab-ess': '/app-dev-platform/backstage-plugins/-/snippets/10300/raw/main'
+      allowedMethods: ['GET']
+      headers:
+        'Private-Token': ${ESS_GITLAB_TOKEN} 
     # '/mcp':
     #   target: ${MCP_SERVER_BASE_URL}
     #   headers:
