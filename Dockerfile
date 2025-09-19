@@ -17,7 +17,7 @@ RUN yarn install
 RUN git config --global --add safe.directory /opt/app-root/src
 
 # Compiling and building the backstage application
-RUN yarn tsc && yarn build:all
+RUN NODE_OPTIONS="--max-old-space-size=4096" yarn tsc && yarn build:all
 
 
 ## Stage 3: Final stage
