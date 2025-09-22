@@ -1,12 +1,9 @@
-import React from 'react';
 import { Box, Button, Paper, Typography } from '@material-ui/core';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import { useStyles } from './styles';
 import { BulkActionsBarProps } from './types';
 
-export const BulkActionsBar: React.FC<BulkActionsBarProps> = ({
-  onInitiateAudit,
-}) => {
+export const BulkActionsBar = ({ onInitiateAudit }: BulkActionsBarProps) => {
   const classes = useStyles();
 
   return (

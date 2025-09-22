@@ -34,11 +34,11 @@ import {
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MenuProps } from './styles';
 import { EmailFormData, InitiateAuditDialogProps } from './types';
 
-export const InitiateAuditDialog: React.FC<InitiateAuditDialogProps> = ({
+export const InitiateAuditDialog = ({
   open,
   onClose,
   applications,
@@ -54,7 +54,7 @@ export const InitiateAuditDialog: React.FC<InitiateAuditDialogProps> = ({
   initiating,
   getQuarterOptions,
   getYearOptions,
-}) => {
+}: InitiateAuditDialogProps) => {
   const alertApi = useApi(alertApiRef);
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
@@ -124,7 +124,6 @@ Compliance Team`;
     setLocalSelectedApplications(updatedSelection);
     onApplicationsChange(updatedSelection);
   };
-
 
   const getSelectedApplicationDetails = () => {
     return applications.filter(app =>

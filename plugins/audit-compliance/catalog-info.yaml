@@ -2,7 +2,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: audit-compliance-plugin
-  title: Audit Compliance Plugin Compass
+  title: Audit Access Manager Plugin Compass
   description: Backstage Plugin for Audit Compliance
   namespace: compass
   tags:

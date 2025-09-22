@@ -1,11 +1,8 @@
-import React from 'react';
 import { Card, CardContent, Grid, Typography, Box } from '@material-ui/core';
 import { useStyles } from './styles';
 import { SummaryCardsNewProps } from './types';
 
-export const SummaryCardsNew: React.FC<SummaryCardsNewProps> = ({
-  summary,
-}) => {
+export const SummaryCardsNew = ({ summary }: SummaryCardsNewProps) => {
   const classes = useStyles();
 
   return (

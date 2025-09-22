@@ -10,6 +10,7 @@ import {
   alertApiRef,
   discoveryApiRef,
   fetchApiRef,
+  identityApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
 import { Box, Typography } from '@material-ui/core';
@@ -54,6 +55,7 @@ export const ComplianceManagerPageNew = () => {
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
   const alertApi = useApi(alertApiRef);
+  const identityApi = useApi(identityApiRef);
 
   // Application selection state
   const [applications, setApplications] = useState<Application[]>([]);
@@ -87,6 +89,9 @@ export const ComplianceManagerPageNew = () => {
   // Dialog state
   const [initiateDialogOpen, setInitiateDialogOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+  // Current user state
+  const [currentUser, setCurrentUser] = useState<string>('');
 
   const fetchApplications = useCallback(async () => {
     try {
@@ -129,11 +134,23 @@ export const ComplianceManagerPageNew = () => {
     }
   }, [discoveryApi, fetchApi]);
 
+  const fetchCurrentUser = useCallback(async () => {
+    try {
+      const identity = await identityApi.getBackstageIdentity();
+      setCurrentUser(identity.userEntityRef);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to fetch current user:', err);
+      setCurrentUser('compliance-manager'); // Fallback
+    }
+  }, [identityApi]);
+
   // Fetch applications on component mount
   useEffect(() => {
     fetchApplications();
     fetchComplianceSummary();
-  }, [fetchApplications, fetchComplianceSummary]);
+    fetchCurrentUser();
+  }, [fetchApplications, fetchComplianceSummary, fetchCurrentUser]);
 
   const handleInitiateBulkAudits = async () => {
     if (selectedApplications.length === 0) {
@@ -172,7 +189,7 @@ export const ComplianceManagerPageNew = () => {
           app_name: application?.app_name || '',
           frequency,
           period,
-          initiated_by: 'compliance-manager',
+          initiated_by: currentUser || 'compliance-manager',
         };
       });
 
@@ -191,24 +208,62 @@ export const ComplianceManagerPageNew = () => {
         throw new Error(`Failed to initiate audits: ${response.statusText}`);
       }
 
-      alertApi.post({
-        message: `Successfully initiated ${selectedApplications.length} audit(s)`,
-        severity: 'success',
-      });
+      const responseData = await response.json();
 
-      // Clear selection and refresh data
-      setSelectedApplications([]);
-      setFrequency('');
-      setSelectedQuarter('');
-      setInitiateDialogOpen(false);
-      fetchApplications(); // Refresh applications to show new audits
-      fetchComplianceSummary(); // Refresh compliance summary
-      setRefreshTrigger(prev => prev + 1); // Trigger table refresh
+      // Handle successful audits
+      if (
+        responseData.created_audits &&
+        responseData.created_audits.length > 0
+      ) {
+        alertApi.post({
+          message: `Successfully initiated ${responseData.created_audits.length} audit(s)`,
+          severity: 'success',
+          display: 'transient',
+        });
+      }
+
+      // Handle errors (including duplicate audits)
+      if (responseData.errors && responseData.errors.length > 0) {
+        responseData.errors.forEach((auditError: any) => {
+          let errorMessage = auditError.error;
+
+          // Format duplicate audit error messages more formally
+          if (errorMessage.includes('Audit already exists')) {
+            // Find the application name from the applications array
+            const application = applications.find(
+              app => app.id === auditError.application_id,
+            );
+            const appName = application?.app_name || auditError.application_id;
+            errorMessage = `Audit creation failed: Duplicate audit already in progress for ${appName}`;
+          }
+
+          alertApi.post({
+            message: errorMessage,
+            severity: 'error',
+            display: 'transient',
+          });
+        });
+      }
+
+      // Clear selection and refresh data only if there were successful audits
+      if (
+        responseData.created_audits &&
+        responseData.created_audits.length > 0
+      ) {
+        setSelectedApplications([]);
+        setFrequency('');
+        setSelectedQuarter('');
+        setInitiateDialogOpen(false);
+        fetchApplications();
+        fetchComplianceSummary();
+        setRefreshTrigger(prev => prev + 1);
+      }
     } catch (err) {
       alertApi.post({
         message:
           err instanceof Error ? err.message : 'Failed to initiate audits',
         severity: 'error',
+        display: 'transient',
       });
     } finally {
       setInitiatingAudits(false);
