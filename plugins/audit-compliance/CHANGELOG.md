@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.25.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.24.2...@appdev/backstage-plugin-audit-compliance@1.25.0) (2025-09-22)
+
+
+### Features
+
+* **audit-access-manager:** Improve UI, fix duplicate audit alerts, and enhance email dialog ([53ad113](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/53ad1137d87e7a2d099a27bc1f44116ffd914b87))
+
 ## @appdev/backstage-plugin-audit-compliance [1.24.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.24.1...@appdev/backstage-plugin-audit-compliance@1.24.2) (2025-09-17)
 
 
