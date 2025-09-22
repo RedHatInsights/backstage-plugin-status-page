@@ -740,7 +740,6 @@ export default function ServiceAccountAccessReviewTable({
                 <Switch
                   checked={showDetails}
                   onChange={e => setShowDetails(e.target.checked)}
-                  disabled={isFinalSignedOff}
                 />
               }
               label="Show Details"

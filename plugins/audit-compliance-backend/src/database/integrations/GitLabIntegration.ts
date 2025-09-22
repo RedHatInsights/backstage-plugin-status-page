@@ -471,7 +471,7 @@ export class GitLabDatabase implements GitLabStore {
         frequency: 'quarterly', // Default value, should be updated by the caller
         period: new Date().getFullYear().toString(), // Default value, should be updated by the caller
         app_delegate: appEntry.app_delegate,
-        ticket_status: 'pending',
+        ticket_status: null,
       };
 
       try {
@@ -572,7 +572,7 @@ export class GitLabDatabase implements GitLabStore {
             period: period,
             frequency: frequency,
             app_delegate: app_delegate,
-            ticket_status: 'pending',
+            ticket_status: null,
             source: 'gitlab',
           };
           await this.db('service_account_access_review').insert(
@@ -693,7 +693,7 @@ export class GitLabDatabase implements GitLabStore {
           frequency: row.frequency,
           period: row.period,
           app_delegate: row.app_delegate,
-          ticket_status: 'pending',
+          ticket_status: null,
         };
         await this.db('group_access_reports').insert(dbRow);
         report.push(dbRow);
