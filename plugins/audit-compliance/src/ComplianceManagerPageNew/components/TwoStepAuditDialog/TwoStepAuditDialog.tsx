@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -44,10 +44,12 @@ import {
   discoveryApiRef,
   fetchApiRef,
   alertApiRef,
+  identityApiRef,
+  configApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
 
-export const TwoStepAuditDialog: React.FC<TwoStepAuditDialogProps> = ({
+export const TwoStepAuditDialog = ({
   open,
   onClose,
   applications,
@@ -62,11 +64,13 @@ export const TwoStepAuditDialog: React.FC<TwoStepAuditDialogProps> = ({
   onInitiate,
   getQuarterOptions,
   getYearOptions,
-}) => {
+}: TwoStepAuditDialogProps) => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
+  const identityApi = useApi(identityApiRef);
+  const configApi = useApi(configApiRef);
 
   const [activeTab, setActiveTab] = useState(0);
   const [localSelectedApplications, setLocalSelectedApplications] =
@@ -86,6 +90,7 @@ export const TwoStepAuditDialog: React.FC<TwoStepAuditDialogProps> = ({
   const [sendingEmail, setSendingEmail] = useState(false);
   const [isEditingBody, setIsEditingBody] = useState(false);
   const [initiatingAudits, setInitiatingAudits] = useState(false);
+  const [currentUser, setCurrentUser] = useState<string>('');
   const [emailTemplate] = useState({
     greeting: 'Hello Team,',
     mainContent:
@@ -142,17 +147,17 @@ export const TwoStepAuditDialog: React.FC<TwoStepAuditDialogProps> = ({
     results: AuditResult[],
     mainTicket: string,
   ): string => {
-    const jiraBaseUrl = 'https://jira.company.com/browse';
+    const jiraBaseUrl = configApi.getString('auditCompliance.jiraUrl');
 
     const tableHtml = `
       <div style="margin: 20px 0;">
-        <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd; font-family: Arial, sans-serif; font-size: 12px;">
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid var(--border-color, #ddd); font-family: Arial, sans-serif; font-size: 12px;">
           <thead>
-            <tr style="background-color: #f8f9fa;">
-              <th style="border: 1px solid #ddd; padding: 8px; text-align: left; font-weight: bold;">Jira</th>
-              <th style="border: 1px solid #ddd; padding: 8px; text-align: left; font-weight: bold;">Ticket Description</th>
-              <th style="border: 1px solid #ddd; padding: 8px; text-align: left; font-weight: bold;">Status</th>
-              <th style="border: 1px solid #ddd; padding: 8px; text-align: left; font-weight: bold;">Assignee</th>
+            <tr style="background-color: var(--table-header-bg, #f8f9fa);">
+              <th style="border: 1px solid var(--border-color, #ddd); padding: 8px; text-align: left; font-weight: bold; color: var(--text-primary, #333);">Jira</th>
+              <th style="border: 1px solid var(--border-color, #ddd); padding: 8px; text-align: left; font-weight: bold; color: var(--text-primary, #333);">Ticket Description</th>
+              <th style="border: 1px solid var(--border-color, #ddd); padding: 8px; text-align: left; font-weight: bold; color: var(--text-primary, #333);">Status</th>
+              <th style="border: 1px solid var(--border-color, #ddd); padding: 8px; text-align: left; font-weight: bold; color: var(--text-primary, #333);">Assignee</th>
             </tr>
           </thead>
           <tbody>
@@ -163,18 +168,20 @@ export const TwoStepAuditDialog: React.FC<TwoStepAuditDialogProps> = ({
                 );
                 return `
               <tr style="background-color: ${
-                index % 2 === 0 ? '#ffffff' : '#f8f9fa'
+                index % 2 === 0
+                  ? 'var(--table-row-even-bg, #ffffff)'
+                  : 'var(--table-row-odd-bg, #f8f9fa)'
               };">
-                <td style="border: 1px solid #ddd; padding: 8px; font-weight: 500;">${
+                <td style="border: 1px solid var(--border-color, #ddd); padding: 8px; font-weight: 500; color: var(--text-primary, #333);">${
                   result.jira_ticket && result.jira_ticket !== 'N/A'
-                    ? `<a href="${jiraBaseUrl}/${result.jira_ticket}" style="color: #007bff; text-decoration: none;">${result.jira_ticket}</a>`
-                    : '<span style="color: #666; font-style: italic;">N/A</span>'
+                    ? `<a href="${jiraBaseUrl}/browse/${result.jira_ticket}" target="_blank" rel="noopener noreferrer" style="color: var(--link-color, #007bff); text-decoration: none;">${result.jira_ticket}</a>`
+                    : '<span style="color: var(--text-secondary, #666); font-style: italic;">N/A</span>'
                 }</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${
+                <td style="border: 1px solid var(--border-color, #ddd); padding: 8px; color: var(--text-primary, #333);">${
                   result.app_name
                 }</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">In Progress</td>
-                <td style="border: 1px solid #ddd; padding: 8px;">${
+                <td style="border: 1px solid var(--border-color, #ddd); padding: 8px; color: var(--text-primary, #333);">In Progress</td>
+                <td style="border: 1px solid var(--border-color, #ddd); padding: 8px; color: var(--text-primary, #333);">${
                   app?.app_owner || 'N/A'
                 }</td>
               </tr>
@@ -210,13 +217,13 @@ Request you to please Initiate & complete the <strong>"${frequencyText} Access R
 
 <strong>Important</strong> - Recent audit experience shows auditors very keenly observe the below points. please double check them before closing the activity<br><br>
 
-<strong>1)</strong> Please use the <a href="http://localhost:3000/audit-access-manager" style="color: #007bff; text-decoration: none;"><strong>Audit Access Manager plugin</strong></a> to access and complete the audit activity<br>
+<strong>1)</strong> Please use the <a href="https://console.one.redhat.com/audit-access-manager" style="color: #007bff; text-decoration: none;"><strong>Audit Access Manager plugin</strong></a> to access and complete the audit activity<br>
 <strong>2)</strong> If you are rejecting an access of a user, then make sure that the <strong>user access is removed from both Rover and GitLab</strong> (or whatever sources) and the <strong>status is completed before final sign-off is being provided</strong>.<br>
 <strong>3)</strong> For each access deletion, there should be <strong>a ticket and proper documentation of the access removal process</strong>.<br><br>
 
 Tickets assigned to you can be found under the epic - ${
       mainTicket && mainTicket !== 'N/A'
-        ? `<a href="${jiraBaseUrl}/${mainTicket}" style="color: #007bff; text-decoration: none;"><strong>${mainTicket}</strong></a>`
+        ? `<a href="${jiraBaseUrl}/browse/${mainTicket}" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none;"><strong>${mainTicket}</strong></a>`
         : '<span style="color: #666; font-style: italic;">N/A (Jira creation failed)</span>'
     }<br><br>
 
@@ -263,6 +270,21 @@ Audit and Compliance Team`;
     }
   }, [open, selectedApplications]);
 
+  // Fetch current user when component mounts
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const identity = await identityApi.getBackstageIdentity();
+        setCurrentUser(identity.userEntityRef);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to fetch current user:', err);
+        setCurrentUser('compliance-manager'); // Fallback
+      }
+    };
+    fetchCurrentUser();
+  }, [identityApi]);
+
   const handleApplicationsChange = (
     event: React.ChangeEvent<{ value: unknown }>,
   ) => {
@@ -299,7 +321,7 @@ Audit and Compliance Team`;
           app_name: application?.app_name || '',
           frequency,
           period,
-          initiated_by: 'compliance-manager',
+          initiated_by: currentUser || 'compliance-manager',
         };
       });
 
@@ -319,6 +341,29 @@ Audit and Compliance Team`;
       }
 
       const result = await response.json();
+
+      // Handle errors (including duplicate audits)
+      if (result.errors && result.errors.length > 0) {
+        result.errors.forEach((auditError: any) => {
+          let errorMessage = auditError.error;
+
+          // Format duplicate audit error messages more formally
+          if (errorMessage.includes('Audit already exists')) {
+            // Find the application name from the applications array
+            const application = applications.find(
+              app => app.id === auditError.application_id,
+            );
+            const appName = application?.app_name || auditError.application_id;
+            errorMessage = `Audit creation failed: Duplicate audit already in progress for ${appName}`;
+          }
+
+          alertApi.post({
+            message: errorMessage,
+            severity: 'error',
+            display: 'transient',
+          });
+        });
+      }
 
       // Extract audit results from the response
       const createdAudits: RawAuditResult[] = result.created_audits || [];
@@ -350,48 +395,51 @@ Audit and Compliance Team`;
         },
       );
 
-      // Use the first valid Jira ticket as the main ticket, or 'N/A' if none exist
-      const mainTicket =
-        results.find(auditResult => auditResult.jira_ticket !== 'N/A')
-          ?.jira_ticket || 'N/A';
+      // Only proceed if there were successful audits
+      if (results.length > 0) {
+        // Use the first valid Jira ticket as the main ticket, or 'N/A' if none exist
+        const mainTicket =
+          results.find(auditResult => auditResult.jira_ticket !== 'N/A')
+            ?.jira_ticket || 'N/A';
 
-      setStep1Completed(true);
+        setStep1Completed(true);
 
-      // Pre-populate email data
-      const selectedApps = applications.filter(app =>
-        localSelectedApplications.includes(app.id),
-      );
-      const appOwners = selectedApps
-        .map(app => (app as any).app_owner_email)
-        .filter((email, index, arr) => email && arr.indexOf(email) === index);
+        // Pre-populate email data
+        const selectedApps = applications.filter(app =>
+          localSelectedApplications.includes(app.id),
+        );
+        const appOwners = selectedApps
+          .map(app => (app as any).app_owner_email)
+          .filter((email, index, arr) => email && arr.indexOf(email) === index);
 
-      const periodText =
-        frequency === 'quarterly'
-          ? `${selectedQuarter}-${selectedYear}`
-          : selectedYear.toString();
+        const periodText =
+          frequency === 'quarterly'
+            ? `${selectedQuarter}-${selectedYear}`
+            : selectedYear.toString();
 
-      const emailTitle = `[Action Required] ${
-        frequency === 'quarterly' ? 'Quarterly' : 'Yearly'
-      } Access Reviews ${periodText} - ${selectedApps
-        .map(app => app.app_name)
-        .join(', ')}`;
-      const emailBody = generateEmailBody(results, mainTicket);
+        const emailTitle = `[Action Required] ${
+          frequency === 'quarterly' ? 'Quarterly' : 'Yearly'
+        } Access Reviews ${periodText} - ${selectedApps
+          .map(app => app.app_name)
+          .join(', ')}`;
+        const emailBody = generateEmailBody(results, mainTicket);
 
-      setEmailData({
-        to: appOwners,
-        cc: [],
-        subject: emailTitle,
-        body: emailBody,
-      });
+        setEmailData({
+          to: appOwners,
+          cc: [],
+          subject: emailTitle,
+          body: emailBody,
+        });
 
-      // Move to Tab 2
-      setActiveTab(1);
+        // Move to Tab 2
+        setActiveTab(1);
 
-      alertApi.post({
-        message: `Successfully initiated ${localSelectedApplications.length} audit(s)`,
-        severity: 'success',
-        display: 'transient',
-      });
+        alertApi.post({
+          message: `Successfully initiated ${results.length} audit(s)`,
+          severity: 'success',
+          display: 'transient',
+        });
+      }
     } catch (error) {
       setStep1Error(
         error instanceof Error ? error.message : 'Failed to initiate audits',
@@ -524,16 +572,7 @@ Audit and Compliance Team`;
         {activeTab === 0 && (
           <Box>
             {step1Error && (
-              <Box
-                style={{
-                  backgroundColor: '#ffebee',
-                  color: '#c62828',
-                  padding: '12px',
-                  borderRadius: '4px',
-                  marginBottom: '16px',
-                  border: '1px solid #ffcdd2',
-                }}
-              >
+              <Box className={classes.errorBox}>
                 <Typography variant="body2" style={{ fontWeight: 500 }}>
                   {step1Error}
                 </Typography>
@@ -832,10 +871,11 @@ Audit and Compliance Team`;
                     size="small"
                     onClick={() => setIsEditingBody(!isEditingBody)}
                     title={isEditingBody ? 'Preview' : 'Edit'}
-                    style={{
-                      backgroundColor: isEditingBody ? '#e3f2fd' : '#f5f5f5',
-                      color: isEditingBody ? '#1976d2' : '#666',
-                    }}
+                    className={
+                      isEditingBody
+                        ? classes.editButtonActive
+                        : classes.editButton
+                    }
                   >
                     {isEditingBody ? <VisibilityIcon /> : <EditIcon />}
                   </IconButton>
@@ -856,36 +896,13 @@ Audit and Compliance Team`;
                     style={{ fontFamily: 'monospace', fontSize: '12px' }}
                   />
                 ) : (
-                  <Box
-                    style={{
-                      border: '1px solid #ddd',
-                      borderRadius: '8px',
-                      padding: '20px',
-                      minHeight: '300px',
-                      backgroundColor: '#fafafa',
-                      overflow: 'auto',
-                      position: 'relative',
-                    }}
-                  >
+                  <Box className={classes.emailPreview}>
                     <Box
                       dangerouslySetInnerHTML={{ __html: emailData.body }}
-                      style={{
-                        fontFamily: 'Arial, sans-serif',
-                        lineHeight: '1.6',
-                        color: '#333',
-                      }}
+                      className={classes.emailPreviewContent}
                     />
                     {!emailData.body.trim() && (
-                      <Box
-                        style={{
-                          position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, -50%)',
-                          color: '#999',
-                          fontSize: '14px',
-                        }}
-                      >
+                      <Box className={classes.emailPreviewPlaceholder}>
                         Click the edit icon to add email content
                       </Box>
                     )}

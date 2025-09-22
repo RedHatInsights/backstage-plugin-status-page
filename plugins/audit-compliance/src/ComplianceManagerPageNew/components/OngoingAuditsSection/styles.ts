@@ -8,36 +8,35 @@ export const useStyles = makeStyles(theme => ({
     fontSize: '24px',
     fontWeight: 600,
     marginBottom: theme.spacing(3),
-    color: '#333',
+    color: theme.palette.text.primary,
   },
   tableContainer: {
-    borderRadius: '12px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+    borderRadius: theme.shape.borderRadius,
   },
   tableHeader: {
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.palette.background.paper,
   },
   tableHeaderCell: {
     fontWeight: 600,
     fontSize: '16px',
-    color: '#333',
+    color: theme.palette.text.primary,
   },
   tableRow: {
     '&:hover': {
-      backgroundColor: '#f8f9fa',
+      backgroundColor: theme.palette.action.hover,
     },
   },
   appName: {
     fontSize: '16px',
     fontWeight: 600,
-    color: '#333',
+    color: theme.palette.text.primary,
   },
   statusChip: {
     fontWeight: 600,
     marginRight: theme.spacing(1),
   },
   expandButton: {
-    borderRadius: '6px',
+    borderRadius: theme.shape.borderRadius,
     textTransform: 'none',
     fontWeight: 500,
   },
@@ -46,12 +45,11 @@ export const useStyles = makeStyles(theme => ({
   },
   collapsedContent: {
     padding: theme.spacing(2),
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.palette.background.default,
   },
   auditCard: {
     marginBottom: theme.spacing(2),
-    borderRadius: '8px',
-    boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+    borderRadius: theme.shape.borderRadius,
     '&:last-child': {
       marginBottom: 0,
     },
@@ -64,15 +62,15 @@ export const useStyles = makeStyles(theme => ({
   },
   progressLabel: {
     fontSize: '12px',
-    color: '#666',
+    color: theme.palette.text.secondary,
     marginBottom: theme.spacing(0.5),
   },
   progressBar: {
     height: '6px',
-    borderRadius: '3px',
+    borderRadius: theme.shape.borderRadius,
   },
   actionButton: {
-    borderRadius: '6px',
+    borderRadius: theme.shape.borderRadius,
     textTransform: 'none',
     fontWeight: 500,
     fontSize: '12px',
@@ -80,10 +78,10 @@ export const useStyles = makeStyles(theme => ({
   emptyState: {
     textAlign: 'center',
     padding: theme.spacing(4),
-    color: '#666',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '8px',
-    border: '1px solid #e0e0e0',
+    color: theme.palette.text.secondary,
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: theme.shape.borderRadius,
+    border: `1px solid ${theme.palette.divider}`,
   },
   filtersContainer: {
     display: 'flex',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -33,12 +33,12 @@ Please review and take necessary actions.
 Best regards,
 Compliance Team`;
 
-export const SendEmailDialog: React.FC<SendEmailDialogProps> = ({
+export const SendEmailDialog = ({
   open,
   onClose,
   applications,
   onEmailSent,
-}) => {
+}: SendEmailDialogProps) => {
   const classes = useStyles();
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);

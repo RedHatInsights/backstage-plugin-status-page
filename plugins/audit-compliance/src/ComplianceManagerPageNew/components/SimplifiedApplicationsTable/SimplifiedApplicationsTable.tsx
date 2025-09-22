@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, Table } from '@backstage/core-components';
 import {
   discoveryApiRef,
@@ -27,15 +27,13 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import { useStyles } from './styles';
 import { AuditInfo, SimplifiedApplicationsTableProps } from './types';
 
-export const SimplifiedApplicationsTable: React.FC<
-  SimplifiedApplicationsTableProps
-> = ({
+export const SimplifiedApplicationsTable = ({
   applications,
   searchTerm,
   onSearchChange,
   onRefresh,
   refreshTrigger,
-}) => {
+}: SimplifiedApplicationsTableProps) => {
   const classes = useStyles();
   const [auditData, setAuditData] = useState<Record<string, AuditInfo[]>>({});
   const [loading, setLoading] = useState(false);

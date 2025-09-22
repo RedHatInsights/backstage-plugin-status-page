@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -24,6 +24,7 @@ import { Table as BackstageTable } from '@backstage/core-components';
 import {
   discoveryApiRef,
   fetchApiRef,
+  configApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -37,14 +38,14 @@ import {
   AuditStep,
 } from '../../../AuditCompliancePage/audit-components/AuditProgressStepper/AuditProgressStepper';
 
-export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
+export const OngoingAuditsSection = ({
   applications,
   refreshTrigger,
   searchTerm = '',
   onSearchChange,
   statusFilter = 'all',
   onStatusFilterChange,
-}) => {
+}: OngoingAuditsSectionProps) => {
   const classes = useStyles();
   const [auditData, setAuditData] = useState<Record<string, AuditInfo[]>>({});
   const [expandedApps, setExpandedApps] = useState<Set<string>>(new Set());
@@ -52,6 +53,62 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
   const [localStatusFilter, setLocalStatusFilter] = useState(statusFilter);
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
+  const configApi = useApi(configApiRef);
+
+  // Color palette definitions
+  const chipColors = {
+    // Blue theme colors
+    lightBlue: '#E3F2FD',
+    darkBlue: '#1565C0',
+    mediumBlue: '#42A5F5',
+
+    // Amber/warning theme colors
+    lightAmber: '#FFF3E0',
+    darkAmber: '#E65100',
+    mediumAmber: '#FF9800',
+
+    // Green/success theme colors
+    lightGreen: '#E8F5E8',
+    darkGreen: '#1B5E20',
+    mediumGreen: '#4CAF50',
+
+    // Gray/neutral theme colors
+    lightGray: '#F5F5F5',
+    mediumGray: '#616161',
+    mediumGrayBorder: '#9E9E9E',
+
+    // Common colors
+    white: '#FFFFFF',
+  };
+
+  // Status chip color definitions using named color variables
+  const statusColors = {
+    AUDIT_STARTED: {
+      backgroundColor: chipColors.lightBlue,
+      color: chipColors.darkBlue,
+      borderColor: chipColors.mediumBlue,
+    },
+    IN_PROGRESS: {
+      backgroundColor: chipColors.lightAmber,
+      color: chipColors.darkAmber,
+      borderColor: chipColors.mediumAmber,
+    },
+    ACCESS_REVIEW_COMPLETE: {
+      backgroundColor: chipColors.darkAmber,
+      color: chipColors.white,
+      borderColor: chipColors.darkAmber,
+    },
+    COMPLETED: {
+      backgroundColor: chipColors.lightGreen,
+      color: chipColors.darkGreen,
+      borderColor: chipColors.mediumGreen,
+    },
+    DEFAULT: {
+      backgroundColor: chipColors.lightGray,
+      color: chipColors.mediumGray,
+      borderColor: chipColors.mediumGrayBorder,
+    },
+  };
 
   const fetchAuditData = useCallback(async () => {
     try {
@@ -329,7 +386,7 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
                 const isExpanded = expandedApps.has(summary.app.app_name);
 
                 return (
-                  <React.Fragment key={summary.app.id}>
+                  <div key={summary.app.id}>
                     <TableRow
                       className={classes.tableRow}
                       onClick={() => toggleExpanded(summary.app.app_name)}
@@ -380,9 +437,12 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
                                     ) {
                                       return 'N/A';
                                     }
+                                    const jiraUrl = configApi.getString(
+                                      'auditCompliance.jiraUrl',
+                                    );
                                     return (
                                       <a
-                                        href={`https://issues.redhat.com/browse/${row.jira_key}`}
+                                        href={`${jiraUrl}/browse/${row.jira_key}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         style={{
@@ -403,54 +463,17 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
                                   render: (row: any) => {
                                     const status =
                                       row.status?.toUpperCase() || '';
-                                    let chipStyle: React.CSSProperties = {
+
+                                    // Get colors for the status, fallback to DEFAULT if not found
+                                    const colors =
+                                      statusColors[
+                                        status as keyof typeof statusColors
+                                      ] || statusColors.DEFAULT;
+
+                                    const chipStyle: React.CSSProperties = {
+                                      ...colors,
                                       fontWeight: 600,
                                     };
-
-                                    // Gradient color system: lighter colors for early stages, darker for completion
-                                    if (status === 'AUDIT_STARTED') {
-                                      // Blue for kickoff phase
-                                      chipStyle = {
-                                        backgroundColor: '#E3F2FD',
-                                        color: '#1565C0',
-                                        borderColor: '#42A5F5',
-                                        fontWeight: 600,
-                                      };
-                                    } else if (status === 'IN_PROGRESS') {
-                                      // Amber for midway/in progress
-                                      chipStyle = {
-                                        backgroundColor: '#FFF3E0',
-                                        color: '#E65100',
-                                        borderColor: '#FF9800',
-                                        fontWeight: 600,
-                                      };
-                                    } else if (
-                                      status === 'ACCESS_REVIEW_COMPLETE'
-                                    ) {
-                                      // Dark amber for review done
-                                      chipStyle = {
-                                        backgroundColor: '#E65100',
-                                        color: '#FFFFFF',
-                                        borderColor: '#E65100',
-                                        fontWeight: 600,
-                                      };
-                                    } else if (status === 'COMPLETED') {
-                                      // Green for success/fully complete
-                                      chipStyle = {
-                                        backgroundColor: '#E8F5E8',
-                                        color: '#1B5E20',
-                                        borderColor: '#4CAF50',
-                                        fontWeight: 600,
-                                      };
-                                    } else {
-                                      // Default gray for unknown statuses
-                                      chipStyle = {
-                                        backgroundColor: '#F5F5F5',
-                                        color: '#616161',
-                                        borderColor: '#9E9E9E',
-                                        fontWeight: 600,
-                                      };
-                                    }
 
                                     return (
                                       <Chip
@@ -503,7 +526,7 @@ export const OngoingAuditsSection: React.FC<OngoingAuditsSectionProps> = ({
                         </Collapse>
                       </TableCell>
                     </TableRow>
-                  </React.Fragment>
+                  </div>
                 );
               })}
             </TableBody>
