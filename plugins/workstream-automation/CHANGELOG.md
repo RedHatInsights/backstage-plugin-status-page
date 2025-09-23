@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-workstream-automation [1.21.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.20.0...@compass/backstage-plugin-workstream-automation@1.21.0) (2025-09-23)
+
+
+### Features
+
+* **PULSE-1094:** added new RHDH theme with header ([9915332](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/99153328f2cf84d5c9823d22dc8340f973565997))
+
 ## @compass/backstage-plugin-workstream-automation [1.20.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.19.5...@compass/backstage-plugin-workstream-automation@1.20.0) (2025-09-16)
 
 
