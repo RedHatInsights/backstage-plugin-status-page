@@ -131,6 +131,8 @@ export interface ServiceNowSIAComplianceControlsResponse {
   // API response fields (dot notation)
   'recovery_time_objective.name'?: string;
   'recovery_point_objective.name'?: string;
+  'adjusted_rto.name'?: string;
+  'adjusted_rpo.name'?: string;
 }
 
 export interface ServiceNowPIAAssessmentInstanceItem {

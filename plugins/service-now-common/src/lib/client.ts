@@ -56,7 +56,7 @@ export class ServiceNowClient {
     sysId: string,
     options?: CommonListOptions,
   ) {
-    const uri = `/api/now/table/${CMDB_SIA_TABLE_NAME}`;
+    const uri = `/api/now/v2/table/${CMDB_SIA_TABLE_NAME}`;
     const sysparmQuery = `applies_to=${sysId}`;
     const sysparm_fields = options?.sysparm_fields?.split?.(',') ?? [];
 

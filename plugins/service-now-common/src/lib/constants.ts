@@ -30,6 +30,8 @@ export const CMDB_SIA_RECORD_FIELDS = [
   "expires",
   "recovery_time_objective.name",
   "recovery_point_objective.name",
+  "adjusted_rto.name",
+  "adjusted_rpo.name",
 ]
 export const CMDB_PIA_RECORD_FIELDS = [
   "number",
