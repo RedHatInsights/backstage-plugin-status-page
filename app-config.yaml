@@ -238,12 +238,11 @@ auth:
   environment: development
   providers:
     guest:
-      {}
-      # userEntityRef: user:redhat/yoswal
-      # profile:
-      #   displayName: 'Yash Oswal'
-      #   email: 'yoswal@redhat.com'
-      #   picture: 'https://i.pravatar.cc/100'
+      userEntityRef: user:development/guest
+      profile:
+        displayName: 'Guest'
+        email: 'guest@email.com'
+        picture: 'https://i.pravatar.cc/100'
     oauth2:
       development:
         authorizationUrl: ${AUTH_SSO_AUTHORIZATION_URL}
@@ -353,7 +352,6 @@ catalog:
     #   target: https://github.com/backstage/backstage/blob/master/packages/catalog-model/examples/acme-corp.yaml
     #   rules:
     #     - allow: [User, Group]
-
 
 permission:
   enabled: false
