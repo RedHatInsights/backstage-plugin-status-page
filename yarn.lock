@@ -7535,7 +7535,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-service-now-common@npm:^1.5.2, @compass/backstage-plugin-service-now-common@workspace:plugins/service-now-common":
+"@compass/backstage-plugin-service-now-common@npm:^1.7.0, @compass/backstage-plugin-service-now-common@workspace:plugins/service-now-common":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-service-now-common@workspace:plugins/service-now-common"
   dependencies:
@@ -7635,7 +7635,7 @@ __metadata:
     "@backstage/cli": "npm:^0.34.1"
     "@backstage/config": "npm:^1.3.3"
     "@backstage/types": "npm:^1.2.1"
-    "@compass/backstage-plugin-service-now-common": "npm:^1.5.2"
+    "@compass/backstage-plugin-service-now-common": "npm:^1.7.0"
     "@spotify/backstage-plugin-soundcheck-common": "npm:^0.19.1"
     "@spotify/backstage-plugin-soundcheck-node": "npm:^0.10.1"
   languageName: unknown
