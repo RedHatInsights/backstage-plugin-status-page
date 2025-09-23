@@ -41,9 +41,10 @@ const useStyles = makeStyles(theme => ({
   paper: {
     width: 600,
     backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
+    border: `2px solid ${theme.palette.border}`,
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
+    borderRadius: theme.shape.borderRadius * 2,
   },
 }));
 
@@ -229,7 +230,9 @@ const TemplateFormModal = (props: TemplateFormModalProps) => {
           <Button
             variant="contained"
             color="primary"
-            onClick={type === 'create' ? handleCreateTemplate : handleUpdateTemplate}
+            onClick={
+              type === 'create' ? handleCreateTemplate : handleUpdateTemplate
+            }
             disabled={!handleValidation() || isLoading}
           >
             {isLoading && <CircularProgress size={20} />}

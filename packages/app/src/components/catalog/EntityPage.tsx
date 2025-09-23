@@ -62,10 +62,6 @@ import { MatomoPage } from '@backstage-community/plugin-matomo';
 import { SpashipPage } from '@appdev/backstage-plugin-spaship';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
-import {
-  EntityJiraOverviewCard,
-  isJiraAvailable,
-} from '@roadiehq/backstage-plugin-jira';
 
 import {
   InfraDetailsPage,
@@ -97,7 +93,7 @@ import {
   isReportPortalAvailable,
 } from '@backstage-community/plugin-report-portal';
 import { usePermission } from '@backstage/plugin-permission-react';
-import { EntityFeedbackPage } from '@janus-idp/backstage-plugin-feedback';
+import { EntityFeedbackPage } from '@backstage-community/plugin-feedback';
 import Delete from '@material-ui/icons/Delete';
 
 import {
@@ -106,7 +102,10 @@ import {
   GroupSoundcheckContent,
 } from '@spotify/backstage-plugin-soundcheck';
 import { MCPPrimitives, MCPLinks } from '@compass/backstage-plugin-mcp';
-import { AIExpresswayCard, isXEAIXWayAvailable } from '@compass/backstage-plugin-ai-expressway';
+import {
+  AIExpresswayCard,
+  isXEAIXWayAvailable,
+} from '@compass/backstage-plugin-ai-expressway';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -184,11 +183,6 @@ const infraDetailsContent = (
 
 const jiraContent = (
   <EntitySwitch>
-    <EntitySwitch.Case if={isJiraAvailable}>
-      <Grid item md={12}>
-        <EntityJiraOverviewCard />
-      </Grid>
-    </EntitySwitch.Case>
 
     <EntitySwitch.Case>
       <MissingAnnotationEmptyState
@@ -641,7 +635,7 @@ const MCPEntityPage = (
             <EntityCatalogGraphCard variant="gridItem" height={400} />
           </Grid>
           <Grid item xs={12}>
-            <EntityWorkstreamCard variant='gridItem' />
+            <EntityWorkstreamCard variant="gridItem" />
           </Grid>
           <Grid item xs={12}>
             <EntityHasSubcomponentsCard variant="gridItem" />
@@ -652,7 +646,7 @@ const MCPEntityPage = (
             <MCPLinks variant="gridItem" />
           </Grid>
           <Grid item xs={12}>
-            <MCPPrimitives variant='gridItem' />
+            <MCPPrimitives variant="gridItem" />
           </Grid>
           <EntitySwitch>
             <EntitySwitch.Case if={isAppCodeAvailable}>

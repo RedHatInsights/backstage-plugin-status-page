@@ -5,8 +5,8 @@ kind: Template
 metadata:
   name: backstage-plugins
   annotations:
-    openshift.io/display-name: "backstage-plugins"
-    description: "backstage-plugins"
+    openshift.io/display-name: 'backstage-plugins'
+    description: 'backstage-plugins'
   labels:
     paas.redhat.com/appcode: ONEP-003
 objects:
@@ -27,9 +27,6 @@ objects:
         dockerStrategy:
           dockerfilePath: Dockerfile
           noCache: true
-          env:
-            - name: NODE_OPTIONS
-              value: "--max-old-space-size=4096"
       output:
         to:
           kind: DockerImage
@@ -43,6 +40,5 @@ objects:
 
 parameters:
   - name: TAG
-    description: "Tag for repo"
+    description: 'Tag for repo'
     required: true
-

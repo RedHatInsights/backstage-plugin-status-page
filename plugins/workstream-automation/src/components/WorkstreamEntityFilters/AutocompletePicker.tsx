@@ -133,8 +133,13 @@ export const AutocompletePicker = (props: PickerProps) => {
 
   return (
     <Box pb={1} pt={1}>
-      <Typography variant="button" component="label">
+      <Typography
+        variant="button"
+        style={{ fontWeight: 'bold', textTransform: 'none' }}
+        component="label"
+      >
         {label}
+        <Typography/>
         <Autocomplete<string, true>
           // PopperComponent={popperProps => (
           //   <div {...popperProps}>{popperProps.children as ReactNode}</div>

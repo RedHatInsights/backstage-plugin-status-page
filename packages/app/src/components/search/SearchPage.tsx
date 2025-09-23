@@ -10,7 +10,6 @@ import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 import { SearchType } from '@backstage/plugin-search';
 import {
   DefaultResultListItem,
-  SearchBar,
   SearchFilter,
   SearchResult,
   SearchPagination,
@@ -50,11 +49,6 @@ const SearchPage = () => {
       <Header title="Search" />
       <Content>
         <Grid container direction="row">
-          <Grid item xs={12}>
-            <Paper className={classes.bar}>
-              <SearchBar />
-            </Paper>
-          </Grid>
           <Grid item xs={3}>
             <SearchType.Accordion
               name="Result Type"
@@ -122,6 +116,7 @@ const SearchPage = () => {
                             result={document}
                             highlight={highlight}
                             rank={rank}
+                            icon={<CatalogIcon />}
                           />
                         );
                       case 'techdocs':
@@ -130,6 +125,7 @@ const SearchPage = () => {
                             key={document.location}
                             result={document}
                             highlight={highlight}
+                            icon={<CatalogIcon />}
                             rank={rank}
                           />
                         );

@@ -46,7 +46,7 @@ export const LinkCard = (props: LinkCardProps) => {
                 textOverflow: 'ellipsis',
               }}
             >
-              <Typography variant="button">
+              <Typography variant="button" style={{fontWeight:'bold', textTransform:'none'}} >
                 {title && title.length > 14
                   ? `${title.substring(0, 14)}...`
                   : title}

@@ -9,7 +9,7 @@ import {
   configApiRef,
   createApiFactory,
 } from '@backstage/core-plugin-api';
-import { MatomoAnalytics } from '@janus-idp/backstage-plugin-analytics-module-matomo';
+import { MatomoAnalytics } from '@backstage-community/plugin-analytics-module-matomo';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import {
   entityPresentationApiRef,

@@ -85,9 +85,9 @@ import { WORKSTREAM_RELATION_PAIR } from '@compass/backstage-plugin-workstream-a
 import { MockPluginPage } from '@compass/plugin-mock-plugin';
 import {
   GlobalFeedbackPage,
-  OpcFeedbackComponent,
+  GlobalFeedbackComponent,
   feedbackPlugin,
-} from '@janus-idp/backstage-plugin-feedback';
+} from '@backstage-community/plugin-feedback';
 import AdbIcon from '@material-ui/icons/Adb';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import WebLinkIcon from '@material-ui/icons/Language';
@@ -262,8 +262,8 @@ export default app.createRoot(
     <AppRouter>
       <RedirectsProvider>
         <Root>{routes}</Root>
-        <OpcFeedbackComponent />
       </RedirectsProvider>
+      <GlobalFeedbackComponent />
     </AppRouter>
   </>,
 );

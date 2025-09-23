@@ -1,6 +1,14 @@
 import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
+  root: {
+    marginTop: 'calc(6rem - 8px)',
+    marginRight: theme.spacing(1),
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: theme.shape.borderRadius * 4,
+    height: 'calc(100vh - 5 * 1.3rem)', // Same as Root.css height
+  },
+
   fullHeightContainer: {
     width: 400,
     height: '100vh',
@@ -20,7 +28,7 @@ const useStyles = makeStyles(theme => ({
   },
   inputContainer: {
     padding: theme.spacing(2),
-    paddingBottom: theme.spacing(10),
+    paddingBottom: theme.spacing(6),
     backgroundColor: theme.palette.background.paper,
     borderTop: `1px solid ${theme.palette.divider}`,
     flexShrink: 0,

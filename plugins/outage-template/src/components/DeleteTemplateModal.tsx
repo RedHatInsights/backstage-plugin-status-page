@@ -1,15 +1,15 @@
+import { useApi } from '@backstage/core-plugin-api';
 import {
   Button,
-  Grid,
-  Typography,
-  Modal,
-  makeStyles,
   Chip,
   CircularProgress,
+  Grid,
+  Modal,
+  Typography,
+  makeStyles,
 } from '@material-ui/core';
 import { useRef, useState } from 'react';
 import { outageApiRef } from '../api';
-import { useApi } from '@backstage/core-plugin-api';
 
 interface DeleteTemplateModalProps {
   open: boolean;
@@ -39,9 +39,10 @@ const useStyles = makeStyles(theme => ({
   paper: {
     width: 450,
     backgroundColor: theme.palette.background.paper,
-    border: '2px solid #000',
+    border: `2px solid ${theme.palette.border}`,
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
+    borderRadius: theme.shape.borderRadius * 2,
   },
 }));
 
@@ -84,7 +85,12 @@ const DeleteTemplateModal = (props: DeleteTemplateModalProps) => {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <Button variant="text" color="primary" onClick={onClose} disabled={isLoading}>
+          <Button
+            variant="text"
+            color="primary"
+            onClick={onClose}
+            disabled={isLoading}
+          >
             Cancel
           </Button>
           <Button

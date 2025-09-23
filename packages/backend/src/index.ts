@@ -104,12 +104,12 @@ backend.add(import('@backstage/plugin-permission-backend/alpha'));
 backend.add(import('./policy'));
 
 // search plugin
-backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend'));
 backend.add(import('@backstage/plugin-search-backend-module-catalog'));
-backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
 
 backend.add(import('@backstage-community/plugin-matomo-backend'));
-backend.add(import('@janus-idp/backstage-plugin-feedback-backend/alpha'));
+backend.add(import('@backstage-community/plugin-feedback-backend'));
 backend.add(import('@backstage-community/plugin-report-portal-backend'));
 
 backend.add(import('@spotify/backstage-plugin-soundcheck-backend'));

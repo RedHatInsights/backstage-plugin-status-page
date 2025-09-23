@@ -1,5 +1,5 @@
 app:
-  title: Scaffolded Backstage App
+  title: XE Compass Plugins
   baseUrl: http://localhost:3000
   analytics:
     matomo:
@@ -21,13 +21,13 @@ app:
         to: /
 
 organization:
-  name: Backstage Plugins
+  name: XE Compass Plugins
 
 backend:
   actions:
     pluginSources:
-      - "catalog"
-      - "mcp-actions-example"
+      - 'catalog'
+      - 'mcp-actions-example'
   # Used for enabling authentication, secret is shared by all backend plugins
   # See https://backstage.io/docs/auth/service-to-service-auth for
   # information on the format
@@ -67,7 +67,7 @@ backend:
   database:
     client: better-sqlite3
     connection: ':memory:'
-    
+
   cache:
     store: memory
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
@@ -154,16 +154,16 @@ proxy:
       credentials: dangerously-allow-unauthenticated
       changeOrigin: true
       allowedMethods: ['GET']
-  '/gitlab-ess':
+    '/gitlab-ess':
       target: ${ESS_GITLAB_BASE_URL}
       changeOrigin: true
-      secure: false  # Ignore SSL certificate errors
+      secure: false # Ignore SSL certificate errors
       credentials: dangerously-allow-unauthenticated
       pathRewrite:
         '^/api/proxy/gitlab-ess': '/app-dev-platform/backstage-plugins/-/snippets/10300/raw/main'
       allowedMethods: ['GET']
       headers:
-        'Private-Token': ${ESS_GITLAB_TOKEN} 
+        'Private-Token': ${ESS_GITLAB_TOKEN}
     # '/mcp':
     #   target: ${MCP_SERVER_BASE_URL}
     #   headers:
@@ -205,6 +205,8 @@ proxyManager:
   apiBaseUrl: ${PROXY_MANAGER_API_BASE_URL}
 
 feedback:
+  customizations:
+    opcFeedbackTemplate: {}
   baseEntityRef: ${FEEDBACK_PLUGIN_BASE_ENTITY} # for global feedbacks
   summaryLimit: ${FEEDBACK_PLUGIN_SUMMARY_LIMIT}
   integrations:
@@ -235,14 +237,19 @@ auth:
   dangerouslyAllowSignInWithoutUserInCatalog: true
   environment: development
   providers:
-    guest: {}
+    guest:
+      {}
+      # userEntityRef: user:redhat/yoswal
+      # profile:
+      #   displayName: 'Yash Oswal'
+      #   email: 'yoswal@redhat.com'
+      #   picture: 'https://i.pravatar.cc/100'
     oauth2:
       development:
         authorizationUrl: ${AUTH_SSO_AUTHORIZATION_URL}
         tokenUrl: ${AUTH_SSO_TOKEN_URL}
         clientId: ${AUTH_SSO_CLIENT_ID}
         clientSecret: ${AUTH_SSO_CLIENT_SECRET}
-    
 
 scaffolder:
   {}
@@ -448,8 +455,8 @@ permissionManagement:
     from: ${EMAIL_FROM}
     secure: false
     caCert: ${NODE_EXTRA_CA_CERTS}
-    
-gdpr: 
+
+gdpr:
   dcp:
     apiBaseUrl: ${GDPR_DCP_API_BASE_URL}
     serviceAccount: ${GDPR_DRUPAL_SA}
