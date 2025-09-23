@@ -4,13 +4,16 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Button,
   Checkbox,
+  CircularProgress,
   FormControl,
   FormControlLabel,
   FormLabel,
   Grid,
   InputLabel,
+  LinearProgress,
   List,
   ListItem,
   ListItemText,
@@ -22,14 +25,11 @@ import {
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import Backdrop from '@mui/material/Backdrop';
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
-import LinearProgress from '@mui/material/LinearProgress';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { outageApiRef } from '../api';
 import { StatusPageHeader } from './Header';
+import { StyledBackdrop, StyledBox } from './StyledComponents';
 
 export const UpdateIncident = () => {
   const outageApi = useApi(outageApiRef);
@@ -246,7 +246,7 @@ export const UpdateIncident = () => {
           />
           {pageLoading && (
             <LinearProgress
-              sx={{
+              style={{
                 width: '100vw',
                 marginLeft: '-5vw',
                 height: 4,
@@ -265,23 +265,12 @@ export const UpdateIncident = () => {
                 width: '100%',
               }}
             >
-              <LinearProgress sx={{ width: '60%' }} />
+              <LinearProgress style={{ width: '60%' }} />
             </Box>
           </Content>
         ) : (
           <Content>
-            <Box
-              sx={{
-                width: '50%',
-                minWidth: 700,
-                m: 3,
-                p: 3,
-                backgroundColor: 'background.paper',
-                borderRadius: 2,
-                border: '1px solid',
-                borderColor: 'divider',
-              }}
-            >
+            <StyledBox>
               <Grid container spacing={3} direction="column">
                 <Grid item>
                   <InputLabel
@@ -619,16 +608,13 @@ export const UpdateIncident = () => {
                   </Grid>
                 </Grid>
               </Grid>
-            </Box>
+            </StyledBox>
           </Content>
         )}
       </Page>
-      <Backdrop
-        open={submitLoading}
-        sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }}
-      >
+      <StyledBackdrop open={submitLoading}>
         <CircularProgress color="inherit" />
-      </Backdrop>
+      </StyledBackdrop>
     </>
   );
 };

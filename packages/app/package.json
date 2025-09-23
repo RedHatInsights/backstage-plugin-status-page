@@ -29,6 +29,8 @@
     "@appdev/backstage-plugin-permission-management": "*",
     "@appdev/backstage-plugin-proxy-manager": "*",
     "@appdev/backstage-plugin-spaship": "*",
+    "@backstage-community/plugin-analytics-module-matomo": "^1.18.1",
+    "@backstage-community/plugin-feedback": "^1.8.2",
     "@backstage-community/plugin-github-actions": "^0.7.1",
     "@backstage-community/plugin-matomo": "^1.12.0",
     "@backstage-community/plugin-report-portal": "^1.1.3",
@@ -52,13 +54,13 @@
     "@backstage/plugin-permission-react": "^0.4.36",
     "@backstage/plugin-scaffolder": "^1.34.0",
     "@backstage/plugin-search": "^1.4.29",
+    "@backstage/plugin-search-common": "^1.2.19",
     "@backstage/plugin-search-react": "^1.9.3",
     "@backstage/plugin-signals": "^0.0.22",
     "@backstage/plugin-techdocs": "^1.14.1",
     "@backstage/plugin-techdocs-module-addons-contrib": "^1.1.27",
     "@backstage/plugin-techdocs-react": "^1.3.2",
     "@backstage/plugin-user-settings": "^0.8.25",
-    "@backstage/theme": "^0.6.8",
     "@backstage/types": "^1.2.1",
     "@backstage/ui": "^0.7.0",
     "@compass/backstage-plugin-ai-expressway": "*",
@@ -71,19 +73,17 @@
     "@compass/backstage-plugin-workstream-automation": "*",
     "@compass/backstage-plugin-workstream-automation-common": "*",
     "@compass/plugin-mock-plugin": "*",
-    "@janus-idp/backstage-plugin-analytics-module-matomo": "^1.8.1",
-    "@janus-idp/backstage-plugin-feedback": "^1.6.3",
     "@material-table/exporters": "^1.2.19",
-    "@material-ui/core": "^4.12.2",
+    "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.9.1",
-    "@red-hat-developer-hub/backstage-plugin-theme": "^0.5.0",
-    "@roadiehq/backstage-plugin-jira": "^2.5.6",
-    "@spotify/backstage-plugin-soundcheck": "^0.18.0",
-    "history": "^5.0.0",
+    "@material-ui/lab": "^4.0.0-alpha.61",
+    "@red-hat-developer-hub/backstage-plugin-theme": "^0.10.0",
+    "@spotify/backstage-plugin-soundcheck": "^0.19.3",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router": "^6.3.0",
-    "react-router-dom": "^6.3.0"
+    "react-router-dom": "^6.3.0",
+    "react-use": "^17.6.0"
   },
   "devDependencies": {
     "@backstage/test-utils": "^1.7.11",
@@ -111,6 +111,8 @@
     ]
   },
   "files": [
-    "dist"
-  ]
+    "dist",
+    "config.d.ts"
+  ],
+  "configSchema": "config.d.ts"
 }

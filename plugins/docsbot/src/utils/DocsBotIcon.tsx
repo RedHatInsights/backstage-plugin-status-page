@@ -1,17 +1,8 @@
 import { SvgIcon, SvgIconProps } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles(() => ({
-  root: {
-    color: '#b5b5b5',
-  },
-}));
 
 export const DocsBotIcon: React.FC<SvgIconProps> = props => {
-  const classes = useStyles();
-
   return (
-    <SvgIcon {...props} className={classes.root} viewBox="0 0 122.88 119.35">
+    <SvgIcon {...props} viewBox="0 0 122.88 119.35">
       <svg
         id="Layer_1"
         data-name="Layer 1"

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 import {
   Chip,
   Grid,
@@ -34,10 +34,9 @@ export const ProgressChart = (props: IProps) => {
           <LinearProgress variant="determinate" value={event.value} />
         </Box>
         <Box sx={{ minWidth: 35 }}>
-          <Typography
-            variant="body2"
-            sx={{ color: 'text.secondary' }}
-          >{`${Math.round(event.value)}%`}</Typography>
+          <Typography variant="body2" color="textSecondary">{`${Math.round(
+            event.value,
+          )}%`}</Typography>
         </Box>
       </Box>
     );

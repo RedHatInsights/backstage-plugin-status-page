@@ -29,8 +29,8 @@
     "@backstage/catalog-model": "^1.7.5",
     "@gitbeaker/core": "^42.1.0",
     "@gitbeaker/rest": "^42.1.0",
-    "@spotify/backstage-plugin-soundcheck-common": "^0.18.0",
-    "@spotify/backstage-plugin-soundcheck-node": "^0.9.10",
+    "@spotify/backstage-plugin-soundcheck-common": "^0.19.1",
+    "@spotify/backstage-plugin-soundcheck-node": "^0.10.1",
     "luxon": "^3.5.0"
   },
   "devDependencies": {

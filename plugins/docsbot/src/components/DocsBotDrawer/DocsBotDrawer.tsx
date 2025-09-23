@@ -321,7 +321,7 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
       backstage: 'Backstage',
       portfolio_management_and_strategy: 'Portfolio Management and Strategy',
       spaship_docs: 'SPAship',
-      graphql:'GraphQl'
+      graphql: 'GraphQl',
     };
 
     const title = titles[option] || 'Unknown Workspace';
@@ -335,6 +335,7 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
         anchor="right"
         open={isOpen}
         onClose={toggleDrawer}
+        classes={{paper: classes.root}}
       >
         <div className={classes.fullHeightContainer}>
           <div className={classes.menuSection}>
@@ -434,7 +435,7 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
                   'backstage',
                   'portfolio_management_and_strategy',
                   'spaship_docs',
-                  'graphql'
+                  'graphql',
                 ].map(option => (
                   <MenuItem
                     key={option}

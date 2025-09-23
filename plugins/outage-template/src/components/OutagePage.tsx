@@ -1,8 +1,13 @@
 import { Content, Page } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { Button, Grid, InputAdornment, TextField } from '@material-ui/core';
+import {
+  Button,
+  Grid,
+  InputAdornment,
+  LinearProgress,
+  TextField,
+} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
-import LinearProgress from '@mui/material/LinearProgress';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { outageApiRef } from '../api';
@@ -94,7 +99,11 @@ export const OutageComponent = () => {
 
           <Grid item>
             <TextField
-              label={tabIndex === 2 ? "Search Templates" : "Search Incidents & Maintenance"}
+              label={
+                tabIndex === 2
+                  ? 'Search Templates'
+                  : 'Search Incidents & Maintenance'
+              }
               variant="outlined"
               value={tabIndex === 2 ? searchTermForTemplates : searchTerm}
               onChange={e => {
@@ -123,7 +132,7 @@ export const OutageComponent = () => {
 
           {loading ? (
             <LinearProgress
-              sx={{ width: '110vw', marginLeft: '-5vw', height: 4 }}
+              style={{ width: '110vw', marginLeft: '-5vw', height: 4 }}
             />
           ) : (
             <Grid item>
@@ -141,7 +150,7 @@ export const OutageComponent = () => {
                   setTemplateFormType('edit');
                   setTemplateFormOpen(true);
                 }}
-                onSetTabIndex={(index) => setTabIndex(index)}
+                onSetTabIndex={index => setTabIndex(index)}
                 searchTermForTemplates={searchTermForTemplates}
               />
             </Grid>

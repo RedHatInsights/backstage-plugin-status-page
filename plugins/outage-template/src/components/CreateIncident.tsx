@@ -4,13 +4,16 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   Button,
   Checkbox,
+  CircularProgress,
   FormControl,
   FormControlLabel,
   FormLabel,
   Grid,
   InputLabel,
+  LinearProgress,
   List,
   ListItem,
   ListItemText,
@@ -24,15 +27,12 @@ import {
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import Backdrop from '@mui/material/Backdrop';
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
-import LinearProgress from '@mui/material/LinearProgress';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { outageApiRef } from '../api';
-import { StatusPageHeader } from './Header';
 import { StatusPageUserGuideConfluenceUrl } from '../constants/Constants';
+import { StatusPageHeader } from './Header';
+import { StyledBackdrop, StyledBox } from './StyledComponents';
 
 export const CreateIncident = () => {
   const outageApi = useApi(outageApiRef);
@@ -269,7 +269,7 @@ export const CreateIncident = () => {
           />
           {pageLoading && (
             <LinearProgress
-              sx={{
+              style={{
                 width: '110vw',
                 marginLeft: '-5vw',
                 height: 4,
@@ -280,7 +280,7 @@ export const CreateIncident = () => {
         {pageLoading ? (
           <Content>
             <Box
-              sx={{
+              style={{
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -288,24 +288,12 @@ export const CreateIncident = () => {
                 width: '100%',
               }}
             >
-              <LinearProgress sx={{ width: '60%' }} />
+              <LinearProgress style={{ width: '60%' }} />
             </Box>
           </Content>
         ) : (
           <Content>
-            <Box
-              sx={{
-                width: '50%',
-                minWidth: 700,
-                m: 3,
-                p: 3,
-                backgroundColor: 'background.paper',
-                borderRadius: 2,
-                border: '1px solid',
-                borderColor: 'divider',
-                paddingBottom: '3rem',
-              }}
-            >
+            <StyledBox>
               <Grid container spacing={3} direction="column">
                 <Grid item>
                   <Tabs
@@ -325,7 +313,7 @@ export const CreateIncident = () => {
                 <br />
 
                 {isMaintenanceForm ? (
-                  <Grid container spacing={3}>
+                  <Grid container item spacing={3}>
                     <Grid item xs={12} md={12}>
                       <Grid container direction="column" spacing={3}>
                         <Grid item>
@@ -610,7 +598,7 @@ export const CreateIncident = () => {
                     </Grid>
                   </Grid>
                 ) : (
-                  <Grid container spacing={3}>
+                  <Grid container item spacing={3}>
                     <Grid item xs={12} md={12}>
                       <Grid container direction="column" spacing={3}>
                         <Grid item>
@@ -874,16 +862,13 @@ export const CreateIncident = () => {
                   </Grid>
                 )}
               </Grid>
-            </Box>
+            </StyledBox>
           </Content>
         )}
       </Page>
-      <Backdrop
-        open={submitLoading}
-        sx={{ color: '#fff', zIndex: theme => theme.zIndex.drawer + 1 }}
-      >
+      <StyledBackdrop open={submitLoading}>
         <CircularProgress color="inherit" />
-      </Backdrop>
+      </StyledBackdrop>
     </>
   );
 };
