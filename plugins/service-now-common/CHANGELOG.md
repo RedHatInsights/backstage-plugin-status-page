@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-service-now-common [1.7.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-service-now-common@1.6.0...@compass/backstage-plugin-service-now-common@1.7.0) (2025-09-23)
+
+
+### Features
+
+* **PULSE-1149:** added adjusted rto and rpo in the service now factcollector ([fc8f098](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/fc8f098268ddee6c1c20ee0efe36d3652d4684cc))
+
 ## @compass/backstage-plugin-service-now-common [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-service-now-common@1.5.2...@compass/backstage-plugin-service-now-common@1.6.0) (2025-09-16)
 
 
