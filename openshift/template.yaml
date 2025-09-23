@@ -62,9 +62,9 @@ objects:
                 - name: APP_CONFIG_cors_origin
                   value: 'https://${ROUTER_HOSTNAME}'
                 - name: APP_CONFIG_companyname
-                  value: 'App Dev Plugins'
+                  value: 'XE Compass Plugins'
                 - name: APP_CONFIG_organization_name
-                  value: 'App Dev Platform'
+                  value: 'XE Compass Plugins'
                 - name: NODE_EXTRA_CA_CERTS
                   value: '/var/run/secrets/redhat/ca-bundle.crt'
               envFrom:

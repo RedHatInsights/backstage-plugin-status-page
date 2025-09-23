@@ -32,10 +32,10 @@ export interface Config {
     customizations?: object;
   };
   auth: {
-    providers: {
-      guest: {
+    providers?: {
+      guest?: {
         /** @deepVisibility frontend */
-        profile: ProfileInfo;
+        profile?: ProfileInfo;
       };
     };
   };
