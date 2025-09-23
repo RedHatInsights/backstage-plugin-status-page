@@ -215,6 +215,8 @@ export class RedHatServiceNowFactCollector implements FactCollector {
                 const {
                   'recovery_time_objective.name': rto,
                   'recovery_point_objective.name': rpo,
+                  'adjusted_rto.name': adjustedRto,
+                  'adjusted_rpo.name': adjustedRpo,
                   ...cleanItem
                 } = item;
 
@@ -225,6 +227,8 @@ export class RedHatServiceNowFactCollector implements FactCollector {
                   ),
                   recovery_time_objective_rto: (rto as string)?.trim(),
                   recovery_point_objective_rpo: (rpo as string)?.trim(),
+                  adjusted_recovery_time_objective_rto: (adjustedRto as string)?.trim(),
+                  adjusted_recovery_point_objective_rpo: (adjustedRpo as string)?.trim(),
                 };
               });
 
@@ -333,6 +337,8 @@ export class RedHatServiceNowFactCollector implements FactCollector {
                   sys_updated_on: { type: 'string', format: 'date-time' },
                   recovery_time_objective_rto: { type: 'string' },
                   recovery_point_objective_rpo: { type: 'string' },
+                  adjusted_recovery_time_objective_rto: { type: 'string' },
+                  adjusted_recovery_point_objective_rpo: { type: 'string' },
                 },
                 required: [
                   'name',
