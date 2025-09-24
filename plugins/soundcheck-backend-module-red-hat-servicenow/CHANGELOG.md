@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.6.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.6.0...@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.6.1) (2025-09-24)
+
+
+### Bug Fixes
+
+* **PULSE-1149:** updated the Redhat servicenow factcollector for the adjusted rpo and rto values ([afa65be](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/afa65bee2b9f4cc411b82e235d16654a333778f7))
+
 ## @compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow [1.6.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.5.0...@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@1.6.0) (2025-09-23)
 
 
