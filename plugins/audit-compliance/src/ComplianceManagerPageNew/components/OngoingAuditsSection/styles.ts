@@ -12,6 +12,10 @@ export const useStyles = makeStyles(theme => ({
   },
   tableContainer: {
     borderRadius: theme.shape.borderRadius,
+    width: '100%',
+    '& .MuiTable-root': {
+      width: '100%',
+    },
   },
   tableHeader: {
     backgroundColor: theme.palette.background.paper,
@@ -46,6 +50,8 @@ export const useStyles = makeStyles(theme => ({
   collapsedContent: {
     padding: theme.spacing(2),
     backgroundColor: theme.palette.background.default,
+    width: '100%',
+    overflow: 'hidden',
   },
   auditCard: {
     marginBottom: theme.spacing(2),
