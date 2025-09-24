@@ -180,7 +180,7 @@ export const OngoingAuditsSection = ({
       .join(' ');
   };
 
-  // Get ongoing audits (in progress, started, etc.)
+  // Get audit summaries for all applications
   const toggleExpanded = (appName: string) => {
     setExpandedApps(prev => {
       const newSet = new Set(prev);
@@ -205,31 +205,18 @@ export const OngoingAuditsSection = ({
 
       const audits = auditData[app.app_name] || [];
 
-      // Filter for ongoing audits only
-      let ongoingAudits = audits.filter(audit => {
-        const statusUpper = audit.status?.toUpperCase() || '';
-        const progressLower = audit.progress?.toLowerCase() || '';
-
-        // Include audits that are not completed (by status or progress)
-        return (
-          statusUpper === 'IN_PROGRESS' ||
-          statusUpper === 'AUDIT_STARTED' ||
-          statusUpper === 'ACCESS_REVIEW_COMPLETE' ||
-          (progressLower !== 'completed' && progressLower !== 'not_started')
-        );
-      });
-
-      // Apply status filter to individual audits, not entire applications
+      // Apply status filter to ALL audits first
+      let filteredAudits = audits;
       if (localStatusFilter !== 'all') {
-        ongoingAudits = ongoingAudits.filter(audit => {
+        filteredAudits = audits.filter(audit => {
           const statusUpper = audit.status?.toUpperCase() || '';
           return statusUpper === localStatusFilter.toUpperCase();
         });
       }
 
-      // Only include applications that have ongoing audits after filtering
-      if (ongoingAudits.length > 0) {
-        // Count all audits (not just ongoing ones) for status summary
+      // Only include applications that have audits after filtering
+      if (filteredAudits.length > 0) {
+        // Count all audits for status summary
         const allAudits = audits;
         const inProgressCount = allAudits.filter(audit => {
           const statusUpper = audit.status?.toUpperCase() || '';
@@ -257,8 +244,8 @@ export const OngoingAuditsSection = ({
 
         summaries.push({
           app,
-          audits: ongoingAudits,
-          totalAudits: ongoingAudits.length,
+          audits: filteredAudits,
+          totalAudits: filteredAudits.length,
           inProgressCount,
           completedCount,
           statusSummary,
@@ -299,7 +286,7 @@ export const OngoingAuditsSection = ({
   return (
     <Box className={classes.section}>
       <Typography className={classes.title}>
-        Applications with Ongoing Audits ({appSummaries.length})
+        Applications with Audits ({appSummaries.length})
       </Typography>
 
       <Box className={classes.filtersContainer}>
@@ -359,10 +346,10 @@ export const OngoingAuditsSection = ({
       {appSummaries.length === 0 ? (
         <Box className={classes.emptyState}>
           <Typography variant="h6" color="textSecondary">
-            No ongoing audits
+            No audits found
           </Typography>
           <Typography variant="body2" color="textSecondary">
-            All audits are either completed or not yet started
+            No audits match the current filter criteria
           </Typography>
         </Box>
       ) : (
@@ -374,7 +361,7 @@ export const OngoingAuditsSection = ({
                   App Name
                 </TableCell>
                 <TableCell className={classes.tableHeaderCell}>
-                  Ongoing Audits
+                  Audits
                 </TableCell>
                 <TableCell className={classes.tableHeaderCell}>
                   Status Summary
