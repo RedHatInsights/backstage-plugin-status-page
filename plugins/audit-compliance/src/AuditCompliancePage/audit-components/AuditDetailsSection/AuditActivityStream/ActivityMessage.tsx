@@ -5,7 +5,7 @@ export const ACTIVITY_MESSAGES = {
   AUDIT_INITIATED: (event: AuditEvent) => (
     <Typography className="activityStream">
       [{event.period}], {event.frequency?.toUpperCase()}{' '}
-      <b>{' : '}Audit initiated</b> for <b>{event.app_name}</b> by{' '}
+      <b>{' : '}Audit initiated</b> for <b>{event.app_name}</b> performed by{' '}
       <b>{event.performed_by}</b>
       {event.metadata?.jira_key && <> (Jira: {event.metadata.jira_key})</>}
     </Typography>
@@ -85,6 +85,23 @@ export const ACTIVITY_MESSAGES = {
     <Typography className="activityStream">
       <b>Application updated</b> for <b>{event.app_name}</b> by{' '}
       <b>{event.performed_by}</b>
+    </Typography>
+  ),
+  AUDIT_METADATA_UPDATED: (event: AuditEvent) => (
+    <Typography className="activityStream">
+      [{event.period}], {event.frequency?.toUpperCase()}{' '}
+      <b>Audit metadata updated</b> for <b>{event.app_name}</b> by{' '}
+      <b>{event.performed_by}</b>
+    </Typography>
+  ),
+  AUDIT_DATA_REFRESHED: (event: AuditEvent) => (
+    <Typography className="activityStream">
+      [{event.period}], {event.frequency?.toUpperCase()}{' '}
+      <b>Audit data refreshed</b> for <b>{event.app_name}</b> by{' '}
+      <b>{event.performed_by}</b>
+      {event.metadata?.refresh_stats?.total_records && (
+        <> - {event.metadata.refresh_stats.total_records} records refreshed</>
+      )}
     </Typography>
   ),
   data_refresh: (event: AuditEvent) => (

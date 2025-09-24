@@ -450,6 +450,7 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
           body: JSON.stringify({
             documentation_evidence: { content: documentationEvidence },
             auditor_notes: { content: auditorNotes },
+            performed_by: userRef,
           }),
         },
       );

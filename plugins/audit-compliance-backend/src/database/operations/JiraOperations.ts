@@ -339,7 +339,12 @@ export class JiraOperations {
 
       // Update database
       await this.db('service_account_access_review')
-        .where({ service_account })
+        .where({
+          service_account,
+          app_name: appName,
+          frequency,
+          period,
+        })
         .update({
           ticket_reference: issueKey,
           ticket_status: status,
@@ -667,6 +672,9 @@ export class JiraOperations {
     id: number,
     comments: string,
     ticket_reference: string,
+    app_name?: string,
+    frequency?: string,
+    period?: string,
   ) {
     if (!comments || !ticket_reference) {
       throw new Error('Missing comment or ticket reference.');
@@ -676,9 +684,22 @@ export class JiraOperations {
     await addJiraComment(ticket_reference, comments, this.logger, this.config);
 
     // Update comment in the service_account_access_review table
-    await this.db('service_account_access_review')
-      .where({ id })
-      .update({ comments });
+    if (app_name && frequency && period) {
+      // Use composite key for more precise update
+      await this.db('service_account_access_review')
+        .where({
+          id,
+          app_name,
+          frequency,
+          period,
+        })
+        .update({ comments });
+    } else {
+      // Fallback to id-only update for backward compatibility
+      await this.db('service_account_access_review')
+        .where({ id })
+        .update({ comments });
+    }
 
     this.logger.info(
       `Successfully added comment to Jira ticket ${ticket_reference} and updated service account database.`,
