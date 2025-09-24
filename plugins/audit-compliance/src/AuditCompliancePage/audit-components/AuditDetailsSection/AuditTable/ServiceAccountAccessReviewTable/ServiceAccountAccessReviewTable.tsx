@@ -180,6 +180,7 @@ export default function ServiceAccountAccessReviewTable({
       sign_off_date: new Date().toISOString(),
       ticket_reference: '', // Clear ticket info on approval
       ticket_status: '',
+      comments: '',
     };
 
     try {
@@ -358,6 +359,7 @@ export default function ServiceAccountAccessReviewTable({
         sign_off_date: new Date().toISOString(),
         ticket_reference: '', // Clear ticket info on approval
         ticket_status: '',
+        comments: '',
       };
     });
 
@@ -573,8 +575,8 @@ export default function ServiceAccountAccessReviewTable({
       ),
     },
     {
-      title: 'Access Revoked',
-      field: 'date_of_access_revoked',
+      title: 'Access Revoked Date',
+      field: 'revoked_date',
       hidden: !showDetails,
     },
     { title: 'Created At', field: 'created_at', hidden: !showDetails },

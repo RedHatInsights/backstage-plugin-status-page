@@ -191,6 +191,7 @@ export default function RoverAuditTable({
       access_change_date: new Date().toISOString(),
       ticket_reference: '', // Clear ticket info on approval
       ticket_status: '',
+      comments: '',
     };
 
     const updatedUserData = userData.map(d =>
@@ -368,6 +369,7 @@ export default function RoverAuditTable({
             access_change_date: new Date().toISOString(),
             ticket_reference: '', // Clear ticket info on approval
             ticket_status: '',
+            comments: '',
           }
         : d,
     );
@@ -592,7 +594,7 @@ export default function RoverAuditTable({
       ),
     },
     {
-      title: 'Date of Access Revoked or Added',
+      title: 'Access Changed Date',
       field: 'access_change_date',
       hidden: !showDetails,
     },
