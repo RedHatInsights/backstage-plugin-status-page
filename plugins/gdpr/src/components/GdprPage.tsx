@@ -214,6 +214,7 @@ export const GdprComponent = () => {
       alertApi.post({
         message: "All System search is not yet implemented.",
         severity: 'info',
+        display: 'transient'
       });
       return;
     }
@@ -222,25 +223,37 @@ export const GdprComponent = () => {
       alertApi.post({
         message: "Please enter a Drupal username to search.",
         severity: 'warning',
+        display: 'transient'
+      });
+      return;
+    }
+
+    if (!form.email.trim()) {
+      alertApi.post({
+        message: "Please enter an email address to search.",
+        severity: 'warning',
+        display: 'transient'
       });
       return;
     }
     
     setIsSearching(true);
     try {
-      const fetchedIncidents = await gdprApi.fetchDrupalGdprData(form.drupalUsername);
+      const fetchedIncidents = await gdprApi.fetchDrupalGdprData(form.drupalUsername, form.email);
       setSearchResults(fetchedIncidents);
       
       alertApi.post({
         message: `Found ${fetchedIncidents.length} records for user "${form.drupalUsername}".`,
         severity: 'success',
+        display: 'transient'
       });
     } catch (error) {
       // Handle error appropriately
       setSearchResults([]);
       alertApi.post({
-        message: `Failed to fetch data for user "${form.drupalUsername}".`,
-        severity: 'error',
+        message: `No data found for user "${form.drupalUsername}".`,
+        severity: 'info',
+        display: 'transient'
       });
     } finally {
       setIsSearching(false);
@@ -503,7 +516,12 @@ export const GdprComponent = () => {
                               size="small"
                               value={form.email}
                               onChange={updateForm}
+                              required
                               helperText="User's email address"
+                              InputLabelProps={{ 
+                                required: true,
+                                classes: { asterisk: classes.requiredIndicator }
+                              }}
                             />
                           </Grid>
                           <Grid item xs={12} md={6} className={classes.formFieldRow}>

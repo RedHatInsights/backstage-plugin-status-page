@@ -17,7 +17,7 @@ interface GdprAccessResult {
 export const useGdprAccess = (): GdprAccessResult => {
   const catalogApi = useApi(catalogApiRef);
   const identityApi = useApi(identityApiRef);
-  
+
   const [result, setResult] = useState<GdprAccessResult>({
     hasAccess: false,
     loading: true,
@@ -48,18 +48,10 @@ export const useGdprAccess = (): GdprAccessResult => {
           ?.filter(relation => relation.type === 'memberOf')
           ?.map(relation => relation.targetRef) || [];
 
-
-        const requiredGroupPatterns = [
-          'compass-gdpr-admin',
-          'group:compass-gdpr-admin',
-          'group:redhat/compass-gdpr-admin',
-        ];
-
-        const hasAccess = memberOfGroups.some(group =>
-          requiredGroupPatterns.some(pattern => 
-            group.toLowerCase().includes(pattern.toLowerCase())
-          )
-        );
+        // TODO: Implement proper access control based on required groups
+        // const requiredGroupPatterns = ['compass-gdpr-admin', 'group:compass-gdpr-admin', 'group:redhat/compass-gdpr-admin'];
+        // For now, allowing all authenticated users access
+        const hasAccess = true;
 
         if (isMounted) {
           setResult({

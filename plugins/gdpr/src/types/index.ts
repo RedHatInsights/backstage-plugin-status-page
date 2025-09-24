@@ -4,6 +4,8 @@
 export enum Platform {
   DCP = 'dcp',
   DXSP = 'dxsp',
+  CPPG = 'cppg',
+  CPHUB = 'cphub',
 }
 
 /** User role structure */
@@ -18,15 +20,22 @@ export interface UserRole {
 export interface GdprUser {
   uid: string;
   name: string;
-  mail: string;
-  roles: UserRole[];
+  mail?: string;
+  roles?: UserRole[];
   rh_jwt_user_id: string;
   created?: string;
+  changed?: string;
   status?: string;
   timezone?: string;
   language?: string;
   access?: string;
   login?: string;
+  path?: {
+    langcode: string;
+  };
+  field_avatar_path?: string;
+  field_first_name?: string;
+  field_last_name?: string;
 }
 
 /** Content data from API */
@@ -35,7 +44,15 @@ export interface GdprContent {
   file?: number;
   node?: number;
   media?: number;
+  group?: number;
+  group_relationship?: number;
+  content_moderation_state?: number;
+  cphub_alert?: number;
+  super_sitemap_custom_url?: number;
   rhlearn_progress?: number;
+  red_hat_feedback_option?: number;
+  red_hat_feedback_response?: number;
+  red_hat_feedback_topic?: number;
   paragraph?: number;
   menu_link_content?: number;
   taxonomy_term?: number;
@@ -45,9 +62,11 @@ export interface GdprContent {
 export interface GdprApiResponse {
   platform: Platform;
   user: GdprUser;
+  subscription_user?: GdprUser | null;
   content: GdprContent;
-  code: number;
+  code?: number;
   status: string;
+  message?: string;
 }
 
 /** Formatted table data */
@@ -62,6 +81,20 @@ export interface GdprTableData {
   node: string;
   rhlearnId: string;
   media: string;
+  group?: string;
+  group_relationship?: string;
+  content_moderation_state?: string;
+  cphub_alert?: string;
+  super_sitemap_custom_url?: string;
+  rhlearn_progress?: string;
+  red_hat_feedback_option?: string;
+  red_hat_feedback_response?: string;
+  red_hat_feedback_topic?: string;
+  firstName?: string;
+  lastName?: string;
+  avatarPath?: string;
+  created?: string;
+  changed?: string;
 }
 
 /** Delete request payload */

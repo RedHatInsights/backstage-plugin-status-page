@@ -14,14 +14,14 @@ describe('createRouter', () => {
     {
       platform: Platform.DCP,
       user: { uid: '123', name: 'testuser' },
-      content: [],
+      content: {},
       code: 200,
       status: 'success',
     },
     {
       platform: Platform.DXSP,
       user: { uid: '456', name: 'testuser' },
-      content: [],
+      content: {},
       code: 200,
       status: 'success',
     },

@@ -16,8 +16,8 @@ export async function drupalService({
   logger.info('Initializing DrupalService');
   const drupalConfig: GdprConfig = await readDrupalConfig(config);
   return {
-    fetchUserData: async (request: { id: string }) =>
-      fetchGDPRData(drupalConfig, request.id, logger),
+    fetchUserData: async (request: { id: string; email: string }) =>
+      fetchGDPRData(drupalConfig, request.id, request.email, logger),
 
     deleteUserData: async (requests: DeleteUserDataRequest[]): Promise<DeleteResult[]> => {
       logger.info(`Incoming requests: ${requests}`);

@@ -463,3 +463,11 @@ gdpr:
     apiBaseUrl: ${GDPR_DXSP_API_BASE_URL}
     serviceAccount: ${GDPR_DRUPAL_SA}
     token: ${GDPR_DRUPAL_TOKEN}
+  cppg:
+    apiBaseUrl: ${GDPR_CPPG_API_BASE_URL}
+    serviceAccount: ${GDPR_DRUPAL_SA}
+    token: ${GDPR_DRUPAL_TOKEN}
+  cphub:
+    apiBaseUrl: ${GDPR_CPHUB_API_BASE_URL}
+    serviceAccount: ${GDPR_DRUPAL_SA}
+    token: ${GDPR_DRUPAL_TOKEN}
