@@ -51,6 +51,16 @@ describe('drupalService', () => {
       token: 'dxsp-token',
       apiBaseUrl: 'https://dxsp.example.com/api',
     },
+    cppg: {
+      serviceAccount: 'cppg-service',
+      token: 'cppg-token',
+      apiBaseUrl: 'https://cppg.example.com/api',
+    },
+    cphub: {
+      serviceAccount: 'cphub-service',
+      token: 'cphub-token',
+      apiBaseUrl: 'https://cphub.example.com/api',
+    },
   };
 
   beforeEach(() => {
@@ -96,14 +106,14 @@ describe('drupalService', () => {
         {
           platform: Platform.DCP,
           user: { uid: '123', name: 'testuser' },
-          content: [],
+          content: {},
           code: 200,
           status: 'success',
         },
         {
           platform: Platform.DXSP,
           user: { uid: '456', name: 'testuser' },
-          content: [],
+          content: {},
           code: 200,
           status: 'success',
         },
@@ -116,7 +126,7 @@ describe('drupalService', () => {
         config: mockConfigInstance,
       } as any);
 
-      const result = await service.fetchUserData({ id: 'testuser' });
+      const result = await service.fetchUserData({ id: 'testuser', email: 'test@example.com' });
 
       expect(result).toBe(mockUserData);
       expect(mockedClient.fetchGDPRData).toHaveBeenCalledWith(
@@ -135,7 +145,7 @@ describe('drupalService', () => {
         config: mockConfigInstance,
       } as any);
 
-      await expect(service.fetchUserData({ id: 'testuser' })).rejects.toThrow('Fetch failed');
+      await expect(service.fetchUserData({ id: 'testuser', email: 'test@example.com' })).rejects.toThrow('Fetch failed');
     });
 
     it('should pass empty result when no data found', async () => {
@@ -146,7 +156,7 @@ describe('drupalService', () => {
         config: mockConfigInstance,
       } as any);
 
-      const result = await service.fetchUserData({ id: 'nonexistent' });
+      const result = await service.fetchUserData({ id: 'nonexistent', email: 'nonexistent@example.com' });
 
       expect(result).toEqual([]);
     });

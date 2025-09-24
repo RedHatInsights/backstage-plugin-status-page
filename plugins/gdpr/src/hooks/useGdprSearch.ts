@@ -23,7 +23,7 @@ export interface UseGdprSearchReturn {
     searchDuration: number;
   };
   searchHistory: string[];
-  search: (username: string, filters?: SearchFilters) => Promise<void>;
+  search: (username: string, email: string, filters?: SearchFilters) => Promise<void>;
   clearResults: () => void;
   clearHistory: () => void;
 }
@@ -45,10 +45,18 @@ export const useGdprSearch = (): UseGdprSearchReturn => {
   const gdprApi = useApi(gdprApiRef);
   const alertApi = useApi(alertApiRef);
 
-  const search = useCallback(async (username: string, filters?: SearchFilters) => {
+  const search = useCallback(async (username: string, email: string, filters?: SearchFilters) => {
     if (!username.trim()) {
       alertApi.post({
         message: 'Please enter a username to search.',
+        severity: 'warning',
+      });
+      return;
+    }
+
+    if (!email.trim()) {
+      alertApi.post({
+        message: 'Please enter an email address for the search.',
         severity: 'warning',
       });
       return;
@@ -59,7 +67,7 @@ export const useGdprSearch = (): UseGdprSearchReturn => {
     setSearchError(null);
 
     try {
-      const results = await gdprApi.fetchDrupalGdprData(username.trim());
+      const results = await gdprApi.fetchDrupalGdprData(username.trim(), email.trim());
       
       // Apply filters if provided
       let filteredResults = results;

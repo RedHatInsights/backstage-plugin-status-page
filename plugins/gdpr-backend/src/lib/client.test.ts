@@ -23,6 +23,16 @@ describe('client', () => {
       token: 'dxsp-token',
       apiBaseUrl: 'https://dxsp.example.com/api',
     },
+    cppg: {
+      serviceAccount: 'cppg-service',
+      token: 'cppg-token',
+      apiBaseUrl: 'https://cppg.example.com/api',
+    },
+    cphub: {
+      serviceAccount: 'cphub-service',
+      token: 'cphub-token',
+      apiBaseUrl: 'https://cphub.example.com/api',
+    },
   };
 
   const mockLogger: jest.Mocked<LoggerService> = {
@@ -41,7 +51,7 @@ describe('client', () => {
     const mockUserData = {
       platform: Platform.DCP,
       user: { uid: '123', name: 'testuser' },
-      content: [],
+      content: {},
       code: 200,
       status: 'success',
     };
@@ -62,7 +72,7 @@ describe('client', () => {
         .mockResolvedValueOnce({ dcp: 'data' })
         .mockResolvedValueOnce({ dxsp: 'data' });
 
-      const result = await fetchGDPRData(mockConfig, 'testuser', mockLogger);
+      const result = await fetchGDPRData(mockConfig, 'testuser', 'test@example.com', mockLogger);
 
       expect(result).toHaveLength(2);
       expect(result[0]).toBe(mockUserData);
@@ -87,7 +97,7 @@ describe('client', () => {
 
       mockedHttpUtils.parseJsonResponse.mockResolvedValueOnce({ dcp: 'data' });
 
-      const result = await fetchGDPRData(mockConfig, 'testuser', mockLogger);
+      const result = await fetchGDPRData(mockConfig, 'testuser', 'test@example.com', mockLogger);
 
       expect(result).toHaveLength(1);
       expect(result[0]).toBe(mockUserData);
@@ -109,7 +119,7 @@ describe('client', () => {
 
       mockedHttpUtils.parseJsonResponse.mockResolvedValueOnce({ dxsp: 'data' });
 
-      const result = await fetchGDPRData(mockConfig, 'testuser', mockLogger);
+      const result = await fetchGDPRData(mockConfig, 'testuser', 'test@example.com', mockLogger);
 
       expect(result).toHaveLength(1);
       expect(result[0]).toBe(mockUserData);
@@ -126,7 +136,7 @@ describe('client', () => {
         .mockRejectedValueOnce(dcpError)
         .mockRejectedValueOnce(dxspError);
 
-      await expect(fetchGDPRData(mockConfig, 'testuser', mockLogger)).rejects.toThrow(GdprError);
+      await expect(fetchGDPRData(mockConfig, 'testuser', 'test@example.com', mockLogger)).rejects.toThrow(GdprError);
 
       expect(mockLogger.warn).toHaveBeenCalledWith('Failed to fetch data from DCP', { error: dcpError });
       expect(mockLogger.error).toHaveBeenCalledWith('Failed to fetch data from both platforms', {
@@ -147,7 +157,7 @@ describe('client', () => {
         .mockResolvedValueOnce({ dcp: 'data' })
         .mockResolvedValueOnce({ dxsp: 'data' });
 
-      const result = await fetchGDPRData(mockConfig, 'testuser');
+      const result = await fetchGDPRData(mockConfig, 'testuser', 'test@example.com');
 
       expect(result).toHaveLength(2);
       expect(result[0]).toBe(mockUserData);
@@ -160,7 +170,7 @@ describe('client', () => {
       mockedHttpUtils.makeAuthenticatedRequest.mockResolvedValueOnce(mockDcpResponse);
       mockedHttpUtils.parseJsonResponse.mockResolvedValueOnce({ dcp: 'data' });
 
-      await fetchGDPRData(mockConfig, 'testuser', mockLogger);
+      await fetchGDPRData(mockConfig, 'testuser', 'test@example.com', mockLogger);
 
       expect(mockedHttpUtils.makeAuthenticatedRequest).toHaveBeenCalledWith(
         mockConfig.dcp.apiBaseUrl,
@@ -183,7 +193,7 @@ describe('client', () => {
         .mockRejectedValueOnce(stringError)
         .mockRejectedValueOnce(stringError);
 
-      await expect(fetchGDPRData(mockConfig, 'testuser', mockLogger)).rejects.toThrow(GdprError);
+      await expect(fetchGDPRData(mockConfig, 'testuser', 'test@example.com', mockLogger)).rejects.toThrow(GdprError);
 
       expect(mockLogger.error).toHaveBeenCalledWith('Failed to fetch data from both platforms', {
         dcpError: stringError,

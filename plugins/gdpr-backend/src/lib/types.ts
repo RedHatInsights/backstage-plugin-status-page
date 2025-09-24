@@ -2,6 +2,8 @@
 export enum Platform {
   DCP = 'dcp',
   DXSP = 'dxsp',
+  CPPG = 'cppg',
+  CPHUB = 'cphub',
 }
 
 /** Configuration for a Drupal host */
@@ -11,15 +13,18 @@ export interface DrupalHostConfig {
   serviceAccount: string;
 }
 
-/** GDPR configuration containing both DCP and DXSP configs */
+/** GDPR configuration containing all platform configs */
 export interface GdprConfig {
   dcp: DrupalHostConfig;
   dxsp: DrupalHostConfig;
+  cppg: DrupalHostConfig;
+  cphub: DrupalHostConfig;
 }
 
 /** Request for fetching user data */
 export interface FetchUserDataRequest {
   id: string;
+  email: string;
 }
 
 /** Request for deleting user data */
@@ -38,7 +43,7 @@ export interface User {
 export interface UserData {
   platform: Platform;
   user: User;
-  content: unknown[];
+  content: Record<string, unknown>;
   code: number;
   status: string;
 }

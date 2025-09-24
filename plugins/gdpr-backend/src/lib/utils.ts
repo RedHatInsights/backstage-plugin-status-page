@@ -28,7 +28,7 @@ export function formatUserData(platform: Platform, data: unknown): UserData {
   return {
     platform,
     user,
-    content: Array.isArray(nestedData.content) ? nestedData.content : [],
+    content: nestedData.content && typeof nestedData.content === 'object' ? nestedData.content as Record<string, unknown> : {},
     code: typeof rawData.code === 'number' ? rawData.code : 200,
     status: typeof rawData.status === 'string' ? rawData.status : 'success',
   };

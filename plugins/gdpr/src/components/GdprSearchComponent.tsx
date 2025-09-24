@@ -162,11 +162,13 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
           alertApi.post({
             message: `User ${username} deleted successfully.`,
             severity: 'success',
+            display: 'transient'
           });
         } catch (error) {
           alertApi.post({
             message: `Failed to delete user ${username}.`,
             severity: 'error',
+            display: 'transient'
           });
         }
       },
@@ -183,6 +185,7 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
       alertApi.post({
         message: "No users selected for deletion.",
         severity: 'warning',
+        display: 'transient'
       });
       return;
     }
@@ -214,6 +217,7 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
           alertApi.post({
             message: `${selectedData.length} users deleted successfully.`,
             severity: 'success',
+            display: 'transient'
           });
           
           // Clear search results through callback
@@ -228,6 +232,7 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
           alertApi.post({
             message: "Failed to delete selected users.",
             severity: 'error',
+            display: 'transient'
           });
         }
       },
@@ -255,6 +260,7 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
       alertApi.post({
         message: "No users selected for download.",
         severity: 'warning',
+        display: 'transient'
       });
       return;
     }
@@ -264,6 +270,7 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
       alertApi.post({
         message: `Preparing download for ${selectedData.length} users...`,
         severity: 'info',
+        display: 'transient'
       });
 
       // Simulate processing time for large datasets
@@ -294,12 +301,14 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
       alertApi.post({
         message: `Successfully downloaded ${selectedData.length} user records`,
         severity: 'success',
+        display: 'transient'
       });
 
     } catch (error) {
       alertApi.post({
         message: "Failed to download user data. Please try again.",
         severity: 'error',
+        display: 'transient'
       });
     } finally {
       setIsDownloading(false);
@@ -368,8 +377,12 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
                     <TableCell className={classes.mobileHideColumn}>Comment</TableCell>
                     <TableCell className={classes.mobileHideColumn}>File</TableCell>
                     <TableCell className={classes.mobileHideColumn}>Node</TableCell>
-                    <TableCell className={classes.mobileHideColumn}>RH Learn ID</TableCell>
                     <TableCell className={classes.mobileHideColumn}>Media</TableCell>
+                    <TableCell className={classes.mobileHideColumn}>Group</TableCell>
+                    <TableCell className={classes.mobileHideColumn}>Group Rel</TableCell>
+                    <TableCell className={classes.mobileHideColumn}>Moderation</TableCell>
+                    <TableCell className={classes.mobileHideColumn}>CPHUB Alert</TableCell>
+                    <TableCell className={classes.mobileHideColumn}>Sitemap URL</TableCell>
                     <TableCell>Actions</TableCell>
                   </>
                 )}
@@ -405,8 +418,12 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
                         <TableCell className={classes.mobileHideColumn}>{row.comment}</TableCell>
                         <TableCell className={classes.mobileHideColumn}>{row.file}</TableCell>
                         <TableCell className={classes.mobileHideColumn}>{row.node}</TableCell>
-                        <TableCell className={classes.mobileHideColumn}>{row.rhlearnId}</TableCell>
                         <TableCell className={classes.mobileHideColumn}>{row.media}</TableCell>
+                        <TableCell className={classes.mobileHideColumn}>{row.group}</TableCell>
+                        <TableCell className={classes.mobileHideColumn}>{row.group_relationship}</TableCell>
+                        <TableCell className={classes.mobileHideColumn}>{row.content_moderation_state}</TableCell>
+                        <TableCell className={classes.mobileHideColumn}>{row.cphub_alert}</TableCell>
+                        <TableCell className={classes.mobileHideColumn}>{row.super_sitemap_custom_url}</TableCell>
                         <TableCell>
                           <Box className={classes.mobileStackActions}>
                             <Button
@@ -435,7 +452,7 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={searchType === "All System" ? 6 : 11} align="center">
+                  <TableCell colSpan={searchType === "All System" ? 6 : 16} align="center">
                     No results found
                   </TableCell>
                 </TableRow>

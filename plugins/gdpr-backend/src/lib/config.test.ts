@@ -7,6 +7,8 @@ describe('config', () => {
     let mockGdprConfig: jest.Mocked<Config>;
     let mockDcpConfig: jest.Mocked<Config>;
     let mockDxspConfig: jest.Mocked<Config>;
+    let mockCppgConfig: jest.Mocked<Config>;
+    let mockCphubConfig: jest.Mocked<Config>;
 
     beforeEach(() => {
       mockDcpConfig = {
@@ -15,6 +17,16 @@ describe('config', () => {
       } as unknown as jest.Mocked<Config>;
 
       mockDxspConfig = {
+        getString: jest.fn(),
+        getConfig: jest.fn(),
+      } as unknown as jest.Mocked<Config>;
+
+      mockCppgConfig = {
+        getString: jest.fn(),
+        getConfig: jest.fn(),
+      } as unknown as jest.Mocked<Config>;
+
+      mockCphubConfig = {
         getString: jest.fn(),
         getConfig: jest.fn(),
       } as unknown as jest.Mocked<Config>;
@@ -33,6 +45,8 @@ describe('config', () => {
       mockGdprConfig.getConfig.mockImplementation((key: string) => {
         if (key === 'dcp') return mockDcpConfig;
         if (key === 'dxsp') return mockDxspConfig;
+        if (key === 'cppg') return mockCppgConfig;
+        if (key === 'cphub') return mockCphubConfig;
         throw new Error(`Unknown config key: ${key}`);
       });
     });
@@ -66,6 +80,34 @@ describe('config', () => {
         }
       });
 
+      // Setup CPPG config
+      mockCppgConfig.getString.mockImplementation((key: string) => {
+        switch (key) {
+          case 'token':
+            return 'cppg-token-789';
+          case 'apiBaseUrl':
+            return 'https://cppg.example.com/api';
+          case 'serviceAccount':
+            return 'cppg-service';
+          default:
+            throw new Error(`Unknown CPPG config key: ${key}`);
+        }
+      });
+
+      // Setup CPHUB config
+      mockCphubConfig.getString.mockImplementation((key: string) => {
+        switch (key) {
+          case 'token':
+            return 'cphub-token-101';
+          case 'apiBaseUrl':
+            return 'https://cphub.example.com/api';
+          case 'serviceAccount':
+            return 'cphub-service';
+          default:
+            throw new Error(`Unknown CPHUB config key: ${key}`);
+        }
+      });
+
       const result = readDrupalConfig(mockConfig);
 
       expect(result).toEqual({
@@ -79,12 +121,24 @@ describe('config', () => {
           apiBaseUrl: 'https://dxsp.example.com/api',
           serviceAccount: 'dxsp-service',
         },
+        cppg: {
+          token: 'cppg-token-789',
+          apiBaseUrl: 'https://cppg.example.com/api',
+          serviceAccount: 'cppg-service',
+        },
+        cphub: {
+          token: 'cphub-token-101',
+          apiBaseUrl: 'https://cphub.example.com/api',
+          serviceAccount: 'cphub-service',
+        },
       });
 
       // Verify proper config access
       expect(mockConfig.getConfig).toHaveBeenCalledWith('gdpr');
       expect(mockGdprConfig.getConfig).toHaveBeenCalledWith('dcp');
       expect(mockGdprConfig.getConfig).toHaveBeenCalledWith('dxsp');
+      expect(mockGdprConfig.getConfig).toHaveBeenCalledWith('cppg');
+      expect(mockGdprConfig.getConfig).toHaveBeenCalledWith('cphub');
       
       // Verify DCP config reads
       expect(mockDcpConfig.getString).toHaveBeenCalledWith('token');
@@ -95,6 +149,16 @@ describe('config', () => {
       expect(mockDxspConfig.getString).toHaveBeenCalledWith('token');
       expect(mockDxspConfig.getString).toHaveBeenCalledWith('apiBaseUrl');
       expect(mockDxspConfig.getString).toHaveBeenCalledWith('serviceAccount');
+      
+      // Verify CPPG config reads
+      expect(mockCppgConfig.getString).toHaveBeenCalledWith('token');
+      expect(mockCppgConfig.getString).toHaveBeenCalledWith('apiBaseUrl');
+      expect(mockCppgConfig.getString).toHaveBeenCalledWith('serviceAccount');
+      
+      // Verify CPHUB config reads
+      expect(mockCphubConfig.getString).toHaveBeenCalledWith('token');
+      expect(mockCphubConfig.getString).toHaveBeenCalledWith('apiBaseUrl');
+      expect(mockCphubConfig.getString).toHaveBeenCalledWith('serviceAccount');
     });
 
     it('should throw error when gdpr config is missing', () => {

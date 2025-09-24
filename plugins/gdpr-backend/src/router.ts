@@ -25,17 +25,31 @@ export async function createRouter({
   router.use(express.json());
 
   /**
-   * GET /drupal/:id - Fetch user data by ID
+   * GET /drupal/:id - Fetch user data by ID with email fallback
+   * Query parameter: ?email=user@example.com (required)
    */
   router.get('/drupal/:id', async (req, res) => {
     const { id } = req.params;
+    const { email } = req.query;
+    
+    // Validate required email parameter
+    if (!email || typeof email !== 'string') {
+      logger.warn('Missing or invalid email parameter', { userId: id, email });
+      res.status(400).json({
+        error: {
+          message: 'Email query parameter is required and must be a string',
+        }
+      });
+      return;
+    }
     
     try {
-      logger.info('Fetching user data', { userId: id });
-      const userData = await drupalService.fetchUserData({ id });
+      logger.info('Fetching user data with email fallback', { userId: id, email });
+      const userData = await drupalService.fetchUserData({ id, email });
       
       logger.info('Successfully fetched user data', { 
         userId: id, 
+        email,
         platformCount: userData.length 
       });
       
@@ -43,6 +57,7 @@ export async function createRouter({
     } catch (error) {
       logger.error('Failed to fetch user data', { 
         userId: id, 
+        email,
         error: error instanceof Error ? error.message : String(error) 
       });
 
