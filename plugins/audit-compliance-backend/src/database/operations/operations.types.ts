@@ -27,7 +27,7 @@ export type AuditProgress =
   | 'completed';
 
 // Jira issue types
-export type JiraIssueType = 'Task' | 'Epic';
+export type JiraIssueType = 'Task' | 'Epic' | 'Story';
 
 // Content type constants
 export const CONTENT_TYPE_JSON = 'application/json';

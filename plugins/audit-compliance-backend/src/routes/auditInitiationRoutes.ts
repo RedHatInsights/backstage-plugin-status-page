@@ -175,7 +175,7 @@ export async function createAuditInitiationRouter(
       const reportResults = await Promise.all(reportPromises);
       const successfulReports = reportResults.filter(result => result !== null);
 
-      // Try to create Jira ticket for the audit (as an Epic)
+      // Try to create Jira ticket for the audit (as a Story)
       let jiraTicket = null;
       let jiraCreationFailed = false;
       try {
@@ -195,7 +195,7 @@ export async function createAuditInitiationRouter(
           },
         );
       } catch (jiraError) {
-        logger.error('Failed to create JIRA epic', {
+        logger.error('Failed to create JIRA story', {
           error:
             jiraError instanceof Error ? jiraError.message : String(jiraError),
         });
@@ -271,7 +271,7 @@ export async function createAuditInitiationRouter(
 
   /**
    * PUT /audits/:app_name/:frequency/:period/jira-key
-   * Allows the application owner to manually update the Jira Epic key for an audit.
+   * Allows the application owner to manually update the Jira Story key for an audit.
    * @route PUT /audits/:app_name/:frequency/:period/jira-key
    * @param {string} req.params.app_name - Application name
    * @param {string} req.params.frequency - Audit frequency
@@ -323,13 +323,13 @@ export async function createAuditInitiationRouter(
         }
         if (!user || !userName || !ownerName || userName !== ownerName) {
           return res.status(403).json({
-            error: 'Only the application owner can update the Jira Epic key.',
+            error: 'Only the application owner can update the Jira Story key.',
           });
         }
         await database.updateAudit(app_name, frequency, period, { jira_key });
         return res.sendStatus(204);
       } catch (error) {
-        logger.error('Failed to update Jira Epic key', {
+        logger.error('Failed to update Jira Story key', {
           error: error instanceof Error ? error.message : String(error),
           app_name,
           frequency,
@@ -337,7 +337,7 @@ export async function createAuditInitiationRouter(
         });
         return res
           .status(500)
-          .json({ error: 'Failed to update Jira Epic key' });
+          .json({ error: 'Failed to update Jira Story key' });
       }
     },
   );

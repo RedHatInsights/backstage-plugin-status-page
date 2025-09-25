@@ -226,7 +226,7 @@ export const AuditInitiation = () => {
       // Show alert if JIRA creation failed
       if (auditResult.jira_creation_failed) {
         alertApi.post({
-          message: 'Failed to create a JIRA epic',
+          message: 'Failed to create a JIRA story',
           severity: 'warning',
           display: 'transient',
         });
@@ -287,13 +287,13 @@ export const AuditInitiation = () => {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         alertApi.post({
-          message: errorData.error || 'Failed to update Jira Epic key',
+          message: errorData.error || 'Failed to update Jira Story key',
           severity: 'error',
         });
         return;
       }
       alertApi.post({
-        message: 'Jira Epic key updated successfully',
+        message: 'Jira Story key updated successfully',
         severity: 'success',
       });
       setEditingJiraKey(null);
@@ -301,7 +301,7 @@ export const AuditInitiation = () => {
       fetchAuditHistory();
     } catch (e) {
       alertApi.post({
-        message: 'Failed to update Jira Epic key',
+        message: 'Failed to update Jira Story key',
         severity: 'error',
       });
     }
@@ -517,7 +517,7 @@ export const AuditInitiation = () => {
                               type="text"
                               value={manualJiraKey}
                               onChange={e => setManualJiraKey(e.target.value)}
-                              placeholder="Enter Jira Epic Key"
+                              placeholder="Enter Jira Story Key"
                             />
                             <Button
                               size="small"
@@ -644,7 +644,7 @@ export const AuditInitiation = () => {
                                     period: row.period,
                                   })
                                 }
-                                title="Edit Jira Epic"
+                                title="Edit Jira Story"
                               >
                                 <EditIcon />
                               </IconButton>

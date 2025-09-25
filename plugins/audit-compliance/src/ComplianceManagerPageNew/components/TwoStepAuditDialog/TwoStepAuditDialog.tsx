@@ -221,7 +221,7 @@ Request you to please Initiate & complete the <strong>"${frequencyText} Access R
 <strong>2)</strong> If you are rejecting an access of a user, then make sure that the <strong>user access is removed from both Rover and GitLab</strong> (or whatever sources) and the <strong>status is completed before final sign-off is being provided</strong>.<br>
 <strong>3)</strong> For each access deletion, there should be <strong>a ticket and proper documentation of the access removal process</strong>.<br><br>
 
-Tickets assigned to you can be found under the epic - ${
+Tickets assigned to you can be found under the story - ${
       mainTicket && mainTicket !== 'N/A'
         ? `<a href="${jiraBaseUrl}/browse/${mainTicket}" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none;"><strong>${mainTicket}</strong></a>`
         : '<span style="color: #666; font-style: italic;">N/A (Jira creation failed)</span>'

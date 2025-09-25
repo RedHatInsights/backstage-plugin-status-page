@@ -320,7 +320,7 @@ export async function createComplianceManagerRouter(
               result => result !== null,
             );
 
-            // Try to create Jira ticket for the audit (as an Epic)
+            // Try to create Jira ticket for the audit (as a Story)
             let jiraTicket = null;
             let jiraCreationFailed = false;
             try {
@@ -340,7 +340,7 @@ export async function createComplianceManagerRouter(
                 },
               );
             } catch (jiraError) {
-              logger.error('Failed to create JIRA epic', {
+              logger.error('Failed to create JIRA story', {
                 app_name: appName,
                 error:
                   jiraError instanceof Error
