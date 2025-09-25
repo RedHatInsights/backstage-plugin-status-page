@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-gdpr-backend [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-gdpr-backend@1.1.0...@appdev/backstage-plugin-gdpr-backend@1.2.0) (2025-09-25)
+
+
+### Features
+
+* CPPG & CPHUB integration added for GDPR ([ca9f948](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/ca9f9483502b804acb6a7fe8c09858467d653e62))
+
 ## @appdev/backstage-plugin-gdpr-backend [1.1.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-gdpr-backend@1.0.0...@appdev/backstage-plugin-gdpr-backend@1.1.0) (2025-09-16)
 
 
