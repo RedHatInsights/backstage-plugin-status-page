@@ -1,5 +1,22 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.26.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.25.0...@appdev/backstage-plugin-audit-compliance@1.26.0) (2025-09-26)
+
+
+### Features
+
+* **audit-access-manager:** Creating Story instead of Epic on Epic Creation ([e75cec8](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/e75cec8c59d745c0671f384779e74faafbf6b358))
+* **audit-access-manager:** Fixed all activity stream issues for the message ([b0b6730](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/b0b6730e21ba181b316280f32d57b117f367499c))
+* **audit-access-manager:** Fixing the dates in the tables ([3d1bca8](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/3d1bca81a5e3d4338694f6dda250cf26bd88d7b0))
+* **audit-access-manager:** Removing Pending ticket status on audit initiation and data refresh ([621bcb0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/621bcb070c26f3c20e7c1f870b5b15b105bc6747))
+
+
+### Bug Fixes
+
+* **audit-access-manager:** Fixed the breaking css of the table ([edc1b2c](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/edc1b2cd353e19cf2c72b30c59991a99a5dc3483))
+* **audit-access-manager:** Fixed the filter accordin to audit status ([e55d7fb](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/e55d7fbcdbe91d34bd0a0486e9230f109fb86f2c))
+* **audit-access-manager:** Fixing CC field in the email ([e1c0dbc](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/e1c0dbc3c366e693e0919abea02646f98bcda4fd))
+
 ## @appdev/backstage-plugin-audit-compliance [1.25.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.24.2...@appdev/backstage-plugin-audit-compliance@1.25.0) (2025-09-22)
 
 
