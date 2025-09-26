@@ -322,7 +322,7 @@ export const ComplianceManagerPageNew = () => {
             />
           </Box>
 
-          {/* Ongoing Audits Section */}
+          {/* Audits Section */}
           <Box mb={4}>
             <OngoingAuditsSection
               applications={applications}

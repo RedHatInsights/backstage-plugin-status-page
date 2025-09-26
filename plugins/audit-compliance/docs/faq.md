@@ -246,10 +246,10 @@ Yes! The plugin supports bulk actions for:
 - The integration uses the configured JIRA URL and API token
 - Tickets include relevant audit information and status updates
 
-### How are Jira Epics and Tasks linked to audits?
+### How are Jira Stories and Tasks linked to audits?
 
-- When bulk audits are initiated, the system creates (or links to) a Jira Epic per application and period.
-- Follow-up work (e.g., access review rejections, service account actions) creates Tasks linked to the parent Epic.
+- When bulk audits are initiated, the system creates (or links to) a Jira Story per application and period.
+- Follow-up work (e.g., access review rejections, service account actions) creates Tasks linked to the parent Story.
 - Labels include the app name, period, and frequency (e.g., `my-app-Q1-2025-quarterly`).
 - Ticket keys and statuses are stored with audit records for display in the UI.
 

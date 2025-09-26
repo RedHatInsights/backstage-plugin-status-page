@@ -15,8 +15,7 @@ export interface JiraRequestFields extends JsonObject {
   issuetype: { name: string };
   labels: string[];
   assignee?: { emailAddress: string };
-  customfield_12311140?: string; // Epic Link
-  customfield_12311141?: string; // Epic Name
+  customfield_12311140?: string; // Parent Epic Link
 }
 
 export interface JiraRequestBody extends JsonObject {

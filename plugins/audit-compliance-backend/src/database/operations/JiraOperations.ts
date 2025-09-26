@@ -7,7 +7,7 @@ import {
   JiraRequestBody,
 } from '../AuditComplianceDatabase.types';
 import { addJiraComment } from '../integrations/JiraIntegration';
-import { CONTENT_TYPE_JSON, JiraIssueType } from './operations.types';
+import { JiraIssueType, CONTENT_TYPE_JSON } from './operations.types';
 
 export class JiraOperations {
   constructor(
@@ -41,7 +41,7 @@ export class JiraOperations {
     const summary = `[${formattedPeriod}] ${titleCaseAppName} ${formattedFrequency} Access Review Audit`;
     const ticketDescription =
       description ||
-      `Parent Epic for ${titleCaseAppName} ${formattedPeriod} ${formattedFrequency} Access Review Audit. This audit covers user access reviews, service account reviews, and compliance checks.`;
+      `Parent Story for ${titleCaseAppName} ${formattedPeriod} ${formattedFrequency} Access Review Audit. This audit covers user access reviews, service account reviews, and compliance checks.`;
 
     // Fetch jira_metadata from applications table
     const appDetails = await this.db('applications')
@@ -57,7 +57,7 @@ export class JiraOperations {
     // Get jira_metadata from database
     const jira_metadata = appDetails.jira_metadata || {};
 
-    // Handle components and labels for Epic tickets
+    // Handle components and labels for Story tickets
     const components = jira_metadata.components;
     let extraLabels = [];
 
@@ -75,19 +75,20 @@ export class JiraOperations {
         project: { key: appDetails.jira_project },
         summary,
         description: ticketDescription,
-        issuetype: { name: 'Epic' as JiraIssueType },
+        issuetype: { name: 'Story' as JiraIssueType },
         labels: [
-          `${app_name}-${period}-${frequency}-Epic`,
+          `${app_name}-${period}-${frequency}-Story`,
           'audit-compliance-plugin',
           ...extraLabels,
         ],
-        customfield_12311141: summary, // Epic Name (same as summary)
+        // Hardcoded epic link for testing - replace with actual epic key when available
+        customfield_12311140: 'APD-1092', // Parent Epic Link - hardcoded for testing
         ...(components ? { components } : {}),
         ...otherFields,
       },
     };
 
-    this.logger.info('EPIC: Jira ticket request body', { requestBody });
+    this.logger.info('STORY: Jira ticket request body', { requestBody });
 
     let createResp;
     try {
@@ -143,7 +144,7 @@ export class JiraOperations {
 
     const status = detailsResp.data.fields.status.name;
 
-    // Store the epic key in application_audits table
+    // Store the story key in application_audits table
     await this.db('application_audits')
       .where({ app_name, frequency, period })
       .update({
@@ -229,7 +230,7 @@ export class JiraOperations {
         throw new Error(`Jira project not found for app_name: ${appName}`);
       }
 
-      const parentEpicKey = await this.getAuditJiraKey(
+      const parentStoryKey = await this.getAuditJiraKey(
         appName,
         frequency,
         period,
@@ -260,10 +261,26 @@ export class JiraOperations {
           ],
           ...jira_metadata,
         },
+        // Add issue linking to request body
+        ...(parentStoryKey?.trim()
+          ? {
+              update: {
+                issuelinks: [
+                  {
+                    add: {
+                      type: {
+                        name: 'Depend',
+                      },
+                      inwardIssue: {
+                        key: parentStoryKey.trim(),
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : {}),
       };
-      if (parentEpicKey?.trim()) {
-        requestBody.fields.customfield_12311140 = parentEpicKey.trim();
-      }
 
       // Create Jira ticket
       const createResp = await axios
@@ -286,7 +303,9 @@ export class JiraOperations {
         });
 
       const { key: issueKey, id: issueId } = createResp.data;
-
+      // const issueKey = 'APD-1094';
+      // const issueId = 'APD-1094';
+      console.log('TASK:JIRA - service account', requestBody);
       // Get ticket status
       const detailsResp = await axios
         .get<JiraIssueStatusResponse>(
@@ -339,7 +358,12 @@ export class JiraOperations {
 
       // Update database
       await this.db('service_account_access_review')
-        .where({ service_account })
+        .where({
+          service_account,
+          app_name: appName,
+          frequency,
+          period,
+        })
         .update({
           ticket_reference: issueKey,
           ticket_status: status,
@@ -428,7 +452,7 @@ export class JiraOperations {
         throw new Error(`Jira project not found for app_name: ${app_name}`);
       }
 
-      const parentEpicKey = await this.getAuditJiraKey(
+      const parentStoryKey = await this.getAuditJiraKey(
         app_name,
         frequency,
         period,
@@ -455,11 +479,26 @@ export class JiraOperations {
           ],
           ...jira_metadata,
         },
+        // Add issue linking to request body
+        ...(parentStoryKey?.trim()
+          ? {
+              update: {
+                issuelinks: [
+                  {
+                    add: {
+                      type: {
+                        name: 'Depend',
+                      },
+                      inwardIssue: {
+                        key: parentStoryKey.trim(),
+                      },
+                    },
+                  },
+                ],
+              },
+            }
+          : {}),
       };
-
-      if (parentEpicKey?.trim()) {
-        requestBody.fields.customfield_12311140 = parentEpicKey.trim();
-      }
 
       // Create Jira ticket
       const createResp = await axios
@@ -667,6 +706,9 @@ export class JiraOperations {
     id: number,
     comments: string,
     ticket_reference: string,
+    app_name?: string,
+    frequency?: string,
+    period?: string,
   ) {
     if (!comments || !ticket_reference) {
       throw new Error('Missing comment or ticket reference.');
@@ -676,9 +718,22 @@ export class JiraOperations {
     await addJiraComment(ticket_reference, comments, this.logger, this.config);
 
     // Update comment in the service_account_access_review table
-    await this.db('service_account_access_review')
-      .where({ id })
-      .update({ comments });
+    if (app_name && frequency && period) {
+      // Use composite key for more precise update
+      await this.db('service_account_access_review')
+        .where({
+          id,
+          app_name,
+          frequency,
+          period,
+        })
+        .update({ comments });
+    } else {
+      // Fallback to id-only update for backward compatibility
+      await this.db('service_account_access_review')
+        .where({ id })
+        .update({ comments });
+    }
 
     this.logger.info(
       `Successfully added comment to Jira ticket ${ticket_reference} and updated service account database.`,

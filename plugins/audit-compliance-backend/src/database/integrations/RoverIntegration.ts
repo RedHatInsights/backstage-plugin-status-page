@@ -445,7 +445,8 @@ export class RoverDatabase implements RoverStore {
         ? managerInfoCache[row.managerUid]
         : null;
 
-      const managerName = managerInfo?.cn || row.managerUid || row.app_owner || '';
+      const managerName =
+        managerInfo?.cn || row.managerUid || row.app_owner || '';
 
       let managerUidFinal = row.managerUid || '';
       if (
@@ -501,7 +502,7 @@ export class RoverDatabase implements RoverStore {
           frequency: row.frequency,
           period: row.period,
           app_delegate: row.app_delegate,
-          ticket_status: 'pending',
+          ticket_status: null,
         };
         await this.db('group_access_reports').insert(dbRow);
         report.push(dbRow);
@@ -819,7 +820,7 @@ export class RoverDatabase implements RoverStore {
           frequency,
           period,
           app_delegate,
-          ticket_status: 'pending',
+          ticket_status: null,
         };
         await this.db('group_access_reports').insert(dbRow);
         report.push(dbRow);

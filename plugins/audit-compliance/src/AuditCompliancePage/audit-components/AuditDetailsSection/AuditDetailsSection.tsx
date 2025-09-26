@@ -467,7 +467,7 @@ export const AuditDetailsSection = () => {
     try {
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
 
-      // Update the progress
+      // Update the progress with user information - this will create the activity event
       const progressResponse = await fetchApi.fetch(
         `${baseUrl}/audits/progress`,
         {
@@ -480,6 +480,7 @@ export const AuditDetailsSection = () => {
             frequency,
             period,
             progress: 'summary_generated',
+            performed_by: currentUser, // Pass user info to backend
           }),
         },
       );
@@ -487,25 +488,6 @@ export const AuditDetailsSection = () => {
       if (!progressResponse.ok) {
         const errorData = await progressResponse.json();
         throw new Error(errorData.error || 'Failed to update audit progress');
-      }
-
-      // Create the activity event with user information
-      const eventResponse = await fetchApi.fetch(`${baseUrl}/activity-stream`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          event_type: 'AUDIT_SUMMARY_GENERATED',
-          app_name,
-          frequency,
-          period,
-          performed_by: currentUser,
-        }),
-      });
-
-      if (!eventResponse.ok) {
-        throw new Error('Failed to create activity event');
       }
 
       // Navigate to summary page

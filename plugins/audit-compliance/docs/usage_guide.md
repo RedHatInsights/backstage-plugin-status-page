@@ -25,7 +25,7 @@ This video provides step-by-step demonstrations of the plugin's features, workfl
 - Compliance dashboard with summary cards
 - Ongoing audits view with status chips and deep links to Jira
 - Global activity stream (app‑level and global)
-- Jira integration (epics for audits, tasks for follow‑ups, comments)
+- Jira integration (stories for audits, tasks for follow‑ups, comments)
 - Email notifications (pre‑populated recipients and templates)
 - Audit summary report (PDF)
 
@@ -209,7 +209,7 @@ The detailed audit view provides comprehensive audit execution capabilities with
 **Jira Integration Modal** (triggered when rejecting access):
 - **Ticket Creation**: Automatic Jira ticket generation for rejected access
 - **Ticket Management**: View and update Jira ticket status
-- **Epic Organization**: Group related tickets under audit epics
+- **Story Organization**: Group related tickets under audit stories
 - **Status Synchronization**: Real-time status updates from Jira
 - **Comment Integration**: Add comments and updates to Jira tickets
 

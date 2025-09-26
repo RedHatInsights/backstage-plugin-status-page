@@ -180,7 +180,7 @@ export const OngoingAuditsSection = ({
       .join(' ');
   };
 
-  // Get ongoing audits (in progress, started, etc.)
+  // Get audit summaries for all applications
   const toggleExpanded = (appName: string) => {
     setExpandedApps(prev => {
       const newSet = new Set(prev);
@@ -205,31 +205,18 @@ export const OngoingAuditsSection = ({
 
       const audits = auditData[app.app_name] || [];
 
-      // Filter for ongoing audits only
-      let ongoingAudits = audits.filter(audit => {
-        const statusUpper = audit.status?.toUpperCase() || '';
-        const progressLower = audit.progress?.toLowerCase() || '';
-
-        // Include audits that are not completed (by status or progress)
-        return (
-          statusUpper === 'IN_PROGRESS' ||
-          statusUpper === 'AUDIT_STARTED' ||
-          statusUpper === 'ACCESS_REVIEW_COMPLETE' ||
-          (progressLower !== 'completed' && progressLower !== 'not_started')
-        );
-      });
-
-      // Apply status filter to individual audits, not entire applications
+      // Apply status filter to ALL audits first
+      let filteredAudits = audits;
       if (localStatusFilter !== 'all') {
-        ongoingAudits = ongoingAudits.filter(audit => {
+        filteredAudits = audits.filter(audit => {
           const statusUpper = audit.status?.toUpperCase() || '';
           return statusUpper === localStatusFilter.toUpperCase();
         });
       }
 
-      // Only include applications that have ongoing audits after filtering
-      if (ongoingAudits.length > 0) {
-        // Count all audits (not just ongoing ones) for status summary
+      // Only include applications that have audits after filtering
+      if (filteredAudits.length > 0) {
+        // Count all audits for status summary
         const allAudits = audits;
         const inProgressCount = allAudits.filter(audit => {
           const statusUpper = audit.status?.toUpperCase() || '';
@@ -257,8 +244,8 @@ export const OngoingAuditsSection = ({
 
         summaries.push({
           app,
-          audits: ongoingAudits,
-          totalAudits: ongoingAudits.length,
+          audits: filteredAudits,
+          totalAudits: filteredAudits.length,
           inProgressCount,
           completedCount,
           statusSummary,
@@ -299,7 +286,7 @@ export const OngoingAuditsSection = ({
   return (
     <Box className={classes.section}>
       <Typography className={classes.title}>
-        Applications with Ongoing Audits ({appSummaries.length})
+        Applications with Audits ({appSummaries.length})
       </Typography>
 
       <Box className={classes.filtersContainer}>
@@ -359,10 +346,10 @@ export const OngoingAuditsSection = ({
       {appSummaries.length === 0 ? (
         <Box className={classes.emptyState}>
           <Typography variant="h6" color="textSecondary">
-            No ongoing audits
+            No audits found
           </Typography>
           <Typography variant="body2" color="textSecondary">
-            All audits are either completed or not yet started
+            No audits match the current filter criteria
           </Typography>
         </Box>
       ) : (
@@ -374,7 +361,7 @@ export const OngoingAuditsSection = ({
                   App Name
                 </TableCell>
                 <TableCell className={classes.tableHeaderCell}>
-                  Ongoing Audits
+                  Audits
                 </TableCell>
                 <TableCell className={classes.tableHeaderCell}>
                   Status Summary
@@ -386,7 +373,7 @@ export const OngoingAuditsSection = ({
                 const isExpanded = expandedApps.has(summary.app.app_name);
 
                 return (
-                  <div key={summary.app.id}>
+                  <>
                     <TableRow
                       className={classes.tableRow}
                       onClick={() => toggleExpanded(summary.app.app_name)}
@@ -419,114 +406,119 @@ export const OngoingAuditsSection = ({
                     </TableRow>
 
                     <TableRow>
-                      <TableCell colSpan={3} style={{ padding: 0 }}>
+                      <TableCell
+                        colSpan={3}
+                        style={{ padding: 0, width: '100%' }}
+                      >
                         <Collapse in={isExpanded}>
                           <Box className={classes.collapsedContent}>
-                            <BackstageTable
-                              title={`${formatAppName(
-                                summary.app.app_name,
-                              )} - Audit Details`}
-                              columns={[
-                                {
-                                  title: 'Jira Ticket',
-                                  field: 'jira_key',
-                                  render: (row: any) => {
-                                    if (
-                                      !row.jira_key ||
-                                      row.jira_key.toUpperCase() === 'N/A'
-                                    ) {
-                                      return 'N/A';
-                                    }
-                                    const jiraUrl = configApi.getString(
-                                      'auditCompliance.jiraUrl',
-                                    );
-                                    return (
-                                      <a
-                                        href={`${jiraUrl}/browse/${row.jira_key}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        style={{
-                                          color: '#1976d2',
-                                          textDecoration: 'underline',
-                                          cursor: 'pointer',
+                            <Box style={{ width: '100%', overflow: 'auto' }}>
+                              <BackstageTable
+                                title={`${formatAppName(
+                                  summary.app.app_name,
+                                )} - Audit Details`}
+                                columns={[
+                                  {
+                                    title: 'Jira Ticket',
+                                    field: 'jira_key',
+                                    render: (row: any) => {
+                                      if (
+                                        !row.jira_key ||
+                                        row.jira_key.toUpperCase() === 'N/A'
+                                      ) {
+                                        return 'N/A';
+                                      }
+                                      const jiraUrl = configApi.getString(
+                                        'auditCompliance.jiraUrl',
+                                      );
+                                      return (
+                                        <a
+                                          href={`${jiraUrl}/browse/${row.jira_key}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          style={{
+                                            color: '#1976d2',
+                                            textDecoration: 'underline',
+                                            cursor: 'pointer',
+                                          }}
+                                        >
+                                          {row.jira_key}
+                                        </a>
+                                      );
+                                    },
+                                  },
+                                  { title: 'Frequency', field: 'frequency' },
+                                  { title: 'Period', field: 'period' },
+                                  {
+                                    title: 'Status',
+                                    render: (row: any) => {
+                                      const status =
+                                        row.status?.toUpperCase() || '';
+
+                                      // Get colors for the status, fallback to DEFAULT if not found
+                                      const colors =
+                                        statusColors[
+                                          status as keyof typeof statusColors
+                                        ] || statusColors.DEFAULT;
+
+                                      const chipStyle: React.CSSProperties = {
+                                        ...colors,
+                                        fontWeight: 600,
+                                      };
+
+                                      return (
+                                        <Chip
+                                          label={status}
+                                          size="small"
+                                          variant="outlined"
+                                          style={chipStyle}
+                                        />
+                                      );
+                                    },
+                                  },
+                                  {
+                                    title: 'Audit Progress',
+                                    field: 'progress',
+                                    render: (row: any) => (
+                                      <AuditProgressStepper
+                                        activeStep={mapProgressToAuditStep(
+                                          row.progress || 'audit_started',
+                                        )}
+                                      />
+                                    ),
+                                  },
+                                  { title: 'Created At', field: 'created_at' },
+                                  {
+                                    title: 'Actions',
+                                    render: (row: any) => (
+                                      <Button
+                                        variant="outlined"
+                                        size="small"
+                                        onClick={() => {
+                                          const url = `/audit-access-manager/${encodeURIComponent(
+                                            row.app_name,
+                                          )}`;
+                                          window.open(url, '_blank');
                                         }}
                                       >
-                                        {row.jira_key}
-                                      </a>
-                                    );
+                                        View Details
+                                      </Button>
+                                    ),
                                   },
-                                },
-                                { title: 'Frequency', field: 'frequency' },
-                                { title: 'Period', field: 'period' },
-                                {
-                                  title: 'Status',
-                                  render: (row: any) => {
-                                    const status =
-                                      row.status?.toUpperCase() || '';
-
-                                    // Get colors for the status, fallback to DEFAULT if not found
-                                    const colors =
-                                      statusColors[
-                                        status as keyof typeof statusColors
-                                      ] || statusColors.DEFAULT;
-
-                                    const chipStyle: React.CSSProperties = {
-                                      ...colors,
-                                      fontWeight: 600,
-                                    };
-
-                                    return (
-                                      <Chip
-                                        label={status}
-                                        size="small"
-                                        variant="outlined"
-                                        style={chipStyle}
-                                      />
-                                    );
-                                  },
-                                },
-                                {
-                                  title: 'Audit Progress',
-                                  field: 'progress',
-                                  render: (row: any) => (
-                                    <AuditProgressStepper
-                                      activeStep={mapProgressToAuditStep(
-                                        row.progress || 'audit_started',
-                                      )}
-                                    />
-                                  ),
-                                },
-                                { title: 'Created At', field: 'created_at' },
-                                {
-                                  title: 'Actions',
-                                  render: (row: any) => (
-                                    <Button
-                                      variant="outlined"
-                                      size="small"
-                                      onClick={() => {
-                                        const url = `/audit-access-manager/${encodeURIComponent(
-                                          row.app_name,
-                                        )}`;
-                                        window.open(url, '_blank');
-                                      }}
-                                    >
-                                      View Details
-                                    </Button>
-                                  ),
-                                },
-                              ]}
-                              data={summary.audits}
-                              options={{
-                                paging: false,
-                                search: false,
-                                showTitle: false,
-                              }}
-                            />
+                                ]}
+                                data={summary.audits}
+                                options={{
+                                  paging: false,
+                                  search: false,
+                                  showTitle: false,
+                                }}
+                              />
+                            </Box>
                           </Box>
                         </Collapse>
                       </TableCell>
                     </TableRow>
-                  </div>
+                  </>
                 );
               })}
             </TableBody>

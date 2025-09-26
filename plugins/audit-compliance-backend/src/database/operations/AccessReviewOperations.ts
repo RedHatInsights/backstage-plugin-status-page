@@ -103,7 +103,13 @@ export class AccessReviewOperations {
       const recordData = {
         ...rest,
         sign_off_date: item.sign_off_date || null,
-        access_change_date: item.access_change_date || null,
+        access_change_date: this.db.fn.now(),
+        // Always clear ticket fields and comments on approval
+        ticket_reference:
+          sign_off_status === 'approved' ? null : item.ticket_reference || null,
+        ticket_status:
+          sign_off_status === 'approved' ? null : item.ticket_status || null,
+        comments: sign_off_status === 'approved' ? null : item.comments || null,
       };
 
       this.logger.debug('Updating Access Review', { recordData });
@@ -282,6 +288,7 @@ export class AccessReviewOperations {
           description,
           sign_off_status,
           sign_off_by,
+          source,
         } = item;
 
         if (!service_account) {
@@ -294,7 +301,12 @@ export class AccessReviewOperations {
         }
 
         const existing = await trx('service_account_access_review')
-          .where({ service_account })
+          .where({
+            service_account,
+            app_name,
+            frequency,
+            period,
+          })
           .first();
 
         if (!existing) {
@@ -379,16 +391,32 @@ export class AccessReviewOperations {
           sign_off_status: item.sign_off_status ?? existing.sign_off_status,
           sign_off_by: item.sign_off_by ?? existing.sign_off_by,
           sign_off_date: item.sign_off_date ?? existing.sign_off_date,
-          comments: comments ?? existing.comments,
-          ticket_reference: existing.ticket_reference,
-          date_of_access_revoked:
-            item.date_of_access_revoked ?? existing.date_of_access_revoked,
-          ticket_status: existing.ticket_status,
+          // Always clear ticket fields and comments on approval
+          comments:
+            sign_off_status === 'approved'
+              ? null
+              : comments ?? existing.comments,
+          ticket_reference:
+            sign_off_status === 'approved'
+              ? null
+              : item.ticket_reference ?? existing.ticket_reference,
+          revoked_date:
+            sign_off_status === 'rejected' ? this.db.fn.now() : null,
+          ticket_status:
+            sign_off_status === 'approved'
+              ? null
+              : item.ticket_status ?? existing.ticket_status,
           updated_at: this.db.fn.now(),
         };
 
         await trx('service_account_access_review')
-          .where({ service_account })
+          .where({
+            service_account,
+            app_name: app_name || existing.app_name,
+            frequency: frequency || existing.frequency,
+            period: period || existing.period,
+            source: source || existing.source,
+          })
           .update(updatePayload);
 
         results.push({

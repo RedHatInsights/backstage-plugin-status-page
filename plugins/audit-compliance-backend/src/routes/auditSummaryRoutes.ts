@@ -548,7 +548,7 @@ export async function createAuditSummaryRouter(
     '/audits/:app_name/:frequency/:period/metadata',
     async (req, res) => {
       const { app_name, frequency, period } = req.params;
-      const { documentation_evidence, auditor_notes } = req.body;
+      const { documentation_evidence, auditor_notes, performed_by } = req.body;
 
       try {
         // First get the audit to get its ID
@@ -573,7 +573,7 @@ export async function createAuditSummaryRouter(
           app_name,
           frequency,
           period,
-          performed_by: 'system',
+          performed_by: performed_by || 'system',
           metadata: {
             audit_id: audit.id,
             update_type: 'metadata',
