@@ -28,20 +28,21 @@ export async function createEmailRouter(
    * @param {string} req.body.to - Recipient email address
    * @param {string} req.body.subject - Email subject
    * @param {string} req.body.html - HTML content of the email
+   * @param {string} [req.body.cc] - Optional CC email address
    * @param {string} [req.body.replyTo] - Optional reply-to address
    * @returns {Object} 200 - Email sent successfully
    * @returns {Object} 400 - Missing required fields
    * @returns {Object} 500 - Internal error sending email
    */
   emailRouter.post('/send-email', async (req, res) => {
-    const { to, subject, html, replyTo } = req.body;
+    const { to, subject, html, cc, replyTo } = req.body;
 
     if (!to || !subject || !html) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     try {
-      await emailService.sendMail({ to, subject, html, replyTo });
+      await emailService.sendMail({ to, subject, html, cc, replyTo });
       return res.status(200).json({ message: 'Email sent successfully' });
     } catch (error: any) {
       logger.error(`Failed to send email: ${error.message}`);

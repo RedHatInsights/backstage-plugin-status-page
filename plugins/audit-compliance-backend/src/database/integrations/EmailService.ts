@@ -7,6 +7,7 @@ interface MailOptions {
   to: string;
   subject: string;
   html: string;
+  cc?: string;
   replyTo?: string;
 }
 
@@ -36,16 +37,20 @@ export class EmailService {
   }
 
   async sendMail(options: MailOptions): Promise<void> {
-    const { to, subject, html, replyTo } = options;
+    const { to, subject, html, cc, replyTo } = options;
     try {
-      this.logger.info(`Sending email to ${to} with subject "${subject}"`);
+      this.logger.info(
+        `Sending email to ${to} with subject "${subject}"${
+          cc ? `, cc: ${cc}` : ''
+        }`,
+      );
       await this.transporter.sendMail({
         from: this.from,
         to,
         subject,
         html,
+        cc,
         replyTo,
-        cc: replyTo,
       });
     } catch (error: any) {
       this.logger.error(`Email send failed: ${error.message}`);

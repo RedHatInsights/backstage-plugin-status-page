@@ -113,9 +113,9 @@ export const SendEmailDialog = ({
         },
         body: JSON.stringify({
           to: formData.to.join(','),
+          cc: formData.cc.join(','),
           subject: formData.subject,
           html: formData.body.replace(/\n/g, '<br>'),
-          replyTo: formData.cc.join(','),
         }),
       });
 
