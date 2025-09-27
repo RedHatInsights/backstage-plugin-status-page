@@ -131,7 +131,7 @@ const TemplatesTable = (props: {
           </TableHead>
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={4}>
+              <TableCell colSpan={6}>
                 <LinearProgress />
               </TableCell>
             </TableRow>
@@ -176,7 +176,7 @@ const TemplatesTable = (props: {
                             setOpenTemplateViewDrawer(true);
                           }}
                         >
-                          View
+                          View Details
                         </Button>
                         <Button
                           variant="outlined"

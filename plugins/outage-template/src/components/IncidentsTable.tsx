@@ -188,7 +188,7 @@ const IncidentsTable = ({
                               component: incident.components,
                             })
                           }
-                          style={{ marginTop: '10px' }}
+                          style={{ marginTop: '10px', width: '8rem' }}
                         >
                           View Updates
                         </Button>
@@ -202,6 +202,7 @@ const IncidentsTable = ({
                               onClick={() => onUpdate(incident.id)}
                               disabled={false}
                               size="small"
+                              style={{ width: '8rem' }}
                               startIcon={<AssignmentIcon className={classes.buttonIcon} />}
                             >
                               Postmortem
@@ -213,6 +214,7 @@ const IncidentsTable = ({
                               onClick={() => onUpdate(incident.id)}
                               disabled={false}
                               size="small"
+                              style={{ width: '8rem' }}
                               startIcon={<EditIcon className={classes.buttonIcon} />}
                             >
                               Update
