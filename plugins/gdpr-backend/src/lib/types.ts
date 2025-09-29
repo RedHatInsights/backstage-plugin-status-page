@@ -27,6 +27,18 @@ export interface FetchUserDataRequest {
   email: string;
 }
 
+/** Request for fetching user data by username only */
+export interface FetchUserDataByUsernameRequest {
+  username: string;
+  serviceNowTicket: string;
+}
+
+/** Request for fetching user data by email only */
+export interface FetchUserDataByEmailRequest {
+  email: string;
+  serviceNowTicket: string;
+}
+
 /** Request for deleting user data */
 export interface DeleteUserDataRequest {
   uid: string;

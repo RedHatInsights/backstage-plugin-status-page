@@ -100,6 +100,52 @@ export class GDPRApi {
     }
   }
 
+  async fetchDrupalGdprDataByUsername(username: string, serviceNowTicket: string): Promise<GdprTableData[]> {
+    try {
+      const baseUrl = await this.getDrupalBaseUrl();
+      const url = new URL(`${baseUrl}/username/${username}`);
+      url.searchParams.append('serviceNowTicket', serviceNowTicket);
+      
+      const response = await this.fetchApi.fetch(url.toString(), {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        const errorMessage = `No data found for username "${username}"`;
+        throw new Error(errorMessage);
+      }
+
+      const data: GdprApiResponse[] = await response.json();
+      return this.formatUserData(data);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      throw new Error(`GDPR username search failed: ${errorMessage}`);
+    }
+  }
+
+  async fetchDrupalGdprDataByEmail(email: string, serviceNowTicket: string): Promise<GdprTableData[]> {
+    try {
+      const baseUrl = await this.getDrupalBaseUrl();
+      const url = new URL(`${baseUrl}/email/${email}`);
+      url.searchParams.append('serviceNowTicket', serviceNowTicket);
+      
+      const response = await this.fetchApi.fetch(url.toString(), {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        const errorMessage = `No data found for email "${email}"`;
+        throw new Error(errorMessage);
+      }
+
+      const data: GdprApiResponse[] = await response.json();
+      return this.formatUserData(data);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      throw new Error(`GDPR email search failed: ${errorMessage}`);
+    }
+  }
+
 
   async deleteDrupalGDPRData(requests: DeleteRequest[]): Promise<DeleteResponse[]> {
     try {

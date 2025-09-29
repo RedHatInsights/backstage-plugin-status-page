@@ -48,10 +48,17 @@ export const useGdprAccess = (): GdprAccessResult => {
           ?.filter(relation => relation.type === 'memberOf')
           ?.map(relation => relation.targetRef) || [];
 
-        // TODO: Implement proper access control based on required groups
-        // const requiredGroupPatterns = ['compass-gdpr-admin', 'group:compass-gdpr-admin', 'group:redhat/compass-gdpr-admin'];
-        // For now, allowing all authenticated users access
-        const hasAccess = true;
+        const requiredGroupPatterns = [
+          'compass-gdpr-admin',
+          'group:compass-gdpr-admin',
+          'group:redhat/compass-gdpr-admin',
+        ];
+
+        const hasAccess = memberOfGroups.some(group =>
+          requiredGroupPatterns.some(pattern =>
+            group.toLowerCase().includes(pattern.toLowerCase())
+          )
+        );
 
         if (isMounted) {
           setResult({

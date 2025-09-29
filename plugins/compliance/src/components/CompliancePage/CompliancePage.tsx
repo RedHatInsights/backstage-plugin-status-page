@@ -113,7 +113,7 @@ const tools: ComplianceTool[] = [
   {
     name: 'GDPR Automation',
     description: 'Manage GDPR requests in a standardized and automated way, integrating seamlessly with Drupal applications and Compass workflows.',
-    path: '/gdpr',
+    path: '/compliance/gdpr',
     tags: ['Data Privacy', 'GDPR', 'Automation'],
   },
 ];
@@ -124,8 +124,8 @@ export const CompliancePage = () => {
   return (
     <Page themeId="tool">
       <Header
-        title="Compliance Manager"
-        subtitle="Centralized compliance management dashboard"
+        title="Compliance Hub"
+        subtitle="Centralized compliance management and insights"
       >
         <HeaderLabel label="Owner" value="AppDev" />
         <HeaderLabel label="Lifecycle" value="Beta" />
