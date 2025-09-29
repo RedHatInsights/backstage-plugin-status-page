@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance-backend [1.26.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance-backend@1.25.0...@appdev/backstage-plugin-audit-compliance-backend@1.26.0) (2025-09-29)
+
+
+### Features
+
+* **audit-access-manager:** enhance audit flow and clean up unused code ([a5407cb](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/a5407cb3108f8fc9d73b9d124818ed45b64958c3))
+
 ## @appdev/backstage-plugin-audit-compliance-backend [1.25.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance-backend@1.24.1...@appdev/backstage-plugin-audit-compliance-backend@1.25.0) (2025-09-26)
 
 
