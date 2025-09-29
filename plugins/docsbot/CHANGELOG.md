@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-docsbot [1.14.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-docsbot@1.13.0...@appdev/backstage-plugin-docsbot@1.14.0) (2025-09-29)
+
+
+### Features
+
+* **PULSE-1094:** add global header app bar ([132ce01](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/132ce015f61306f43f7e052f134f2fb1384b4e9f))
+
 ## @appdev/backstage-plugin-docsbot [1.13.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-docsbot@1.12.0...@appdev/backstage-plugin-docsbot@1.13.0) (2025-09-23)
 
 
