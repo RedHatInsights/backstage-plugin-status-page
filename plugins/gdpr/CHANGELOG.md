@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-gdpr [1.2.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-gdpr@1.2.0...@appdev/backstage-plugin-gdpr@1.2.1) (2025-09-29)
+
+
+### Other changes
+
+* design improvement in GDPR UI, fallback removed and route changed ([74dbac1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/74dbac1b8eaae9834decd61f32ca18aaf69199b6))
+
 ## @appdev/backstage-plugin-gdpr [1.2.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-gdpr@1.1.0...@appdev/backstage-plugin-gdpr@1.2.0) (2025-09-25)
 
 
