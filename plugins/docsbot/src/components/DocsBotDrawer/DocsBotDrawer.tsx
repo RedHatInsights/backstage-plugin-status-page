@@ -18,7 +18,6 @@ import {
   Switch,
   Tooltip,
   Typography,
-  useTheme,
 } from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import CloseIcon from '@material-ui/icons/Close';
@@ -49,8 +48,7 @@ export const disclaimer =
   '<b><i>Note: You are about to use a tool that utilizes Artificial Intelligence (AI) to process inputs and provide responses. Please do not include any personal, customer, or partner confidential information in your chat interaction with the AI. By proceeding to use the tool, you acknowledge that the tool and any information provided are intended for internal use only, and that information obtained should only be shared with those who have a legitimate business purpose.</i></b>';
 
 export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
-  const theme = useTheme();
-  const classes = useStyles(theme);
+  const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const identityApi = useApi(identityApiRef);
   const discoveryApiRefDocsBot = useApi(discoveryApiRef);
@@ -335,7 +333,7 @@ export const DocsBotDrawer = ({ isOpen, toggleDrawer }: Props) => {
         anchor="right"
         open={isOpen}
         onClose={toggleDrawer}
-        classes={{paper: classes.root}}
+        classes={{ paper: classes.root }}
       >
         <div className={classes.fullHeightContainer}>
           <div className={classes.menuSection}>

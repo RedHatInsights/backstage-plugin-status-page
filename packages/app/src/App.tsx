@@ -97,6 +97,12 @@ import { CatalogPage } from './components/CatalogPage/CatalogPage';
 import { GdprPage } from '@appdev/backstage-plugin-gdpr';
 import { CompliancePage } from '@appdev/backstage-plugin-compliance';
 import { EssPage, PlatformDetailPage } from '@appdev/backstage-plugin-ess';
+import ManageAccounts from '@mui/icons-material/ManageAccountsOutlined';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import Logout from '@mui/icons-material/LogoutOutlined';
+import CategoryOutlinedIcon from '@material-ui/icons/CategoryOutlined';
+import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
+import CreateComponentIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 
 const app = createApp({
   apis,
@@ -144,6 +150,12 @@ const app = createApp({
     python: PythonIcon,
     docker: DockerIcon,
     mistral: MistralIcon,
+    manageAccounts: ManageAccounts,
+    account: AccountCircleOutlinedIcon,
+    logout: Logout,
+    category: CategoryOutlinedIcon,
+    notifications: NotificationsOutlinedIcon,
+    create: CreateComponentIcon
   },
   themes: getThemes(),
 });
@@ -250,7 +262,10 @@ const routes = (
     />
     <Route path="/compliance" element={<CompliancePage />} />
     <Route path="/compliance/ess" element={<EssPage />} />
-    <Route path="/compliance/ess/platform/:name" element={<PlatformDetailPage />} />
+    <Route
+      path="/compliance/ess/platform/:name"
+      element={<PlatformDetailPage />}
+    />
   </FlatRoutes>
 );
 
