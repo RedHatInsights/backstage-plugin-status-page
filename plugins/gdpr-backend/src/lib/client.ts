@@ -166,6 +166,222 @@ export async function fetchGDPRData(
 }
 
 /**
+ * Fetches user data from a specific platform by username only - no fallback
+ */
+async function fetchUserDataFromPlatformByUsername(
+  config: GdprConfig,
+  platform: Platform,
+  username: string,
+  serviceNowTicket: string,
+  logger?: LoggerService,
+): Promise<UserData> {
+  const platformConfig = config[platform];
+
+  logger?.info(`Fetching GDPR data from ${platform.toUpperCase()} by username only`, {
+    platform,
+    apiUrl: platformConfig.apiBaseUrl,
+    username,
+    serviceNowTicket,
+  });
+
+  const nameBody = JSON.stringify({ summarize: true, name: username });
+  logger?.info(`Searching ${platform.toUpperCase()} with username: ${username}`);
+
+  const nameResponse = await makeAuthenticatedRequest(
+    platformConfig.apiBaseUrl,
+    platformConfig,
+    platform,
+    {
+      method: GDPR_CONSTANTS.HTTP_METHODS.POST,
+      body: nameBody,
+    },
+    logger,
+  );
+
+  const nameData = await parseJsonResponse(nameResponse, platform);
+  const userData = formatUserData(platform, nameData);
+  
+  // Check if we got meaningful results (user exists and has content/data)
+  if (userData.user && Object.keys(userData.user).length > 0) {
+    logger?.info(`Successfully fetched data from ${platform.toUpperCase()} using username`);
+    return userData;
+  }
+  
+  // No fallback - throw error if no results
+  throw new GdprError(
+    `No data found for username "${username}" on ${platform.toUpperCase()}`,
+    platform,
+    404,
+  );
+}
+
+/**
+ * Fetches user data from a specific platform by email only - no fallback
+ */
+async function fetchUserDataFromPlatformByEmail(
+  config: GdprConfig,
+  platform: Platform,
+  email: string,
+  serviceNowTicket: string,
+  logger?: LoggerService,
+): Promise<UserData> {
+  const platformConfig = config[platform];
+
+  logger?.info(`Fetching GDPR data from ${platform.toUpperCase()} by email only`, {
+    platform,
+    apiUrl: platformConfig.apiBaseUrl,
+    email,
+    serviceNowTicket,
+  });
+
+  const emailBody = JSON.stringify({ summarize: true, mail: email });
+  logger?.info(`Searching ${platform.toUpperCase()} with email: ${email}`);
+  
+  const emailResponse = await makeAuthenticatedRequest(
+    platformConfig.apiBaseUrl,
+    platformConfig,
+    platform,
+    {
+      method: GDPR_CONSTANTS.HTTP_METHODS.POST,
+      body: emailBody,
+    },
+    logger,
+  );
+
+  const emailData = await parseJsonResponse(emailResponse, platform);
+  const userData = formatUserData(platform, emailData);
+  
+  logger?.info(`Successfully fetched data from ${platform.toUpperCase()} using email`);
+  return userData;
+}
+
+/**
+ * Fetches GDPR data from all platforms by username only - no fallback
+ */
+export async function fetchGDPRDataByUsername(
+  drupalConfig: GdprConfig,
+  username: string,
+  serviceNowTicket: string,
+  logger?: LoggerService,
+): Promise<UserData[]> {
+  const results: UserData[] = [];
+  const errors: string[] = [];
+
+  logger?.info('Starting GDPR data fetch by username from all platforms', {
+    username,
+    serviceNowTicket,
+    dcpUrl: drupalConfig.dcp.apiBaseUrl,
+    dxspUrl: drupalConfig.dxsp.apiBaseUrl,
+    cppgUrl: drupalConfig.cppg.apiBaseUrl,
+    cphubUrl: drupalConfig.cphub.apiBaseUrl,
+  });
+
+  // Try each platform independently - no fallback
+  const platforms = [Platform.DCP, Platform.DXSP, Platform.CPPG, Platform.CPHUB];
+  
+  for (const platform of platforms) {
+    try {
+      const userData = await fetchUserDataFromPlatformByUsername(
+        drupalConfig, 
+        platform, 
+        username, 
+        serviceNowTicket, 
+        logger
+      );
+      results.push(userData);
+      logger?.info(`Successfully fetched data from ${platform.toUpperCase()}`);
+    } catch (error) {
+      const errorMsg = `Failed to fetch data from ${platform.toUpperCase()}: ${String(error)}`;
+      errors.push(errorMsg);
+      logger?.warn(errorMsg);
+    }
+  }
+
+  // Log summary
+  logger?.info('GDPR username search completed', {
+    platformsSucceeded: results.length,
+    platformsFailed: errors.length,
+    totalPlatforms: platforms.length,
+    errors,
+  });
+
+  // If no platforms returned data, throw the accumulated errors
+  if (results.length === 0) {
+    const combinedError = errors.join('; ');
+    throw new GdprError(
+      `No data found for username "${username}" on any platform. Errors: ${combinedError}`,
+      Platform.DCP,
+      404,
+    );
+  }
+
+  return results;
+}
+
+/**
+ * Fetches GDPR data from all platforms by email only - no fallback
+ */
+export async function fetchGDPRDataByEmail(
+  drupalConfig: GdprConfig,
+  email: string,
+  serviceNowTicket: string,
+  logger?: LoggerService,
+): Promise<UserData[]> {
+  const results: UserData[] = [];
+  const errors: string[] = [];
+
+  logger?.info('Starting GDPR data fetch by email from all platforms', {
+    email,
+    serviceNowTicket,
+    dcpUrl: drupalConfig.dcp.apiBaseUrl,
+    dxspUrl: drupalConfig.dxsp.apiBaseUrl,
+    cppgUrl: drupalConfig.cppg.apiBaseUrl,
+    cphubUrl: drupalConfig.cphub.apiBaseUrl,
+  });
+
+  // Try each platform independently - no fallback
+  const platforms = [Platform.DCP, Platform.DXSP, Platform.CPPG, Platform.CPHUB];
+  
+  for (const platform of platforms) {
+    try {
+      const userData = await fetchUserDataFromPlatformByEmail(
+        drupalConfig, 
+        platform, 
+        email, 
+        serviceNowTicket, 
+        logger
+      );
+      results.push(userData);
+      logger?.info(`Successfully fetched data from ${platform.toUpperCase()}`);
+    } catch (error) {
+      const errorMsg = `Failed to fetch data from ${platform.toUpperCase()}: ${String(error)}`;
+      errors.push(errorMsg);
+      logger?.warn(errorMsg);
+    }
+  }
+
+  // Log summary
+  logger?.info('GDPR email search completed', {
+    platformsSucceeded: results.length,
+    platformsFailed: errors.length,
+    totalPlatforms: platforms.length,
+    errors,
+  });
+
+  // If no platforms returned data, throw the accumulated errors
+  if (results.length === 0) {
+    const combinedError = errors.join('; ');
+    throw new GdprError(
+      `No data found for email "${email}" on any platform. Errors: ${combinedError}`,
+      Platform.DCP,
+      404,
+    );
+  }
+
+  return results;
+}
+
+/**
  * Deletes user data from a specific platform
  */
 export async function deleteUserDataByPlatform(

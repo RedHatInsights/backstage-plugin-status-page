@@ -103,6 +103,17 @@ const useStyles = makeStyles(theme => ({
       },
     },
   },
+  noDataFoundRow: {
+    backgroundColor: `${theme.palette.error.light}20`, // Light red background with transparency
+    '& .MuiTableCell-root': {
+      color: theme.palette.error.dark,
+      fontStyle: 'italic',
+      fontWeight: 500,
+    },
+    '&:hover': {
+      backgroundColor: `${theme.palette.error.light}30`, // Slightly darker on hover
+    },
+  },
 }));
 
 interface GdprSearchComponentProps {
@@ -117,10 +128,18 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<GdprTableData | null>(null);
   const [selectedUsers, setSelectedUsers] = useState<boolean[]>([]);
-  const [selectAll, setSelectAll] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const gdprApi = useApi(gdprApiRef);
   const alertApi = useApi(alertApiRef);
+  
+  // Computed value: are all selectable rows selected?
+  const selectableRowsIndices = searchResults
+    .map((row, index) => ({ row, index }))
+    .filter(({ row }) => !row.isNoDataFound)
+    .map(({ index }) => index);
+  
+  const allSelectableSelected = selectableRowsIndices.length > 0 && 
+    selectableRowsIndices.every(index => selectedUsers[index]);
   
   // Confirmation dialog state
   const {
@@ -227,7 +246,6 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
           
           // Reset selections
           setSelectedUsers([]);
-          setSelectAll(false);
         } catch (error) {
           alertApi.post({
             message: "Failed to delete selected users.",
@@ -240,15 +258,26 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
   };
 
   const toggleUserSelection = (index: number) => {
+    // Don't allow toggling of "no data found" rows
+    if (searchResults[index]?.isNoDataFound) {
+      return;
+    }
+    
     const updated = [...selectedUsers];
     updated[index] = !updated[index];
     setSelectedUsers(updated);
   };
 
   const handleSelectAll = () => {
-    const allSelected = !selectAll;
-    setSelectAll(allSelected);
-    const updatedSelection = searchResults.map(() => allSelected);
+    const newSelectionState = !allSelectableSelected;
+    
+    // Only update selection for non-disabled rows
+    const updatedSelection = searchResults.map((row) => {
+      if (row.isNoDataFound) {
+        return false; // Always keep disabled rows unselected
+      }
+      return newSelectionState;
+    });
     setSelectedUsers(updatedSelection);
   };
 
@@ -331,7 +360,7 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
               onClick={handleSelectAll}
               className={classes.actionButton}
             >
-              {selectAll ? 'Deselect All' : 'Select All'}
+              {allSelectableSelected ? 'Deselect All' : 'Select All'}
             </Button>
             <Button
               variant="contained"
@@ -358,7 +387,7 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
           <Table>
             <TableHead>
               <TableRow>
-                {searchType !== "All System" && <TableCell padding="checkbox"><Checkbox checked={selectAll} onChange={handleSelectAll} /></TableCell>}
+                {searchType !== "All System" && <TableCell padding="checkbox"><Checkbox checked={allSelectableSelected} onChange={handleSelectAll} /></TableCell>}
                 {searchType === "All System" ? (
                   <>
                     <TableCell>ID</TableCell>
@@ -391,12 +420,16 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
             <TableBody>
               {searchResults.length > 0 ? (
                 searchResults.map((row, index) => (
-                  <TableRow key={index}>
+                  <TableRow 
+                    key={index} 
+                    className={row.isNoDataFound ? classes.noDataFoundRow : ''}
+                  >
                     {searchType !== "All System" && (
                       <TableCell padding="checkbox">
                         <Checkbox
                           checked={!!selectedUsers[index]}
                           onChange={() => toggleUserSelection(index)}
+                          disabled={row.isNoDataFound}
                         />
                       </TableCell>
                     )}
@@ -430,8 +463,8 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
                               variant="contained"
                               color="primary"
                               size="small"
-                              className={classes.tableActionButton}
                               onClick={() => handleViewUser(row)}
+                              disabled={row.isNoDataFound}
                             >
                               View User
                             </Button>
@@ -439,8 +472,8 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
                               variant="outlined"
                               color="secondary"
                               size="small"
-                              className={classes.tableActionButton}
                               onClick={() => handleDeleteUser(row.uid || '', row.platform)}
+                              disabled={row.isNoDataFound}
                             >
                               Delete User
                             </Button>

@@ -38,6 +38,8 @@ describe('createRouter', () => {
 
     mockDrupalService = {
       fetchUserData: jest.fn(),
+      fetchUserDataByUsername: jest.fn(),
+      fetchUserDataByEmail: jest.fn(),
       deleteUserData: jest.fn(),
     };
 

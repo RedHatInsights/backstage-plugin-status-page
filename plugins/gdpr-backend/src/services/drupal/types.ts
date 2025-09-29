@@ -1,5 +1,12 @@
 
-import { UserData, DeleteUserDataRequest, DeleteResult, FetchUserDataRequest } from '../../lib/types';
+import { 
+  UserData, 
+  DeleteUserDataRequest, 
+  DeleteResult, 
+  FetchUserDataRequest,
+  FetchUserDataByUsernameRequest,
+  FetchUserDataByEmailRequest
+} from '../../lib/types';
 
 /**
  * @deprecated Legacy interface - kept for compatibility
@@ -17,9 +24,19 @@ export interface DrupalItem {
  */
 export interface DrupalService {
   /**
-   * Fetches user data from both DCP and DXSP platforms
+   * Fetches user data from both DCP and DXSP platforms (Legacy with fallback)
    */
   fetchUserData(request: FetchUserDataRequest): Promise<UserData[]>;
+
+  /**
+   * Fetches user data by username only - no fallback to email
+   */
+  fetchUserDataByUsername(request: FetchUserDataByUsernameRequest): Promise<UserData[]>;
+
+  /**
+   * Fetches user data by email only - no fallback to username
+   */
+  fetchUserDataByEmail(request: FetchUserDataByEmailRequest): Promise<UserData[]>;
 
   /**
    * Deletes user data from specified platforms

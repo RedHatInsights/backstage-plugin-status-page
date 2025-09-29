@@ -224,7 +224,7 @@ const routes = (
       path="/status-page/:type/:incident_id"
       element={<UpdateIncident />}
     />
-    <Route path="/gdpr" element={<GdprPage />} />
+    <Route path="/compliance/gdpr" element={<GdprPage />} />
     <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
     <Route path="/devtools" element={<DevToolsPage />} />
     <Route path="/audit-access-manager" element={<AuditCompliancePage />} />

@@ -25,7 +25,7 @@ export async function createRouter({
   router.use(express.json());
 
   /**
-   * GET /drupal/:id - Fetch user data by ID with email fallback
+   * GET /drupal/:id - Fetch user data by ID with email fallback (Legacy endpoint)
    * Query parameter: ?email=user@example.com (required)
    */
   router.get('/drupal/:id', async (req, res) => {
@@ -44,7 +44,7 @@ export async function createRouter({
     }
     
     try {
-      logger.info('Fetching user data with email fallback', { userId: id, email });
+      logger.info('Fetching user data with email fallback (Legacy)', { userId: id, email });
       const userData = await drupalService.fetchUserData({ id, email });
       
       logger.info('Successfully fetched user data', { 
@@ -73,6 +73,116 @@ export async function createRouter({
         res.status(500).json({
           error: {
             message: 'Internal server error while fetching user data',
+          }
+        });
+      }
+    }
+  });
+
+  /**
+   * GET /drupal/username/:username - Fetch user data by Drupal username only
+   * Query parameter: ?serviceNowTicket=TICKET123 (required)
+   */
+  router.get('/drupal/username/:username', async (req, res) => {
+    const { username } = req.params;
+    const { serviceNowTicket } = req.query;
+    
+    // Validate required parameters
+    if (!serviceNowTicket || typeof serviceNowTicket !== 'string') {
+      logger.warn('Missing or invalid ServiceNow ticket parameter', { username, serviceNowTicket });
+      res.status(400).json({
+        error: {
+          message: 'ServiceNow ticket parameter is required',
+        }
+      });
+      return;
+    }
+    
+    try {
+      logger.info('Fetching user data by username only', { username, serviceNowTicket });
+      const userData = await drupalService.fetchUserDataByUsername({ username, serviceNowTicket });
+      
+      logger.info('Successfully fetched user data by username', { 
+        username, 
+        serviceNowTicket,
+        platformCount: userData.length 
+      });
+      
+      res.json(userData);
+    } catch (error) {
+      logger.error('Failed to fetch user data by username', { 
+        username, 
+        serviceNowTicket,
+        error: error instanceof Error ? error.message : String(error) 
+      });
+
+      if (error instanceof GdprError) {
+        res.status(error.statusCode || 500).json({
+          error: {
+            message: error.message,
+            platform: error.platform,
+            statusCode: error.statusCode,
+          }
+        });
+      } else {
+        res.status(500).json({
+          error: {
+            message: 'Internal server error while fetching user data by username',
+          }
+        });
+      }
+    }
+  });
+
+  /**
+   * GET /drupal/email/:email - Fetch user data by email only
+   * Query parameter: ?serviceNowTicket=TICKET123 (required)
+   */
+  router.get('/drupal/email/:email', async (req, res) => {
+    const { email } = req.params;
+    const { serviceNowTicket } = req.query;
+    
+    // Validate required parameters
+    if (!serviceNowTicket || typeof serviceNowTicket !== 'string') {
+      logger.warn('Missing or invalid ServiceNow ticket parameter', { email, serviceNowTicket });
+      res.status(400).json({
+        error: {
+          message: 'ServiceNow ticket parameter is required',
+        }
+      });
+      return;
+    }
+    
+    try {
+      logger.info('Fetching user data by email only', { email, serviceNowTicket });
+      const userData = await drupalService.fetchUserDataByEmail({ email, serviceNowTicket });
+      
+      logger.info('Successfully fetched user data by email', { 
+        email, 
+        serviceNowTicket,
+        platformCount: userData.length 
+      });
+      
+      res.json(userData);
+    } catch (error) {
+      logger.error('Failed to fetch user data by email', { 
+        email, 
+        serviceNowTicket,
+        error: error instanceof Error ? error.message : String(error) 
+      });
+
+      if (error instanceof GdprError) {
+        res.status(error.statusCode || 500).json({
+          error: {
+            message: error.message,
+            platform: error.platform,
+            statusCode: error.statusCode,
+          }
+        });
+      } else {
+        res.status(500).json({
+          error: {
+            message: 'Internal server error while fetching user data by email',
           }
         });
       }

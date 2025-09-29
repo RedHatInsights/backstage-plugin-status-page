@@ -10,7 +10,9 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
-  Typography
+  Typography,
+  Switch,
+  FormControlLabel
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -24,7 +26,7 @@ import { gdprApiRef } from '../api';
 import { PDRStatusComponent } from './PDRStatusComponent';
 import { GdprSearchComponent } from './GdprSearchComponent';
 import { useApi, alertApiRef } from '@backstage/core-plugin-api';
-import { GdprTableData } from '../types';
+import { GdprTableData, Platform } from '../types';
 import { Progress } from '@backstage/core-components';
 import { useGdprAccess } from '../hooks/useGdprAccess';
 import { AccessDenied } from './AccessDenied';
@@ -144,6 +146,45 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
+/**
+ * Helper function to ensure all platforms are represented in search results
+ * Adds "no data found" entries for missing platforms at the end
+ */
+const processSearchResultsWithAllPlatforms = (searchResults: GdprTableData[], searchedUsername: string): GdprTableData[] => {
+  const allPlatforms = [Platform.DCP, Platform.DXSP, Platform.CPPG, Platform.CPHUB];
+  const foundPlatforms = searchResults.map(result => result.platform);
+  const missingPlatforms = allPlatforms.filter(platform => !foundPlatforms.includes(platform));
+  
+  // Create "no data found" entries for missing platforms
+  const noDataFoundEntries: GdprTableData[] = missingPlatforms.map(platform => ({
+    platform,
+    username: `${searchedUsername} not found`,
+    ssoId: '-',
+    roles: '-',
+    comment: '-',
+    file: '-',
+    node: '-',
+    rhlearnId: '-',
+    media: '-',
+    group: '-',
+    group_relationship: '-',
+    content_moderation_state: '-',
+    cphub_alert: '-',
+    super_sitemap_custom_url: '-',
+    rhlearn_progress: '-',
+    red_hat_feedback_option: '-',
+    red_hat_feedback_response: '-',
+    red_hat_feedback_topic: '-',
+    firstName: '-',
+    lastName: '-',
+    created: '-',
+    changed: '-',
+    isNoDataFound: true,
+  }));
+  
+  // Return original results followed by "no data found" entries
+  return [...searchResults, ...noDataFoundEntries];
+};
 
 export const GdprComponent = () => {
   const classes = useStyles();
@@ -154,6 +195,9 @@ export const GdprComponent = () => {
   // Tab state management
   const [tabIndex, setTabIndex] = useState(0);
   const [searchType, setSearchType] = useState('All System'); // Default selection
+  
+  // Search method toggle: true = Email Address search, false = Drupal Username search (default)
+  const [useEmailSearch, setUseEmailSearch] = useState(false);
 
   const gdprApi = useApi(gdprApiRef);
   const alertApi = useApi(alertApiRef);
@@ -164,14 +208,11 @@ export const GdprComponent = () => {
   // State management for form fields
   const [form, setForm] = useState({
     email: '',
-    ssoUsername: '',
     accountNumber: '',
     firstName: '',
     lastName: '',
-    ticketId: '',
-    drupalUsername: '',
-    drupalUid: '',
-    ssoId: ''
+    serviceNowTicket: '', // Required ServiceNow ticket for every GDPR request
+    drupalUsername: ''
   });
 
   // Handle tab change
@@ -185,14 +226,11 @@ export const GdprComponent = () => {
     setSearchType(event.target.value as string);
     setForm({
       email: '',
-      ssoUsername: '',
       accountNumber: '',
       firstName: '',
       lastName: '',
-      ticketId: '',
-      drupalUsername: '',
-      drupalUid: '',
-      ssoId: ''
+      serviceNowTicket: '',
+      drupalUsername: ''
     });
   };
 
@@ -209,6 +247,16 @@ export const GdprComponent = () => {
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
+    // Validate required ServiceNow ticket
+    if (!form.serviceNowTicket.trim()) {
+      alertApi.post({
+        message: "ServiceNow Ticket Number is required for every GDPR request.",
+        severity: 'warning',
+        display: 'transient'
+      });
+      return;
+    }
+
     if (searchType === "All System") {
       // TODO: Implement all system search functionality
       alertApi.post({
@@ -219,39 +267,59 @@ export const GdprComponent = () => {
       return;
     }
 
-    if (!form.drupalUsername.trim()) {
-      alertApi.post({
-        message: "Please enter a Drupal username to search.",
-        severity: 'warning',
-        display: 'transient'
-      });
-      return;
-    }
-
-    if (!form.email.trim()) {
-      alertApi.post({
-        message: "Please enter an email address to search.",
-        severity: 'warning',
-        display: 'transient'
-      });
-      return;
+    // Validate search criteria based on toggle
+    if (useEmailSearch) {
+      if (!form.email.trim()) {
+        alertApi.post({
+          message: "Please enter an email address for full deletion search.",
+          severity: 'warning',
+          display: 'transient'
+        });
+        return;
+      }
+    } else {
+      if (!form.drupalUsername.trim()) {
+        alertApi.post({
+          message: "Please enter a Drupal username to search.",
+          severity: 'warning',
+          display: 'transient'
+        });
+        return;
+      }
     }
     
     setIsSearching(true);
     try {
-      const fetchedIncidents = await gdprApi.fetchDrupalGdprData(form.drupalUsername, form.email);
-      setSearchResults(fetchedIncidents);
+      let fetchedIncidents: any[];
       
-      alertApi.post({
-        message: `Found ${fetchedIncidents.length} records for user "${form.drupalUsername}".`,
-        severity: 'success',
-        display: 'transient'
-      });
+      if (useEmailSearch) {
+        // Use email search API (will be implemented in backend)
+        fetchedIncidents = await gdprApi.fetchDrupalGdprDataByEmail(form.email, form.serviceNowTicket);
+        alertApi.post({
+          message: `Found ${fetchedIncidents.length} records for email "${form.email}".`,
+          severity: 'success',
+          display: 'transient'
+        });
+      } else {
+        // Use username search API (will be updated in backend)
+        fetchedIncidents = await gdprApi.fetchDrupalGdprDataByUsername(form.drupalUsername, form.serviceNowTicket);
+        alertApi.post({
+          message: `Found ${fetchedIncidents.length} records for username "${form.drupalUsername}".`,
+          severity: 'success',
+          display: 'transient'
+        });
+      }
+      
+      // Process results to include all platforms (add "no data found" entries for missing platforms)
+      const searchedUsername = useEmailSearch ? form.email : form.drupalUsername;
+      const processedResults = processSearchResultsWithAllPlatforms(fetchedIncidents, searchedUsername);
+      setSearchResults(processedResults);
     } catch (error) {
       // Handle error appropriately
       setSearchResults([]);
+      const searchTerm = useEmailSearch ? form.email : form.drupalUsername;
       alertApi.post({
-        message: `No data found for user "${form.drupalUsername}".`,
+        message: `No data found for ${useEmailSearch ? 'email' : 'username'} "${searchTerm}".`,
         severity: 'info',
         display: 'transient'
       });
@@ -264,14 +332,11 @@ export const GdprComponent = () => {
   const resetForm = () => {
     setForm({
       email: '',
-      ssoUsername: '',
       accountNumber: '',
       firstName: '',
       lastName: '',
-      ticketId: '',
-      drupalUsername: '',
-      drupalUid: '',
-      ssoId: ''
+      serviceNowTicket: '',
+      drupalUsername: ''
     });
   };
 
@@ -334,6 +399,33 @@ export const GdprComponent = () => {
                     </div>
                   }
                 >
+                  {/* Search Method Toggle - Only show for Drupal */}
+                  {searchType === "Drupal" && (
+                    <Grid container spacing={2} style={{ marginBottom: '24px', paddingTop: '16px' }}>
+                      <Grid item xs={12}>
+                        <Typography variant="subtitle2" className={classes.sectionTitle}>
+                          Search Method
+                        </Typography>
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={useEmailSearch}
+                              onChange={(e) => setUseEmailSearch(e.target.checked)}
+                              color="primary"
+                            />
+                          }
+                          label={
+                            <Typography variant="body2">
+                              {useEmailSearch 
+                                ? "Search using Email Address (for full deletion)" 
+                                : "Search using Drupal Login ID (default)"
+                              }
+                            </Typography>
+                          }
+                        />
+                      </Grid>
+                    </Grid>
+                  )}
                   <form onSubmit={onSubmit}>
                     <Grid container spacing={2} className={classes.formContainer}>
                       {/* Search Type Dropdown */}
@@ -342,6 +434,30 @@ export const GdprComponent = () => {
                       {/* Conditional Fields Based on Search Type */}
                       {searchType === "All System" ? (
                         <>
+                          <Grid item xs={12}>
+                            <Typography variant="subtitle2" className={classes.sectionTitle}>
+                              GDPR Request Information & Search Criteria
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={12} md={6} className={classes.formFieldRow}>
+                            <TextField
+                              fullWidth
+                              label="ServiceNow Ticket Number"
+                              name="serviceNowTicket"
+                              type="text"
+                              variant="outlined"
+                              size="small"
+                              value={form.serviceNowTicket}
+                              onChange={updateForm}
+                              required
+                              helperText="Required: ServiceNow ticket number for this GDPR request"
+                              InputLabelProps={{ 
+                                required: true,
+                                classes: { asterisk: classes.requiredIndicator }
+                              }}
+                            />
+                          </Grid>
+                          
                           <Grid item xs={12}>
                             <Typography variant="subtitle2" className={classes.sectionTitle}>
                               User Information
@@ -368,24 +484,6 @@ export const GdprComponent = () => {
                           <Grid item xs={12} md={6} className={classes.formFieldRow}>
                             <TextField
                               fullWidth
-                              label="SSO Username"
-                              name="ssoUsername"
-                              type="text"
-                              variant="outlined"
-                              size="small"
-                              value={form.ssoUsername}
-                              onChange={updateForm}
-                              required
-                              helperText="Single Sign-On username (login name)"
-                              InputLabelProps={{ 
-                                required: true,
-                                classes: { asterisk: classes.requiredIndicator }
-                              }}
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={6} className={classes.formFieldRow}>
-                            <TextField
-                              fullWidth
                               label="Account Number"
                               name="accountNumber"
                               type="text"
@@ -395,24 +493,6 @@ export const GdprComponent = () => {
                               onChange={updateForm}
                               required
                               helperText="Account number"
-                              InputLabelProps={{ 
-                                required: true,
-                                classes: { asterisk: classes.requiredIndicator }
-                              }}
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={6} className={classes.formFieldRow}>
-                            <TextField
-                              fullWidth
-                              label="ServiceNow Ticket"
-                              name="ticketId"
-                              type="text"
-                              variant="outlined"
-                              size="small"
-                              value={form.ticketId}
-                              onChange={updateForm}
-                              required
-                              helperText="ServiceNow ticket number for this request"
                               InputLabelProps={{ 
                                 required: true,
                                 classes: { asterisk: classes.requiredIndicator }
@@ -466,18 +546,18 @@ export const GdprComponent = () => {
                         <>
                           <Grid item xs={12}>
                             <Typography variant="subtitle2" className={classes.sectionTitle}>
-                              Search Criteria
+                              GDPR Request Information & Search Criteria
                             </Typography>
                           </Grid>
                           <Grid item xs={12} md={6} className={classes.formFieldRow}>
                             <TextField
                               fullWidth
                               label="ServiceNow Ticket Number"
-                              name="ticketId"
+                              name="serviceNowTicket"
                               type="text"
                               variant="outlined"
                               size="small"
-                              value={form.ticketId}
+                              value={form.serviceNowTicket}
                               onChange={updateForm}
                               required
                               helperText="Required: ServiceNow ticket number for this GDPR request"
@@ -488,67 +568,41 @@ export const GdprComponent = () => {
                             />
                           </Grid>
                           <Grid item xs={12} md={6} className={classes.formFieldRow}>
-                            <TextField
-                              fullWidth
-                              label="Drupal Username"
-                              name="drupalUsername"
-                              type="text"
-                              variant="outlined"
-                              size="small"
-                              value={form.drupalUsername}
-                              onChange={updateForm}
-                              helperText="Drupal-specific username (leave empty to search by other criteria)"
-                            />
-                          </Grid>
-                          
-                          <Grid item xs={12}>
-                            <Typography variant="subtitle2" className={classes.sectionTitle}>
-                              Additional Identifiers
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={12} md={6} className={classes.formFieldRow}>
-                            <TextField
-                              fullWidth
-                              label="Email Address"
-                              name="email"
-                              type="email"
-                              variant="outlined"
-                              size="small"
-                              value={form.email}
-                              onChange={updateForm}
-                              required
-                              helperText="User's email address"
-                              InputLabelProps={{ 
-                                required: true,
-                                classes: { asterisk: classes.requiredIndicator }
-                              }}
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={6} className={classes.formFieldRow}>
-                            <TextField
-                              fullWidth
-                              label="Drupal User ID"
-                              name="drupalUid"
-                              type="text"
-                              variant="outlined"
-                              size="small"
-                              value={form.drupalUid}
-                              onChange={updateForm}
-                              helperText="Numeric user ID in Drupal system"
-                            />
-                          </Grid>
-                          <Grid item xs={12} md={6} className={classes.formFieldRow}>
-                            <TextField
-                              fullWidth
-                              label="SSO Identifier"
-                              name="ssoId"
-                              type="text"
-                              variant="outlined"
-                              size="small"
-                              value={form.ssoId}
-                              onChange={updateForm}
-                              helperText="Single Sign-On identifier"
-                            />
+                            {useEmailSearch ? (
+                              <TextField
+                                fullWidth
+                                label="Email Address"
+                                name="email"
+                                type="email"
+                                variant="outlined"
+                                size="small"
+                                value={form.email}
+                                onChange={updateForm}
+                                required
+                                helperText="Email address for full deletion search"
+                                InputLabelProps={{ 
+                                  required: true,
+                                  classes: { asterisk: classes.requiredIndicator }
+                                }}
+                              />
+                            ) : (
+                              <TextField
+                                fullWidth
+                                label="Drupal Login Id"
+                                name="drupalUsername"
+                                type="text"
+                                variant="outlined"
+                                size="small"
+                                value={form.drupalUsername}
+                                onChange={updateForm}
+                                required
+                                helperText="Drupal-specific Login Id for targeted search"
+                                InputLabelProps={{ 
+                                  required: true,
+                                  classes: { asterisk: classes.requiredIndicator }
+                                }}
+                              />
+                            )}
                           </Grid>
                         </>
                       )}

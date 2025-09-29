@@ -95,6 +95,7 @@ export interface GdprTableData {
   avatarPath?: string;
   created?: string;
   changed?: string;
+  isNoDataFound?: boolean;
 }
 
 /** Delete request payload */
@@ -119,14 +120,11 @@ export interface DeleteResponse {
 /** Form data structure */
 export interface GdprFormData {
   email: string;
-  ssoUsername: string;
   accountNumber: string;
   firstName: string;
   lastName: string;
-  ticketId: string;
+  serviceNowTicket: string; // Required ServiceNow ticket for every GDPR request
   drupalUsername: string;
-  drupalUid: string;
-  ssoId: string;
 }
 
 /** Search options */

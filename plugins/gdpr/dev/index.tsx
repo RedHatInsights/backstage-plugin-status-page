@@ -7,6 +7,6 @@ createDevApp()
   .addPage({
     element: <GdprPage />,
     title: 'Root Page',
-    path: '/gdpr',
+    path: '/compliance/gdpr',
   })
   .render();
