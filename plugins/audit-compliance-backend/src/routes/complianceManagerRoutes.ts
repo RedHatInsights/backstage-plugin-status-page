@@ -183,6 +183,19 @@ export async function createComplianceManagerRouter(
         const createdAudits = [];
         const errors = [];
 
+        // Collect all app names for epic title
+        const allAppNames = audits
+          .map(audit => {
+            if (audit.app_name) {
+              return audit.app_name;
+            }
+            const application = applications.find(
+              app => app.id?.toString() === audit.application_id,
+            );
+            return application?.app_name;
+          })
+          .filter(Boolean);
+
         for (const auditConfig of audits) {
           try {
             // Get application details if app_name is not provided
@@ -324,11 +337,16 @@ export async function createComplianceManagerRouter(
             let jiraTicket = null;
             let jiraCreationFailed = false;
             try {
-              jiraTicket = await database.createAuditJiraTicket({
-                app_name: appName,
-                frequency: auditConfig.frequency,
-                period: auditConfig.period,
-              });
+              jiraTicket = await database.createAuditJiraTicket(
+                {
+                  app_name: appName,
+                  frequency: auditConfig.frequency,
+                  period: auditConfig.period,
+                },
+                undefined,
+                auditConfig.initiated_by || 'system',
+                allAppNames,
+              );
               // Update the audit record with the Jira ticket key
               await database.updateAudit(
                 appName,
@@ -378,6 +396,13 @@ export async function createComplianceManagerRouter(
               reports_generated: successfulReports.length,
               jira_creation_failed: jiraCreationFailed,
               jira_ticket: jiraTicket,
+              epic_details: jiraTicket
+                ? {
+                    epic_key: jiraTicket.epic_key,
+                    epic_title: jiraTicket.epic_title,
+                    epic_creation_failed: jiraTicket.epic_creation_failed,
+                  }
+                : null,
             });
           } catch (error) {
             logger.error('Failed to create audit for application', {

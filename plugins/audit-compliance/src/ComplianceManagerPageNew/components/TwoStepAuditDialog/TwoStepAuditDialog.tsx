@@ -61,9 +61,9 @@ export const TwoStepAuditDialog = ({
   onQuarterChange,
   onYearChange,
   onApplicationsChange,
-  onInitiate,
   getQuarterOptions,
   getYearOptions,
+  onRefresh,
 }: TwoStepAuditDialogProps) => {
   const classes = useStyles();
   const alertApi = useApi(alertApiRef);
@@ -391,16 +391,22 @@ Audit and Compliance Team`;
             period: audit.period,
             jira_ticket: jiraTicketKey,
             status: audit.status,
+            epic_key:
+              audit.jira_ticket?.epic_key ||
+              audit.epic_details?.epic_key ||
+              'N/A',
           };
         },
       );
 
       // Only proceed if there were successful audits
       if (results.length > 0) {
-        // Use the first valid Jira ticket as the main ticket, or 'N/A' if none exist
+        // Use the first valid epic key as the main ticket, or 'N/A' if none exist
         const mainTicket =
-          results.find(auditResult => auditResult.jira_ticket !== 'N/A')
-            ?.jira_ticket || 'N/A';
+          results.find(
+            auditResult =>
+              auditResult.epic_key && auditResult.epic_key !== 'N/A',
+          )?.epic_key || 'N/A';
 
         setStep1Completed(true);
 
@@ -408,7 +414,15 @@ Audit and Compliance Team`;
         const selectedApps = applications.filter(app =>
           localSelectedApplications.includes(app.id),
         );
-        const appOwners = selectedApps
+        const delegateEmails = selectedApps
+          .map(app => {
+            const delegate = (app as any).app_delegate;
+            return delegate ? `${delegate}@redhat.com` : null;
+          })
+          .filter((email): email is string => email !== null)
+          .filter((email, index, arr) => arr.indexOf(email) === index);
+
+        const appOwnerEmails = selectedApps
           .map(app => (app as any).app_owner_email)
           .filter((email, index, arr) => email && arr.indexOf(email) === index);
 
@@ -425,8 +439,8 @@ Audit and Compliance Team`;
         const emailBody = generateEmailBody(results, mainTicket);
 
         setEmailData({
-          to: appOwners,
-          cc: [],
+          to: delegateEmails,
+          cc: appOwnerEmails,
           subject: emailTitle,
           body: emailBody,
         });
@@ -527,7 +541,11 @@ Audit and Compliance Team`;
         display: 'transient',
       });
 
-      onInitiate();
+      // Call refresh before closing
+      if (onRefresh) {
+        onRefresh();
+      }
+
       onClose();
     } catch (error) {
       alertApi.post({

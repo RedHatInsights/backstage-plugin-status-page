@@ -40,6 +40,7 @@ import { AuditActivityStream } from './AuditActivityStream/AuditActivityStream';
 import { useStyles } from './AuditDetailsSection.styles';
 import RoverAuditTable from './AuditTable/RoverAuditTable/RoverAuditTable';
 import ServiceAccountAccessReviewTable from './AuditTable/ServiceAccountAccessReviewTable/ServiceAccountAccessReviewTable';
+import { EpicDisplay } from '../../../components/EpicDisplay';
 
 export const AuditDetailsSection = () => {
   const classes = useStyles();
@@ -74,6 +75,8 @@ export const AuditDetailsSection = () => {
   const [isAuditCompleted, setIsAuditCompleted] = useState(false);
   const [statusChecked, setStatusChecked] = useState(false);
   const [ownerChecked, setOwnerChecked] = useState(false);
+  const [epicKey, setEpicKey] = useState<string>('');
+  const [epicTitle, setEpicTitle] = useState<string>('');
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
   const alertApi = useApi(alertApiRef);
@@ -96,9 +99,13 @@ export const AuditDetailsSection = () => {
           const audit = data[0];
           setIsFinalSignedOff(audit.status === 'access_review_complete');
           setIsAuditCompleted(audit.progress === 'completed');
+          setEpicKey(audit.epic_key || '');
+          setEpicTitle(audit.epic_title || '');
         } else {
           setIsFinalSignedOff(false);
           setIsAuditCompleted(false);
+          setEpicKey('');
+          setEpicTitle('');
         }
         setStatusChecked(true);
       } catch (error) {
@@ -182,6 +189,7 @@ export const AuditDetailsSection = () => {
   const checkAllApprovalsComplete = async (): Promise<{
     canProceed: boolean;
     totalPending: number;
+    incompleteTickets: number;
     userCounts: any;
     serviceCounts: any;
   }> => {
@@ -248,10 +256,32 @@ export const AuditDetailsSection = () => {
         rejected: serviceRejected,
       };
 
+      // Check for incomplete tickets in rejected access reviews
+      const incompleteUserTickets = userData.filter(
+        (d: any) =>
+          d.sign_off_status === 'rejected' &&
+          d.ticket_reference &&
+          d.ticket_reference.trim() !== '' &&
+          !['Resolved', 'Closed'].includes(d.ticket_status),
+      );
+
+      const incompleteServiceTickets = serviceData.filter(
+        (d: any) =>
+          d.sign_off_status === 'rejected' &&
+          d.ticket_reference &&
+          d.ticket_reference.trim() !== '' &&
+          !['Resolved', 'Closed'].includes(d.ticket_status),
+      );
+
+      const totalIncompleteTickets =
+        incompleteUserTickets.length + incompleteServiceTickets.length;
+
       const totalPending = userPending + servicePending;
+
       return {
-        canProceed: totalPending === 0,
+        canProceed: totalPending === 0 && totalIncompleteTickets === 0,
         totalPending,
+        incompleteTickets: totalIncompleteTickets,
         userCounts: userCountsFresh,
         serviceCounts: serviceCountsFresh,
       };
@@ -265,8 +295,15 @@ export const AuditDetailsSection = () => {
       const approvalCheck = await checkAllApprovalsComplete();
 
       if (!approvalCheck.canProceed) {
+        let message = `Cannot proceed with final sign-off. `;
+        if (approvalCheck.totalPending > 0) {
+          message += `${approvalCheck.totalPending} review(s) still pending. Please complete all reviews first.`;
+        }
+        if (approvalCheck.incompleteTickets > 0) {
+          message += ` ${approvalCheck.incompleteTickets} JIRA ticket(s) are not closed. Kindly close the tickets before proceeding with final sign-off.`;
+        }
         alertApi.post({
-          message: `Cannot proceed with final sign-off. ${approvalCheck.totalPending} review(s) still pending. Please complete all reviews first.`,
+          message: message.trim(),
           severity: 'warning',
         });
         return;
@@ -336,8 +373,15 @@ export const AuditDetailsSection = () => {
       const approvalCheck = await checkAllApprovalsComplete();
 
       if (!approvalCheck.canProceed) {
+        let message = `Cannot send email reminder. `;
+        if (approvalCheck.totalPending > 0) {
+          message += `${approvalCheck.totalPending} review(s) still pending. Please complete all reviews first.`;
+        }
+        if (approvalCheck.incompleteTickets > 0) {
+          message += ` ${approvalCheck.incompleteTickets} JIRA ticket(s) are not closed. Kindly close the tickets before proceeding.`;
+        }
         alertApi.post({
-          message: `Cannot send email reminder. ${approvalCheck.totalPending} review(s) still pending. Please complete all reviews first.`,
+          message: message.trim(),
           severity: 'warning',
         });
         return;
@@ -629,9 +673,26 @@ export const AuditDetailsSection = () => {
           alignItems="center"
           mb={2}
         >
-          <Typography variant="h4">
-            {`${app_name} Quarterly Audit – ${period.toUpperCase()} Review`}
-          </Typography>
+          <Box>
+            <Typography variant="h4">
+              {`${app_name} Quarterly Audit – ${period.toUpperCase()} Review`}
+            </Typography>
+            {epicKey && (
+              <Box mt={1} display="flex" alignItems="center">
+                <Typography variant="body2" color="textSecondary">
+                  Epic:
+                </Typography>
+                <EpicDisplay
+                  epicKey={epicKey}
+                  epicTitle={epicTitle}
+                  variant="chip"
+                  size="small"
+                  showKey
+                  showTitle
+                />
+              </Box>
+            )}
+          </Box>
           <Box display="flex" alignItems="center">
             {/* Show Final Sign Off button only for application owners */}
             {isAppOwner && (

@@ -107,6 +107,10 @@ export const AuditSummary: React.FC = () => {
           app_owner: audit.app_owner || '',
           app_delegate: audit.app_delegate || '',
           jira_key: audit.jira_key || '',
+          epic_key: audit.epic_key || '',
+          epic_title: audit.epic_title || '',
+          epic_created_at: audit.epic_created_at || '',
+          epic_created_by: audit.epic_created_by || '',
           progress: audit.status,
         }));
 
@@ -260,6 +264,8 @@ export const AuditSummary: React.FC = () => {
           error={error || undefined}
           onGenerateSummary={handleBack}
           jira_key={auditDetails?.jira_key || ''}
+          epic_key={auditDetails?.epic_key || ''}
+          epic_title={auditDetails?.epic_title || ''}
           isAuditCompleted={isAuditCompleted}
           isSyncing={isSyncing}
           onAuditCompleted={handleAuditCompleted}

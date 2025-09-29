@@ -21,18 +21,51 @@ export class JiraOperations {
    *
    * @param auditData - Audit data containing app_name, frequency, and period
    * @param description - Optional custom description for the Jira ticket
+   * @param createdBy - User who initiated the audit
+   * @param appNames - Optional array of app names for epic title
    * @returns Promise resolving to created Jira ticket details
    * @throws Error if Jira project not found or ticket creation fails
    */
   async createAuditJiraTicket(
     auditData: { app_name: string; frequency: string; period: string },
     description?: string,
+    createdBy: string = 'system',
+    appNames?: string[],
   ) {
     const jiraUrl = this.config.getString('auditCompliance.jiraUrl');
     const jiraToken = this.config.getString('auditCompliance.jiraToken');
     this.logger.info('Creating Jira ticket for audit initiation', auditData);
 
     const { app_name, frequency, period } = auditData;
+
+    // Get or create epic for this period/frequency combination
+    let epicKey = 'N/A'; // Fallback to N/A
+    let epicTitle = 'N/A';
+    let epicCreationFailed = false;
+
+    try {
+      const epicDetails = await this.getOrCreateEpic(
+        period,
+        frequency,
+        createdBy,
+        appNames,
+      );
+      epicKey = epicDetails.key;
+      epicTitle = epicDetails.title;
+      this.logger.info('Using epic for story creation', {
+        epicKey,
+        epicTitle,
+        isNew: epicDetails.isNew,
+      });
+    } catch (epicError) {
+      this.logger.error('Failed to get or create epic, using fallback', {
+        period,
+        frequency,
+        error:
+          epicError instanceof Error ? epicError.message : String(epicError),
+      });
+      epicCreationFailed = true;
+    }
     const titleCaseAppName = this.toTitleCase(app_name);
     const formattedPeriod = period.toUpperCase().replace('-', ' ');
     const formattedFrequency =
@@ -81,8 +114,8 @@ export class JiraOperations {
           'audit-compliance-plugin',
           ...extraLabels,
         ],
-        // Hardcoded epic link for testing - replace with actual epic key when available
-        customfield_12311140: 'APD-1092', // Parent Epic Link - hardcoded for testing
+        // Dynamic epic link based on period/frequency combination
+        ...(epicKey !== 'N/A' ? { customfield_12311140: epicKey } : {}), // Parent Epic Link
         ...(components ? { components } : {}),
         ...otherFields,
       },
@@ -144,12 +177,14 @@ export class JiraOperations {
 
     const status = detailsResp.data.fields.status.name;
 
-    // Store the story key in application_audits table
+    // Store the story key and epic details in application_audits table
     await this.db('application_audits')
       .where({ app_name, frequency, period })
       .update({
         jira_key: issueKey,
         jira_status: status,
+        epic_key: epicKey,
+        epic_title: epicTitle,
         updated_at: this.db.fn.now(),
       });
 
@@ -158,6 +193,9 @@ export class JiraOperations {
       key: issueKey,
       status,
       self: `${jiraUrl}/rest/api/latest/issue/${issueKey}`,
+      epic_key: epicKey,
+      epic_title: epicTitle,
+      epic_creation_failed: epicCreationFailed,
     };
   }
   /*
@@ -738,5 +776,259 @@ export class JiraOperations {
     this.logger.info(
       `Successfully added comment to Jira ticket ${ticket_reference} and updated service account database.`,
     );
+  }
+
+  /**
+   * Checks if an epic already exists for the given period and frequency combination.
+   *
+   * @param period - Audit period (e.g., "Q1-2025", "2025")
+   * @param frequency - Audit frequency (e.g., "quarterly", "yearly")
+   * @returns Promise resolving to epic details if exists, null otherwise
+   */
+  async getExistingEpic(period: string, frequency: string) {
+    this.logger.info('Checking for existing epic', { period, frequency });
+
+    const existingEpic = await this.db('application_audits')
+      .select('epic_key', 'epic_title', 'epic_created_at', 'epic_created_by')
+      .where({
+        period,
+        frequency,
+      })
+      .whereNotNull('epic_key')
+      .first();
+
+    if (existingEpic) {
+      this.logger.info('Found existing epic', {
+        period,
+        frequency,
+        epic_key: existingEpic.epic_key,
+        epic_title: existingEpic.epic_title,
+      });
+    } else {
+      this.logger.info('No existing epic found', { period, frequency });
+    }
+
+    return existingEpic;
+  }
+
+  /**
+   * Creates a parent epic in JIRA-1 board for the given period and frequency.
+   *
+   * @param period - Audit period (e.g., "Q1-2025", "2025")
+   * @param frequency - Audit frequency (e.g., "quarterly", "yearly")
+   * @param createdBy - User who initiated the epic creation
+   * @param appNames - Optional array of app names to include in epic title
+   * @returns Promise resolving to created epic details
+   * @throws Error if epic creation fails
+   */
+  async createParentEpic(
+    period: string,
+    frequency: string,
+    createdBy: string = 'system',
+    appNames?: string[],
+  ) {
+    const jiraUrl = this.config.getString('auditCompliance.jiraUrl');
+    const jiraToken = this.config.getString('auditCompliance.jiraToken');
+    const epicProject =
+      this.config.getString('auditCompliance.epicProject') || 'JIRA-1';
+
+    this.logger.info('Creating parent epic', {
+      period,
+      frequency,
+      epicProject,
+    });
+
+    const formattedPeriod = period.toUpperCase().replace('-', ' ');
+    const formattedFrequency =
+      frequency.charAt(0).toUpperCase() + frequency.slice(1);
+
+    // Create epic title with app names if provided
+    let epicTitle;
+    if (appNames && appNames.length > 0) {
+      const appNamesStr = appNames.join(', ');
+      epicTitle = `${appNamesStr} - ${formattedFrequency} Access Review ${formattedPeriod}`;
+    } else {
+      epicTitle = `[${formattedPeriod}] ${formattedFrequency} Audit Epic`;
+    }
+    const epicDescription = `Parent epic for ${formattedPeriod} ${frequency} audit compliance activities. This epic contains all audit stories for applications undergoing ${frequency} access reviews during ${formattedPeriod}.`;
+
+    const requestBody: JiraRequestBody = {
+      fields: {
+        project: { key: epicProject },
+        summary: epicTitle,
+        description: epicDescription,
+        issuetype: { name: 'Epic' as JiraIssueType },
+        labels: [
+          'audit-compliance-epic',
+          period.toLowerCase(),
+          frequency.toLowerCase(),
+        ],
+        customfield_12311141: epicTitle, // Epic Name field
+      },
+    };
+
+    this.logger.info('EPIC: Jira ticket request body', {
+      requestBody,
+      createdBy,
+    });
+
+    let createResp;
+    try {
+      createResp = await axios.post(
+        `${jiraUrl}/rest/api/latest/issue`,
+        requestBody,
+        {
+          headers: {
+            Authorization: `Bearer ${jiraToken}`,
+            'Content-Type': CONTENT_TYPE_JSON,
+          },
+        },
+      );
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        this.logger.error('Epic creation failed', {
+          data: error.response?.data,
+          status: error.response?.status,
+        });
+      } else {
+        this.logger.error('Epic creation failed', {
+          error: String(error),
+        });
+      }
+      throw error;
+    }
+
+    const { key: epicKey, id: epicId } = createResp.data;
+    const epicUrl = `${jiraUrl}/browse/${epicKey}`;
+
+    this.logger.info('Epic created successfully', {
+      epicKey,
+      epicId,
+      epicTitle,
+      epicUrl,
+    });
+
+    return {
+      key: epicKey,
+      id: epicId,
+      title: epicTitle,
+      url: epicUrl,
+    };
+  }
+
+  /**
+   * Updates all audit records for a given period and frequency with epic details.
+   *
+   * @param period - Audit period
+   * @param frequency - Audit frequency
+   * @param epicDetails - Epic details to store
+   * @param createdBy - User who created the epic
+   * @returns Promise resolving to number of updated records
+   */
+  async updateAuditRecordsWithEpic(
+    period: string,
+    frequency: string,
+    epicDetails: { key: string; title: string; url: string },
+    createdBy: string = 'system',
+  ) {
+    this.logger.info('Updating audit records with epic details', {
+      period,
+      frequency,
+      epicKey: epicDetails.key,
+      epicTitle: epicDetails.title,
+    });
+
+    const updatedCount = await this.db('application_audits')
+      .where({
+        period,
+        frequency,
+      })
+      .update({
+        epic_key: epicDetails.key,
+        epic_title: epicDetails.title,
+        epic_created_at: this.db.fn.now(),
+        epic_created_by: createdBy,
+      });
+
+    this.logger.info('Updated audit records with epic details', {
+      period,
+      frequency,
+      updatedCount,
+    });
+
+    return updatedCount;
+  }
+
+  /**
+   * Gets or creates an epic for the given period and frequency combination.
+   * If epic exists, returns existing details. If not, creates new epic and updates all related audit records.
+   *
+   * @param period - Audit period
+   * @param frequency - Audit frequency
+   * @param createdBy - User who initiated the request
+   * @param appNames - Optional array of app names to include in epic title
+   * @returns Promise resolving to epic details
+   */
+  async getOrCreateEpic(
+    period: string,
+    frequency: string,
+    createdBy: string = 'system',
+    appNames?: string[],
+  ) {
+    this.logger.info('Getting or creating epic', {
+      period,
+      frequency,
+      createdBy,
+    });
+
+    // Check if epic already exists
+    const existingEpic = await this.getExistingEpic(period, frequency);
+
+    if (existingEpic) {
+      this.logger.info('Using existing epic', {
+        period,
+        frequency,
+        epic_key: existingEpic.epic_key,
+        epic_title: existingEpic.epic_title,
+      });
+
+      return {
+        key: existingEpic.epic_key,
+        title: existingEpic.epic_title,
+        url: `${this.config.getString('auditCompliance.jiraUrl')}/browse/${
+          existingEpic.epic_key
+        }`,
+        isNew: false,
+      };
+    }
+
+    // Create new epic
+    this.logger.info('Creating new epic', { period, frequency, appNames });
+    const epicDetails = await this.createParentEpic(
+      period,
+      frequency,
+      createdBy,
+      appNames,
+    );
+
+    // Update all audit records for this period/frequency with epic details
+    await this.updateAuditRecordsWithEpic(
+      period,
+      frequency,
+      epicDetails,
+      createdBy,
+    );
+
+    this.logger.info('Epic created and audit records updated', {
+      period,
+      frequency,
+      epic_key: epicDetails.key,
+      epic_title: epicDetails.title,
+    });
+
+    return {
+      ...epicDetails,
+      isNew: true,
+    };
   }
 }

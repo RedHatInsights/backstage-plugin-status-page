@@ -37,6 +37,7 @@ import {
   AuditProgressStepper,
   AuditStep,
 } from '../../../AuditCompliancePage/audit-components/AuditProgressStepper/AuditProgressStepper';
+import { EpicDisplay } from '../../../components/EpicDisplay';
 
 export const OngoingAuditsSection = ({
   applications,
@@ -134,6 +135,10 @@ export const OngoingAuditsSection = ({
           status: audit.status || 'UNKNOWN',
           progress: audit.progress || 'audit_started',
           jira_key: audit.jira_key || audit.jira_ticket || '',
+          epic_key: audit.epic_key || '',
+          epic_title: audit.epic_title || '',
+          epic_created_at: audit.epic_created_at || '',
+          epic_created_by: audit.epic_created_by || '',
           created_at: audit.created_at,
         });
       });
@@ -320,13 +325,11 @@ export const OngoingAuditsSection = ({
             onChange={e => handleStatusFilterChange(e.target.value as string)}
           >
             <MenuItem value="all">All Status</MenuItem>
-            <MenuItem value="AUDIT_STARTED">Audit Started</MenuItem>
             <MenuItem value="IN_PROGRESS">In Progress</MenuItem>
             <MenuItem value="ACCESS_REVIEW_COMPLETE">
               Access Review Complete
             </MenuItem>
             <MenuItem value="COMPLETED">Completed</MenuItem>
-            <MenuItem value="NOT_STARTED">Not Started</MenuItem>
           </Select>
         </FormControl>
 
@@ -418,6 +421,20 @@ export const OngoingAuditsSection = ({
                                   summary.app.app_name,
                                 )} - Audit Details`}
                                 columns={[
+                                  {
+                                    title: 'Parent Audit Epic',
+                                    field: 'epic_key',
+                                    render: (row: any) => (
+                                      <EpicDisplay
+                                        epicKey={row.epic_key}
+                                        epicTitle={row.epic_title}
+                                        variant="link"
+                                        size="small"
+                                        showKey
+                                        showTitle={false}
+                                      />
+                                    ),
+                                  },
                                   {
                                     title: 'Jira Ticket',
                                     field: 'jira_key',

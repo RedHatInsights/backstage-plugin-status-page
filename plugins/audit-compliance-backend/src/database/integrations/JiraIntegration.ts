@@ -34,18 +34,35 @@ export async function checkAndUpdateJiraStatuses(
   const statusCache: Map<string, string> = new Map();
 
   try {
-    // Fetch all tickets that are not completed or closed
-    const rows = await db('group_access_reports')
-      .select('ticket_reference', 'ticket_status')
-      .whereNotIn('ticket_status', ['Completed', 'Closed'])
-      .whereNotNull('ticket_reference');
+    // Fetch all tickets that are not completed or closed from both tables
+    const [groupAccessRows, serviceAccountRows] = await Promise.all([
+      db('group_access_reports')
+        .select('ticket_reference', 'ticket_status')
+        .whereNotIn('ticket_status', ['Completed', 'Closed'])
+        .whereNotNull('ticket_reference'),
+      db('service_account_access_review')
+        .select('ticket_reference', 'ticket_status')
+        .whereNotIn('ticket_status', ['Completed', 'Closed'])
+        .whereNotNull('ticket_reference'),
+    ]);
+
+    const allRows = [
+      ...groupAccessRows.map(row => ({
+        ...row,
+        table: 'group_access_reports',
+      })),
+      ...serviceAccountRows.map(row => ({
+        ...row,
+        table: 'service_account_access_review',
+      })),
+    ];
 
     logger.info(
-      `Found ${rows.length} Jira tickets to check for status updates`,
+      `Found ${allRows.length} Jira tickets to check for status updates (${groupAccessRows.length} group access, ${serviceAccountRows.length} service account)`,
     );
 
-    for (const row of rows) {
-      const { ticket_reference, ticket_status } = row;
+    for (const row of allRows) {
+      const { ticket_reference, ticket_status, table } = row;
 
       // Skip if no ticket reference (extra safety check)
       if (!ticket_reference) continue;
@@ -67,12 +84,12 @@ export async function checkAndUpdateJiraStatuses(
 
       // Update database if status has changed
       if (latestStatus !== ticket_status) {
-        await db('group_access_reports')
+        await db(table)
           .where('ticket_reference', ticket_reference)
           .update({ ticket_status: latestStatus });
 
         logger.info(
-          `Updated JIRA status for ${ticket_reference}: ${ticket_status} → ${latestStatus}`,
+          `Updated JIRA status for ${ticket_reference} in ${table}: ${ticket_status} → ${latestStatus}`,
         );
       }
 

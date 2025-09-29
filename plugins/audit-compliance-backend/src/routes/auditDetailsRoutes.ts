@@ -2,6 +2,7 @@ import { Knex } from 'knex';
 import express from 'express';
 import Router from 'express-promise-router';
 import { AuditComplianceDatabase } from '../database/AuditComplianceDatabase';
+import { checkAndUpdateJiraStatuses } from '../database/integrations/JiraIntegration';
 
 /**
  * Creates the plugin router with all endpoint definitions.
@@ -45,6 +46,9 @@ export async function createDetailsRouter(
     }
 
     try {
+      // Refresh JIRA ticket statuses before returning data
+      await checkAndUpdateJiraStatuses(knex, logger, config);
+
       const reviews = await database.getAccessReviews({
         app_name: app_name as string,
         frequency: frequency as string,
@@ -217,6 +221,9 @@ export async function createDetailsRouter(
     }
 
     try {
+      // Refresh JIRA ticket statuses before returning data
+      await checkAndUpdateJiraStatuses(knex, logger, config);
+
       const reviews = await database.getServiceAccountAccessReviews({
         app_name: app_name as string,
         frequency: frequency as string,

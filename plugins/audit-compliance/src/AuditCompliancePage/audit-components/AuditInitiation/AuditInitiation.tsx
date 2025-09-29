@@ -37,6 +37,7 @@ import {
   AuditProgressStepper,
   AuditStep,
 } from '../AuditProgressStepper/AuditProgressStepper';
+import { EpicDisplay } from '../../../components/EpicDisplay';
 
 const getQuarterOptions = () => [
   { value: 'Q1', label: 'Q1 (Jan - Mar)' },
@@ -59,6 +60,10 @@ interface AuditHistoryItem {
   created_at: string;
   progress: AuditStep;
   jira_key: string;
+  epic_key?: string;
+  epic_title?: string;
+  epic_created_at?: string;
+  epic_created_by?: string;
 }
 export const AuditInitiation = () => {
   const { app_name } = useParams<{ app_name: string }>();
@@ -497,6 +502,20 @@ export const AuditInitiation = () => {
               <Table
                 title="Audit History"
                 columns={[
+                  {
+                    title: 'Parent Audit Epic',
+                    field: 'epic_key',
+                    render: (row: AuditHistoryItem) => (
+                      <EpicDisplay
+                        epicKey={row.epic_key}
+                        epicTitle={row.epic_title}
+                        variant="link"
+                        size="small"
+                        showKey
+                        showTitle={false}
+                      />
+                    ),
+                  },
                   {
                     title: 'Jira Ticket',
                     field: 'jira_key',
