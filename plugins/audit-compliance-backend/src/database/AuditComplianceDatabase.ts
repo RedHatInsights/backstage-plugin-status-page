@@ -292,8 +292,15 @@ export class AuditComplianceDatabase {
   async createAuditJiraTicket(
     auditData: { app_name: string; frequency: string; period: string },
     description?: string,
+    createdBy?: string,
+    appNames?: string[],
   ) {
-    return this.jiraOps.createAuditJiraTicket(auditData, description);
+    return this.jiraOps.createAuditJiraTicket(
+      auditData,
+      description,
+      createdBy,
+      appNames,
+    );
   }
   // Implementation: JiraOperations.ts
   async createServiceAccountJiraTicket(params: any) {

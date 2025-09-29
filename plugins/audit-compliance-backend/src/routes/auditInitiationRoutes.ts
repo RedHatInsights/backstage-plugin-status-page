@@ -179,11 +179,15 @@ export async function createAuditInitiationRouter(
       let jiraTicket = null;
       let jiraCreationFailed = false;
       try {
-        jiraTicket = await database.createAuditJiraTicket({
-          app_name: audit.app_name,
-          frequency: audit.frequency,
-          period: audit.period,
-        });
+        jiraTicket = await database.createAuditJiraTicket(
+          {
+            app_name: audit.app_name,
+            frequency: audit.frequency,
+            period: audit.period,
+          },
+          undefined,
+          audit.initiated_by || 'system',
+        );
         // Update the audit record with the Jira ticket key
         await database.updateAudit(
           audit.app_name,
@@ -226,6 +230,13 @@ export async function createAuditInitiationRouter(
         reports_generated: successfulReports.length,
         jira_creation_failed: jiraCreationFailed,
         jira_ticket: jiraTicket,
+        epic_details: jiraTicket
+          ? {
+              epic_key: jiraTicket.epic_key,
+              epic_title: jiraTicket.epic_title,
+              epic_creation_failed: jiraTicket.epic_creation_failed,
+            }
+          : null,
       });
     } catch (error) {
       const errorMessage =

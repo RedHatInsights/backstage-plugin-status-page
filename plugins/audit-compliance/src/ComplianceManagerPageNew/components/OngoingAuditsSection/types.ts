@@ -13,6 +13,10 @@ export interface AuditInfo {
   status: string;
   progress?: string;
   jira_key?: string;
+  epic_key?: string;
+  epic_title?: string;
+  epic_created_at?: string;
+  epic_created_by?: string;
   created_at: string;
 }
 

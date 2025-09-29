@@ -16,10 +16,29 @@ export interface JiraRequestFields extends JsonObject {
   labels: string[];
   assignee?: { emailAddress: string };
   customfield_12311140?: string; // Parent Epic Link
+  components?: Array<{ name: string }>;
 }
 
 export interface JiraRequestBody extends JsonObject {
   fields: JiraRequestFields;
+}
+
+export interface EpicDetails {
+  key: string;
+  id: string;
+  title: string;
+  url: string;
+  isNew?: boolean;
+}
+
+export interface JiraTicketResponse {
+  id: string;
+  key: string;
+  status: string;
+  self: string;
+  epic_key?: string;
+  epic_title?: string;
+  epic_creation_failed?: boolean;
 }
 
 /**

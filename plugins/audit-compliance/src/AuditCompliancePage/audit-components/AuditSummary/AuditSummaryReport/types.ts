@@ -23,6 +23,10 @@ export interface AccessReviewSummary {
   auditorNotes: AuditorNote[];
   statistics?: StatisticsData;
   jira_key?: string;
+  epic_key?: string;
+  epic_title?: string;
+  epic_created_at?: string;
+  epic_created_by?: string;
   progress: 'in_progress' | 'completed';
 }
 
@@ -158,6 +162,8 @@ export interface SummaryReportProps {
   error?: string;
   onGenerateSummary?: () => Promise<void>;
   jira_key?: string;
+  epic_key?: string;
+  epic_title?: string;
   isAuditCompleted?: boolean;
   isSyncing?: boolean;
   onAuditCompleted?: () => void;

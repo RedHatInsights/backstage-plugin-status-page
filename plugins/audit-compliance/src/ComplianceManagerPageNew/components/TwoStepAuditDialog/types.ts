@@ -18,6 +18,7 @@ export interface AuditResult {
   period: string;
   jira_ticket: string;
   status: string;
+  epic_key?: string;
 }
 
 // Interface for the raw audit data from backend
@@ -35,6 +36,14 @@ export interface RawAuditResult {
     key: string;
     status: string;
     self: string;
+    epic_key?: string;
+    epic_title?: string;
+    epic_creation_failed?: boolean;
+  } | null;
+  epic_details?: {
+    epic_key: string;
+    epic_title: string;
+    epic_creation_failed: boolean;
   } | null;
 }
 
@@ -50,8 +59,8 @@ export interface TwoStepAuditDialogProps {
   onQuarterChange: (quarter: string) => void;
   onYearChange: (year: number) => void;
   onApplicationsChange: (applicationIds: string[]) => void;
-  onInitiate: () => void;
   initiating: boolean;
   getQuarterOptions: () => Array<{ value: string; label: string }>;
   getYearOptions: () => number[];
+  onRefresh?: () => void;
 }

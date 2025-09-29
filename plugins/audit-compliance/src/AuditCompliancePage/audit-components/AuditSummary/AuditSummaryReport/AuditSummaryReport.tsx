@@ -38,6 +38,7 @@ import {
   StatCard,
   useAuditReportPDF,
 } from './components';
+import { EpicDisplay } from '../../../../components/EpicDisplay';
 import { ReviewDataTable } from './ReviewDataTable';
 import { StatisticsData, SummaryReportProps } from './types';
 import { calculateTotals } from './utils';
@@ -185,6 +186,8 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
   isAuditCompleted,
   isSyncing,
   onAuditCompleted,
+  epic_key,
+  epic_title,
 }): JSX.Element => {
   const classes = useStyles();
   const discoveryApi = useApi(discoveryApiRef);
@@ -974,6 +977,26 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
                   )}
                 </Typography>
               </Grid>
+              {epic_key && (
+                <Grid item xs={12} md={3}>
+                  <Typography
+                    variant="subtitle2"
+                    color="textSecondary"
+                    gutterBottom
+                    style={{ marginTop: '16px' }}
+                  >
+                    Epic
+                  </Typography>
+                  <EpicDisplay
+                    epicKey={epic_key}
+                    epicTitle={epic_title}
+                    variant="link"
+                    size="medium"
+                    showKey
+                    showTitle
+                  />
+                </Grid>
+              )}
             </Grid>
           )}
 
