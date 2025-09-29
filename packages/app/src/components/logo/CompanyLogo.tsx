@@ -5,11 +5,11 @@ import Icon from './logo/Logo_XE_compass_icon.svg';
 const logoVariants = {
   logoDark: {
     src: LogoDark,
-    width: '160px',
+    width: '8rem',
   },
   logoLight: {
     src: LogoLight,
-    width: '160px',
+    width: '8rem',
   },
   icon: {
     src: Icon,
@@ -24,5 +24,7 @@ interface CompanyLogoProps {
 export const CompanyLogo = ({ variant }: CompanyLogoProps) => {
   const props = logoVariants[variant];
 
-  return <img alt="company logo" {...props} />;
+  return (
+    <img alt="company logo" src={props.src} style={{ width: props.width }} />
+  );
 };

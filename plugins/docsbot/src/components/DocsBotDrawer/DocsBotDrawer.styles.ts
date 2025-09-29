@@ -2,11 +2,11 @@ import { makeStyles } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    marginTop: 'calc(6rem - 8px)',
+    marginTop: theme.spacing(8),
     marginRight: theme.spacing(1),
     backgroundColor: theme.palette.background.paper,
     borderRadius: theme.shape.borderRadius * 4,
-    height: 'calc(100vh - 5 * 1.3rem)', // Same as Root.css height
+    maxHeight: `calc(100vh - ${theme.spacing(11)}px)`,
   },
 
   fullHeightContainer: {

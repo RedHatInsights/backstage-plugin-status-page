@@ -1,3 +1,4 @@
+import { Link } from '@backstage/core-components';
 import {
   configApiRef,
   useApi,
@@ -32,6 +33,7 @@ const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.paper,
     borderRadius: theme.shape.borderRadius * 5,
+    paddingInline: '4px',
   },
 }));
 
@@ -40,6 +42,7 @@ const SearchBar = () => {
   const { setTerm, result } = useSearch();
   const [searchText, setSearchText] = useState('');
   const [options, setOptions] = useState<Result<SearchDocument>[]>([]);
+  const [selectedOption, setSelectedOption] = useState<string>();
 
   useEffect(() => {
     if (result.value && result.value.results)
@@ -56,14 +59,13 @@ const SearchBar = () => {
         inputRef.current?.focus();
       }
     };
-
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, []);
 
   useDebounce(
     () => {
-      if (searchText.trim().length > 0) setTerm(searchText);
+      if (searchText.length > 0) setTerm(searchText);
     },
     400,
     [searchText],
@@ -80,29 +82,32 @@ const SearchBar = () => {
       id="root-search-bar"
       freeSolo
       clearOnBlur
-      clearOnEscape
       blurOnSelect
+      disableClearable
       openOnFocus
-      fullWidth
-      value={null}
+      value={selectedOption}
+      inputValue={selectedOption}
       options={options}
+      fullWidth
       filterOptions={x => x} // don't filter while typing
-      getOptionSelected={(op, val) =>
-        op.document.location === val.document.location
-      }
-      getOptionLabel={option => {
-        if (typeof option === 'string') return option; // free solo typing
-        return option.document.title;
+      getOptionSelected={(op, val) => {
+        if (typeof val === 'string') return false;
+        return op.document.location === val.document.location;
       }}
+      // getOptionLabel={option => {
+      //   if (typeof option === 'string') return option; // free solo typing
+      //   return option.document.title;
+      // }}
       onChange={(_e, val) => {
-        if (val && typeof val === 'object') {
+        if (val && typeof val === 'string') {
+          navigate(`${searchRoute()}?query=${val.trim()}`);
+        } else if (val && typeof val === 'object') {
           navigate(val.document.location);
-        } else if (searchText.trim())
-          navigate(`${searchRoute()}?query=${searchText}`);
-        setSearchText('');
+        }
+        setSelectedOption(() => searchText);
       }}
-      onInputChange={(_e, val) => {
-        setSearchText(val.trim());
+      onInputChange={(_e, val, reason) => {
+        if (reason === 'input') setSearchText(() => val);
       }}
       PaperComponent={props => (
         <Paper
@@ -124,9 +129,18 @@ const SearchBar = () => {
                 background: 'rgba(0,0,0,0.04)',
               }}
             >
-              ⏎
+              Enter ⏎
             </kbd>{' '}
-            to view all {result.value?.numberOfResults} results
+            to{' '}
+            <Link
+              to={`${searchRoute()}?query=${searchText}`}
+              onClick={_e => {
+                (document.activeElement as HTMLElement).blur();
+                setSelectedOption(() => searchText);
+              }}
+            >
+              view all {result.value?.numberOfResults} results
+            </Link>
           </Typography>
         </Paper>
       )}
@@ -152,6 +166,7 @@ const SearchBar = () => {
             );
         }
       }}
+      // size='small'
       renderInput={params => (
         <TextField
           {...params}
@@ -160,8 +175,14 @@ const SearchBar = () => {
           placeholder={`Search in ${
             config.getOptionalString('organization.name') ?? 'XE Compass'
           }`}
-          InputProps={{
-            ...params.InputProps,
+          inputProps={{
+            ...params.inputProps,
+            style: {
+              paddingBlock: '12px',
+            },
+          }}
+          InputProps={{ 
+            ref: params.InputProps.ref,
             classes: { root: classes.root },
             startAdornment: (
               <InputAdornment position="start">
@@ -176,7 +197,8 @@ const SearchBar = () => {
                   sx={{
                     px: 1,
                     py: 0.25,
-                    borderRadius: 1,
+                    marginX: '4px',
+                    borderRadius: '8px',
                     bgcolor: 'action.hover',
                     fontSize: '0.9rem',
                     fontFamily: 'monospace',
@@ -199,7 +221,17 @@ const SearchBar = () => {
 export const CustomSearchBar = (props: SearchContextProviderProps) => {
   return (
     <SearchContextProvider {...props}>
-      <SearchBar />
+      <Box
+        sx={{
+          position: 'relative',
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'start',
+        }}
+      >
+        <SearchBar />
+      </Box>
     </SearchContextProvider>
   );
 };

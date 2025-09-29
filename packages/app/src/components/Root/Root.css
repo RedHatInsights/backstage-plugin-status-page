@@ -1,13 +1,3 @@
-div#root > div.MuiBox-root {
-  height: 100vh;
-}
-
-/* This will fix the height issue when app bar is added above main header */
-div.MuiBox-root > main {
-  margin: 1rem;
-  height: calc(100vh - 5 * 1.3rem);
-}
-
 /* This will patch width of content when docsbot panel is expanded */
 body.docsbot-open div.MuiBox-root > main {
   width: calc(100% - 416px);
