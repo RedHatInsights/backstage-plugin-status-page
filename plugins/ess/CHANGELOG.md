@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-ess [1.0.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-ess@1.0.0...@appdev/backstage-plugin-ess@1.0.1) (2025-09-30)
+
+
+### Other changes
+
+* tag based filtering added for the ESS platforms ([445e0c8](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/445e0c8303fb275a8d251a8e52d6e33903f018ab))
+
 ## @appdev/backstage-plugin-ess 1.0.0 (2025-09-22)
 
 
