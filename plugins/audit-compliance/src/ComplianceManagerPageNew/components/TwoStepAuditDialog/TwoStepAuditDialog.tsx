@@ -48,6 +48,7 @@ import {
   configApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
+import { formatAppDisplayName } from '../../../utils/string';
 
 export const TwoStepAuditDialog = ({
   open,
@@ -434,7 +435,7 @@ Audit and Compliance Team`;
         const emailTitle = `[Action Required] ${
           frequency === 'quarterly' ? 'Quarterly' : 'Yearly'
         } Access Reviews ${periodText} - ${selectedApps
-          .map(app => app.app_name)
+          .map(app => formatAppDisplayName(app.app_name))
           .join(', ')}`;
         const emailBody = generateEmailBody(results, mainTicket);
 
