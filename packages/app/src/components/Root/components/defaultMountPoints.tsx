@@ -83,6 +83,7 @@ export const globalHeaderComponentsMountPoints: GlobalHeaderComponentMountPoint[
         priority: 15,
         props: {
           size: 'medium',
+          tooltip: 'Open Assistant'
         },
       },
     }),

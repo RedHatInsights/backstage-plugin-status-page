@@ -2,10 +2,31 @@ import {
   AssistantIcon,
   AssistantPanel,
 } from '@compass/backstage-plugin-assistant';
-import { IconButton } from '@material-ui/core';
+import { IconButton, makeStyles } from '@material-ui/core';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import { CSSProperties, useEffect, useState } from 'react';
+
+const useStyles = makeStyles(theme => ({
+  button: {
+    transitionProperty: 'all',
+    transitionDuration: `${theme.transitions.duration.standard}ms`,
+    transitionTimingFunction: theme.transitions.easing.easeInOut,
+
+    'body.assistant-open &, &:hover': {
+      backgroundColor: '#e00',
+      color: theme.palette.getContrastText('#e00'),
+      rotate: '360deg',
+    },
+    '&:hover': {
+      animation: 'Assistant-Icon-Pulse 1.5s ease-in-out 0.5s infinite',
+      scale: 'var(--scale)',
+    },
+    'body.assistant-open &': {
+      borderRadius: theme.shape.borderRadius * 4,
+    },
+  },
+}));
 
 type AssistantButtonProps = {
   title?: string;
@@ -22,7 +43,9 @@ export const AssistantButton = ({
   layout,
   size,
 }: AssistantButtonProps) => {
+  const classes = useStyles();
   const [isOpen, setIsOpen] = useState(false);
+
   const togglePanel = (): void => {
     setIsOpen(!isOpen);
   };
@@ -47,6 +70,7 @@ export const AssistantButton = ({
           size={size}
           aria-label={title}
           onClick={togglePanel}
+          className={classes.button}
         >
           <AssistantIcon />
         </IconButton>

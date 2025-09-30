@@ -1,5 +1,6 @@
 import {
   Box,
+  Chip,
   Fab,
   IconButton,
   makeStyles,
@@ -8,14 +9,15 @@ import {
   Tooltip,
   Typography,
 } from '@material-ui/core';
+import ResetIcon from '@material-ui/icons/DeleteSweepOutlined';
 import CloseIcon from '@material-ui/icons/LastPageRounded';
 import RefreshIcon from '@material-ui/icons/RefreshOutlined';
-import ResetIcon from '@material-ui/icons/DeleteSweepOutlined';
 import PinnedIcon from '@material-ui/icons/VerticalSplit';
 import PinIcon from '@material-ui/icons/VerticalSplitOutlined';
 import { ThemeConfig } from '@red-hat-developer-hub/backstage-plugin-theme';
 import { clsx } from 'clsx';
 import { useContext } from 'react';
+import pkg from '../../package.json';
 import { AgentContext } from '../contexts/AgentProvider';
 
 const useStyles = makeStyles<Theme & ThemeConfig>(theme => ({
@@ -66,6 +68,8 @@ export const ChatHeader = ({
   const classes = useStyles();
   const { loading, reloadChat, clearChat } = useContext(AgentContext);
 
+  const lifecycle = (['alpha', 'beta'] as const).find(lc => pkg.version.toLowerCase().includes(lc.toLowerCase()));
+
   const handlePinClick = () => {
     togglePin?.(!isPinned);
   };
@@ -94,7 +98,8 @@ export const ChatHeader = ({
       </Tooltip>
       <Box flex={1}>
         <Typography variant="h5" style={{ margin: 0 }}>
-          Compass Assistant
+          Compass Assistant{' '}
+          { lifecycle && <Chip size='small' variant='outlined' label={lifecycle} /> }
         </Typography>
       </Box>
       <Tooltip title="Clear Chat">
