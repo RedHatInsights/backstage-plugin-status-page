@@ -13,10 +13,11 @@ export const usePlatforms = () => {
       },
     });
     
-    // Response already filtered by the API based on the filter criteria
-    const filteredEntities = response.items;
-    
-    // Filtered ESS entities found
+    // Filter entities to only include those with BOTH 'ess' AND 'platform' tags
+    const filteredEntities = response.items.filter(entity => {
+      const tags = entity.metadata.tags || [];
+      return tags.includes('ess') && tags.includes('platform');
+    });
 
     // Transform entities to our Platform interface
     const platforms: Platform[] = filteredEntities.map(entity => ({
