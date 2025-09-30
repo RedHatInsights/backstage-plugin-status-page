@@ -105,13 +105,13 @@ const tools: ComplianceTool[] = [
     tags: ['Access Control', 'Audit', 'Security'],
   },
   {
-    name: 'ESS Compliance',
+    name: 'ESS',
     description: 'A centralized compliance view would reduce overhead, eliminate duplication, and provide clearer ownership and lifecycle tracking across platforms and applications.',
     path: '/compliance/ess',
     tags: ['ESS', 'Compliance', 'Security Standards'],
   },
   {
-    name: 'GDPR Automation',
+    name: 'GDPR',
     description: 'Manage GDPR requests in a standardized and automated way, integrating seamlessly with Drupal applications and Compass workflows.',
     path: '/compliance/gdpr',
     tags: ['Data Privacy', 'GDPR', 'Automation'],
@@ -125,7 +125,7 @@ export const CompliancePage = () => {
     <Page themeId="tool">
       <Header
         title="Compliance Hub"
-        subtitle="Centralized compliance management and insights"
+        subtitle="One place to track, manage, and automate compliance workflows"
       >
         <HeaderLabel label="Owner" value="AppDev" />
         <HeaderLabel label="Lifecycle" value="Beta" />
