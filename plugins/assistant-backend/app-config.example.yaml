@@ -1,0 +1,5 @@
+assistant:
+  llmOptions:
+    modelId: ${ASSISTANT_MODEL_ID}
+    url: ${ASSISTANT_MODEL_URL}
+    apiKey: ${ASSISTANT_MODEL_API_KEY}

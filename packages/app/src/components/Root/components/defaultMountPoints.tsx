@@ -6,10 +6,10 @@ import {
 } from '@red-hat-developer-hub/backstage-plugin-global-header';
 import { SidebarLogo } from './SidebarLogo';
 import { ComponentType } from 'react';
-import { DocsbotButton } from './DocsbotButton';
 import { GlobalHeaderComponentMountPoint } from './types';
 import { CustomSearchBar } from './Searchbar';
 import { ProfileDropdown } from './ProfileDropdown';
+import { AssistantButton } from './AssistantButton';
 
 function createMountPoint<T extends ComponentType<any>>(
   mountPoint: GlobalHeaderComponentMountPoint<T>,
@@ -49,8 +49,12 @@ export const globalHeaderComponentsMountPoints: GlobalHeaderComponentMountPoint[
           to: '/create',
           title: 'Create',
           size: 'medium',
-          tooltip: 'Goto to Templates',
+          tooltip: 'Goto Templates',
+          color: 'primary',
         },
+        layout: {
+          color: '#0066CC',
+        }
       },
     }),
     createMountPoint({
@@ -74,7 +78,7 @@ export const globalHeaderComponentsMountPoints: GlobalHeaderComponentMountPoint[
       },
     }),
     createMountPoint({
-      Component: DocsbotButton,
+      Component: AssistantButton,
       config: {
         priority: 15,
         props: {

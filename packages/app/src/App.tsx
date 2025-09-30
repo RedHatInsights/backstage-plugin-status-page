@@ -103,6 +103,7 @@ import Logout from '@mui/icons-material/LogoutOutlined';
 import CategoryOutlinedIcon from '@material-ui/icons/CategoryOutlined';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import CreateComponentIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+import { AssistantProvider, featureFlags as assistantFeatureFlags } from '@compass/backstage-plugin-assistant';
 
 const app = createApp({
   apis,
@@ -132,11 +133,7 @@ const app = createApp({
     SignInPage: props => <SignInPage {...props} auto providers={['guest']} />,
   },
   featureFlags: [
-    {
-      name: 'default-catalog-index',
-      pluginId: 'catalog-index',
-      description: 'Fall back to the default catalog index page.',
-    },
+    assistantFeatureFlags.debug,
   ],
   icons: {
     'kind:workstream': GroupWorkIcon,
@@ -276,7 +273,9 @@ export default app.createRoot(
     <SignalsDisplay />
     <AppRouter>
       <RedirectsProvider>
-        <Root>{routes}</Root>
+        <AssistantProvider>
+          <Root>{routes}</Root>
+        </AssistantProvider>
       </RedirectsProvider>
       <GlobalFeedbackComponent />
     </AppRouter>

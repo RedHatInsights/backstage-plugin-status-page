@@ -264,7 +264,6 @@ gdpr:
     serviceAccount: ${GDPR_DRUPAL_SA}
     token: ${GDPR_DRUPAL_TOKEN}
 
-
 permission:
   enabled: true
 
@@ -275,3 +274,9 @@ devTools:
       - "@appdev"
       - "@janus-idp/"
       - "@redhat-developer/"
+
+assistant:
+  llmOptions:
+    modelId: ${ASSISTANT_MODEL_ID}
+    url: ${ASSISTANT_MODEL_URL}
+    apiKey: ${ASSISTANT_MODEL_API_KEY}
