@@ -11,6 +11,7 @@ import {
   discoveryApiRef,
   fetchApiRef,
   identityApiRef,
+  configApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
 import {
@@ -27,6 +28,7 @@ import {
   Tabs,
   Tooltip,
   Typography,
+  Link as MuiLink,
 } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import AssessmentIcon from '@material-ui/icons/Assessment';
@@ -40,7 +42,6 @@ import { AuditActivityStream } from './AuditActivityStream/AuditActivityStream';
 import { useStyles } from './AuditDetailsSection.styles';
 import RoverAuditTable from './AuditTable/RoverAuditTable/RoverAuditTable';
 import ServiceAccountAccessReviewTable from './AuditTable/ServiceAccountAccessReviewTable/ServiceAccountAccessReviewTable';
-import { EpicDisplay } from '../../../components/EpicDisplay';
 
 export const AuditDetailsSection = () => {
   const classes = useStyles();
@@ -81,6 +82,8 @@ export const AuditDetailsSection = () => {
   const fetchApi = useApi(fetchApiRef);
   const alertApi = useApi(alertApiRef);
   const identityApi = useApi(identityApiRef);
+  const configApi = useApi(configApiRef);
+  const jiraUrl = configApi.getString('auditCompliance.jiraUrl');
 
   useEffect(() => {
     setStatusChecked(false);
@@ -682,14 +685,14 @@ export const AuditDetailsSection = () => {
                 <Typography variant="body2" color="textSecondary">
                   Epic:
                 </Typography>
-                <EpicDisplay
-                  epicKey={epicKey}
-                  epicTitle={epicTitle}
-                  variant="chip"
-                  size="small"
-                  showKey
-                  showTitle
-                />
+                <MuiLink
+                  href={`${jiraUrl}/browse/${epicKey}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ marginLeft: 6 }}
+                >
+                  {epicTitle || epicKey}
+                </MuiLink>
               </Box>
             )}
           </Box>

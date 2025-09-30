@@ -199,7 +199,8 @@ export class JiraOperations {
     };
   }
   /*
-   * Converts a hyphen-separated string to Title Case with spaces
+   * Converts a hyphen/underscore separated string to Title Case with spaces.
+   * Also collapses multiple spaces and trims.
    * @param str - The string to convert
    * @returns The string in Title Case format with spaces
    */
@@ -841,12 +842,15 @@ export class JiraOperations {
     const formattedPeriod = period.toUpperCase().replace('-', ' ');
     const formattedFrequency =
       frequency.charAt(0).toUpperCase() + frequency.slice(1);
+    const bracketPeriod = period.toUpperCase().replace('-', ' ');
 
     // Create epic title with app names if provided
     let epicTitle;
     if (appNames && appNames.length > 0) {
-      const appNamesStr = appNames.join(', ');
-      epicTitle = `${appNamesStr} - ${formattedFrequency} Access Review ${formattedPeriod}`;
+      const appNamesStr = appNames
+        .map(name => this.toTitleCase(name))
+        .join(', ');
+      epicTitle = `[${bracketPeriod}] : ${appNamesStr} - ${formattedFrequency} Access Review ${formattedPeriod}`;
     } else {
       epicTitle = `[${formattedPeriod}] ${formattedFrequency} Audit Epic`;
     }
