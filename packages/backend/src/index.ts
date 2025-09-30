@@ -167,8 +167,20 @@ backend.add(
   import('@appdev/backstage-plugin-permission-management-backend'),
 );
 backend.add(import('@appdev/backstage-plugin-outage-template-backend'));
-backend.add(import('@compass/backstage-plugin-mcp-actions-example-backend'));
-backend.add(import('@backstage/plugin-mcp-actions-backend'));
+
+/* GDPR Plugin */
 backend.add(import('@appdev/backstage-plugin-gdpr-backend'));
+
+/* MCP Actions Backend */
+backend.add(import('@backstage/plugin-mcp-actions-backend'));
+backend.add(import('@compass/backstage-plugin-mcp-actions-example-backend'));
+
+/* Events backend */
+backend.add(import('@backstage/plugin-events-backend'));
+/* Signals Backend */
+backend.add(import('@backstage/plugin-signals-backend'));
+
+/* Assistant Backend */
+backend.add(import('@compass/backstage-plugin-assistant-backend'));
 
 backend.start();

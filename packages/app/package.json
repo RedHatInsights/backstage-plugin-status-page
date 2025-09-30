@@ -64,6 +64,7 @@
     "@backstage/types": "^1.2.1",
     "@backstage/ui": "^0.7.0",
     "@compass/backstage-plugin-ai-expressway": "*",
+    "@compass/backstage-plugin-assistant": "workspace:^",
     "@compass/backstage-plugin-catalog-index": "*",
     "@compass/backstage-plugin-cmdb": "*",
     "@compass/backstage-plugin-contact-details": "*",

@@ -11,7 +11,10 @@ import {
   SidebarSpace,
   WarningIcon,
 } from '@backstage/core-components';
-import { IconComponent } from '@backstage/core-plugin-api';
+import {
+  IconComponent,
+} from '@backstage/core-plugin-api';
+import { Box } from '@material-ui/core';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import BuildIcon from '@material-ui/icons/Build';
 import DataUsageIcon from '@material-ui/icons/DataUsage';
@@ -25,12 +28,10 @@ import MenuBookIcon from '@material-ui/icons/MenuBook';
 import MapIcon from '@material-ui/icons/MyLocation';
 import Report from '@material-ui/icons/Report';
 import SecurityIcon from '@material-ui/icons/Security';
-import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
+import { GlobalHeaderComponent } from '@red-hat-developer-hub/backstage-plugin-global-header';
 import { PropsWithChildren } from 'react';
 import './Root.css';
-
-import { GlobalHeaderComponent } from '@red-hat-developer-hub/backstage-plugin-global-header';
 import { SidebarLayout } from './components/SidebarLayout';
 import { globalHeaderComponentsMountPoints as globalHeaderComponentMountPoints } from './components/defaultMountPoints';
 

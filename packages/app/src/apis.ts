@@ -17,6 +17,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import AdbIcon from '@material-ui/icons/Adb';
+import { signalsPlugin } from '@backstage/plugin-signals';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
@@ -41,4 +42,5 @@ export const apis: AnyApiFactory[] = [
       });
     },
   }),
+  ...signalsPlugin.getApis()
 ];

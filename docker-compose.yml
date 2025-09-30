@@ -15,5 +15,17 @@ services:
     ports:
       - 55000:5432
 
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: guest@example.com
+      PGADMIN_DEFAULT_PASSWORD: pgadminpw
+      PGADMIN_LISTEN_ADDRESS: "0.0.0.0"
+      PGADMIN_LISTEN_PORT: 55001
+    ports:
+      - 55001:55001
+    depends_on:
+      - postgres
+
 volumes:
   pg_data:

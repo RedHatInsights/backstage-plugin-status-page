@@ -1,4 +1,20 @@
 /* This will patch width of content when docsbot panel is expanded */
-body.docsbot-open div.MuiBox-root > main {
-  width: calc(100% - 416px);
+body.assistant-open #rhdh-sidebar-layout main {
+  width: calc(100% - var(--assistant-panel-width, 0) - 2rem);
+}
+body #rhdh-sidebar-layout main {
+  transition: all 225ms ease-in-out;
+}
+
+body.assistant-open #rhdh-above-sidebar-header-container .MuiDrawer-paperAnchorDockedRight {
+  top: 64px;
+  height: calc(100svh - 64px - 1.5rem);
+  box-sizing: border-box;
+  border-radius: 1rem;
+  overflow: hidden;
+  margin-inline: 1rem;
+}
+
+#root .v5-MuiFab-root {
+  z-index: 1250;
 }
