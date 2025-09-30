@@ -1,15 +1,13 @@
-import type { Knex } from 'knex';
-
 const CHAT_SESSIONS_TABLE_NAME = 'chatthreads';
 
-export async function up(knex: Knex): Promise<void> {
-  if (!await knex.schema.hasTable(CHAT_SESSIONS_TABLE_NAME)) {
+/**
+ * @param { import("knex").Knex } knex
+ * @returns { Promise<void> }
+ */
+export async function up(knex) {
+  if (!(await knex.schema.hasTable(CHAT_SESSIONS_TABLE_NAME))) {
     await knex.schema.createTable(CHAT_SESSIONS_TABLE_NAME, table => {
-      table
-        .string('id')
-        .primary()
-        .notNullable()
-        .comment('Thread id of a chat');
+      table.string('id').primary().notNullable().comment('Thread id of a chat');
       table
         .string('userRef')
         .notNullable()
@@ -31,7 +29,11 @@ export async function up(knex: Knex): Promise<void> {
   }
 }
 
-export async function down(knex: Knex): Promise<void> {
+/**
+ * @param { import("knex").Knex } knex
+ * @returns { Promise<void> }
+ */
+export async function down(knex) {
   if (await knex.schema.hasTable(CHAT_SESSIONS_TABLE_NAME)) {
     await knex.schema.dropTableIfExists(CHAT_SESSIONS_TABLE_NAME);
   }
