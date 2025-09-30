@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-compliance [1.1.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-compliance@1.1.1...@appdev/backstage-plugin-compliance@1.1.2) (2025-09-30)
+
+
+### Other changes
+
+* update the subtitle of the compliance ([ff02a62](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/ff02a623f9e4be96e4b116cea75208717922e423))
+
 ## @appdev/backstage-plugin-compliance [1.1.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-compliance@1.1.0...@appdev/backstage-plugin-compliance@1.1.1) (2025-09-29)
 
 
