@@ -18,3 +18,16 @@ body.assistant-open #rhdh-above-sidebar-header-container .MuiDrawer-paperAnchorD
 #root .v5-MuiFab-root {
   z-index: 1250;
 }
+
+@keyframes Assistant-Icon-Pulse {
+  0% {
+    --scale: 1;
+  }
+  50% {
+    scale: 1.1;
+    border-radius: 35%;
+  }
+  100% {
+    --scale: 1;
+  }
+}
