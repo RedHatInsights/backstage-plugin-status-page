@@ -99,14 +99,17 @@ export async function createRouter({
       return;
     }
 
+    /* HACK: Manually parsing string to JSON array if the database doesn't already return an array. (Required for sqlite) */
+    const messages = (typeof thread.messages === 'string') ? JSON.parse(thread.messages) : thread.messages;
+
     res
       .status(200)
       .setHeader('x-assistant-thread-id', threadId)
       .json({
         threadId,
-        messages: thread.messages,
+        messages,
         _meta: {
-          count: thread.messages.length,
+          count: messages.length,
         },
       });
     return;
