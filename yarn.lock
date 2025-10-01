@@ -7702,7 +7702,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-assistant-backend@npm:^0.1.0-alpha, @compass/backstage-plugin-assistant-backend@workspace:plugins/assistant-backend":
+"@compass/backstage-plugin-assistant-backend@npm:^0.1.0-alpha.2, @compass/backstage-plugin-assistant-backend@workspace:plugins/assistant-backend":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-assistant-backend@workspace:plugins/assistant-backend"
   dependencies:
@@ -23877,7 +23877,7 @@ __metadata:
     "@backstage/plugin-search-backend-node": "npm:^1.3.14"
     "@backstage/plugin-signals-backend": "npm:^0.3.7"
     "@backstage/plugin-techdocs-backend": "npm:^2.0.5"
-    "@compass/backstage-plugin-assistant-backend": "npm:^0.1.0-alpha"
+    "@compass/backstage-plugin-assistant-backend": "npm:^0.1.0-alpha.2"
     "@compass/backstage-plugin-catalog-backend-module-cmdb": "npm:*"
     "@compass/backstage-plugin-catalog-backend-module-enrichment": "npm:*"
     "@compass/backstage-plugin-catalog-backend-module-mcp": "npm:*"

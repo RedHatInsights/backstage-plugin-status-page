@@ -44,7 +44,10 @@ export class ChatThreads implements ChatThreadsStore {
       return false;
     }
 
-    const existingMessages = thread.messages;
+    const existingMessages =
+      typeof thread.messages === 'string'
+        ? JSON.parse(thread.messages)
+        : thread.messages;
 
     const result = await this.db<ChatThreadModel>(this.TABLE_NAME)
       .where({ id })
