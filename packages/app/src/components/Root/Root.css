@@ -1,3 +1,8 @@
+/* Corrects the positioning of the side navigation */
+#rhdh-sidebar-layout nav > .MuiBox-root > div.MuiBox-root {
+  top: 64px;
+}
+
 /* This will patch width of content when docsbot panel is expanded */
 body.assistant-open #rhdh-sidebar-layout main {
   width: calc(100% - var(--assistant-panel-width, 0) - 2rem);
