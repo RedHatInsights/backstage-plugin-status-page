@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-gdpr-backend [1.3.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-gdpr-backend@1.2.1...@appdev/backstage-plugin-gdpr-backend@1.3.0) (2025-10-08)
+
+
+### Features
+
+* specific reponse added for the system ([f600d77](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/f600d775a2cf221778c168e6c5bd08bdbfd9d5d6))
+
 ## @appdev/backstage-plugin-gdpr-backend [1.2.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-gdpr-backend@1.2.0...@appdev/backstage-plugin-gdpr-backend@1.2.1) (2025-09-29)
 
 
