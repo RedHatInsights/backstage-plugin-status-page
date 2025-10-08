@@ -282,12 +282,12 @@ export async function createAuditInitiationRouter(
 
   /**
    * PUT /audits/:app_name/:frequency/:period/jira-key
-   * Allows the application owner to manually update the Jira Story key for an audit.
+   * Allows the application owner to manually update the Jira Story key and Epic key for an audit.
    * @route PUT /audits/:app_name/:frequency/:period/jira-key
    * @param {string} req.params.app_name - Application name
    * @param {string} req.params.frequency - Audit frequency
    * @param {string} req.params.period - Audit period
-   * @param {Object} req.body - { jira_key: string }
+   * @param {Object} req.body - { jira_key: string, epic_key: string, user: string }
    * @returns {void} 204 - Success response
    * @returns {Object} 403 - Forbidden
    * @returns {Object} 404 - Audit not found
@@ -297,7 +297,7 @@ export async function createAuditInitiationRouter(
     '/audits/:app_name/:frequency/:period/jira-key',
     async (req, res) => {
       const { app_name, frequency, period } = req.params;
-      const { jira_key, user } = req.body;
+      const { jira_key, epic_key, user } = req.body;
       try {
         // Fetch the audit and application details
         const audit = await database.findAuditByAppNamePeriod(
@@ -334,13 +334,63 @@ export async function createAuditInitiationRouter(
         }
         if (!user || !userName || !ownerName || userName !== ownerName) {
           return res.status(403).json({
-            error: 'Only the application owner can update the Jira Story key.',
+            error:
+              'Only the application owner can update the Jira Story and Epic keys.',
           });
         }
-        await database.updateAudit(app_name, frequency, period, { jira_key });
+
+        // Prepare update data - only include fields that are provided
+        const updateData: any = {};
+        if (jira_key !== undefined) updateData.jira_key = jira_key;
+        if (epic_key !== undefined) updateData.epic_key = epic_key;
+
+        await database.updateAudit(app_name, frequency, period, updateData);
+
+        // If epic_key was updated, sync it to Jira Story
+        if (epic_key !== undefined && epic_key.trim() !== '') {
+          try {
+            const syncResult = await database.syncEpicToStory(
+              app_name,
+              frequency,
+              period,
+              epic_key,
+            );
+
+            if (!syncResult.success) {
+              logger.warn('Epic sync to Story failed', {
+                app_name,
+                frequency,
+                period,
+                epic_key,
+                error: syncResult.message,
+              });
+              // Don't fail the entire request, just log the warning
+            } else {
+              logger.info('Epic sync to Story successful', {
+                app_name,
+                frequency,
+                period,
+                epic_key,
+              });
+            }
+          } catch (syncError) {
+            logger.error('Epic sync to Story error', {
+              app_name,
+              frequency,
+              period,
+              epic_key,
+              error:
+                syncError instanceof Error
+                  ? syncError.message
+                  : String(syncError),
+            });
+            // Don't fail the entire request, just log the error
+          }
+        }
+
         return res.sendStatus(204);
       } catch (error) {
-        logger.error('Failed to update Jira Story key', {
+        logger.error('Failed to update Jira Story and Epic keys', {
           error: error instanceof Error ? error.message : String(error),
           app_name,
           frequency,
@@ -348,7 +398,7 @@ export async function createAuditInitiationRouter(
         });
         return res
           .status(500)
-          .json({ error: 'Failed to update Jira Story key' });
+          .json({ error: 'Failed to update Jira Story and Epic keys' });
       }
     },
   );

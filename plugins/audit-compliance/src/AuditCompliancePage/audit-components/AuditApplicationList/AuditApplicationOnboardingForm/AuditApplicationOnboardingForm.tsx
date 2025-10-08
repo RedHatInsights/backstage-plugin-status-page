@@ -33,6 +33,7 @@ import {
 } from './types';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { UserEntity } from '@backstage/catalog-model';
+import { getApplicationNameValidationError } from '../../../../utils/applicationNameValidation';
 
 const RequiredAsterisk = () => (
   <span style={{ color: 'red', marginLeft: 2 }}>*</span>
@@ -157,6 +158,19 @@ export const AuditApplicationOnboardingForm = ({
       jira_metadata: [{ key: '', value: '', schema: undefined }],
     };
   });
+
+  // Validation state for application name
+  const [appNameError, setAppNameError] = useState<string>('');
+  const [isFormValid, setIsFormValid] = useState<boolean>(true);
+
+  // Initial validation for new applications
+  useEffect(() => {
+    if (!isEditMode && formData.app_name) {
+      const error = getApplicationNameValidationError(formData.app_name);
+      setAppNameError(error);
+      setIsFormValid(!error);
+    }
+  }, [isEditMode, formData.app_name]);
 
   useEffect(() => {
     if (initialData) {
@@ -301,12 +315,10 @@ export const AuditApplicationOnboardingForm = ({
   const [delegateOptions, setDelegateOptions] = useState<UserEntity[]>([]);
   const [ownerLoading, setOwnerLoading] = useState(false);
   const [delegateLoading, setDelegateLoading] = useState(false);
+  const [selectedDelegates, setSelectedDelegates] = useState<UserEntity[]>([]);
 
   // Store selected users separately to maintain persistence
   const [selectedOwner, setSelectedOwner] = useState<UserEntity | null>(null);
-  const [selectedDelegate, setSelectedDelegate] = useState<UserEntity | null>(
-    null,
-  );
 
   // Initialize selected users from form data
   useEffect(() => {
@@ -344,84 +356,41 @@ export const AuditApplicationOnboardingForm = ({
             );
           }
         } catch (err) {
-          // If fetch fails, create a placeholder entity for display
-          const placeholderOwner: UserEntity = {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'User',
-            metadata: {
-              name: initialData.app_owner,
-              namespace: 'redhat',
-            },
-            spec: {
-              profile: {
-                displayName: initialData.app_owner,
-                email: initialData.app_owner_email || '',
-              },
-            },
-          } as UserEntity;
-          setSelectedOwner(placeholderOwner);
-          setOwnerOptions([placeholderOwner]);
-          setOwnerSearchValue(
-            placeholderOwner.spec.profile?.displayName ||
-              placeholderOwner.metadata.name,
-          );
+          // eslint-disable-next-line no-console
+          console.error('Error fetching owner entity:', err);
         }
       }
 
       if (initialData?.app_delegate) {
         try {
-          // Fetch the delegate entity directly from catalog
-          const delegateResponse = await catalogApi.queryEntities({
-            filter: [{ kind: 'User' }],
-            fullTextFilter: {
-              term: initialData.app_delegate,
-              fields: ['metadata.name', 'spec.profile.displayName'],
-            },
+          // Handle multiple delegates (comma-separated)
+          const delegateNames = initialData.app_delegate
+            .split(',')
+            .map(name => name.trim());
+
+          // Create entity refs in format user:redhat/<name>
+          const entityRefs = delegateNames.map(name => `user:redhat/${name}`);
+
+          // Fetch delegates using getEntitiesByRefs
+          const delegateResponse = await catalogApi.getEntitiesByRefs({
+            entityRefs: entityRefs,
           });
-          // Try to find by metadata.name first, then by displayName
-          let delegate = delegateResponse.items.find(
-            (item: any) => item.metadata.name === initialData.app_delegate,
-          ) as UserEntity;
 
-          if (!delegate) {
-            // If not found by metadata.name, try by displayName
-            delegate = delegateResponse.items.find(
-              (item: any) =>
-                item.spec.profile?.displayName?.toLowerCase() ===
-                initialData.app_delegate.toLowerCase(),
-            ) as UserEntity;
-          }
+          // Filter out null results and cast to UserEntity
+          const delegates = delegateResponse.items.filter(
+            (item): item is UserEntity => item !== null,
+          ) as UserEntity[];
 
-          if (delegate) {
-            setSelectedDelegate(delegate);
-            setDelegateOptions([delegate]);
-            // Set the search value to show the selected user
-            setDelegateSearchValue(
-              delegate.spec.profile?.displayName || delegate.metadata.name,
-            );
+          if (delegates.length > 0) {
+            setSelectedDelegates(delegates);
+            setDelegateOptions(delegates);
           }
         } catch (err) {
-          // If fetch fails, create a placeholder entity for display
-          const placeholderDelegate: UserEntity = {
-            apiVersion: 'backstage.io/v1alpha1',
-            kind: 'User',
-            metadata: {
-              name: initialData.app_delegate,
-              namespace: 'redhat',
-            },
-            spec: {
-              profile: {
-                displayName: initialData.app_delegate,
-                email: initialData.app_delegate_email || '',
-              },
-            },
-          } as UserEntity;
-          setSelectedDelegate(placeholderDelegate);
-          setDelegateOptions([placeholderDelegate]);
-          setDelegateSearchValue(
-            placeholderDelegate.spec.profile?.displayName ||
-              placeholderDelegate.metadata.name,
-          );
+          // eslint-disable-next-line no-console
+          console.error('Failed to fetch delegates:', err);
+          // If fetch fails, clear the delegates
+          setSelectedDelegates([]);
+          setDelegateOptions([]);
         }
       }
     };
@@ -485,10 +454,7 @@ export const AuditApplicationOnboardingForm = ({
   // Search for users when delegate search value changes
   useEffect(() => {
     // Only search if user is actually typing and we have 3+ characters
-    if (
-      delegateSearchValue.length >= 3 &&
-      delegateSearchValue !== selectedDelegate?.spec.profile?.displayName
-    ) {
+    if (delegateSearchValue.length >= 3) {
       setDelegateLoading(true);
       catalogApi
         .queryEntities({
@@ -504,15 +470,14 @@ export const AuditApplicationOnboardingForm = ({
         })
         .then((res: any) => {
           const searchResults = res.items as UserEntity[];
-          // Always include the selected delegate in options if it exists
-          const allOptions =
-            selectedDelegate &&
-            !searchResults.find(
-              u => u.metadata.name === selectedDelegate.metadata.name,
-            )
-              ? [selectedDelegate, ...searchResults]
-              : searchResults;
-          setDelegateOptions(allOptions);
+          // Filter out already selected delegates
+          const filteredResults = searchResults.filter(
+            user =>
+              !selectedDelegates.find(
+                selected => selected.metadata.name === user.metadata.name,
+              ),
+          );
+          setDelegateOptions(filteredResults);
         })
         .catch(() => {
           alertApi.post({
@@ -524,14 +489,10 @@ export const AuditApplicationOnboardingForm = ({
           setDelegateLoading(false);
         });
     } else if (delegateSearchValue.length === 0) {
-      // Keep the selected delegate in options if it exists
-      if (selectedDelegate) {
-        setDelegateOptions([selectedDelegate]);
-      } else {
-        setDelegateOptions([]);
-      }
+      // Clear options when search is empty
+      setDelegateOptions([]);
     }
-  }, [delegateSearchValue, catalogApi, alertApi, selectedDelegate]);
+  }, [delegateSearchValue, catalogApi, alertApi, selectedDelegates]);
 
   // Get display name for user options
   const getUserDisplayName = (user: UserEntity) => {
@@ -550,16 +511,20 @@ export const AuditApplicationOnboardingForm = ({
     }
   };
 
-  // Handle delegate selection
-  const handleDelegateChange = (selectedUser: UserEntity | null) => {
-    if (selectedUser) {
-      // Store the metadata name for delegate
-      formData.app_delegate = selectedUser.metadata.name;
-      formData.app_delegate_email = selectedUser.spec.profile?.email || '';
-      // Trigger form update
-      setFormData({ ...formData });
-      setSelectedDelegate(selectedUser); // Update selected user state
-    }
+  // Handle delegate selection (multiple delegates)
+  const handleDelegateChange = (selectedUsers: UserEntity[]) => {
+    // Store comma-separated delegate names (metadata.name) and emails
+    const delegateNames = selectedUsers.map(user => user.metadata.name);
+    const delegateEmails = selectedUsers.map(
+      user => user.spec.profile?.email || '',
+    );
+
+    formData.app_delegate = delegateNames.join(',');
+    formData.app_delegate_email = delegateEmails.join(',');
+
+    // Trigger form update
+    setFormData({ ...formData });
+    setSelectedDelegates(selectedUsers); // Update selected users state
   };
 
   // Get user option label with email
@@ -572,10 +537,19 @@ export const AuditApplicationOnboardingForm = ({
   const handleMainFieldChange =
     (field: keyof Omit<ApplicationFormData, 'accounts'>) =>
     (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+
       setFormData(prev => ({
         ...prev,
-        [field]: event.target.value,
+        [field]: value,
       }));
+
+      // Validate application name if it's being changed
+      if (field === 'app_name' && !isEditMode) {
+        const error = getApplicationNameValidationError(value);
+        setAppNameError(error);
+        setIsFormValid(!error);
+      }
     };
 
   const handleAddAccountEntry = () => {
@@ -764,6 +738,21 @@ export const AuditApplicationOnboardingForm = ({
   };
 
   const handleSubmit = async () => {
+    // Validate application name before submitting (only for new applications)
+    if (!isEditMode) {
+      const error = getApplicationNameValidationError(formData.app_name);
+      if (error) {
+        setAppNameError(error);
+        setIsFormValid(false);
+        alertApi.post({
+          message:
+            'Please fix the application name validation errors before submitting.',
+          severity: 'error',
+        });
+        return;
+      }
+    }
+
     try {
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
       const endpoint = isEditMode
@@ -958,7 +947,13 @@ export const AuditApplicationOnboardingForm = ({
                 <Grid item xs={12} sm={6}>
                   <Typography variant="subtitle2" style={{ marginBottom: 4 }}>
                     Application Name <RequiredAsterisk />
-                    <Tooltip title="Enter a unique name for your application.">
+                    <Tooltip
+                      title={
+                        isEditMode
+                          ? 'Application name cannot be changed after creation.'
+                          : 'Enter a unique name for your application. Only letters, numbers, hyphens (-), and underscores (_) are allowed.'
+                      }
+                    >
                       <InfoIcon
                         fontSize="small"
                         style={{ marginLeft: 4, verticalAlign: 'middle' }}
@@ -972,6 +967,13 @@ export const AuditApplicationOnboardingForm = ({
                     onChange={handleMainFieldChange('app_name')}
                     required
                     disabled={isEditMode}
+                    error={!!appNameError}
+                    helperText={
+                      appNameError ||
+                      (isEditMode
+                        ? 'Application name cannot be changed after creation.'
+                        : 'Only letters, numbers, hyphens (-), and underscores (_) are allowed.')
+                    }
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -1113,16 +1115,17 @@ export const AuditApplicationOnboardingForm = ({
                     </Tooltip>
                   </Typography>
                   <Autocomplete
+                    multiple
                     options={delegateOptions}
                     getOptionLabel={getUserOptionLabel}
-                    value={selectedDelegate || null}
+                    value={selectedDelegates}
                     onChange={(_event, newValue) =>
                       handleDelegateChange(newValue)
                     }
                     onInputChange={(_event, newInputValue) => {
                       setDelegateSearchValue(newInputValue);
-                      // Only clear options if search is empty and no user is selected
-                      if (!newInputValue && !selectedDelegate) {
+                      // Only clear options if search is empty and no users are selected
+                      if (!newInputValue && selectedDelegates.length === 0) {
                         setDelegateOptions([]);
                       }
                     }}
@@ -1135,12 +1138,22 @@ export const AuditApplicationOnboardingForm = ({
                         required
                         fullWidth
                         size="small"
-                        helperText="Enter at least 3 characters to search (email will be auto-captured)"
+                        helperText="Enter at least 3 characters to search. Select multiple delegates."
                       />
                     )}
                     renderOption={(option: UserEntity, state) => (
                       <li {...state}>{getUserOptionLabel(option)}</li>
                     )}
+                    renderTags={(tagValue, getTagProps) =>
+                      tagValue.map((option, index) => (
+                        <Chip
+                          variant="outlined"
+                          label={getUserDisplayName(option)}
+                          {...getTagProps({ index })}
+                          key={option.metadata.name}
+                        />
+                      ))
+                    }
                   />
                 </Grid>
               </Grid>
@@ -1372,6 +1385,7 @@ export const AuditApplicationOnboardingForm = ({
             onClick={handleSubmit}
             size="large"
             fullWidth
+            disabled={!isEditMode && !isFormValid}
           >
             {isEditMode ? 'Update Application' : 'Submit Application'}
           </Button>

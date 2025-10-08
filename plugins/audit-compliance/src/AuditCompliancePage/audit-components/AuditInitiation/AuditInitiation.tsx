@@ -82,11 +82,14 @@ export const AuditInitiation = () => {
   const [currentUser, setCurrentUser] = useState('');
   const [appOwnerEmail, setAppOwnerEmail] = useState('');
   const [manualJiraKey, setManualJiraKey] = useState('');
-  const [editingJiraKey, setEditingJiraKey] = useState<{
-    key: string;
+  const [manualEpicKey, setManualEpicKey] = useState('');
+  const [editingFields, setEditingFields] = useState<{
+    jiraKey: string;
+    epicKey: string;
     freq: string;
     period: string;
   } | null>(null);
+  const [savingFields, setSavingFields] = useState(false);
   const jiraUrl = configApi.getString('auditCompliance.jiraUrl');
 
   // Fetch current user and app owner
@@ -277,8 +280,9 @@ export const AuditInitiation = () => {
     });
   };
 
-  // Save manual Jira key
-  const handleSaveJiraKey = async (row: AuditHistoryItem) => {
+  // Save manual Jira key and Epic key
+  const handleSaveFields = async (row: AuditHistoryItem) => {
+    setSavingFields(true);
     try {
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
       const response = await fetchApi.fetch(
@@ -286,29 +290,51 @@ export const AuditInitiation = () => {
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jira_key: manualJiraKey, user: currentUser }),
+          body: JSON.stringify({
+            jira_key: manualJiraKey,
+            epic_key: manualEpicKey,
+            user: currentUser,
+          }),
         },
       );
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         alertApi.post({
-          message: errorData.error || 'Failed to update Jira Story key',
+          message:
+            errorData.error || 'Failed to update Jira Story and Epic keys',
           severity: 'error',
         });
         return;
       }
+      // Determine what was updated for better user feedback
+      const updatedFields = [];
+      if (manualJiraKey !== row.jira_key) updatedFields.push('Story');
+      if (manualEpicKey !== row.epic_key) updatedFields.push('Epic');
+
+      const message =
+        updatedFields.length > 0
+          ? `${updatedFields.join(' and ')} key${
+              updatedFields.length > 1 ? 's' : ''
+            } updated successfully${
+              manualEpicKey !== row.epic_key ? ' and synced to Jira' : ''
+            }`
+          : 'Keys updated successfully';
+
       alertApi.post({
-        message: 'Jira Story key updated successfully',
+        message,
         severity: 'success',
       });
-      setEditingJiraKey(null);
+      setEditingFields(null);
       setManualJiraKey('');
+      setManualEpicKey('');
       fetchAuditHistory();
     } catch (e) {
       alertApi.post({
-        message: 'Failed to update Jira Story key',
+        message: 'Failed to update Jira Story and Epic keys',
         severity: 'error',
       });
+    } finally {
+      setSavingFields(false);
     }
   };
 
@@ -505,26 +531,48 @@ export const AuditInitiation = () => {
                   {
                     title: 'Parent Audit Epic',
                     field: 'epic_key',
-                    render: (row: AuditHistoryItem) => (
-                      <EpicDisplay
-                        epicKey={row.epic_key}
-                        epicTitle={row.epic_title}
-                        variant="link"
-                        size="small"
-                        showKey
-                        showTitle={false}
-                      />
-                    ),
+                    render: (row: AuditHistoryItem) => {
+                      if (
+                        editingFields &&
+                        editingFields.freq === row.frequency &&
+                        editingFields.period === row.period
+                      ) {
+                        return (
+                          <Box
+                            display="flex"
+                            alignItems="center"
+                            style={{ gap: 8 }}
+                          >
+                            <input
+                              type="text"
+                              value={manualEpicKey}
+                              onChange={e => setManualEpicKey(e.target.value)}
+                              placeholder="Enter Epic Key"
+                              style={{ minWidth: '120px' }}
+                            />
+                          </Box>
+                        );
+                      }
+                      return (
+                        <EpicDisplay
+                          epicKey={row.epic_key}
+                          epicTitle={row.epic_title}
+                          variant="link"
+                          size="small"
+                          showKey
+                          showTitle={false}
+                        />
+                      );
+                    },
                   },
                   {
                     title: 'Jira Ticket',
                     field: 'jira_key',
                     render: (row: AuditHistoryItem) => {
                       if (
-                        editingJiraKey &&
-                        editingJiraKey.key === row.jira_key &&
-                        editingJiraKey.freq === row.frequency &&
-                        editingJiraKey.period === row.period
+                        editingFields &&
+                        editingFields.freq === row.frequency &&
+                        editingFields.period === row.period
                       ) {
                         return (
                           <Box
@@ -537,18 +585,25 @@ export const AuditInitiation = () => {
                               value={manualJiraKey}
                               onChange={e => setManualJiraKey(e.target.value)}
                               placeholder="Enter Jira Story Key"
+                              style={{ minWidth: '120px' }}
                             />
                             <Button
                               size="small"
                               color="primary"
                               variant="contained"
-                              onClick={() => handleSaveJiraKey(row)}
+                              onClick={() => handleSaveFields(row)}
+                              disabled={savingFields}
                             >
-                              Save
+                              {savingFields ? 'Saving...' : 'Save'}
                             </Button>
                             <Button
                               size="small"
-                              onClick={() => setEditingJiraKey(null)}
+                              onClick={() => {
+                                setEditingFields(null);
+                                setManualJiraKey('');
+                                setManualEpicKey('');
+                              }}
+                              disabled={savingFields}
                             >
                               Cancel
                             </Button>
@@ -656,14 +711,17 @@ export const AuditInitiation = () => {
                             >
                               <IconButton
                                 size="small"
-                                onClick={() =>
-                                  setEditingJiraKey({
-                                    key: row.jira_key,
+                                onClick={() => {
+                                  setEditingFields({
+                                    jiraKey: row.jira_key || '',
+                                    epicKey: row.epic_key || '',
                                     freq: row.frequency,
                                     period: row.period,
-                                  })
-                                }
-                                title="Edit Jira Story"
+                                  });
+                                  setManualJiraKey(row.jira_key || '');
+                                  setManualEpicKey(row.epic_key || '');
+                                }}
+                                title="Edit Jira Story & Epic"
                               >
                                 <EditIcon />
                               </IconButton>

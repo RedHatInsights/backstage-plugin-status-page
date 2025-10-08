@@ -144,12 +144,15 @@ export const AuditDetailsSection = () => {
         );
         setIsAppOwner(isOwner);
 
-        // Check if current user is the application delegate
+        // Check if current user is one of the application delegates
         const isDelegate =
           data.app_delegate &&
-          currentUserRef
-            .toLowerCase()
-            .includes(data.app_delegate.toLowerCase());
+          data.app_delegate
+            .split(',')
+            .map((delegate: string) => delegate.trim().toLowerCase())
+            .some((delegate: string) =>
+              currentUserRef.toLowerCase().includes(delegate),
+            );
         setIsAppDelegate(isDelegate);
 
         setOwnerChecked(true);

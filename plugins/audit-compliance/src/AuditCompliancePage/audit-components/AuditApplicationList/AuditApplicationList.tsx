@@ -47,6 +47,7 @@ import { Application } from './types';
 import { capitalize } from 'lodash';
 import { AuditApplicationOnboardingForm } from './AuditApplicationOnboardingForm/AuditApplicationOnboardingForm';
 import { ApplicationFormData } from './AuditApplicationOnboardingForm/types';
+import { parseEntityRef } from '@backstage/catalog-model';
 
 // Utility to convert hyphen-case to title case with 'and' capitalized
 export function formatDisplayName(name: string) {
@@ -177,7 +178,7 @@ export function AuditApplicationList() {
       setDetailsLoading(true);
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
       const response = await fetchApi.fetch(
-        `${baseUrl}/application-details/${appName}`,
+        `${baseUrl}/application-details/${encodeURIComponent(appName)}`,
         {
           method: 'GET',
           headers: {
@@ -274,7 +275,9 @@ export function AuditApplicationList() {
     try {
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
       const response = await fetchApi.fetch(
-        `${baseUrl}/application-details/${selectedAppDetails.app_name}`,
+        `${baseUrl}/application-details/${encodeURIComponent(
+          selectedAppDetails.app_name,
+        )}`,
         {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
@@ -304,7 +307,7 @@ export function AuditApplicationList() {
       setDeleting(true);
       const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
       const response = await fetchApi.fetch(
-        `${baseUrl}/delete/application/name/${appToDelete}`,
+        `${baseUrl}/delete/application/name/${encodeURIComponent(appToDelete)}`,
         {
           method: 'DELETE',
           headers: {
@@ -317,9 +320,11 @@ export function AuditApplicationList() {
         throw new Error(`Failed to delete application: ${response.statusText}`);
       }
 
-      // Close dialog and refresh applications list
+      // Close dialog, side panel and refresh applications list
       setDeleteDialogOpen(false);
       setAppToDelete(null);
+      setIsSidePanelOpen(false);
+      setSelectedAppDetails(null);
       fetchApplications();
     } catch (err) {
       setError(err as Error);
@@ -505,13 +510,30 @@ export function AuditApplicationList() {
             primary="Application Delegate"
             secondary={
               selectedAppDetails.app_delegate ? (
-                <EntityDisplayName
-                  entityRef={{
-                    name: selectedAppDetails.app_delegate,
-                    kind: 'User',
-                    namespace: 'redhat',
-                  }}
-                />
+                <Box>
+                  {selectedAppDetails.app_delegate
+                    .split(',')
+                    .map((delegate: string) => delegate.trim())
+                    .filter((delegate: string) => delegate.length > 0)
+                    .map((delegate: string, index: number) => (
+                      <Box key={delegate} display="inline-block" mr={1}>
+                        <EntityDisplayName
+                          entityRef={parseEntityRef(
+                            delegate,
+                            {
+                              defaultKind: 'user',
+                              defaultNamespace: 'redhat',
+                            },
+                          )}
+                        />
+                        {index <
+                          selectedAppDetails.app_delegate
+                            .split(',')
+                            .filter((d: string) => d.trim().length > 0).length -
+                            1 && ', '}
+                      </Box>
+                    ))}
+                </Box>
               ) : (
                 'Not specified'
               )

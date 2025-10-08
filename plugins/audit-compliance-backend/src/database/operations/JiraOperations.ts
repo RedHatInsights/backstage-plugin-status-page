@@ -31,6 +31,7 @@ export class JiraOperations {
     description?: string,
     createdBy: string = 'system',
     appNames?: string[],
+    createEpic: boolean = true,
   ) {
     const jiraUrl = this.config.getString('auditCompliance.jiraUrl');
     const jiraToken = this.config.getString('auditCompliance.jiraToken');
@@ -38,33 +39,41 @@ export class JiraOperations {
 
     const { app_name, frequency, period } = auditData;
 
-    // Get or create epic for this period/frequency combination
+    // Get or create epic for this period/frequency combination - conditional based on createEpic parameter
     let epicKey = 'N/A'; // Fallback to N/A
     let epicTitle = 'N/A';
     let epicCreationFailed = false;
 
-    try {
-      const epicDetails = await this.getOrCreateEpic(
+    if (createEpic) {
+      try {
+        const epicDetails = await this.getOrCreateEpic(
+          period,
+          frequency,
+          createdBy,
+          appNames,
+        );
+        epicKey = epicDetails.key;
+        epicTitle = epicDetails.title;
+        this.logger.info('Using epic for story creation', {
+          epicKey,
+          epicTitle,
+          isNew: epicDetails.isNew,
+        });
+      } catch (epicError) {
+        this.logger.error('Failed to get or create epic, using fallback', {
+          period,
+          frequency,
+          error:
+            epicError instanceof Error ? epicError.message : String(epicError),
+        });
+        epicCreationFailed = true;
+      }
+    } else {
+      this.logger.info('Epic creation skipped based on user options', {
         period,
         frequency,
-        createdBy,
-        appNames,
-      );
-      epicKey = epicDetails.key;
-      epicTitle = epicDetails.title;
-      this.logger.info('Using epic for story creation', {
-        epicKey,
-        epicTitle,
-        isNew: epicDetails.isNew,
+        app_name,
       });
-    } catch (epicError) {
-      this.logger.error('Failed to get or create epic, using fallback', {
-        period,
-        frequency,
-        error:
-          epicError instanceof Error ? epicError.message : String(epicError),
-      });
-      epicCreationFailed = true;
     }
     const titleCaseAppName = this.toTitleCase(app_name);
     const formattedPeriod = period.toUpperCase().replace('-', ' ');
@@ -693,7 +702,9 @@ export class JiraOperations {
         .where({ app_name: appName, frequency, period })
         .first();
 
-      return result?.jira_key || null;
+      const jiraKey = result?.jira_key;
+      // Return null if jira_key is 'N/A' to prevent linking
+      return jiraKey && jiraKey !== 'N/A' ? jiraKey : null;
     } catch (error) {
       this.logger.error(`Error fetching audit Jira key for app: ${appName}`, {
         message: (error as Error).message,
@@ -1034,5 +1045,134 @@ export class JiraOperations {
       ...epicDetails,
       isNew: true,
     };
+  }
+
+  /**
+   * Updates the Epic link on a Jira Story ticket.
+   *
+   * @param storyKey - The Jira Story key to update
+   * @param newEpicKey - The new Epic key to link to
+   * @returns Promise resolving to update result
+   * @throws Error if update fails
+   */
+  async updateStoryEpicLink(
+    storyKey: string,
+    newEpicKey: string,
+  ): Promise<void> {
+    const jiraUrl = this.config.getString('auditCompliance.jiraUrl');
+    const jiraToken = this.config.getString('auditCompliance.jiraToken');
+
+    try {
+      this.logger.info('Updating Epic link on Story', {
+        storyKey,
+        newEpicKey,
+      });
+
+      // Prepare the update request body
+      const updateBody = {
+        fields: {
+          customfield_12311140: newEpicKey, // Parent Epic Link field
+        },
+      };
+
+      // Update the Story ticket
+      await axios.put(
+        `${jiraUrl}/rest/api/latest/issue/${storyKey}`,
+        updateBody,
+        {
+          headers: {
+            Authorization: `Bearer ${jiraToken}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+
+      this.logger.info('Successfully updated Epic link on Story', {
+        storyKey,
+        newEpicKey,
+      });
+    } catch (error) {
+      this.logger.error('Failed to update Epic link on Story', {
+        storyKey,
+        newEpicKey,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw new Error(
+        `Failed to update Epic link on Story ${storyKey}: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      );
+    }
+  }
+
+  /**
+   * Syncs Epic changes to all Stories for a given audit.
+   * Updates the Epic link on the Story ticket in Jira.
+   *
+   * @param appName - Application name
+   * @param frequency - Audit frequency
+   * @param period - Audit period
+   * @param newEpicKey - The new Epic key to link to
+   * @returns Promise resolving to sync result
+   * @throws Error if sync fails
+   */
+  async syncEpicToStory(
+    appName: string,
+    frequency: string,
+    period: string,
+    newEpicKey: string,
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      this.logger.info('Starting Epic sync to Story', {
+        appName,
+        frequency,
+        period,
+        newEpicKey,
+      });
+
+      // Get the current Story key for this audit
+      const storyKey = await this.getAuditJiraKey(appName, frequency, period);
+
+      if (!storyKey || storyKey === 'N/A') {
+        this.logger.warn('No Story key found for Epic sync', {
+          appName,
+          frequency,
+          period,
+        });
+        return {
+          success: false,
+          message: 'No Story key found for this audit',
+        };
+      }
+
+      // Update the Epic link on the Story
+      await this.updateStoryEpicLink(storyKey, newEpicKey);
+
+      this.logger.info('Successfully synced Epic to Story', {
+        appName,
+        frequency,
+        period,
+        storyKey,
+        newEpicKey,
+      });
+
+      return {
+        success: true,
+        message: `Successfully updated Epic link on Story ${storyKey}`,
+      };
+    } catch (error) {
+      this.logger.error('Failed to sync Epic to Story', {
+        appName,
+        frequency,
+        period,
+        newEpicKey,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : 'Unknown error occurred',
+      };
+    }
   }
 }
