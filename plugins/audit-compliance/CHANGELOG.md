@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.28.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.27.1...@appdev/backstage-plugin-audit-compliance@1.28.0) (2025-10-08)
+
+
+### Features
+
+* **audit-access-manager:** Support multiple delegates, validate special characters in app names, enable epic key editing, and skip auto Jira creation ([2a72f27](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/2a72f27e0c796bbb6401ceb37018e2ab2577d887))
+
 ## @appdev/backstage-plugin-audit-compliance [1.27.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.26.0...@appdev/backstage-plugin-audit-compliance@1.27.0) (2025-09-29)
 
 
