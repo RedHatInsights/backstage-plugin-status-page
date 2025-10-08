@@ -20,7 +20,7 @@ import {
   WorkstreamApiClient,
   workstreamApiRef,
 } from './api';
-import { rootRouteRef } from './routes';
+import { dashboardRouteRef, rootRouteRef } from './routes';
 
 export const workstreamAutomationPlugin = createPlugin({
   id: 'workstream-automation',
@@ -175,6 +175,29 @@ export const ArtAboutCard = workstreamAutomationPlugin.provide(
     component: {
       lazy: () =>
         import('./components/Art/ArtAboutCard').then(m => m.ArtAboutCard),
+    },
+  }),
+);
+
+export const WorkstreamDashboardPage = workstreamAutomationPlugin.provide(
+  createRoutableExtension({
+    name: 'workstream-dashboard-page',
+    mountPoint: dashboardRouteRef,
+    component: () =>
+      import('./components/WorkstreamDashboardPage').then(
+        m => m.WorkstreamDashboardPage,
+      ),
+  }),
+);
+
+export const WorkstreamDashboardContent = workstreamAutomationPlugin.provide(
+  createComponentExtension({
+    name: 'WorkstreamDashboardContent',
+    component: {
+      lazy: () =>
+        import('./components/WorkstreamDashboardPage').then(
+          m => m.WorkstreamDashboardContent,
+        ),
     },
   }),
 );

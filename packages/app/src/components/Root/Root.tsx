@@ -156,6 +156,11 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
                   to="gdpr"
                   text="GDPR"
                 />
+                <SidebarItem
+                  icon={DataUsageIcon as IconComponent}
+                  to="workstream/dashboard"
+                  text='Workstream Dashboard'
+                />
               </SidebarScrollWrapper>
             </SidebarGroup>
             <SidebarSpace />

@@ -39,7 +39,7 @@ export const SidebarLayout = styled(Box, {
     },
 
     // The height is controlled by the flexbox in the BackstageSidebarPage.
-    '& main[class*="BackstagePage-root"]': {
+    '& > div.MuiBox-root > main': {
       height: `calc(100vh - ${
         aboveSidebarHeaderHeight! + aboveMainContentHeaderHeight!
       }px)`,

@@ -8,9 +8,7 @@ import {
   useRouteRef,
 } from '@backstage/core-plugin-api';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
-import {
-  userSettingsPlugin
-} from '@backstage/plugin-user-settings';
+import { userSettingsPlugin } from '@backstage/plugin-user-settings';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { ExpandMoreOutlined } from '@mui/icons-material';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
@@ -25,7 +23,7 @@ import {
   Menu,
   MenuItem,
   styled,
-  Typography
+  Typography,
 } from '@mui/material';
 import { OverridableStringUnion } from '@mui/types';
 import { CSSProperties, useState } from 'react';
