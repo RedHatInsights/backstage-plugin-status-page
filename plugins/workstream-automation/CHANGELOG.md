@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-workstream-automation [1.22.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.21.0...@compass/backstage-plugin-workstream-automation@1.22.0) (2025-10-08)
+
+
+### Features
+
+* **COMPASS-318:** create workstream dashboard ([308c410](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/308c410550ac0a4e1d80d3aa81cd11430dc6c791))
+
 ## @compass/backstage-plugin-workstream-automation [1.21.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.20.0...@compass/backstage-plugin-workstream-automation@1.21.0) (2025-09-23)
 
 
