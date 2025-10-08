@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-workstream-automation [1.22.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.22.0...@compass/backstage-plugin-workstream-automation@1.22.1) (2025-10-08)
+
+
+### Bug Fixes
+
+* **wa-dashboard:** add check for entites in card details ([6394f8d](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/6394f8de73dfe2464f44651faae527ec9e35a965))
+
 ## @compass/backstage-plugin-workstream-automation [1.22.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.21.0...@compass/backstage-plugin-workstream-automation@1.22.0) (2025-10-08)
 
 
