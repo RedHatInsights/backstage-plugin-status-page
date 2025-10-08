@@ -37,31 +37,38 @@ export class GDPRApi {
   }
 
   private formatUserData(response: GdprApiResponse[]): GdprTableData[] {
-    return response.map((entry) => ({
-      platform: entry.platform,
-      uid: entry.user?.uid,
-      username: entry.user?.name || 'N/A',
-      ssoId: entry.user?.rh_jwt_user_id || 'N/A',
-      roles: entry.user?.roles?.map((r: UserRole) => r.target_id).join(', ') || 'N/A',
-      comment: entry.content?.comment?.toString() || '0',
-      file: entry.content?.file?.toString() || '0',
-      node: entry.content?.node?.toString() || '0',
-      rhlearnId: entry.user?.rh_jwt_user_id || 'N/A',
-      media: entry.content?.media?.toString() || '0',
-      group: entry.content?.group?.toString() || '0',
-      group_relationship: entry.content?.group_relationship?.toString() || '0',
-      content_moderation_state: entry.content?.content_moderation_state?.toString() || '0',
-      cphub_alert: entry.content?.cphub_alert?.toString() || '0',
-      super_sitemap_custom_url: entry.content?.super_sitemap_custom_url?.toString() || '0',
-      rhlearn_progress: entry.content?.rhlearn_progress?.toString() || '0',
-      red_hat_feedback_option: entry.content?.red_hat_feedback_option?.toString() || '0',
-      red_hat_feedback_response: entry.content?.red_hat_feedback_response?.toString() || '0',
-      red_hat_feedback_topic: entry.content?.red_hat_feedback_topic?.toString() || '0',
-      firstName: entry.user?.field_first_name || 'N/A',
-      lastName: entry.user?.field_last_name || 'N/A',
-      created: entry.user?.created || 'N/A',
-      changed: entry.user?.changed || 'N/A',
-    }));
+    return response.map((entry) => {
+      const isServerError: boolean = entry.code !== 200 && !!entry.status && !entry.status.includes('no data found');
+      
+      return {
+        platform: entry.platform,
+        uid: entry.user?.uid,
+        username: entry.user?.name || 'N/A',
+        ssoId: entry.user?.rh_jwt_user_id || 'N/A',
+        roles: entry.user?.roles?.map((r: UserRole) => r.target_id).join(', ') || 'N/A',
+        comment: entry.content?.comment?.toString() || '0',
+        file: entry.content?.file?.toString() || '0',
+        node: entry.content?.node?.toString() || '0',
+        rhlearnId: entry.user?.rh_jwt_user_id || 'N/A',
+        media: entry.content?.media?.toString() || '0',
+        group: entry.content?.group?.toString() || '0',
+        group_relationship: entry.content?.group_relationship?.toString() || '0',
+        content_moderation_state: entry.content?.content_moderation_state?.toString() || '0',
+        cphub_alert: entry.content?.cphub_alert?.toString() || '0',
+        super_sitemap_custom_url: entry.content?.super_sitemap_custom_url?.toString() || '0',
+        rhlearn_progress: entry.content?.rhlearn_progress?.toString() || '0',
+        red_hat_feedback_option: entry.content?.red_hat_feedback_option?.toString() || '0',
+        red_hat_feedback_response: entry.content?.red_hat_feedback_response?.toString() || '0',
+        red_hat_feedback_topic: entry.content?.red_hat_feedback_topic?.toString() || '0',
+        firstName: entry.user?.field_first_name || 'N/A',
+        lastName: entry.user?.field_last_name || 'N/A',
+        created: entry.user?.created || 'N/A',
+        changed: entry.user?.changed || 'N/A',
+        isServerError,
+        errorCode: isServerError ? entry.code : undefined,
+        errorMessage: isServerError ? entry.status : undefined,
+      };
+    });
   }
 
   async fetchDrupalGdprData(userId: string, email: string): Promise<GdprTableData[]> {

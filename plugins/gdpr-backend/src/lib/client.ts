@@ -6,6 +6,60 @@ import { makeAuthenticatedRequest, parseJsonResponse } from './httpUtils';
 import { GDPR_CONSTANTS } from './constants';
 
 /**
+ * Maps error types and HTTP status codes to specific error messages
+ */
+function getSpecificErrorCode(error: unknown): { code: string; reason: string } {
+  if (error instanceof GdprError) {
+    switch (error.statusCode) {
+      case 400:
+        return { code: 'Bad Request', reason: 'Invalid request parameters' };
+      case 401:
+        return { code: 'Unauthorized', reason: 'Authentication failed' };
+      case 403:
+        return { code: 'Access Denied', reason: 'Insufficient permissions' };
+      case 404:
+        return { code: 'Not Found', reason: 'API endpoint or user not found' };
+      case 408:
+        return { code: 'Response Timeout', reason: 'Server response timeout' };
+      case 429:
+        return { code: 'Rate Limited', reason: 'Too many requests' };
+      case 500:
+        return { code: 'Server Error', reason: 'Internal server error' };
+      case 502:
+        return { code: 'Bad Gateway', reason: 'Server gateway error' };
+      case 503:
+        return { code: 'Unavailable', reason: 'Service temporarily unavailable' };
+      case 504:
+        return { code: 'Gateway Timeout', reason: 'Server gateway timeout' };
+      default:
+        return { code: `HTTP ${error.statusCode || 'Unknown'}`, reason: `${error.message || 'Unknown'}` };
+    }
+  }
+
+  const errorMessage = String(error).toLowerCase();
+  
+  // Network-related errors
+  if (errorMessage.includes('timeout') || errorMessage.includes('etimedout')) {
+    return { code: 'Response Timeout', reason: 'Connection timeout' };
+  }
+  if (errorMessage.includes('enotfound') || errorMessage.includes('dns')) {
+    return { code: 'Unreachable', reason: 'DNS resolution failed' };
+  }
+  if (errorMessage.includes('econnrefused') || errorMessage.includes('connection refused')) {
+    return { code: 'Unreachable', reason: 'Connection refused' };
+  }
+  if (errorMessage.includes('network') || errorMessage.includes('fetch')) {
+    return { code: 'Network Error', reason: 'Network connectivity issue' };
+  }
+  if (errorMessage.includes('certificate') || errorMessage.includes('ssl') || errorMessage.includes('tls')) {
+    return { code: 'SSL Error', reason: 'Certificate validation failed' };
+  }
+
+  // Default fallback
+  return { code: 'Unreachable', reason: errorMessage };
+}
+
+/**
  * Fetches user data from a specific platform with email fallback
  * First tries with username, then falls back to email if no results
  */
@@ -294,27 +348,34 @@ export async function fetchGDPRDataByUsername(
       const errorMsg = `Failed to fetch data from ${platform.toUpperCase()}: ${String(error)}`;
       errors.push(errorMsg);
       logger?.warn(errorMsg);
+      
+      // Get specific error code and reason
+      const { code: errorCode, reason } = getSpecificErrorCode(error);
+      
+      // Create error entry to show in the results table
+      const errorEntry: UserData = {
+        platform,
+        user: { 
+          name: `${username} - ${errorCode}`,
+          uid: 'N/A'
+        },
+        content: {},
+        code: error instanceof GdprError ? (error.statusCode || 500) : 500,
+        status: `${errorCode}: ${reason}`
+      };
+      results.push(errorEntry);
     }
   }
 
   // Log summary
   logger?.info('GDPR username search completed', {
-    platformsSucceeded: results.length,
-    platformsFailed: errors.length,
+    platformsSucceeded: results.filter(r => r.code === 200).length,
+    platformsFailed: results.filter(r => r.code !== 200).length,
     totalPlatforms: platforms.length,
     errors,
   });
 
-  // If no platforms returned data, throw the accumulated errors
-  if (results.length === 0) {
-    const combinedError = errors.join('; ');
-    throw new GdprError(
-      `No data found for username "${username}" on any platform. Errors: ${combinedError}`,
-      Platform.DCP,
-      404,
-    );
-  }
-
+  // Always return results, even if some are errors
   return results;
 }
 
@@ -357,27 +418,34 @@ export async function fetchGDPRDataByEmail(
       const errorMsg = `Failed to fetch data from ${platform.toUpperCase()}: ${String(error)}`;
       errors.push(errorMsg);
       logger?.warn(errorMsg);
+      
+      // Get specific error code and reason
+      const { code: errorCode, reason } = getSpecificErrorCode(error);
+      
+      // Create error entry to show in the results table
+      const errorEntry: UserData = {
+        platform,
+        user: { 
+          name: `${email} - ${errorCode}`,
+          uid: 'N/A'
+        },
+        content: {},
+        code: error instanceof GdprError ? (error.statusCode || 500) : 500,
+        status: `${errorCode}: ${reason}`
+      };
+      results.push(errorEntry);
     }
   }
 
   // Log summary
   logger?.info('GDPR email search completed', {
-    platformsSucceeded: results.length,
-    platformsFailed: errors.length,
+    platformsSucceeded: results.filter(r => r.code === 200).length,
+    platformsFailed: results.filter(r => r.code !== 200).length,
     totalPlatforms: platforms.length,
     errors,
   });
 
-  // If no platforms returned data, throw the accumulated errors
-  if (results.length === 0) {
-    const combinedError = errors.join('; ');
-    throw new GdprError(
-      `No data found for email "${email}" on any platform. Errors: ${combinedError}`,
-      Platform.DCP,
-      404,
-    );
-  }
-
+  // Always return results, even if some are errors
   return results;
 }
 
