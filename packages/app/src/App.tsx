@@ -80,6 +80,7 @@ import {
 import {
   JiraIcon,
   SlackIcon,
+  WorkstreamDashboardPage,
 } from '@compass/backstage-plugin-workstream-automation';
 import { WORKSTREAM_RELATION_PAIR } from '@compass/backstage-plugin-workstream-automation-common';
 import { MockPluginPage } from '@compass/plugin-mock-plugin';
@@ -103,7 +104,10 @@ import Logout from '@mui/icons-material/LogoutOutlined';
 import CategoryOutlinedIcon from '@material-ui/icons/CategoryOutlined';
 import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import CreateComponentIcon from '@mui/icons-material/AddCircleOutlineOutlined';
-import { AssistantProvider, featureFlags as assistantFeatureFlags } from '@compass/backstage-plugin-assistant';
+import {
+  AssistantProvider,
+  featureFlags as assistantFeatureFlags,
+} from '@compass/backstage-plugin-assistant';
 
 const app = createApp({
   apis,
@@ -132,9 +136,7 @@ const app = createApp({
   components: {
     SignInPage: props => <SignInPage {...props} auto providers={['guest']} />,
   },
-  featureFlags: [
-    assistantFeatureFlags.debug,
-  ],
+  featureFlags: [assistantFeatureFlags.debug],
   icons: {
     'kind:workstream': GroupWorkIcon,
     'kind:art': AdbIcon,
@@ -152,7 +154,7 @@ const app = createApp({
     logout: Logout,
     category: CategoryOutlinedIcon,
     notifications: NotificationsOutlinedIcon,
-    create: CreateComponentIcon
+    create: CreateComponentIcon,
   },
   themes: getThemes(),
 });
@@ -263,6 +265,8 @@ const routes = (
       path="/compliance/ess/platform/:name"
       element={<PlatformDetailPage />}
     />
+    <Route path="/workstream/dashboard" element={<WorkstreamDashboardPage />} />
+    <Route path="/workstream" element={<Navigate to='/catalog?filter[kind]=Workstream' />} />
   </FlatRoutes>
 );
 

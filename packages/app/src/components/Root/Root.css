@@ -3,6 +3,14 @@
   top: 64px;
 }
 
+/* Corrects the positioning of main container */
+#rhdh-sidebar-layout > div.MuiBox-root {
+  display: flex;
+  flex-direction: column;
+  height: unset;
+  flex-grow: 1;
+}
+
 /* This will patch width of content when docsbot panel is expanded */
 body.assistant-open #rhdh-sidebar-layout main {
   width: calc(100% - var(--assistant-panel-width, 0) - 2rem);
@@ -11,7 +19,9 @@ body #rhdh-sidebar-layout main {
   transition: all 225ms ease-in-out;
 }
 
-body.assistant-open #rhdh-above-sidebar-header-container .MuiDrawer-paperAnchorDockedRight {
+body.assistant-open
+  #rhdh-above-sidebar-header-container
+  .MuiDrawer-paperAnchorDockedRight {
   top: 64px;
   height: calc(100svh - 64px - 1.5rem);
   box-sizing: border-box;
