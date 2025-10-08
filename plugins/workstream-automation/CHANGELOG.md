@@ -1,5 +1,13 @@
 # Changelog
 
+## @compass/backstage-plugin-workstream-automation [1.22.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.22.1...@compass/backstage-plugin-workstream-automation@1.22.2) (2025-10-08)
+
+
+
+### Dependencies
+
+* **@compass/backstage-plugin-workstream-automation-common:** upgraded to 1.0.0
+
 ## @compass/backstage-plugin-workstream-automation [1.22.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.22.0...@compass/backstage-plugin-workstream-automation@1.22.1) (2025-10-08)
 
 
