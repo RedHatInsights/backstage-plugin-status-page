@@ -45,7 +45,7 @@ export const CardDetails = (props: {
   const columns: TableColumn<WorkstreamEntity | ArtEntity>[] = [
     {
       field: 'metadata.name',
-      title: `${entities[0].kind} Name`, // dynamically get title 'Workstream' / 'ART'
+      title: entities.length > 0 ? `${entities[0].kind} Name` : 'Name', // dynamically get title 'Workstream' / 'ART'
       render: data => <EntityRefLink entityRef={data} />,
     },
     {
