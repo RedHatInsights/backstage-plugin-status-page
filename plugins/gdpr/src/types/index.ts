@@ -96,6 +96,9 @@ export interface GdprTableData {
   created?: string;
   changed?: string;
   isNoDataFound?: boolean;
+  isServerError?: boolean;
+  errorCode?: number;
+  errorMessage?: string;
 }
 
 /** Delete request payload */

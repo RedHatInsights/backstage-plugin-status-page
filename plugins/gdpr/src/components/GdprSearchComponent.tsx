@@ -114,6 +114,17 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: `${theme.palette.error.light}30`, // Slightly darker on hover
     },
   },
+  serverErrorRow: {
+    backgroundColor: `${theme.palette.warning.light}20`, // Light orange background for server errors
+    '& .MuiTableCell-root': {
+      color: theme.palette.warning.dark,
+      fontStyle: 'italic',
+      fontWeight: 500,
+    },
+    '&:hover': {
+      backgroundColor: `${theme.palette.warning.light}30`, // Slightly darker on hover
+    },
+  },
 }));
 
 interface GdprSearchComponentProps {
@@ -135,7 +146,7 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
   // Computed value: are all selectable rows selected?
   const selectableRowsIndices = searchResults
     .map((row, index) => ({ row, index }))
-    .filter(({ row }) => !row.isNoDataFound)
+    .filter(({ row }) => !row.isNoDataFound && !row.isServerError)
     .map(({ index }) => index);
   
   const allSelectableSelected = selectableRowsIndices.length > 0 && 
@@ -258,8 +269,8 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
   };
 
   const toggleUserSelection = (index: number) => {
-    // Don't allow toggling of "no data found" rows
-    if (searchResults[index]?.isNoDataFound) {
+    // Don't allow toggling of "no data found" or server error rows
+    if (searchResults[index]?.isNoDataFound || searchResults[index]?.isServerError) {
       return;
     }
     
@@ -273,7 +284,7 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
     
     // Only update selection for non-disabled rows
     const updatedSelection = searchResults.map((row) => {
-      if (row.isNoDataFound) {
+      if (row.isNoDataFound || row.isServerError) {
         return false; // Always keep disabled rows unselected
       }
       return newSelectionState;
@@ -419,17 +430,25 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
             </TableHead>
             <TableBody>
               {searchResults.length > 0 ? (
-                searchResults.map((row, index) => (
-                  <TableRow 
-                    key={index} 
-                    className={row.isNoDataFound ? classes.noDataFoundRow : ''}
-                  >
+                searchResults.map((row, index) => {
+                  let rowClassName = '';
+                  if (row.isServerError) {
+                    rowClassName = classes.serverErrorRow;
+                  } else if (row.isNoDataFound) {
+                    rowClassName = classes.noDataFoundRow;
+                  }
+                  
+                  return (
+                    <TableRow 
+                      key={index} 
+                      className={rowClassName}
+                    >
                     {searchType !== "All System" && (
                       <TableCell padding="checkbox">
                         <Checkbox
                           checked={!!selectedUsers[index]}
                           onChange={() => toggleUserSelection(index)}
-                          disabled={row.isNoDataFound}
+                          disabled={row.isNoDataFound || row.isServerError}
                         />
                       </TableCell>
                     )}
@@ -464,7 +483,7 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
                               color="primary"
                               size="small"
                               onClick={() => handleViewUser(row)}
-                              disabled={row.isNoDataFound}
+                              disabled={row.isNoDataFound || row.isServerError}
                             >
                               View User
                             </Button>
@@ -473,7 +492,7 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
                               color="secondary"
                               size="small"
                               onClick={() => handleDeleteUser(row.uid || '', row.platform)}
-                              disabled={row.isNoDataFound}
+                              disabled={row.isNoDataFound || row.isServerError}
                             >
                               Delete User
                             </Button>
@@ -482,7 +501,8 @@ export const GdprSearchComponent = ({ searchType, searchResults, onSearchResults
                       </>
                     )}
                   </TableRow>
-                ))
+                  );
+                })
               ) : (
                 <TableRow>
                   <TableCell colSpan={searchType === "All System" ? 6 : 16} align="center">

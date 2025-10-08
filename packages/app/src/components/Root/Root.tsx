@@ -149,11 +149,11 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
                 <SidebarItem
                   icon={SecurityIcon as IconComponent}
                   to="compliance"
-                  text="Compliance"
+                  text="Compliance Hub"
                 />
                 <SidebarItem
                   icon={MenuBookIcon as IconComponent}
-                  to="gdpr"
+                  to="compliance/gdpr"
                   text="GDPR"
                 />
               </SidebarScrollWrapper>
