@@ -279,8 +279,9 @@ export async function createAuditApplicationsRouter(
   auditApplicationsRouter.get(
     '/application-details/:app_name',
     async (req, res) => {
-      // Restore normalization for app_name in path param
-      const normalizedAppName = req.params.app_name
+      // Decode URL-encoded app_name and restore normalization
+      const decodedAppName = decodeURIComponent(req.params.app_name);
+      const normalizedAppName = decodedAppName
         .toLowerCase()
         .replace(/\s+/g, '-');
 

@@ -92,6 +92,10 @@ export const TwoStepAuditDialog = ({
   const [isEditingBody, setIsEditingBody] = useState(false);
   const [initiatingAudits, setInitiatingAudits] = useState(false);
   const [currentUser, setCurrentUser] = useState<string>('');
+  const [jiraOptions, setJiraOptions] = useState({
+    createEpic: true,
+    createStory: true,
+  });
   const [emailTemplate] = useState({
     greeting: 'Hello Team,',
     mainContent:
@@ -333,7 +337,10 @@ Audit and Compliance Team`;
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ audits: auditRequests }),
+          body: JSON.stringify({
+            audits: auditRequests,
+            jiraOptions: jiraOptions,
+          }),
         },
       );
 
@@ -710,6 +717,74 @@ Audit and Compliance Team`;
               </Grid>
             </Grid>
 
+            <Typography
+              variant="h6"
+              className={classes.sectionTitle}
+              style={{ marginTop: 24 }}
+            >
+              Jira Integration Options
+            </Typography>
+
+            <Box mb={2}>
+              <Typography variant="body2" color="textSecondary" gutterBottom>
+                Choose what to create in Jira during audit initiation:
+              </Typography>
+              <Box display="flex" flexDirection="column" style={{ gap: 8 }}>
+                <Box display="flex" alignItems="center">
+                  <Checkbox
+                    checked={jiraOptions.createEpic}
+                    onChange={e =>
+                      setJiraOptions(prev => ({
+                        ...prev,
+                        createEpic: e.target.checked,
+                      }))
+                    }
+                    color="primary"
+                  />
+                  <Box ml={1}>
+                    <Typography variant="body2" style={{ fontWeight: 500 }}>
+                      Create Epic
+                    </Typography>
+                    <Typography variant="caption" color="textSecondary">
+                      Creates a parent Epic for this audit period
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box display="flex" alignItems="center">
+                  <Checkbox
+                    checked={jiraOptions.createStory}
+                    onChange={e =>
+                      setJiraOptions(prev => ({
+                        ...prev,
+                        createStory: e.target.checked,
+                      }))
+                    }
+                    color="primary"
+                  />
+                  <Box ml={1}>
+                    <Typography variant="body2" style={{ fontWeight: 500 }}>
+                      Create Story
+                    </Typography>
+                    <Typography variant="caption" color="textSecondary">
+                      Creates a Story ticket for each application audit
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+              {!jiraOptions.createEpic && !jiraOptions.createStory && (
+                <Box mt={1}>
+                  <Typography
+                    variant="caption"
+                    color="textSecondary"
+                    style={{ color: '#ff9800' }}
+                  >
+                    ⚠️ No Jira tickets will be created. You can add them
+                    manually later.
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+
             {localSelectedApplications.length > 0 && (
               <Box mt={4}>
                 <Typography variant="h6" className={classes.sectionTitle}>
@@ -723,6 +798,7 @@ Audit and Compliance Team`;
                         <TableCell>App Owner</TableCell>
                         <TableCell>Frequency</TableCell>
                         <TableCell>Period</TableCell>
+                        <TableCell>Jira Creation</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -743,6 +819,51 @@ Audit and Compliance Team`;
                                   : 'Yearly'}
                               </TableCell>
                               <TableCell>{period}</TableCell>
+                              <TableCell>
+                                <Box
+                                  display="flex"
+                                  flexDirection="column"
+                                  style={{ gap: 4 }}
+                                >
+                                  {jiraOptions.createEpic && (
+                                    <Chip
+                                      label="Epic"
+                                      size="small"
+                                      color="primary"
+                                      variant="outlined"
+                                      style={{
+                                        fontSize: '0.7rem',
+                                        height: '20px',
+                                      }}
+                                    />
+                                  )}
+                                  {jiraOptions.createStory && (
+                                    <Chip
+                                      label="Story"
+                                      size="small"
+                                      color="primary"
+                                      variant="outlined"
+                                      style={{
+                                        fontSize: '0.7rem',
+                                        height: '20px',
+                                      }}
+                                    />
+                                  )}
+                                  {!jiraOptions.createEpic &&
+                                    !jiraOptions.createStory && (
+                                      <Chip
+                                        label="N/A"
+                                        size="small"
+                                        color="default"
+                                        variant="outlined"
+                                        style={{
+                                          fontSize: '0.7rem',
+                                          height: '20px',
+                                        }}
+                                      />
+                                    )}
+                                </Box>
+                              </TableCell>
                             </TableRow>
                           )
                         );

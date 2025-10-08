@@ -86,7 +86,10 @@ export async function createDataDeletionRouter(
     async (req, res): Promise<void> => {
       try {
         const { appName } = req.params;
-        const normalizedAppName = appName.toLowerCase().replace(/\s+/g, '-');
+        const decodedAppName = decodeURIComponent(appName);
+        const normalizedAppName = decodedAppName
+          .toLowerCase()
+          .replace(/\s+/g, '-');
 
         const deletionSummary = await database.deleteApplicationByName(
           normalizedAppName,

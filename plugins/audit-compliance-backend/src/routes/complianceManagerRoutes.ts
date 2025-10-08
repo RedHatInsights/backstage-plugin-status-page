@@ -124,7 +124,7 @@ export async function createComplianceManagerRouter(
     '/compliance/bulk-initiate-audits',
     async (req, res) => {
       try {
-        const { audits } = req.body;
+        const { audits, jiraOptions } = req.body;
 
         // Validate request
         if (!audits || !Array.isArray(audits) || audits.length === 0) {
@@ -132,6 +132,13 @@ export async function createComplianceManagerRouter(
             error: 'audits array is required and must not be empty',
           });
         }
+
+        // Set default jiraOptions if not provided
+        const defaultJiraOptions = {
+          createEpic: true,
+          createStory: true,
+        };
+        const finalJiraOptions = jiraOptions || defaultJiraOptions;
 
         // Validate each audit configuration
         for (const audit of audits) {
@@ -333,39 +340,59 @@ export async function createComplianceManagerRouter(
               result => result !== null,
             );
 
-            // Try to create Jira ticket for the audit (as a Story)
+            // Try to create Jira ticket for the audit (as a Story) - conditional based on jiraOptions
             let jiraTicket = null;
             let jiraCreationFailed = false;
-            try {
-              jiraTicket = await database.createAuditJiraTicket(
-                {
+
+            if (finalJiraOptions.createStory) {
+              try {
+                jiraTicket = await database.createAuditJiraTicket(
+                  {
+                    app_name: appName,
+                    frequency: auditConfig.frequency,
+                    period: auditConfig.period,
+                  },
+                  undefined,
+                  auditConfig.initiated_by || 'system',
+                  allAppNames,
+                );
+                // Update the audit record with the Jira ticket key
+                await database.updateAudit(
+                  appName,
+                  auditConfig.frequency,
+                  auditConfig.period,
+                  {
+                    jira_key: jiraTicket.key,
+                    jira_status: jiraTicket.status,
+                  },
+                );
+              } catch (jiraError) {
+                logger.error('Failed to create JIRA story', {
                   app_name: appName,
-                  frequency: auditConfig.frequency,
-                  period: auditConfig.period,
-                },
-                undefined,
-                auditConfig.initiated_by || 'system',
-                allAppNames,
-              );
-              // Update the audit record with the Jira ticket key
-              await database.updateAudit(
-                appName,
-                auditConfig.frequency,
-                auditConfig.period,
-                {
-                  jira_key: jiraTicket.key,
-                  jira_status: jiraTicket.status,
-                },
-              );
-            } catch (jiraError) {
-              logger.error('Failed to create JIRA story', {
+                  error:
+                    jiraError instanceof Error
+                      ? jiraError.message
+                      : String(jiraError),
+                });
+                jiraCreationFailed = true;
+                // Update the audit record with jira_key: 'N/A'
+                await database.updateAudit(
+                  appName,
+                  auditConfig.frequency,
+                  auditConfig.period,
+                  {
+                    jira_key: 'N/A',
+                    jira_status: 'N/A',
+                  },
+                );
+              }
+            } else {
+              // Story creation was skipped
+              logger.info('JIRA story creation skipped based on user options', {
                 app_name: appName,
-                error:
-                  jiraError instanceof Error
-                    ? jiraError.message
-                    : String(jiraError),
+                frequency: auditConfig.frequency,
+                period: auditConfig.period,
               });
-              jiraCreationFailed = true;
               // Update the audit record with jira_key: 'N/A'
               await database.updateAudit(
                 appName,

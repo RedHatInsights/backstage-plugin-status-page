@@ -43,6 +43,7 @@ import { ReviewDataTable } from './ReviewDataTable';
 import { StatisticsData, SummaryReportProps } from './types';
 import { calculateTotals } from './utils';
 import { AuditActivityStream } from '../../AuditDetailsSection/AuditActivityStream/AuditActivityStream';
+import { parseEntityRef } from '@backstage/catalog-model';
 
 const StatisticsTable: React.FC<{
   statistics: StatisticsData;
@@ -332,7 +333,7 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
       try {
         const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
         const response = await fetchApi.fetch(
-          `${baseUrl}/application-details/${data.app_name}`,
+          `${baseUrl}/application-details/${encodeURIComponent(data.app_name)}`,
           {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
@@ -930,13 +931,28 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
                 </Typography>
                 <Typography variant="body1">
                   {applicationDetails?.app_delegate ? (
-                    <EntityDisplayName
-                      entityRef={{
-                        name: applicationDetails.app_delegate,
-                        kind: 'User',
-                        namespace: 'redhat',
-                      }}
-                    />
+                    <Box>
+                      {applicationDetails.app_delegate
+                        .split(',')
+                        .map((delegate: string) => delegate.trim())
+                        .filter((delegate: string) => delegate.length > 0)
+                        .map((delegate: string, index: number) => (
+                          <Box key={delegate} display="inline-block" mr={1}>
+                            <EntityDisplayName
+                              entityRef={parseEntityRef(delegate, {
+                                defaultKind: 'user',
+                                defaultNamespace: 'redhat',
+                              })}
+                            />
+                            {index <
+                              applicationDetails.app_delegate
+                                .split(',')
+                                .filter((d: string) => d.trim().length > 0)
+                                .length -
+                                1 && ', '}
+                          </Box>
+                        ))}
+                    </Box>
                   ) : (
                     'Not specified'
                   )}

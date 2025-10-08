@@ -426,4 +426,14 @@ export class AuditComplianceDatabase {
   public getConfig() {
     return this.config;
   }
+
+  // Implementation: JiraOperations.ts
+  async syncEpicToStory(
+    appName: string,
+    frequency: string,
+    period: string,
+    newEpicKey: string,
+  ): Promise<{ success: boolean; message: string }> {
+    return this.jiraOps.syncEpicToStory(appName, frequency, period, newEpicKey);
+  }
 }
