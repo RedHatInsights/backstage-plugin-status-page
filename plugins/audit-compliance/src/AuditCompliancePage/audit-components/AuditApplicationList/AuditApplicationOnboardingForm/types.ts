@@ -2,6 +2,7 @@ export type AccountEntry = {
   type: 'service-account' | 'rover-group-name';
   source: 'rover' | 'gitlab' | 'ldap';
   account_name: string;
+  custom_reviewer?: string;
 };
 
 export type JiraMetadataArrayItem = { id: string; key: string; value: string };

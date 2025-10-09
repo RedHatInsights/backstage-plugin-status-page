@@ -98,6 +98,7 @@ export class ApplicationOperations {
       type: AccountType;
       source: AccountSource;
       account_name: string;
+      custom_reviewer?: string;
     }>;
     jira_metadata?: Record<string, string | { value: string; schema?: any }>;
     performed_by?: string;
@@ -151,6 +152,9 @@ export class ApplicationOperations {
         };
         if (Object.keys(transformedJiraMetadata).length > 0) {
           entry.jira_metadata = transformedJiraMetadata;
+        }
+        if (account.custom_reviewer) {
+          entry.custom_reviewer = account.custom_reviewer;
         }
         return entry;
       });
@@ -218,6 +222,7 @@ export class ApplicationOperations {
       type: AccountType;
       source: AccountSource;
       account_name: string;
+      custom_reviewer?: string;
     }>;
     jira_metadata?: Record<string, string | { value: string; schema?: any }>;
     performed_by?: string;
@@ -274,6 +279,9 @@ export class ApplicationOperations {
         };
         if (Object.keys(transformedJiraMetadata).length > 0) {
           entry.jira_metadata = transformedJiraMetadata;
+        }
+        if (account.custom_reviewer) {
+          entry.custom_reviewer = account.custom_reviewer;
         }
         return entry;
       });
@@ -340,6 +348,7 @@ export class ApplicationOperations {
         'jira_project',
         'app_owner_email',
         'jira_metadata',
+        'custom_reviewer',
       )
       .where({ app_name: appName });
 

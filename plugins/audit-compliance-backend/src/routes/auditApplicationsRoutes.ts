@@ -312,6 +312,7 @@ export async function createAuditApplicationsRouter(
           type: row.type,
           source: row.source,
           account_name: row.account_name,
+          custom_reviewer: row.custom_reviewer || '',
         }));
 
         res.set('Cache-Control', 'no-store'); // Disable caching

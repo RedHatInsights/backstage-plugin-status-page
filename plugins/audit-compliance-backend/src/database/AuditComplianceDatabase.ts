@@ -104,6 +104,7 @@ export class AuditComplianceDatabase {
       type: AccountType;
       source: AccountSource;
       account_name: string;
+      custom_reviewer?: string;
     }>;
     jira_metadata?: Record<string, string | { value: string; schema?: any }>;
     performed_by?: string;
@@ -124,6 +125,7 @@ export class AuditComplianceDatabase {
       type: AccountType;
       source: AccountSource;
       account_name: string;
+      custom_reviewer?: string;
     }>;
     jira_metadata?: Record<string, string | { value: string; schema?: any }>;
     performed_by?: string;
