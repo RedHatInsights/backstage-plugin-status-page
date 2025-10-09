@@ -153,7 +153,12 @@ export const AuditApplicationOnboardingForm = ({
       app_delegate_email: '',
       jira_project: '',
       accounts: [
-        { type: 'rover-group-name', source: 'rover', account_name: '' },
+        {
+          type: 'rover-group-name',
+          source: 'rover',
+          account_name: '',
+          custom_reviewer: '',
+        },
       ],
       jira_metadata: [{ key: '', value: '', schema: undefined }],
     };
@@ -320,6 +325,48 @@ export const AuditApplicationOnboardingForm = ({
   // Store selected users separately to maintain persistence
   const [selectedOwner, setSelectedOwner] = useState<UserEntity | null>(null);
 
+  // Custom reviewer search state for each account entry
+  const [customReviewerSearchValues, setCustomReviewerSearchValues] = useState<
+    string[]
+  >([]);
+  const [customReviewerOptions, setCustomReviewerOptions] = useState<
+    UserEntity[][]
+  >([]);
+  const [customReviewerLoading, setCustomReviewerLoading] = useState<boolean[]>(
+    [],
+  );
+  const [selectedCustomReviewers, setSelectedCustomReviewers] = useState<
+    (UserEntity | null)[]
+  >([]);
+
+  // Initialize custom reviewer arrays when accounts change
+  useEffect(() => {
+    setCustomReviewerSearchValues(prev => {
+      if (prev.length !== formData.accounts.length) {
+        return formData.accounts.map(() => '');
+      }
+      return prev;
+    });
+    setCustomReviewerOptions(prev => {
+      if (prev.length !== formData.accounts.length) {
+        return formData.accounts.map(() => []);
+      }
+      return prev;
+    });
+    setCustomReviewerLoading(prev => {
+      if (prev.length !== formData.accounts.length) {
+        return formData.accounts.map(() => false);
+      }
+      return prev;
+    });
+    setSelectedCustomReviewers(prev => {
+      if (prev.length !== formData.accounts.length) {
+        return formData.accounts.map(() => null);
+      }
+      return prev;
+    });
+  }, [formData.accounts]);
+
   // Initialize selected users from form data
   useEffect(() => {
     const initializeUsers = async () => {
@@ -399,6 +446,72 @@ export const AuditApplicationOnboardingForm = ({
       initializeUsers();
     }
   }, [initialData, catalogApi]);
+
+  // Initialize custom reviewers from initial data
+  useEffect(() => {
+    const initializeCustomReviewers = async () => {
+      if (initialData?.accounts) {
+        const customReviewerPromises = initialData.accounts.map(
+          async (account, index) => {
+            if (account.custom_reviewer) {
+              try {
+                // Search for the custom reviewer by display name or metadata name
+                const response = await catalogApi.queryEntities({
+                  filter: [{ kind: 'User' }],
+                  fullTextFilter: {
+                    term: account.custom_reviewer,
+                    fields: ['metadata.name', 'spec.profile.displayName'],
+                  },
+                });
+
+                const searchResults = response.items as UserEntity[];
+
+                // Try to find by metadata.name first (current storage format), then by display name (backward compatibility)
+                const reviewer = searchResults.find(
+                  (user: UserEntity) =>
+                    user.metadata.name === account.custom_reviewer,
+                );
+
+                if (reviewer) {
+                  // Update selected custom reviewers
+                  setSelectedCustomReviewers(prev => {
+                    const newSelected = [...prev];
+                    newSelected[index] = reviewer;
+                    return newSelected;
+                  });
+
+                  // Update custom reviewer search values (use display name for UI)
+                  setCustomReviewerSearchValues(prev => {
+                    const newSearchValues = [...prev];
+                    newSearchValues[index] =
+                      reviewer.spec.profile?.displayName ||
+                      reviewer.metadata.name;
+                    return newSearchValues;
+                  });
+
+                  // Update custom reviewer options
+                  setCustomReviewerOptions(prev => {
+                    const newOptions = [...prev];
+                    newOptions[index] = [reviewer];
+                    return newOptions;
+                  });
+                }
+              } catch (err) {
+                // Silently handle error - custom reviewer will remain empty
+                // This prevents the form from breaking if a reviewer can't be found
+              }
+            }
+          },
+        );
+
+        await Promise.all(customReviewerPromises);
+      }
+    };
+
+    if (initialData?.accounts && formData.accounts.length > 0) {
+      initializeCustomReviewers();
+    }
+  }, [initialData, formData.accounts, catalogApi]);
 
   // Search for users when owner search value changes
   useEffect(() => {
@@ -494,6 +607,87 @@ export const AuditApplicationOnboardingForm = ({
     }
   }, [delegateSearchValue, catalogApi, alertApi, selectedDelegates]);
 
+  // Search for custom reviewers when search values change
+  useEffect(() => {
+    const searchCustomReviewers = async () => {
+      for (let index = 0; index < customReviewerSearchValues.length; index++) {
+        const searchValue = customReviewerSearchValues[index];
+        const selectedReviewer = selectedCustomReviewers[index];
+
+        if (
+          searchValue.length >= 3 &&
+          searchValue !== selectedReviewer?.spec.profile?.displayName
+        ) {
+          setCustomReviewerLoading(prev => {
+            const newLoading = [...prev];
+            newLoading[index] = true;
+            return newLoading;
+          });
+
+          try {
+            const response = await catalogApi.queryEntities({
+              filter: [{ kind: 'User' }],
+              fullTextFilter: {
+                term: searchValue,
+                fields: ['metadata.name', 'spec.profile.displayName'],
+              },
+            });
+
+            const searchResults = response.items as UserEntity[];
+
+            // Always include the selected reviewer in options if it exists
+            const allOptions =
+              selectedReviewer &&
+              !searchResults.find(
+                u => u.metadata.name === selectedReviewer.metadata.name,
+              )
+                ? [selectedReviewer, ...searchResults]
+                : searchResults;
+
+            setCustomReviewerOptions(prev => {
+              const newOptions = [...prev];
+              newOptions[index] = allOptions;
+              return newOptions;
+            });
+          } catch (error) {
+            alertApi.post({
+              message: `Failed to search users: ${error}`,
+              severity: 'error',
+            });
+          } finally {
+            setCustomReviewerLoading(prev => {
+              const newLoading = [...prev];
+              newLoading[index] = false;
+              return newLoading;
+            });
+          }
+        } else if (searchValue.length === 0) {
+          // Keep the selected reviewer in options if it exists
+          if (selectedReviewer) {
+            setCustomReviewerOptions(prev => {
+              const newOptions = [...prev];
+              newOptions[index] = [selectedReviewer];
+              return newOptions;
+            });
+          } else {
+            setCustomReviewerOptions(prev => {
+              const newOptions = [...prev];
+              newOptions[index] = [];
+              return newOptions;
+            });
+          }
+        }
+      }
+    };
+
+    searchCustomReviewers();
+  }, [
+    customReviewerSearchValues,
+    catalogApi,
+    alertApi,
+    selectedCustomReviewers,
+  ]);
+
   // Get display name for user options
   const getUserDisplayName = (user: UserEntity) => {
     return user.spec.profile?.displayName || user.metadata.name;
@@ -527,6 +721,44 @@ export const AuditApplicationOnboardingForm = ({
     setSelectedDelegates(selectedUsers); // Update selected users state
   };
 
+  // Handle custom reviewer selection for a specific account entry
+  const handleCustomReviewerChange = (
+    index: number,
+    selectedUser: UserEntity | null,
+  ) => {
+    if (selectedUser) {
+      // Update the form data - store metadata.name (UID) for consistency with app_delegate
+      const newAccounts = [...formData.accounts];
+      newAccounts[index] = {
+        ...newAccounts[index],
+        custom_reviewer: selectedUser.metadata.name,
+      };
+      setFormData(prev => ({ ...prev, accounts: newAccounts }));
+
+      // Update selected reviewers state
+      setSelectedCustomReviewers(prev => {
+        const newSelected = [...prev];
+        newSelected[index] = selectedUser;
+        return newSelected;
+      });
+    } else {
+      // Clear the custom reviewer
+      const newAccounts = [...formData.accounts];
+      newAccounts[index] = {
+        ...newAccounts[index],
+        custom_reviewer: '',
+      };
+      setFormData(prev => ({ ...prev, accounts: newAccounts }));
+
+      // Update selected reviewers state
+      setSelectedCustomReviewers(prev => {
+        const newSelected = [...prev];
+        newSelected[index] = null;
+        return newSelected;
+      });
+    }
+  };
+
   // Get user option label with email
   const getUserOptionLabel = (user: UserEntity) => {
     const displayName = getUserDisplayName(user);
@@ -557,9 +789,20 @@ export const AuditApplicationOnboardingForm = ({
       ...prev,
       accounts: [
         ...prev.accounts,
-        { type: 'rover-group-name', source: 'rover', account_name: '' },
+        {
+          type: 'rover-group-name',
+          source: 'rover',
+          account_name: '',
+          custom_reviewer: '',
+        },
       ],
     }));
+
+    // Initialize custom reviewer arrays for the new entry
+    setCustomReviewerSearchValues(prev => [...prev, '']);
+    setCustomReviewerOptions(prev => [...prev, []]);
+    setCustomReviewerLoading(prev => [...prev, false]);
+    setSelectedCustomReviewers(prev => [...prev, null]);
   };
 
   const handleRemoveAccountEntry = (index: number) => {
@@ -567,6 +810,12 @@ export const AuditApplicationOnboardingForm = ({
       ...prev,
       accounts: prev.accounts.filter((_, i) => i !== index),
     }));
+
+    // Remove corresponding custom reviewer state
+    setCustomReviewerSearchValues(prev => prev.filter((_, i) => i !== index));
+    setCustomReviewerOptions(prev => prev.filter((_, i) => i !== index));
+    setCustomReviewerLoading(prev => prev.filter((_, i) => i !== index));
+    setSelectedCustomReviewers(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleAccountChange = (
@@ -825,7 +1074,12 @@ export const AuditApplicationOnboardingForm = ({
           app_delegate_email: '',
           jira_project: '',
           accounts: [
-            { type: 'rover-group-name', source: 'rover', account_name: '' },
+            {
+              type: 'rover-group-name',
+              source: 'rover',
+              account_name: '',
+              custom_reviewer: '',
+            },
           ],
           jira_metadata: [{ key: '', value: '', schema: undefined }],
         });
@@ -1231,7 +1485,7 @@ export const AuditApplicationOnboardingForm = ({
                         </MenuItem>
                       </TextField>
                     </Grid>
-                    <Grid item xs={12} sm={3}>
+                    <Grid item xs={12} sm={2}>
                       <Typography
                         variant="subtitle2"
                         style={{ marginBottom: 4 }}
@@ -1259,7 +1513,7 @@ export const AuditApplicationOnboardingForm = ({
                         <MenuItem value="ldap">LDAP</MenuItem>
                       </TextField>
                     </Grid>
-                    <Grid item xs={12} sm={5}>
+                    <Grid item xs={12} sm={3}>
                       <Typography
                         variant="subtitle2"
                         style={{ marginBottom: 4 }}
@@ -1352,6 +1606,70 @@ export const AuditApplicationOnboardingForm = ({
                         />
                       )}
                     </Grid>
+                    {entry.type === 'service-account' && (
+                      <Grid item xs={12} sm={3}>
+                        <Typography
+                          variant="subtitle2"
+                          style={{ marginBottom: 4 }}
+                        >
+                          Custom Reviewer
+                          <Tooltip title="Override the application-level custom reviewer for this specific service account. Leave empty to use the application default.">
+                            <InfoIcon
+                              fontSize="small"
+                              style={{ marginLeft: 4, verticalAlign: 'middle' }}
+                            />
+                          </Tooltip>
+                        </Typography>
+                        <Autocomplete
+                          options={customReviewerOptions[index] || []}
+                          getOptionLabel={getUserOptionLabel}
+                          value={selectedCustomReviewers[index] || null}
+                          onChange={(_event, newValue) =>
+                            handleCustomReviewerChange(index, newValue)
+                          }
+                          onInputChange={(_event, newInputValue) => {
+                            setCustomReviewerSearchValues(prev => {
+                              const newValues = [...prev];
+                              newValues[index] = newInputValue;
+                              return newValues;
+                            });
+                            // Only clear options if search is empty and no user is selected
+                            if (
+                              !newInputValue &&
+                              !selectedCustomReviewers[index]
+                            ) {
+                              setCustomReviewerOptions(prev => {
+                                const newOptions = [...prev];
+                                newOptions[index] = [];
+                                return newOptions;
+                              });
+                            }
+                          }}
+                          renderInput={params => (
+                            <TextField
+                              {...params}
+                              label=""
+                              placeholder="Leave empty to use application default"
+                              size="small"
+                              InputProps={{
+                                ...params.InputProps,
+                                endAdornment: (
+                                  <>
+                                    {customReviewerLoading[index] ? (
+                                      <CircularProgress
+                                        color="inherit"
+                                        size={20}
+                                      />
+                                    ) : null}
+                                    {params.InputProps.endAdornment}
+                                  </>
+                                ),
+                              }}
+                            />
+                          )}
+                        />
+                      </Grid>
+                    )}
                     <Grid item xs={12} sm={1}>
                       <IconButton
                         color="secondary"

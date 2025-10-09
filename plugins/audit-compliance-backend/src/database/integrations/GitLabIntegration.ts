@@ -514,6 +514,7 @@ export class GitLabDatabase implements GitLabStore {
           'app_name',
           'app_owner',
           'app_owner_email',
+          'custom_reviewer',
         )
         .where({
           app_name: appname,
@@ -539,6 +540,7 @@ export class GitLabDatabase implements GitLabStore {
           app_owner_email,
           account_name,
           app_name,
+          custom_reviewer,
         } = app;
 
         // Check if this is a service account - handle differently
@@ -571,7 +573,7 @@ export class GitLabDatabase implements GitLabStore {
             updated_at: new Date(),
             period: period,
             frequency: frequency,
-            app_delegate: app_delegate,
+            app_delegate: custom_reviewer || app_delegate,
             ticket_status: null,
             source: 'gitlab',
           };
@@ -646,7 +648,7 @@ export class GitLabDatabase implements GitLabStore {
             app_name,
             period,
             frequency,
-            app_delegate,
+            app_delegate: custom_reviewer || app_delegate,
           });
         }
       }
@@ -735,6 +737,7 @@ export class GitLabDatabase implements GitLabStore {
           'app_name',
           'app_owner',
           'app_owner_email',
+          'custom_reviewer',
         )
         .where({
           app_name: appname,
@@ -751,7 +754,7 @@ export class GitLabDatabase implements GitLabStore {
           type,
           environment,
           app_delegate,
-
+          custom_reviewer,
           app_owner,
           app_owner_email,
           account_name,
@@ -782,7 +785,7 @@ export class GitLabDatabase implements GitLabStore {
             app_name,
             frequency,
             period,
-            app_delegate,
+            app_delegate: custom_reviewer || app_delegate,
           };
           report.push(serviceAccountRow);
           continue; // Skip the rest of the loop for service accounts
@@ -854,7 +857,7 @@ export class GitLabDatabase implements GitLabStore {
             app_name,
             frequency,
             period,
-            app_delegate,
+            app_delegate: custom_reviewer || app_delegate,
             app_owner_email,
           };
 

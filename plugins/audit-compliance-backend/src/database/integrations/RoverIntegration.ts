@@ -328,6 +328,7 @@ export class RoverDatabase implements RoverStore {
         'app_name',
         'app_owner',
         'app_owner_email',
+        'custom_reviewer',
       )
       .where({
         app_name: appname,
@@ -352,6 +353,7 @@ export class RoverDatabase implements RoverStore {
         app_name,
         app_owner,
         app_owner_email,
+        custom_reviewer,
       } = app;
 
       const rover_group_name = account_name;
@@ -396,7 +398,7 @@ export class RoverDatabase implements RoverStore {
             app_name,
             frequency,
             period,
-            app_delegate,
+            app_delegate: custom_reviewer || app_delegate,
           });
         }
       } else if (type === 'service-account') {
@@ -425,7 +427,8 @@ export class RoverDatabase implements RoverStore {
           app_name,
           frequency,
           period,
-          app_delegate,
+          app_delegate: custom_reviewer || app_delegate,
+          custom_reviewer,
           isServiceAccount: true,
         });
       }
@@ -475,7 +478,7 @@ export class RoverDatabase implements RoverStore {
           updated_at: new Date(),
           period: row.period,
           frequency: row.frequency,
-          app_delegate: row.app_delegate,
+          app_delegate: row.custom_reviewer || row.app_delegate,
           ticket_status: '',
           source: 'rover',
         };
@@ -538,6 +541,7 @@ export class RoverDatabase implements RoverStore {
         'app_name',
         'app_owner',
         'app_owner_email',
+        'custom_reviewer',
       )
       .where({
         app_name: appname,
@@ -562,6 +566,7 @@ export class RoverDatabase implements RoverStore {
         app_name,
         app_owner,
         app_owner_email,
+        custom_reviewer,
       } = app;
 
       const rover_group_name = account_name;
@@ -606,7 +611,7 @@ export class RoverDatabase implements RoverStore {
             app_name,
             frequency,
             period,
-            app_delegate,
+            app_delegate: custom_reviewer || app_delegate,
           });
         }
       } else if (type === 'service-account') {
@@ -630,7 +635,7 @@ export class RoverDatabase implements RoverStore {
           app_name,
           frequency,
           period,
-          app_delegate,
+          app_delegate: custom_reviewer || app_delegate,
           isServiceAccount: true,
         });
       }
@@ -772,6 +777,7 @@ export class RoverDatabase implements RoverStore {
         'app_name',
         'app_owner',
         'app_owner_email',
+        'custom_reviewer',
       )
       .where({
         app_name: appname,
@@ -796,6 +802,7 @@ export class RoverDatabase implements RoverStore {
         app_name,
         app_owner,
         app_owner_email,
+        custom_reviewer,
       } = app;
 
       if (type === 'rover-group-name') {
@@ -819,7 +826,7 @@ export class RoverDatabase implements RoverStore {
           app_name,
           frequency,
           period,
-          app_delegate,
+          app_delegate: custom_reviewer || app_delegate,
           ticket_status: null,
         };
         await this.db('group_access_reports').insert(dbRow);
@@ -844,7 +851,7 @@ export class RoverDatabase implements RoverStore {
           updated_at: new Date(),
           period,
           frequency,
-          app_delegate,
+          app_delegate: custom_reviewer || app_delegate,
           ticket_status: '',
           source: 'ldap',
         };
@@ -886,6 +893,7 @@ export class RoverDatabase implements RoverStore {
         'app_name',
         'app_owner',
         'app_owner_email',
+        'custom_reviewer',
       )
       .where({
         app_name: appname,
@@ -910,6 +918,7 @@ export class RoverDatabase implements RoverStore {
         app_name,
         app_owner,
         app_owner_email,
+        custom_reviewer,
       } = app;
 
       if (type === 'rover-group-name') {
@@ -926,7 +935,7 @@ export class RoverDatabase implements RoverStore {
           app_name,
           frequency,
           period,
-          app_delegate,
+          app_delegate: custom_reviewer || app_delegate,
           created_at: new Date(),
         };
         report.push(dbRow);
@@ -941,7 +950,7 @@ export class RoverDatabase implements RoverStore {
           service_account: account_name,
           user_role: 'service-account',
           manager: app_owner || 'N/A',
-          app_delegate,
+          app_delegate: custom_reviewer || app_delegate,
           source: 'ldap',
           account_name,
           created_at: new Date(),
