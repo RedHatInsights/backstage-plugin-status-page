@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.29.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.28.0...@appdev/backstage-plugin-audit-compliance@1.29.0) (2025-10-10)
+
+
+### Features
+
+* **audit-access-manager:** Add and auto-populate custom reviewers for service accounts (APD-1316) ([a1517a5](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/a1517a5ab1db1b324efa97a521f4d9f6ae07890d))
+
 ## @appdev/backstage-plugin-audit-compliance [1.28.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.27.1...@appdev/backstage-plugin-audit-compliance@1.28.0) (2025-10-08)
 
 
