@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-catalog-backend-module-aixway [1.1.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-catalog-backend-module-aixway@1.1.0...@compass/backstage-plugin-catalog-backend-module-aixway@1.1.1) (2025-10-10)
+
+
+### Other changes
+
+* **release:** 1.0.0 [skip ci] ([d80fb30](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/d80fb303a3fb0e86117e4684f859de4e3ba8b39e))
+
 ## @compass/backstage-plugin-catalog-backend-module-aixway 1.0.0 (2025-10-08)
 
 
