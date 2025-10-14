@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-audit-compliance [1.30.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.29.0...@appdev/backstage-plugin-audit-compliance@1.30.0) (2025-10-14)
+
+
+### Features
+
+* **audit-access-manager:** Manual data handling, onboarding enhancements, and build fixes ([ed1b658](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/ed1b658a143a811adfab41932ed7505c8e481e07))
+
 ## @appdev/backstage-plugin-audit-compliance [1.29.0](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-audit-compliance@1.28.0...@appdev/backstage-plugin-audit-compliance@1.29.0) (2025-10-10)
 
 
