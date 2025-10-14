@@ -19,7 +19,8 @@ export function isValidApplicationName(appName: string): boolean {
   // - Numbers (0-9)
   // - Hyphens (-)
   // - Underscores (_)
-  const allowedPattern = /^[a-zA-Z0-9_-]+$/;
+  // - Spaces
+  const allowedPattern = /^[a-zA-Z0-9_\s-]+$/;
 
   return allowedPattern.test(appName.trim());
 }
@@ -35,7 +36,7 @@ export function getApplicationNameValidationError(appName: string): string {
   }
 
   if (!isValidApplicationName(appName)) {
-    return 'Application name can only contain letters, numbers, hyphens (-), and underscores (_). Special characters like spaces, slashes (/), and ampersands (&) are not allowed.';
+    return 'Application name can only contain letters, numbers, hyphens (-), underscores (_), and spaces. Special characters like slashes (/), and ampersands (&) are not allowed.';
   }
 
   return '';

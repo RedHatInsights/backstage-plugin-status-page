@@ -266,6 +266,54 @@ export async function createAuditSummaryRouter(
               }).length,
             },
           },
+          manual: {
+            total: regularGroupAccess.filter(r => r.source === 'manual').length,
+            fresh: freshGroupAccess.filter(r => r.source === 'manual').length,
+            approved: regularGroupAccess.filter(
+              r =>
+                r.source === 'manual' &&
+                r.sign_off_status?.toLowerCase() === 'approved',
+            ).length,
+            rejected: regularGroupAccess.filter(
+              r =>
+                r.source === 'manual' &&
+                r.sign_off_status?.toLowerCase() === 'rejected',
+            ).length,
+            pending: regularGroupAccess.filter(
+              r =>
+                r.source === 'manual' &&
+                (!r.sign_off_status ||
+                  r.sign_off_status?.toLowerCase() === 'pending'),
+            ).length,
+            changes: {
+              added: freshGroupAccess.filter(
+                fresh =>
+                  fresh.source === 'manual' &&
+                  !regularGroupAccess.some(
+                    reg => reg.user_id === fresh.user_id,
+                  ),
+              ).length,
+              removed: regularGroupAccess.filter(
+                reg =>
+                  reg.source === 'manual' &&
+                  !freshGroupAccess.some(
+                    fresh => fresh.user_id === reg.user_id,
+                  ),
+              ).length,
+              modified: regularGroupAccess.filter(reg => {
+                if (reg.source !== 'manual') return false;
+                const fresh = freshGroupAccess.find(
+                  f => f.user_id === reg.user_id,
+                );
+                return (
+                  fresh &&
+                  (fresh.user_role !== reg.user_role ||
+                    fresh.manager !== reg.manager ||
+                    fresh.app_delegate !== reg.app_delegate)
+                );
+              }).length,
+            },
+          },
         };
 
         // Calculate statistics for service accounts by source
@@ -407,6 +455,56 @@ export async function createAuditSummaryRouter(
               ).length,
               modified: regularServiceAccounts.filter(reg => {
                 if (reg.source !== 'ldap') return false;
+                const fresh = freshServiceAccounts.find(
+                  f => f.service_account === reg.service_account,
+                );
+                return (
+                  fresh &&
+                  (fresh.user_role !== reg.user_role ||
+                    fresh.manager !== reg.manager ||
+                    fresh.app_delegate !== reg.app_delegate)
+                );
+              }).length,
+            },
+          },
+          manual: {
+            total: regularServiceAccounts.filter(r => r.source === 'manual')
+              .length,
+            fresh: freshServiceAccounts.filter(r => r.source === 'manual')
+              .length,
+            approved: regularServiceAccounts.filter(
+              r =>
+                r.source === 'manual' &&
+                r.sign_off_status?.toLowerCase() === 'approved',
+            ).length,
+            rejected: regularServiceAccounts.filter(
+              r =>
+                r.source === 'manual' &&
+                r.sign_off_status?.toLowerCase() === 'rejected',
+            ).length,
+            pending: regularServiceAccounts.filter(
+              r =>
+                r.source === 'manual' &&
+                (!r.sign_off_status ||
+                  r.sign_off_status?.toLowerCase() === 'pending'),
+            ).length,
+            changes: {
+              added: freshServiceAccounts.filter(
+                fresh =>
+                  fresh.source === 'manual' &&
+                  !regularServiceAccounts.some(
+                    reg => reg.service_account === fresh.service_account,
+                  ),
+              ).length,
+              removed: regularServiceAccounts.filter(
+                reg =>
+                  reg.source === 'manual' &&
+                  !freshServiceAccounts.some(
+                    fresh => fresh.service_account === reg.service_account,
+                  ),
+              ).length,
+              modified: regularServiceAccounts.filter(reg => {
+                if (reg.source !== 'manual') return false;
                 const fresh = freshServiceAccounts.find(
                   f => f.service_account === reg.service_account,
                 );

@@ -4,11 +4,9 @@ import { Knex } from 'knex';
 import { ReviewData } from '../AuditComplianceDatabase.types';
 import { checkAndUpdateJiraStatuses } from '../integrations/JiraIntegration';
 import { ActivityStreamOperations } from './ActivityStreamOperations';
-import { JiraOperations } from './JiraOperations';
 
 export class AccessReviewOperations {
   private readonly activityStreamOps: ActivityStreamOperations;
-  private readonly jiraOps: JiraOperations;
 
   constructor(
     private readonly db: Knex,
@@ -16,7 +14,6 @@ export class AccessReviewOperations {
     private readonly config: Config,
   ) {
     this.activityStreamOps = new ActivityStreamOperations(db, logger);
-    this.jiraOps = new JiraOperations(db, logger, config);
   }
   /**
    * Retrieves access review records filtered by application name, frequency, and period.
@@ -285,7 +282,6 @@ export class AccessReviewOperations {
           frequency,
           period,
           comments,
-          description,
           sign_off_status,
           sign_off_by,
           source,
@@ -343,49 +339,8 @@ export class AccessReviewOperations {
           });
         }
 
-        // If this is a new review (no ticket_reference) and status is 'rejected', create a Jira ticket
-        if (
-          sign_off_status &&
-          sign_off_status.toLowerCase() === 'rejected' &&
-          !existing.ticket_reference
-        ) {
-          try {
-            const jiraTicket =
-              await this.jiraOps.createServiceAccountJiraTicket({
-                service_account,
-                appName: app_name || existing.app_name,
-                frequency: frequency || existing.frequency,
-                period: period || existing.period,
-                title:
-                  item.title ||
-                  `Service account access review for ${service_account}`,
-                description:
-                  description ||
-                  `Service account access review for ${service_account}`,
-                comments: comments || '',
-                manager_uid: item.manager_uid,
-                current_user_uid: item.current_user_uid,
-                manager_name: item.manager_name,
-              });
-
-            results.push({
-              status: 'created_ticket',
-              service_account,
-              jira_ticket: jiraTicket.key,
-            });
-          } catch (error) {
-            this.logger.error('Failed to create Jira ticket', {
-              error: error instanceof Error ? error.message : String(error),
-              service_account,
-            });
-            results.push({
-              status: 'error',
-              message: 'Failed to create Jira ticket',
-              service_account,
-            });
-            continue;
-          }
-        }
+        // Note: Jira ticket creation is now handled by the frontend via /create-service-account-ticket endpoint
+        // This matches the AQR pattern where frontend creates tickets and backend only updates database
 
         const updatePayload = {
           sign_off_status: item.sign_off_status ?? existing.sign_off_status,

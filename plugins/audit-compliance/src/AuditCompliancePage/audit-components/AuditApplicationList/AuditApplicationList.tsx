@@ -65,8 +65,9 @@ export function formatDisplayName(name: string) {
 
 interface AccountEntry {
   type: 'service-account' | 'rover-group-name';
-  source: 'rover' | 'gitlab' | 'ldap';
+  source: 'rover' | 'gitlab' | 'ldap' | 'manual';
   account_name: string;
+  custom_reviewer?: string;
 }
 
 interface ApplicationDetails {
@@ -518,13 +519,10 @@ export function AuditApplicationList() {
                     .map((delegate: string, index: number) => (
                       <Box key={delegate} display="inline-block" mr={1}>
                         <EntityDisplayName
-                          entityRef={parseEntityRef(
-                            delegate,
-                            {
-                              defaultKind: 'user',
-                              defaultNamespace: 'redhat',
-                            },
-                          )}
+                          entityRef={parseEntityRef(delegate, {
+                            defaultKind: 'user',
+                            defaultNamespace: 'redhat',
+                          })}
                         />
                         {index <
                           selectedAppDetails.app_delegate
@@ -607,6 +605,19 @@ export function AuditApplicationList() {
                     'LDAP',
                   )}
                 </div>
+                <div>
+                  <strong>Manual:</strong>{' '}
+                  {getAccountDisplayText(
+                    selectedAppDetails.accounts
+                      .filter(
+                        acc =>
+                          acc.type === 'rover-group-name' &&
+                          acc.source === 'manual',
+                      )
+                      .map(acc => acc.account_name),
+                    'Manual',
+                  )}
+                </div>
               </div>
             }
           />
@@ -653,6 +664,19 @@ export function AuditApplicationList() {
                       )
                       .map(acc => acc.account_name),
                     'LDAP',
+                  )}
+                </div>
+                <div>
+                  <strong>Manual:</strong>{' '}
+                  {getAccountDisplayText(
+                    selectedAppDetails.accounts
+                      .filter(
+                        acc =>
+                          acc.type === 'service-account' &&
+                          acc.source === 'manual',
+                      )
+                      .map(acc => acc.account_name),
+                    'Manual',
                   )}
                 </div>
               </div>

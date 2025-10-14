@@ -101,6 +101,19 @@ export interface StatisticsData {
       };
       accounts?: string[];
     };
+    manual?: {
+      total: number;
+      fresh: number;
+      approved: number;
+      rejected: number;
+      pending: number;
+      changes: {
+        added: number;
+        removed: number;
+        modified: number;
+      };
+      accounts?: string[];
+    };
   };
   service_accounts: {
     rover: {
@@ -130,6 +143,19 @@ export interface StatisticsData {
       accounts?: string[];
     };
     ldap: {
+      total: number;
+      fresh: number;
+      approved: number;
+      rejected: number;
+      pending: number;
+      changes: {
+        added: number;
+        removed: number;
+        modified: number;
+      };
+      accounts?: string[];
+    };
+    manual?: {
       total: number;
       fresh: number;
       approved: number;
