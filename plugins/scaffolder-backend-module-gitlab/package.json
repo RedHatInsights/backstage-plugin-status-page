@@ -1,0 +1,40 @@
+{
+  "name": "@compass/backstage-plugin-scaffolder-backend-module-gitlab",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "description": "The gitlab-custom module for @backstage/plugin-scaffolder-backend",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "scaffolder",
+    "pluginPackage": "@backstage/plugin-scaffolder-backend"
+  },
+  "scripts": {
+    "start": "backstage-cli package start",
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "^1.4.3",
+    "@backstage/integration": "^1.16.0",
+    "@backstage/plugin-scaffolder-node": "^0.11.1",
+    "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.34.1",
+    "@backstage/plugin-scaffolder-node-test-utils": "^0.3.3"
+  },
+  "files": [
+    "dist"
+  ]
+}
