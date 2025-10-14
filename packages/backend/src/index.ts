@@ -183,4 +183,8 @@ backend.add(import('@backstage/plugin-signals-backend'));
 /* Assistant Backend */
 backend.add(import('@compass/backstage-plugin-assistant-backend'));
 
+/* GitLab custom scaffolder actions Backend */
+backend.add(import('@compass/backstage-plugin-scaffolder-backend-module-gitlab'));
+
+
 backend.start();

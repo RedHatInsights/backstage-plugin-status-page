@@ -64,6 +64,7 @@
     "@compass/backstage-plugin-catalog-backend-module-spaship": "*",
     "@compass/backstage-plugin-mcp-actions-example-backend": "*",
     "@compass/backstage-plugin-scaffolder-backend-module-custom-filters": "*",
+    "@compass/backstage-plugin-scaffolder-backend-module-gitlab": "*",
     "@compass/backstage-plugin-soundcheck-backend-module-droperator": "*",
     "@compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets": "*",
     "@compass/backstage-plugin-soundcheck-backend-module-red-hat-core": "*",
