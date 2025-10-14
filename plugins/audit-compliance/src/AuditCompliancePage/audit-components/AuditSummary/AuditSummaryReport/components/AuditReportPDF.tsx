@@ -490,13 +490,25 @@ export const useAuditReportPDF = () => {
             'rover-group-name',
             'ldap',
           );
+          const manualAccounts = filterAccounts(
+            accounts,
+            'rover-group-name',
+            'manual',
+          );
           const serviceAccounts = filterAccounts(accounts, 'service-account');
+          const manualServiceAccounts = filterAccounts(
+            accounts,
+            'service-account',
+            'manual',
+          );
 
           const accountSummary = [
             ['Rover Accounts', getAccountNames(roverAccounts)],
             ['GitLab Accounts', getAccountNames(gitlabAccounts)],
             ['LDAP Accounts', getAccountNames(ldapAccounts)],
+            ['Manual Accounts', getAccountNames(manualAccounts)],
             ['Service Accounts', getAccountNames(serviceAccounts)],
+            ['Manual Service Accounts', getAccountNames(manualServiceAccounts)],
           ];
           currentY = renderCard('Account Summary', accountSummary, currentY);
         }
@@ -596,11 +608,13 @@ export const useAuditReportPDF = () => {
           `${
             statistics.service_accounts.rover.approved +
             statistics.service_accounts.gitlab.approved +
-            statistics.service_accounts.ldap.approved
+            statistics.service_accounts.ldap.approved +
+            (statistics.service_accounts.manual?.approved || 0)
           } Approved, ${
             statistics.service_accounts.rover.rejected +
             statistics.service_accounts.gitlab.rejected +
-            statistics.service_accounts.ldap.rejected
+            statistics.service_accounts.ldap.rejected +
+            (statistics.service_accounts.manual?.rejected || 0)
           } Rejected`,
         );
 
@@ -624,16 +638,40 @@ export const useAuditReportPDF = () => {
           `${statistics.group_access.gitlab.approved} Approved, ${statistics.group_access.gitlab.rejected} Rejected`,
         );
 
-        // Third row - LDAP card and additional cards
+        // Third row - LDAP, Manual, and User Accounts cards
         const row3Y = row2Y + cardHeight + rowSpacing;
         renderStatCard(
           'LDAP Reviews',
-          statistics.group_access.ldap.total,
+          statistics.group_access.ldap.total +
+            statistics.service_accounts.ldap.total,
           'total',
           row3Y,
           margin,
           cardWidth,
-          `${statistics.group_access.ldap.approved} Approved, ${statistics.group_access.ldap.rejected} Rejected`,
+          `${
+            statistics.group_access.ldap.approved +
+            statistics.service_accounts.ldap.approved
+          } Approved, ${
+            statistics.group_access.ldap.rejected +
+            statistics.service_accounts.ldap.rejected
+          } Rejected`,
+        );
+
+        renderStatCard(
+          'Manual Reviews',
+          (statistics.group_access.manual?.total || 0) +
+            (statistics.service_accounts.manual?.total || 0),
+          'total',
+          row3Y,
+          margin + cardWidth + cardSpacing,
+          cardWidth,
+          `${
+            (statistics.group_access.manual?.approved || 0) +
+            (statistics.service_accounts.manual?.approved || 0)
+          } Approved, ${
+            (statistics.group_access.manual?.rejected || 0) +
+            (statistics.service_accounts.manual?.rejected || 0)
+          } Rejected`,
         );
 
         renderStatCard(
@@ -641,19 +679,9 @@ export const useAuditReportPDF = () => {
           totals.totalUserAccounts.after,
           'total',
           row3Y,
-          margin + cardWidth + cardSpacing,
-          cardWidth,
-          'Total User Accounts',
-        );
-
-        renderStatCard(
-          'Pending Reviews',
-          statistics.statusOverview.totalReviews.pending,
-          'pending',
-          row3Y,
           margin + (cardWidth + cardSpacing) * 2,
           cardWidth,
-          'Pending Access Reviews',
+          'Total User Accounts',
         );
 
         // Add new line after the grid
@@ -759,7 +787,7 @@ export const useAuditReportPDF = () => {
 
       currentY += 40; // Add 2 blank lines after service account table
 
-      // 6. DOCUMENTS & EVIDENCE
+      // 7. DOCUMENTS & EVIDENCE
       currentY = renderSectionHeader('Documents & Evidence');
 
       if (documentationEvidence) {
@@ -771,7 +799,7 @@ export const useAuditReportPDF = () => {
 
       currentY += 20;
 
-      // 7. AUDITOR NOTES
+      // 8. AUDITOR NOTES
       currentY = renderSectionHeader('Auditor Notes');
 
       if (auditorNotes) {
@@ -786,7 +814,7 @@ export const useAuditReportPDF = () => {
       pdf.addPage();
       currentY = margin;
 
-      // 8. ACTIVITY STREAM DATA
+      // 9. ACTIVITY STREAM DATA
       currentY = renderSectionHeader('Activity Stream & Audit Trail');
 
       // Fetch activity stream data for the PDF

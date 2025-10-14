@@ -1,6 +1,6 @@
 export type AccountEntry = {
   type: 'service-account' | 'rover-group-name';
-  source: 'rover' | 'gitlab' | 'ldap';
+  source: 'rover' | 'gitlab' | 'ldap' | 'manual';
   account_name: string;
   custom_reviewer?: string;
 };

@@ -224,9 +224,10 @@ export async function createAuditApplicationsRouter(
             });
             return;
           }
-          if (!['rover', 'gitlab', 'ldap'].includes(account.source)) {
+          if (!['rover', 'gitlab', 'ldap', 'manual'].includes(account.source)) {
             res.status(400).json({
-              error: 'Account source must be either rover, gitlab, or ldap',
+              error:
+                'Account source must be either rover, gitlab, ldap, or manual',
             });
             return;
           }
@@ -423,9 +424,10 @@ export async function createAuditApplicationsRouter(
             });
             return;
           }
-          if (!['rover', 'gitlab', 'ldap'].includes(account.source)) {
+          if (!['rover', 'gitlab', 'ldap', 'manual'].includes(account.source)) {
             res.status(400).json({
-              error: 'Account source must be either rover, gitlab, or ldap',
+              error:
+                'Account source must be either rover, gitlab, ldap, or manual',
             });
             return;
           }

@@ -114,6 +114,21 @@ const StatisticsTable: React.FC<{
       status: `${totals.ldap.approved} Approved, ${totals.ldap.rejected} Rejected`,
       statusColor: 'info' as const,
     },
+    {
+      category: 'Manual Accounts',
+      before: totals.manual?.before || 0,
+      after: totals.manual?.after || 0,
+      change:
+        (totals.manual?.before || 0) > 0
+          ? (((totals.manual?.after || 0) - (totals.manual?.before || 0)) /
+              (totals.manual?.before || 0)) *
+            100
+          : 0,
+      status: `${totals.manual?.approved || 0} Approved, ${
+        totals.manual?.rejected || 0
+      } Rejected`,
+      statusColor: 'info' as const,
+    },
   ];
 
   return (
@@ -164,7 +179,7 @@ const StatisticsTable: React.FC<{
 
 interface AccountEntry {
   type: 'service-account' | 'rover-group-name';
-  source: 'rover' | 'gitlab' | 'ldap';
+  source: 'rover' | 'gitlab' | 'ldap' | 'manual';
   account_name: string;
 }
 
@@ -243,7 +258,8 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
           (review: any) =>
             review.source === 'rover' ||
             review.source === 'gitlab' ||
-            review.source === 'ldap',
+            review.source === 'ldap' ||
+            review.source === 'manual',
         );
         setUserAccessData(filteredUserReviews);
       }
@@ -276,7 +292,7 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
   // Helper function to filter accounts by type and source
   const getFilteredAccounts = (
     type: 'rover-group-name' | 'service-account',
-    source: 'rover' | 'gitlab' | 'ldap',
+    source: 'rover' | 'gitlab' | 'ldap' | 'manual',
   ) => {
     if (!applicationDetails?.accounts) return [];
     return applicationDetails.accounts
@@ -557,9 +573,11 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
                 statistics.group_access.rover.total +
                 statistics.group_access.gitlab.total +
                 statistics.group_access.ldap.total +
+                (statistics.group_access.manual?.total || 0) +
                 statistics.service_accounts.rover.total +
                 statistics.service_accounts.gitlab.total +
-                statistics.service_accounts.ldap.total
+                statistics.service_accounts.ldap.total +
+                (statistics.service_accounts.manual?.total || 0)
               }
               type="total"
               subtitle="All Access Reviews"
@@ -567,17 +585,21 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
                 statistics.group_access.rover.fresh +
                 statistics.group_access.gitlab.fresh +
                 statistics.group_access.ldap.fresh +
+                (statistics.group_access.manual?.fresh || 0) +
                 statistics.service_accounts.rover.fresh +
                 statistics.service_accounts.gitlab.fresh +
-                statistics.service_accounts.ldap.fresh
+                statistics.service_accounts.ldap.fresh +
+                (statistics.service_accounts.manual?.fresh || 0)
               }
               after={
                 statistics.group_access.rover.total +
                 statistics.group_access.gitlab.total +
                 statistics.group_access.ldap.total +
+                (statistics.group_access.manual?.total || 0) +
                 statistics.service_accounts.rover.total +
                 statistics.service_accounts.gitlab.total +
-                statistics.service_accounts.ldap.total
+                statistics.service_accounts.ldap.total +
+                (statistics.service_accounts.manual?.total || 0)
               }
             />
           </Grid>
@@ -591,9 +613,11 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
                 statistics.group_access.rover.approved +
                 statistics.group_access.gitlab.approved +
                 statistics.group_access.ldap.approved +
+                (statistics.group_access.manual?.approved || 0) +
                 statistics.service_accounts.rover.approved +
                 statistics.service_accounts.gitlab.approved +
-                statistics.service_accounts.ldap.approved
+                statistics.service_accounts.ldap.approved +
+                (statistics.service_accounts.manual?.approved || 0)
               }
               after={statistics.statusOverview.totalReviews.approved}
             />
@@ -608,9 +632,11 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
                 statistics.group_access.rover.rejected +
                 statistics.group_access.gitlab.rejected +
                 statistics.group_access.ldap.rejected +
+                (statistics.group_access.manual?.rejected || 0) +
                 statistics.service_accounts.rover.rejected +
                 statistics.service_accounts.gitlab.rejected +
-                statistics.service_accounts.ldap.rejected
+                statistics.service_accounts.ldap.rejected +
+                (statistics.service_accounts.manual?.rejected || 0)
               }
               after={statistics.statusOverview.totalReviews.rejected}
             />
@@ -621,33 +647,38 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
               value={
                 statistics.service_accounts.rover.total +
                 statistics.service_accounts.gitlab.total +
-                statistics.service_accounts.ldap.total
+                statistics.service_accounts.ldap.total +
+                (statistics.service_accounts.manual?.total || 0)
               }
               type="total"
               subtitle={`${
                 statistics.service_accounts.rover.approved +
                 statistics.service_accounts.gitlab.approved +
-                statistics.service_accounts.ldap.approved
+                statistics.service_accounts.ldap.approved +
+                (statistics.service_accounts.manual?.approved || 0)
               } Approved, ${
                 statistics.service_accounts.rover.rejected +
                 statistics.service_accounts.gitlab.rejected +
-                statistics.service_accounts.ldap.rejected
+                statistics.service_accounts.ldap.rejected +
+                (statistics.service_accounts.manual?.rejected || 0)
               } Rejected`}
               before={
                 statistics.service_accounts.rover.fresh +
                 statistics.service_accounts.gitlab.fresh +
-                statistics.service_accounts.ldap.fresh
+                statistics.service_accounts.ldap.fresh +
+                (statistics.service_accounts.manual?.fresh || 0)
               }
               after={
                 statistics.service_accounts.rover.total +
                 statistics.service_accounts.gitlab.total +
-                statistics.service_accounts.ldap.total
+                statistics.service_accounts.ldap.total +
+                (statistics.service_accounts.manual?.total || 0)
               }
             />
           </Grid>
         </Grid>
         <Grid container spacing={2}>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <StatCard
               title="Rover Reviews"
               value={statistics.group_access.rover.total}
@@ -657,7 +688,7 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
               after={statistics.group_access.rover.total}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <StatCard
               title="GitLab Reviews"
               value={statistics.group_access.gitlab.total}
@@ -667,17 +698,88 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
               after={statistics.group_access.gitlab.total}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={3}>
             <StatCard
               title="LDAP Reviews"
-              value={statistics.group_access.ldap.total}
+              value={
+                statistics.group_access.ldap.total +
+                statistics.service_accounts.ldap.total
+              }
               type="total"
-              subtitle={`${statistics.group_access.ldap.approved} Approved, ${statistics.group_access.ldap.rejected} Rejected`}
-              before={statistics.group_access.ldap.fresh}
-              after={statistics.group_access.ldap.total}
+              subtitle={`${
+                statistics.group_access.ldap.approved +
+                statistics.service_accounts.ldap.approved
+              } Approved, ${
+                statistics.group_access.ldap.rejected +
+                statistics.service_accounts.ldap.rejected
+              } Rejected`}
+              before={
+                statistics.group_access.ldap.fresh +
+                statistics.service_accounts.ldap.fresh
+              }
+              after={
+                statistics.group_access.ldap.total +
+                statistics.service_accounts.ldap.total
+              }
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <StatCard
+              title="Manual Reviews"
+              value={
+                (statistics.group_access.manual?.total || 0) +
+                (statistics.service_accounts.manual?.total || 0)
+              }
+              type="total"
+              subtitle={`${
+                (statistics.group_access.manual?.approved || 0) +
+                (statistics.service_accounts.manual?.approved || 0)
+              } Approved, ${
+                (statistics.group_access.manual?.rejected || 0) +
+                (statistics.service_accounts.manual?.rejected || 0)
+              } Rejected`}
+              before={
+                (statistics.group_access.manual?.fresh || 0) +
+                (statistics.service_accounts.manual?.fresh || 0)
+              }
+              after={
+                (statistics.group_access.manual?.total || 0) +
+                (statistics.service_accounts.manual?.total || 0)
+              }
             />
           </Grid>
         </Grid>
+
+        {/* Manual Data Disclaimer */}
+        {((statistics.group_access.manual?.total || 0) > 0 ||
+          (statistics.service_accounts.manual?.total || 0) > 0) && (
+          <Box
+            style={{
+              marginTop: 16,
+              padding: 12,
+              backgroundColor: '#fff3cd',
+              border: '1px solid #ffeaa7',
+              borderRadius: 4,
+              color: '#856404',
+            }}
+          >
+            <Typography
+              variant="body2"
+              style={{ fontWeight: 'bold', marginBottom: 4 }}
+            >
+              ⚠️ Manual Data Verification Notice
+            </Typography>
+            <Typography variant="body2">
+              This audit includes{' '}
+              {(statistics.group_access.manual?.total || 0) +
+                (statistics.service_accounts.manual?.total || 0)}{' '}
+              manual entries that were added manually and cannot be
+              automatically verified against external systems (Rover, GitLab,
+              LDAP). These entries require manual verification and should be
+              reviewed with additional scrutiny before final approval.
+            </Typography>
+          </Box>
+        )}
       </>
     ) : (
       <StatisticsTable statistics={statistics} isSyncing={isSyncing} />
@@ -1022,7 +1124,7 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
               Account Names
             </Typography>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2}>
                 <Typography
                   variant="subtitle2"
                   color="textSecondary"
@@ -1034,7 +1136,7 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
                   accounts={getFilteredAccounts('rover-group-name', 'rover')}
                 />
               </Grid>
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2}>
                 <Typography
                   variant="subtitle2"
                   color="textSecondary"
@@ -1046,7 +1148,7 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
                   accounts={getFilteredAccounts('rover-group-name', 'gitlab')}
                 />
               </Grid>
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2}>
                 <Typography
                   variant="subtitle2"
                   color="textSecondary"
@@ -1058,7 +1160,19 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
                   accounts={getFilteredAccounts('rover-group-name', 'ldap')}
                 />
               </Grid>
-              <Grid item xs={12} md={3}>
+              <Grid item xs={12} md={2}>
+                <Typography
+                  variant="subtitle2"
+                  color="textSecondary"
+                  gutterBottom
+                >
+                  Manual Accounts
+                </Typography>
+                <AccountListComponent
+                  accounts={getFilteredAccounts('rover-group-name', 'manual')}
+                />
+              </Grid>
+              <Grid item xs={12} md={2}>
                 <Typography
                   variant="subtitle2"
                   color="textSecondary"
@@ -1071,6 +1185,7 @@ export const AuditSummaryReport: React.FC<SummaryReportProps> = ({
                     ...getFilteredAccounts('service-account', 'rover'),
                     ...getFilteredAccounts('service-account', 'gitlab'),
                     ...getFilteredAccounts('service-account', 'ldap'),
+                    ...getFilteredAccounts('service-account', 'manual'),
                   ]}
                 />
               </Grid>

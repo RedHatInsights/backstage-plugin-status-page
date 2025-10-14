@@ -4,9 +4,11 @@ import {
   SyncFreshDataResult,
   RoverDataItem,
   GitLabDataItem,
+  ManualDataItem,
 } from '../types/types';
 import { RoverDatabase } from '../database/integrations/RoverIntegration';
 import { GitLabDatabase } from '../database/integrations/GitLabIntegration';
+import { ManualDataIntegration } from '../database/integrations/ManualDataIntegration';
 import { Knex } from 'knex';
 
 /**
@@ -34,6 +36,9 @@ export async function createDataSyncRouter(
     config,
     logger,
   });
+
+  // Initialize Manual integrations database
+  const manualStore = new ManualDataIntegration(knex, logger);
 
   const dataSyncRouter = Router();
 
@@ -64,6 +69,7 @@ export async function createDataSyncRouter(
           let roverData: RoverDataItem[] = [];
           let gitlabData: GitLabDataItem[] = [];
           let ldapData: any[] = [];
+          let manualData: ManualDataItem[] = [];
 
           try {
             roverData = await roverStore.fetchRoverDataForFresh(
@@ -95,6 +101,16 @@ export async function createDataSyncRouter(
             logger.warn(`LDAP data not available: ${e.message || e}`);
           }
 
+          try {
+            manualData = await manualStore.fetchManualDataForFresh(
+              appname,
+              frequency,
+              period,
+            );
+          } catch (e: any) {
+            logger.warn(`Manual data not available: ${e.message || e}`);
+          }
+
           // Clear existing fresh data for this app/period combination
           await trx('service_account_access_review_fresh')
             .where({ app_name: appname, period, frequency })
@@ -109,6 +125,8 @@ export async function createDataSyncRouter(
           let gitlabGroupAccess = 0;
           let ldapServiceAccounts = 0;
           let ldapGroupAccess = 0;
+          let manualServiceAccounts = 0;
+          let manualGroupAccess = 0;
 
           // Insert Rover data into fresh tables only
           if (roverData.length > 0) {
@@ -264,6 +282,58 @@ export async function createDataSyncRouter(
             }
           }
 
+          // Insert Manual data into fresh tables only
+          if (manualData.length > 0) {
+            // Handle service accounts
+            const manualServiceAccountsData = manualData
+              .filter((item: ManualDataItem) => item.service_account)
+              .map((item: ManualDataItem) => ({
+                app_name: item.app_name,
+                environment: item.environment,
+                service_account: item.service_account,
+                user_role: item.user_role,
+                manager: item.manager,
+                app_delegate: item.app_delegate,
+                source: 'manual',
+                account_name: item.account_name,
+                period,
+                frequency,
+                created_at: new Date(),
+              }));
+
+            if (manualServiceAccountsData.length > 0) {
+              await trx('service_account_access_review_fresh').insert(
+                manualServiceAccountsData,
+              );
+              manualServiceAccounts = manualServiceAccountsData.length;
+            }
+
+            // Handle group access
+            const manualGroupAccessData = manualData
+              .filter((item: ManualDataItem) => item.user_id)
+              .map((item: ManualDataItem) => ({
+                environment: item.environment,
+                full_name: item.full_name,
+                user_id: item.user_id,
+                user_role: item.user_role,
+                manager: item.manager,
+                source: 'manual',
+                account_name: item.account_name,
+                app_name: item.app_name,
+                period,
+                frequency,
+                app_delegate: item.app_delegate,
+                created_at: new Date(),
+              }));
+
+            if (manualGroupAccessData.length > 0) {
+              await trx('group_access_reports_fresh').insert(
+                manualGroupAccessData,
+              );
+              manualGroupAccess = manualGroupAccessData.length;
+            }
+          }
+
           return {
             message: 'Fresh data synced successfully',
             statistics: {
@@ -282,13 +352,20 @@ export async function createDataSyncRouter(
                 group_access: ldapGroupAccess,
                 total: ldapServiceAccounts + ldapGroupAccess,
               },
+              manual: {
+                service_accounts: manualServiceAccounts,
+                group_access: manualGroupAccess,
+                total: manualServiceAccounts + manualGroupAccess,
+              },
               total_records:
                 roverServiceAccounts +
                 roverGroupAccess +
                 gitlabServiceAccounts +
                 gitlabGroupAccess +
                 ldapServiceAccounts +
-                ldapGroupAccess,
+                ldapGroupAccess +
+                manualServiceAccounts +
+                manualGroupAccess,
             },
           };
         },

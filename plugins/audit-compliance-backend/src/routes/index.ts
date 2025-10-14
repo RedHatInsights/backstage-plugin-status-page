@@ -10,6 +10,7 @@ import { createJiraRouter } from './jiraRoutes';
 import { createDataDeletionRouter } from './dataDeletionRoutes';
 import { createComplianceManagerRouter } from './complianceManagerRoutes';
 import { createActivityStreamRouter } from './activityStream';
+import { createManualDataUploadRouter } from './manualDataUploadRoutes';
 
 export const createCombinedRouter = async (
   knex: Knex,
@@ -29,6 +30,7 @@ export const createCombinedRouter = async (
     dataDeletionRouter,
     complianceManagerRouter,
     activityStreamRouter,
+    manualDataUploadRouter,
   ] = await Promise.all([
     createDetailsRouter(knex, logger, config),
     createDataSyncRouter(knex, config, logger),
@@ -40,6 +42,7 @@ export const createCombinedRouter = async (
     createDataDeletionRouter(knex, logger, config),
     createComplianceManagerRouter(knex, config, logger),
     createActivityStreamRouter(knex, logger, config),
+    createManualDataUploadRouter(knex, config, logger),
   ]);
 
   router.use('/', detailsRouter);
@@ -52,6 +55,7 @@ export const createCombinedRouter = async (
   router.use('/', dataDeletionRouter);
   router.use('/', complianceManagerRouter);
   router.use('/', activityStreamRouter);
+  router.use('/', manualDataUploadRouter);
 
   return router;
 };

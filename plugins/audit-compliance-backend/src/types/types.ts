@@ -61,6 +61,39 @@ export interface GitLabDataItem {
 }
 
 /**
+ * Interface representing a manual data item for access reviews.
+ * Contains information about manually entered user or service account access to an application.
+ */
+export interface ManualDataItem {
+  /** Name of the application */
+  app_name: string;
+  /** Environment (e.g., 'production', 'staging') */
+  environment: string;
+  /** Service account identifier if applicable */
+  service_account?: string;
+  /** User ID if applicable */
+  user_id?: string;
+  /** Full name of the user */
+  full_name?: string;
+  /** Role of the user in the application */
+  user_role: string;
+  /** Manager of the user */
+  manager: string;
+  /** Application delegate */
+  app_delegate?: string;
+  /** Source of the data (e.g., 'manual') */
+  source: string;
+  /** Account name in the source system */
+  account_name: string;
+  /** Review period (e.g., '2024') */
+  period: string;
+  /** Review frequency (e.g., 'quarterly', 'annual') */
+  frequency: string;
+  /** Custom reviewer email */
+  custom_reviewer?: string;
+}
+
+/**
  * Interface representing the result of a fresh data sync operation.
  * Contains statistics about the sync operation for both Rover and GitLab data.
  */

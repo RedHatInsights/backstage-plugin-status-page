@@ -31,6 +31,7 @@ import {
 } from '@material-ui/core';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import PersonIcon from '@material-ui/icons/Person';
+import EditIcon from '@material-ui/icons/Edit';
 import { useEffect, useState } from 'react';
 import EmailModal from '../../../Modals/EmailModal/EmailModal';
 import JiraModal from '../../../Modals/JiraModal';
@@ -461,7 +462,18 @@ export default function ServiceAccountAccessReviewTable({
       field: 'source',
       render: (rowData: ServiceAccountData) => {
         const source = rowData.source?.toLowerCase();
-        const icon = source === 'gitlab' ? <GitHubIcon /> : <PersonIcon />;
+        let icon = <PersonIcon />;
+
+        if (source === 'rover') {
+          icon = <PersonIcon />;
+        } else if (source === 'gitlab') {
+          icon = <GitHubIcon />;
+        } else if (source === 'ldap') {
+          icon = <PersonIcon />;
+        } else if (source === 'manual') {
+          icon = <EditIcon />;
+        }
+
         return (
           <Chip
             icon={icon}
@@ -469,6 +481,11 @@ export default function ServiceAccountAccessReviewTable({
             variant="outlined"
             size="small"
             className={classes.sourceChip}
+            title={
+              source === 'manual'
+                ? 'Manual entry - cannot be automatically verified'
+                : undefined
+            }
           />
         );
       },

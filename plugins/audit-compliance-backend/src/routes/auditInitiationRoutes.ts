@@ -4,6 +4,7 @@ import Router from 'express-promise-router';
 import { AuditComplianceDatabase } from '../database/AuditComplianceDatabase';
 import { RoverDatabase } from '../database/integrations/RoverIntegration';
 import { GitLabDatabase } from '../database/integrations/GitLabIntegration';
+import { ManualDataIntegration } from '../database/integrations/ManualDataIntegration';
 import { EventType } from '../database/operations/operations.types';
 
 /**
@@ -41,6 +42,9 @@ export async function createAuditInitiationRouter(
     config,
     logger,
   });
+
+  // Initialize Manual integrations database
+  const manualStore = new ManualDataIntegration(knex, logger);
 
   /**
    * GET /search/groups
@@ -167,6 +171,13 @@ export async function createAuditInitiationRouter(
           .generateLDAPData(audit.app_name, audit.frequency, audit.period)
           .catch(error => {
             logger.error('Failed to generate LDAP report', { error });
+            return null;
+          }),
+        // Generate Manual report
+        manualStore
+          .generateManualData(audit.app_name, audit.frequency, audit.period)
+          .catch(error => {
+            logger.error('Failed to generate Manual report', { error });
             return null;
           }),
       ];
@@ -555,6 +566,13 @@ export async function createAuditInitiationRouter(
             logger.error('Failed to generate LDAP report', { error });
             return null;
           }),
+        // Generate Manual report
+        manualStore
+          .generateManualData(app_name, frequency, period)
+          .catch(error => {
+            logger.error('Failed to generate Manual report', { error });
+            return null;
+          }),
       ];
 
       // Wait for all report generations to complete
@@ -565,7 +583,8 @@ export async function createAuditInitiationRouter(
       const roverCount = reportResults[0]?.length || 0;
       const gitlabCount = reportResults[1]?.length || 0;
       const ldapCount = reportResults[2]?.length || 0;
-      const totalRecords = roverCount + gitlabCount + ldapCount;
+      const manualCount = reportResults[3]?.length || 0;
+      const totalRecords = roverCount + gitlabCount + ldapCount + manualCount;
 
       // Add detailed logging for debugging
       logger.info('Refresh data results:', {
@@ -575,6 +594,7 @@ export async function createAuditInitiationRouter(
         roverCount,
         gitlabCount,
         ldapCount,
+        manualCount,
         totalRecords,
         roverData: reportResults[0]
           ? `${reportResults[0].length} records`
@@ -584,6 +604,9 @@ export async function createAuditInitiationRouter(
           : 'null',
         ldapData: reportResults[2]
           ? `${reportResults[2].length} records`
+          : 'null',
+        manualData: reportResults[3]
+          ? `${reportResults[3].length} records`
           : 'null',
       });
 
@@ -614,6 +637,7 @@ export async function createAuditInitiationRouter(
       if (roverCount > 0) sources.push('Rover');
       if (gitlabCount > 0) sources.push('GitLab');
       if (ldapCount > 0) sources.push('LDAP');
+      if (manualCount > 0) sources.push('Manual');
 
       // Reset audit status to 'details_under_review' after data refresh
       // This allows users to continue working on the audit after refreshing data
@@ -655,6 +679,7 @@ export async function createAuditInitiationRouter(
             rover_records: roverCount,
             gitlab_records: gitlabCount,
             ldap_records: ldapCount,
+            manual_records: manualCount,
             total_records: totalRecords,
             sources: sources,
           },
@@ -670,6 +695,7 @@ export async function createAuditInitiationRouter(
           rover: { total: roverCount },
           gitlab: { total: gitlabCount },
           ldap: { total: ldapCount },
+          manual: { total: manualCount },
         },
       });
     } catch (error) {
