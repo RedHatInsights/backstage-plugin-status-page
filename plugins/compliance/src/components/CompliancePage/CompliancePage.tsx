@@ -14,8 +14,11 @@ import {
   Box,
   CardActions,
   Button,
+  IconButton,
+  Tooltip,
 } from '@material-ui/core';
-import LaunchIcon from '@material-ui/icons/Launch';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import InfoIcon from '@material-ui/icons/InfoOutlined';
 
 const useStyles = makeStyles(theme => ({
   cardContent: {
@@ -86,6 +89,15 @@ const useStyles = makeStyles(theme => ({
     borderRadius: theme.shape.borderRadius,
     color: theme.palette.primary.main,
   },
+  cardTitleContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing(0.5),
+  },
+  infoButton: {
+    padding: theme.spacing(0.5),
+    marginLeft: theme.spacing(0.5),
+  },
 }));
 
 interface ComplianceTool {
@@ -94,6 +106,7 @@ interface ComplianceTool {
   path: string;
   tags: string[];
   disabled?: boolean;
+  disclaimer?: string;
 }
 
 const tools: ComplianceTool[] = [
@@ -115,6 +128,7 @@ const tools: ComplianceTool[] = [
     description: 'Manage GDPR requests in a standardized and automated way, integrating seamlessly with Drupal applications and Compass workflows.',
     path: '/compliance/gdpr',
     tags: ['Data Privacy', 'GDPR', 'Automation'],
+    disclaimer: 'Note: This feature is currently controlled by a feature flag. To enable it, navigate to Settings > Feature Flags and activate it for the GDPR Plugin. Access is currently limited to a specific team.',
   },
 ];
 
@@ -128,7 +142,7 @@ export const CompliancePage = () => {
         subtitle="One place to track, manage, and automate compliance workflows"
       >
         <HeaderLabel label="Owner" value="AppDev" />
-        <HeaderLabel label="Lifecycle" value="Beta" />
+        <HeaderLabel label="Lifecycle" value="Production" />
       </Header>
       <Content>
           <Typography variant="h5" gutterBottom>
@@ -145,7 +159,20 @@ export const CompliancePage = () => {
             {tools.map(tool => (
               <Grid item xs={12} sm={6} md={4} key={tool.name}>
                 <InfoCard
-                  title={tool.name}
+                  title={
+                    tool.disclaimer ? (
+                      <div className={classes.cardTitleContainer}>
+                        <span>{tool.name}</span>
+                        <Tooltip title={tool.disclaimer} placement="top">
+                          <IconButton className={classes.infoButton} size="small">
+                            <InfoIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </div>
+                    ) : (
+                      tool.name
+                    )
+                  }
                   noPadding
                   variant="gridItem"
                   subheader={null}
@@ -181,7 +208,7 @@ export const CompliancePage = () => {
                         <Button
                           size="small"
                           variant="text"
-                          startIcon={<LaunchIcon />}
+                          startIcon={<ArrowForwardIcon />}
                           className={classes.viewDetailsButton}
                           disabled
                         >
@@ -192,7 +219,7 @@ export const CompliancePage = () => {
                           <Button
                             size="small"
                             variant="text"
-                            startIcon={<LaunchIcon />}
+                            startIcon={<ArrowForwardIcon />}
                             className={classes.viewDetailsButton}
                           >
                             Open
