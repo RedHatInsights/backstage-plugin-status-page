@@ -8,7 +8,7 @@ import {
   CardActions,
   Button
 } from '@material-ui/core';
-import LaunchIcon from '@material-ui/icons/Launch';
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { Platform } from '../../types';
 
 const useStyles = makeStyles(theme => ({
@@ -194,7 +194,7 @@ export const PlatformCardView = ({ platforms }: PlatformCardViewProps) => {
                     <Button
                       size="small"
                       variant="text"
-                      startIcon={<LaunchIcon />}
+                      startIcon={<ArrowForwardIcon />}
                       onClick={(e) => e.stopPropagation()}
                       className={classes.viewDetailsButton}
                     >
