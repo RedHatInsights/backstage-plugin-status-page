@@ -1,5 +1,12 @@
 # Changelog
 
+## @appdev/backstage-plugin-ess [1.0.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-ess@1.0.1...@appdev/backstage-plugin-ess@1.0.2) (2025-10-15)
+
+
+### Other changes
+
+* icon and tooltip updated for the compliance hub ([bbee1af](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/bbee1af4aa8b38043a596f2336bffc536de048f6))
+
 ## @appdev/backstage-plugin-ess [1.0.1](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@appdev/backstage-plugin-ess@1.0.0...@appdev/backstage-plugin-ess@1.0.1) (2025-09-30)
 
 
