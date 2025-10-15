@@ -234,6 +234,12 @@ catalog:
       rules:
         - allow: [Component, Group]
 
+    # Local example datasource target component
+    - type: file
+      target: ./examples/test-data/datasource-plugin.yaml
+      rules:
+        - allow: [Resource]
+
 # Report portal plugin
 reportPortal:
   supportEmail: ${REPORT_PORTAL_SUPPORT_EMAIL}

@@ -59,6 +59,7 @@
     "@backstage/plugin-techdocs-backend": "^2.0.5",
     "@compass/backstage-plugin-assistant-backend": "^0.1.0-alpha.2",
     "@compass/backstage-plugin-catalog-backend-module-cmdb": "*",
+    "@compass/backstage-plugin-catalog-backend-module-datasource": "*",
     "@compass/backstage-plugin-catalog-backend-module-enrichment": "*",
     "@compass/backstage-plugin-catalog-backend-module-mcp": "*",
     "@compass/backstage-plugin-catalog-backend-module-spaship": "*",

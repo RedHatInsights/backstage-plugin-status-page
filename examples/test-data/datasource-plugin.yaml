@@ -1,0 +1,38 @@
+---
+apiVersion: resource/v1alpha1
+kind: Resource
+metadata:
+  name: customer-orders-dataset
+  title: Customer Orders Dataset
+  description: |
+    Fields: customer_id, name, email, order_date, total_amount
+    ~1.2M rows stored as Parquet files in S3. Used for sales analytics.
+  annotations:
+    compass.redhat.com/ai-related: 'true'
+  tags:
+    - datasource
+    - analytics
+    - ai
+spec:
+  type: s3-bucket
+  owner: user:redhat/mdeshmuk
+  steward: user:redhat/yoswal
+  system: examples
+  dependencyOf:
+    - component:example-website-for-enrichment-data
+    - component:example-website-for-feedback-plugin
+    - component:example-website-for-jira-server-plugin
+  usage: |
+    Primary dataset to train ML models for customer churn prediction
+    and sales forecasting.
+  location: Where the data is stored, s3://internal-data/sales/orders
+  classification: RH-Restricted(+PII)
+  existsIn:
+    - name: GraphQL
+      description: Exposed via Falcon GraphQL API
+    - name: Starburst
+      description: Used for analytics queries
+    - name: Data Warehouse
+      description: Transformed copy available in Snowflake for BI
+    - name: Dataverse
+    - name: XE S3 Bucket

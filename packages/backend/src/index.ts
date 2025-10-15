@@ -55,7 +55,7 @@ const defaultServiceFactories: Array<
   userInfoServiceFactory,
   // Custom url reader
   urlReaderServiceFactory,
-  ];
+];
 
 const backend = createSpecializedBackend({ defaultServiceFactories });
 
@@ -73,9 +73,7 @@ backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 backend.add(import('@backstage/plugin-auth-backend-module-oauth2-provider'));
 
 // Initialize plugin before catalog module
-backend.add(
-  import('@compass/backstage-plugin-workstream-automation-backend'),
-);
+backend.add(import('@compass/backstage-plugin-workstream-automation-backend'));
 // catalog plugin
 backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(
@@ -83,20 +81,17 @@ backend.add(
 );
 backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
 backend.add(
-  import(
-    '@compass/backstage-plugin-workstream-automation-backend/module'
-  ),
+  import('@compass/backstage-plugin-workstream-automation-backend/module'),
 );
+backend.add(import('@compass/backstage-plugin-catalog-backend-module-cmdb'));
 backend.add(
-  import('@compass/backstage-plugin-catalog-backend-module-cmdb'),
-);
-backend.add(
-  import(
-    '@compass/backstage-plugin-catalog-backend-module-spaship/alpha'
-  ),
+  import('@compass/backstage-plugin-catalog-backend-module-spaship/alpha'),
 );
 backend.add(
   import('@compass/backstage-plugin-catalog-backend-module-enrichment'),
+);
+backend.add(
+  import('@compass/backstage-plugin-catalog-backend-module-datasource'),
 );
 
 // permission plugin
@@ -117,19 +112,13 @@ backend.add(
   import('@backstage/plugin-scaffolder-backend-module-notifications'),
 );
 backend.add(
-  import(
-    '@compass/backstage-plugin-soundcheck-backend-module-droperator'
-  ),
+  import('@compass/backstage-plugin-soundcheck-backend-module-droperator'),
 );
 backend.add(
-  import(
-    '@compass/backstage-plugin-soundcheck-backend-module-red-hat-core'
-  ),
+  import('@compass/backstage-plugin-soundcheck-backend-module-red-hat-core'),
 );
 backend.add(
-  import(
-    '@compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab'
-  ),
+  import('@compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab'),
 );
 backend.add(
   import(
@@ -151,21 +140,13 @@ backend.add(import('@backstage/plugin-devtools-backend'));
 
 backend.add(import('@compass/backstage-plugin-catalog-backend-module-mcp'));
 
-backend.add(
-  import('@appdev/backstage-plugin-devex-data-layer-backend'),
-);
-backend.add(
-  import('@appdev/backstage-plugin-audit-compliance-backend'),
-);
+backend.add(import('@appdev/backstage-plugin-devex-data-layer-backend'));
+backend.add(import('@appdev/backstage-plugin-audit-compliance-backend'));
 
 backend.add(
-  import(
-    '@compass/backstage-plugin-scaffolder-backend-module-custom-filters'
-  ),
+  import('@compass/backstage-plugin-scaffolder-backend-module-custom-filters'),
 );
-backend.add(
-  import('@appdev/backstage-plugin-permission-management-backend'),
-);
+backend.add(import('@appdev/backstage-plugin-permission-management-backend'));
 backend.add(import('@appdev/backstage-plugin-outage-template-backend'));
 
 /* GDPR Plugin */

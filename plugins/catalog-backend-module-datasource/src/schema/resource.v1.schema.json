@@ -1,0 +1,204 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "DatasourceEntity",
+  "description": "This is a schema is to define datasource entires in Resource entity",
+  "title": "AI Data Source Resource",
+  "type": "object",
+  "examples": [
+    {
+      "apiVersion": "resource/v1alpha1",
+      "kind": "Resource",
+      "metadata": {
+        "name": "customer-orders-dataset",
+        "title": "Customer Orders Dataset",
+        "description": "Contains customer purchase orders (~1.2M records). Fields: customer_id, item, amount, and timestamp.",
+        "annotations": {
+          "compass.redhat.com/ai-related": "true"
+        },
+        "tags": [
+          "data-source",
+          "analytics"
+        ]
+      },
+      "spec": {
+        "type": "s3-bucket",
+        "owner": "group:data-platform",
+        "steward": "group:analytics-engineering",
+        "system": "sales-analytics",
+        "dependencyOf": [
+          "component:customer-insights-api",
+          "component:etl-pipeline"
+        ],
+        "usage": "Used to train ML models for churn prediction and generate sales dashboards.",
+        "location": "s3://internal-data/sales/orders",
+        "classification": "RH-Restricted(+PII)",
+        "existsIn": [
+          {
+            "name": "GraphQL",
+            "description": "Exposed via Falcon GraphQL API"
+          },
+          {
+            "name": "XE S3 Bucket",
+            "description": "Raw data resides in XE S3 Lake"
+          },
+          {
+            "name": "Data Warehouse",
+            "description": "Transformed copy available in Snowflake for BI"
+          }
+        ]
+      }
+    }
+  ],
+  "allOf": [
+    {
+      "$ref": "Entity"
+    },
+    {
+      "type": "object",
+      "required": [
+        "kind",
+        "apiVersion",
+        "metadata",
+        "spec"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "Resource"
+          ]
+        },
+        "apiVersion": {
+          "type": "string",
+          "enum": [
+            "resource/v1alpha1"
+          ]
+        },
+        "metadata": {
+          "allOf": [
+            {
+              "$ref": "EntityMeta"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string",
+                  "description": "mapped from DataContent: What fields/columns does the data contain (e.g., name, email, sales_amount)? What's the volume or format (e.g., JSON, CSV, relational table)? (ex. Fields: name, email, orders; 100K rows in CSV format)"
+                },
+                "annotations": {
+                  "type": "object",
+                  "properties": {
+                    "compass.redhat.com/ai-related": {
+                      "type": "string",
+                      "enum": [
+                        "true",
+                        "false"
+                      ],
+                      "description": "Whether this datasource is AI related"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "spec": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "owner"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "The type of resource.",
+              "examples": [
+                "database",
+                "s3-bucket",
+                "cluster"
+              ],
+              "minLength": 1
+            },
+            "owner": {
+              "type": "string",
+              "description": "An entity reference to the owner of the resource.",
+              "examples": [
+                "artist-relations-team",
+                "user:john.johnson"
+              ],
+              "minLength": 1
+            },
+            "steward": {
+              "type": "string",
+              "description": "An entity reference to the owner of the resource.",
+              "examples": [
+                "artist-relations-team",
+                "user:john.johnson"
+              ],
+              "minLength": 1
+            },
+            "dependencyOf": {
+              "type": "array",
+              "description": "An array of references to other entities that the resource depends on to function.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "system": {
+              "type": "string",
+              "description": "An entity reference to the system that the resource belongs to.",
+              "minLength": 1
+            },
+            "usage": {
+              "type": "string",
+              "description": "What is the main purpose of this application? What business questions or processes does this data support?",
+              "minLength": 1
+            },
+            "location": {
+              "type": "string",
+              "description": "Storage location or system where the data physically or logically resides.",
+              "minLength": 1
+            },
+            "classification": {
+              "type": "string",
+              "description": "https://source.redhat.com/departments/it/it_information_security/wiki/red_hat_data_classifications",
+              "enum": [
+                "RH-Public",
+                "RH-Internal",
+                "RH-Restricted",
+                "RH-Restricted(+PII)"
+              ]
+            },
+            "existsIn": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "enum": [
+                      "GraphQL",
+                      "XE S3 Bucket",
+                      "Starburst",
+                      "Dataverse",
+                      "Data Warehouse"
+                    ]
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
