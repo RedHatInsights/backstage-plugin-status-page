@@ -1,4 +1,9 @@
 import {
+  EntityGithubActionsContent,
+  isGithubActionsAvailable,
+} from '@backstage-community/plugin-github-actions';
+import {
+  parseEntityRef,
   RELATION_API_CONSUMED_BY,
   RELATION_API_PROVIDED_BY,
   RELATION_CONSUMES_API,
@@ -10,7 +15,9 @@ import {
 } from '@backstage/catalog-model';
 import {
   EmptyState,
+  InfoCard,
   MissingAnnotationEmptyState,
+  StructuredMetadataTable,
 } from '@backstage/core-components';
 import {
   EntityApiDefinitionCard,
@@ -22,6 +29,7 @@ import {
 } from '@backstage/plugin-api-docs';
 import {
   EntityAboutCard,
+  EntityDependencyOfComponentsCard,
   EntityDependsOnComponentsCard,
   EntityDependsOnResourcesCard,
   EntityHasComponentsCard,
@@ -45,31 +53,42 @@ import {
   EntityCatalogGraphCard,
 } from '@backstage/plugin-catalog-graph';
 import {
-  EntityGithubActionsContent,
-  isGithubActionsAvailable,
-} from '@backstage-community/plugin-github-actions';
-import {
   EntityGroupProfileCard,
   EntityMembersListCard,
   EntityOwnershipCard,
   EntityUserProfileCard,
 } from '@backstage/plugin-org';
 import { EntityTechdocsContent } from '@backstage/plugin-techdocs';
-import { Button, Container, Grid } from '@material-ui/core';
-import { useState } from 'react';
+import {
+  Button,
+  Container,
+  Grid,
+  makeStyles,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from '@material-ui/core';
+import { Fragment, useState } from 'react';
 
-import { MatomoPage } from '@backstage-community/plugin-matomo';
 import { SpashipPage } from '@appdev/backstage-plugin-spaship';
+import { MatomoPage } from '@backstage-community/plugin-matomo';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 
 import {
   InfraDetailsPage,
-  ServiceDetailsCard,
   isAppCodeAvailable,
+  ServiceDetailsCard,
 } from '@compass/backstage-plugin-cmdb';
 import { LighthousePage } from '@compass/backstage-plugin-lighthouse';
 
+import { EntityFeedbackPage } from '@backstage-community/plugin-feedback';
+import {
+  isReportPortalAvailable,
+  ReportPortalOverviewCard,
+} from '@backstage-community/plugin-report-portal';
+import { usePermission } from '@backstage/plugin-permission-react';
 import {
   ContactDetailsCard,
   isContactDetailsAvailable,
@@ -88,24 +107,20 @@ import {
   artDeletePermission,
   workstreamDeletePermission,
 } from '@compass/backstage-plugin-workstream-automation-common';
-import {
-  ReportPortalOverviewCard,
-  isReportPortalAvailable,
-} from '@backstage-community/plugin-report-portal';
-import { usePermission } from '@backstage/plugin-permission-react';
-import { EntityFeedbackPage } from '@backstage-community/plugin-feedback';
 import Delete from '@material-ui/icons/Delete';
 
-import {
-  EntitySoundcheckContent,
-  EntitySoundcheckCard,
-  GroupSoundcheckContent,
-} from '@spotify/backstage-plugin-soundcheck';
-import { MCPPrimitives, MCPLinks } from '@compass/backstage-plugin-mcp';
+import { EntityRefLink, useEntity } from '@backstage/plugin-catalog-react';
 import {
   AIExpresswayCard,
   isXEAIXWayAvailable,
 } from '@compass/backstage-plugin-ai-expressway';
+import { DatasourceEntity } from '@compass/backstage-plugin-datasource-common';
+import { MCPLinks, MCPPrimitives } from '@compass/backstage-plugin-mcp';
+import {
+  EntitySoundcheckCard,
+  EntitySoundcheckContent,
+  GroupSoundcheckContent,
+} from '@spotify/backstage-plugin-soundcheck';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -183,7 +198,6 @@ const infraDetailsContent = (
 
 const jiraContent = (
   <EntitySwitch>
-
     <EntitySwitch.Case>
       <MissingAnnotationEmptyState
         annotation={['jira/project-key', 'jira/component']}
@@ -609,6 +623,9 @@ const WorkstreamEntityPage = () => {
             </Grid>
           </Container>
         </EntityLayout.Route>
+        <EntityLayout.Route path="/soundcheck" title="Soundcheck">
+          <EntitySoundcheckContent />
+        </EntityLayout.Route>
       </EntityLayout>
     </>
   );
@@ -788,6 +805,113 @@ const ArtEntityPage = () => {
   );
 };
 
+const useResourceStyles = makeStyles(theme => ({
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse',
+  },
+  leftCell: {
+    padding: theme.spacing(1),
+    width: '100px',
+    fontWeight: 'bold',
+  },
+  rightCell: {
+    padding: theme.spacing(1),
+  },
+  separator: {
+    padding: '0px',
+    height: theme.spacing(0.5),
+    background: theme.palette.divider,
+  },
+}));
+
+const ResourceEntityPage = () => {
+  const classes = useResourceStyles();
+  const { entity } = useEntity<DatasourceEntity>();
+
+  const renderSpec = {
+    ...entity.spec,
+    owner: <EntityRefLink entityRef={entity.spec.owner} />,
+    steward: <EntityRefLink entityRef={entity.spec.steward} />,
+    dependencyOf:
+      entity.spec.dependencyOf &&
+      entity.spec.dependencyOf.map(component => (
+        <li>
+          <EntityRefLink entityRef={component} />
+        </li>
+      )),
+    system: (
+      <EntityRefLink
+        entityRef={parseEntityRef(entity.spec.system ?? '', {
+          defaultKind: 'system',
+        })}
+      />
+    ),
+    existsIn: (
+      <Table cellSpacing={0} className={classes.table}>
+        <TableBody>
+          {entity.spec.existsIn.map((store, index) => (
+            <Fragment key={index}>
+              <TableRow>
+                <TableCell className={classes.leftCell}>Name</TableCell>
+                <TableCell className={classes.rightCell}>
+                  {store.name}
+                </TableCell>
+              </TableRow>
+              {store.description && (
+                <TableRow>
+                  <TableCell className={classes.leftCell}>
+                    Description
+                  </TableCell>
+                  <TableCell className={classes.rightCell}>
+                    {store.description}
+                  </TableCell>
+                </TableRow>
+              )}
+              {index < entity.spec.existsIn.length - 1 && (
+                <TableRow>
+                  <TableCell colSpan={2} className={classes.separator} />
+                </TableRow>
+              )}
+            </Fragment>
+          ))}
+        </TableBody>
+      </Table>
+    ),
+  };
+
+  return (
+    <EntityLayout>
+      <EntityLayout.Route path="overview" title="Overview">
+        <Grid container spacing={2}>
+          <Grid container item spacing={2} xs={4}>
+            <Grid item xs={12}>
+              <InfoCard title="Datasource Information">
+                <StructuredMetadataTable metadata={renderSpec} />
+              </InfoCard>
+            </Grid>
+          </Grid>
+          <Grid container item spacing={2} xs={8}>
+            <Grid item md={12} lg={6}>
+              <EntityAboutCard variant="flex" />
+            </Grid>
+            <Grid item md={12} lg={6}>
+              <EntityCatalogGraphCard variant="flex" />
+            </Grid>
+          </Grid>
+        </Grid>
+      </EntityLayout.Route>
+      <EntityLayout.Route path="dependencies" title="Dependencies">
+        <>
+          <EntityDependencyOfComponentsCard variant="gridItem" />
+          <br />
+          <EntityDependsOnComponentsCard variant="gridItem" />
+        </>
+      </EntityLayout.Route>
+    </EntityLayout>
+  );
+};
+
 export const entityPage = (
   <EntitySwitch>
     <EntitySwitch.Case if={isKind('component')} children={componentPage} />
@@ -803,7 +927,10 @@ export const entityPage = (
     <EntitySwitch.Case if={isKind('system')} children={systemPage} />
     <EntitySwitch.Case if={isKind('domain')} children={domainPage} />
     <EntitySwitch.Case if={isKind('mcpserver')} children={MCPEntityPage} />
-
+    <EntitySwitch.Case
+      if={isKind('resource')}
+      children={<ResourceEntityPage />}
+    />
     <EntitySwitch.Case>{defaultEntityPage}</EntitySwitch.Case>
   </EntitySwitch>
 );

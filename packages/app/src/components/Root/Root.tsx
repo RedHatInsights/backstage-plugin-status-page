@@ -11,9 +11,7 @@ import {
   SidebarSpace,
   WarningIcon,
 } from '@backstage/core-components';
-import {
-  IconComponent,
-} from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { Box } from '@material-ui/core';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import BuildIcon from '@material-ui/icons/Build';
@@ -159,7 +157,12 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
                 <SidebarItem
                   icon={DataUsageIcon as IconComponent}
                   to="workstream/dashboard"
-                  text='Workstream Dashboard'
+                  text="Workstream Dashboard"
+                />
+                <SidebarItem
+                  icon={BuildIcon}
+                  to="entity-validator"
+                  text="Entity Validator"
                 />
               </SidebarScrollWrapper>
             </SidebarGroup>

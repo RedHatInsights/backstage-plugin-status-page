@@ -108,6 +108,7 @@ import {
   AssistantProvider,
   featureFlags as assistantFeatureFlags,
 } from '@compass/backstage-plugin-assistant';
+import { EntityValidationPage } from '@backstage-community/plugin-entity-validation';
 
 const app = createApp({
   apis,
@@ -266,7 +267,11 @@ const routes = (
       element={<PlatformDetailPage />}
     />
     <Route path="/workstream/dashboard" element={<WorkstreamDashboardPage />} />
-    <Route path="/workstream" element={<Navigate to='/catalog?filter[kind]=Workstream' />} />
+    <Route
+      path="/workstream"
+      element={<Navigate to="/catalog?filter[kind]=Workstream" />}
+    />
+    <Route path="/entity-validator" element={<EntityValidationPage  hideFileLocationField />} />
   </FlatRoutes>
 );
 
