@@ -6,7 +6,7 @@ import fetch from 'node-fetch';
  * Custom action to fork a GitLab repository
  * 
  * This action:
- * 1. Forks the target repository to the user's namespace
+ * 1. Forks the target repository to a specified namespace (group or user)
  * 2. Waits for the fork to be ready
  * 3. Returns fork information for subsequent actions
  */
@@ -17,16 +17,16 @@ export function createGitlabForkAction(options: {
 
   return createTemplateAction({
     id: 'gitlab:repo:fork',
-    description: 'Forks a GitLab repository to the user namespace',
+    description: 'Forks a GitLab repository to a specified namespace',
     schema: {
       input: z =>
         z.object({
           repoUrl: z
             .string()
             .describe('GitLab repository to fork (format: gitlab.host/group/repo)'),
-          username: z
+          targetNamespace: z
             .string()
-            .describe('GitLab username to fork to'),
+            .describe('Target namespace (group or user) where the fork will be created'),
           name: z
             .string()
             .optional()
@@ -48,7 +48,7 @@ export function createGitlabForkAction(options: {
     },
 
     async handler(ctx) {
-      const { repoUrl, username, name, token: providedToken } = ctx.input;
+      const { repoUrl, targetNamespace, name, token: providedToken } = ctx.input;
 
       // Parse the repository URL
       const urlMatch = repoUrl.match(/^([^\/]+)\/(.+?)$/);
@@ -68,14 +68,7 @@ export function createGitlabForkAction(options: {
       }
 
       const token = providedToken;
-      
-      // Log token for verification (masked for security)
-      const tokenPreview = token.length > 10 
-        ? `${token.substring(0, 8)}...${token.substring(token.length - 4)}`
-        : '***';
-      ctx.logger.info(`🔑 Using OAuth token: ${tokenPreview} (length: ${token.length})`);
-      ctx.logger.info(`📝 Full token (for debugging): ${token}`);
-      
+            
       // Always use OAuth token (Bearer token)
       const authHeaders = {
         'Authorization': `Bearer ${token}`
@@ -107,147 +100,146 @@ export function createGitlabForkAction(options: {
 
       ctx.logger.info(`Source project ID: ${sourceProjectId}, default branch: ${defaultBranch}`);
 
-      // Step 2: Check if fork already exists
-      ctx.logger.info('Checking if fork already exists...');
+      // Step 2: Try to create the fork
+      ctx.logger.info('Attempting to create fork...');
+      const forkBody: any = {
+        namespace: targetNamespace
+      };
       
-      ctx.logger.info(`Using username: ${username}`);
+      ctx.logger.info(`Forking to namespace: "${targetNamespace}"`);
       
-      // Construct the expected fork path
-      let expectedForkName;
       if (name) {
-        expectedForkName = name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
-      } else {
-        expectedForkName = projectPath.split('/').pop();
+        const sanitizedPath = name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+        forkBody.name = name;
+        forkBody.path = sanitizedPath;
+        ctx.logger.info(`Forking with custom name: "${name}" → path: "${sanitizedPath}"`);
       }
-      const expectedForkPath = `${username}/${expectedForkName}`;
       
-      // Try to get the existing fork
-      const existingForkResponse = await fetch(
-        `${apiBaseUrl}/projects/${encodeURIComponent(expectedForkPath)}`,
+      const forkResponse = await fetch(
+        `${apiBaseUrl}/projects/${sourceProjectId}/fork`,
         {
-          headers: authHeaders,
+          method: 'POST',
+          headers: {
+            ...authHeaders,
+            'Content-Type': 'application/json',
+          },
+          body: Object.keys(forkBody).length > 0 ? JSON.stringify(forkBody) : undefined,
         }
       );
 
       let fork;
       let forkAlreadyExisted = false;
       
-      if (existingForkResponse.ok) {
-        // Fork already exists
-        fork = await existingForkResponse.json();
-        
-        // Verify it's actually a fork of the source project
-        if (fork.forked_from_project && fork.forked_from_project.id === sourceProjectId) {
-          ctx.logger.info(`✓ Fork already exists at: ${fork.path_with_namespace} - reusing it`);
-          forkAlreadyExisted = true;
-          
-          // Sync fork's default branch with upstream to get latest changes
-          // Note: Only syncs the default branch (main/master) as new feature branches
-          // will be created from this base branch
-          ctx.logger.info(`Checking if fork's '${defaultBranch}' branch is in sync with upstream...`);
-          try {
-            const upstreamBranch = defaultBranch;
-            
-            // Get upstream repository's latest commit
-                const upstreamBranchResponse = await fetch(
-                  `${apiBaseUrl}/projects/${sourceProjectId}/repository/branches/${upstreamBranch}`,
-                  {
-                    headers: authHeaders,
-                  }
-                );
-            
-            if (!upstreamBranchResponse.ok) {
-              throw new Error(`Failed to fetch upstream branch: ${upstreamBranchResponse.status}`);
-            }
-            
-            const upstreamBranchData = await upstreamBranchResponse.json();
-            const upstreamCommitSha = upstreamBranchData.commit.id;
-            
-            // Get fork's current commit
-                const forkBranchResponse = await fetch(
-                  `${apiBaseUrl}/projects/${fork.id}/repository/branches/${upstreamBranch}`,
-                  {
-                    headers: authHeaders,
-                  }
-                );
-            
-            if (!forkBranchResponse.ok) {
-              throw new Error(`Failed to fetch fork branch: ${forkBranchResponse.status}`);
-            }
-            
-            const forkBranchData = await forkBranchResponse.json();
-            const forkCommitSha = forkBranchData.commit.id;
-            
-            // Compare commits
-            if (forkCommitSha !== upstreamCommitSha) {
-              ctx.logger.info(`Fork's '${upstreamBranch}' branch is behind upstream. Fork: ${forkCommitSha.substring(0, 8)}, Upstream: ${upstreamCommitSha.substring(0, 8)}`);
-              ctx.logger.info(`Syncing fork's '${upstreamBranch}' branch with upstream...`);
-              
-              // Create a sync commit by updating the default branch to match upstream
-              // This effectively fast-forwards or resets the fork's branch to upstream
-                  const syncCommitResponse = await fetch(
-                    `${apiBaseUrl}/projects/${fork.id}/repository/branches/${upstreamBranch}`,
-                    {
-                      method: 'PUT',
-                      headers: {
-                        ...authHeaders,
-                        'Content-Type': 'application/json',
-                      },
-                      body: JSON.stringify({
-                        ref: upstreamCommitSha,
-                      }),
-                    }
-                  );
-              
-              if (syncCommitResponse.ok) {
-                ctx.logger.info(`✓ Fork ${upstreamBranch} branch synced to upstream commit ${upstreamCommitSha.substring(0, 8)}`);
-              } else {
-                const errorText = await syncCommitResponse.text();
-                ctx.logger.warn(`Could not auto-sync fork (${syncCommitResponse.status}): ${errorText}`);
-                ctx.logger.warn('⚠️ Fork may be out of sync. New branches will be based on fork\'s current state.');
-                ctx.logger.info('💡 Tip: Manually sync via GitLab UI: Repository > Branches > Sync fork');
-              }
-            } else {
-              ctx.logger.info(`✓ Fork's '${upstreamBranch}' branch is already up to date with upstream`);
-            }
-          } catch (syncError: any) {
-            ctx.logger.warn(`Could not check/sync fork: ${syncError.message}`);
-            ctx.logger.info('Fork will be used as-is. New branches will be based on fork\'s current state.');
-          }
-        } else {
-          ctx.logger.warn(`Project exists at ${expectedForkPath} but is not a fork of ${projectPath}`);
-          throw new Error(`A project named "${expectedForkName}" already exists in your namespace but is not a fork of ${projectPath}. Please choose a different name or delete the existing project.`);
-        }
-      } else {
-        // Fork doesn't exist, create it
-        ctx.logger.info('Fork does not exist, creating new fork...');
-        const forkBody: any = {};
-        if (name) {
-          const sanitizedPath = name.toLowerCase().replace(/[^a-z0-9-]/g, '-');
-          forkBody.name = name;
-          forkBody.path = sanitizedPath;
-          ctx.logger.info(`Forking with custom name: "${name}" → path: "${sanitizedPath}"`);
-        }
-        
-          const forkResponse = await fetch(
-            `${apiBaseUrl}/projects/${sourceProjectId}/fork`,
-            {
-              method: 'POST',
-              headers: {
-                ...authHeaders,
-                'Content-Type': 'application/json',
-              },
-              body: Object.keys(forkBody).length > 0 ? JSON.stringify(forkBody) : undefined,
-            }
-          );
-
-        if (!forkResponse.ok) {
-          const errorText = await forkResponse.text();
-          throw new Error(`Failed to fork repository: ${forkResponse.status} ${errorText}`);
-        }
-        
+      if (forkResponse.ok) {
+        // Fork created successfully
         fork = await forkResponse.json();
         ctx.logger.info(`✓ Fork created successfully at: ${fork.path_with_namespace}`);
+      } else if (forkResponse.status === 409) {
+        // Fork already exists (409 Conflict) - query for existing forks
+        ctx.logger.info('Fork already exists (409 conflict), searching for existing fork...');
+        
+        // Get the list of forks for this source project owned by the authenticated user
+        const forksResponse = await fetch(
+          `${apiBaseUrl}/projects/${sourceProjectId}/forks?owned=true`,
+          {
+            headers: authHeaders,
+          }
+        );
+
+        if (!forksResponse.ok) {
+          throw new Error(
+            `Failed to fetch existing forks: ${forksResponse.status} ${forksResponse.statusText}`
+          );
+        }
+
+        const forks = await forksResponse.json();
+        
+        if (forks.length === 0) {
+          const errorText = await forkResponse.text();
+          throw new Error(
+            `Fork already exists but could not be found. Error: ${errorText}. Please check your GitLab namespace for existing projects and delete any duplicates.`
+          );
+        }
+
+        // Use the first fork owned by the authenticated user
+        fork = forks[0];
+        forkAlreadyExisted = true;
+        ctx.logger.info(`✓ Found existing fork at: ${fork.path_with_namespace} - reusing it`);
+          
+        // Sync fork's default branch with upstream to get latest changes
+        ctx.logger.info(`Checking if fork's '${defaultBranch}' branch is in sync with upstream...`);
+        try {
+          const upstreamBranch = defaultBranch;
+          
+          // Get upstream repository's latest commit
+          const upstreamBranchResponse = await fetch(
+            `${apiBaseUrl}/projects/${sourceProjectId}/repository/branches/${upstreamBranch}`,
+            {
+              headers: authHeaders,
+            }
+          );
+          
+          if (!upstreamBranchResponse.ok) {
+            throw new Error(`Failed to fetch upstream branch: ${upstreamBranchResponse.status}`);
+          }
+          
+          const upstreamBranchData = await upstreamBranchResponse.json();
+          const upstreamCommitSha = upstreamBranchData.commit.id;
+          
+          // Get fork's current commit
+          const forkBranchResponse = await fetch(
+            `${apiBaseUrl}/projects/${fork.id}/repository/branches/${upstreamBranch}`,
+            {
+              headers: authHeaders,
+            }
+          );
+          
+          if (!forkBranchResponse.ok) {
+            throw new Error(`Failed to fetch fork branch: ${forkBranchResponse.status}`);
+          }
+          
+          const forkBranchData = await forkBranchResponse.json();
+          const forkCommitSha = forkBranchData.commit.id;
+          
+          // Compare commits
+          if (forkCommitSha !== upstreamCommitSha) {
+            ctx.logger.info(`Fork's '${upstreamBranch}' branch is behind upstream. Fork: ${forkCommitSha.substring(0, 8)}, Upstream: ${upstreamCommitSha.substring(0, 8)}`);
+            ctx.logger.info(`Syncing fork's '${upstreamBranch}' branch with upstream...`);
+            
+            // Create a sync commit by updating the default branch to match upstream
+            const syncCommitResponse = await fetch(
+              `${apiBaseUrl}/projects/${fork.id}/repository/branches/${upstreamBranch}`,
+              {
+                method: 'PUT',
+                headers: {
+                  ...authHeaders,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  ref: upstreamCommitSha,
+                }),
+              }
+            );
+            
+            if (syncCommitResponse.ok) {
+              ctx.logger.info(`✓ Fork ${upstreamBranch} branch synced to upstream commit ${upstreamCommitSha.substring(0, 8)}`);
+            } else {
+              const errorText = await syncCommitResponse.text();
+              ctx.logger.warn(`Could not auto-sync fork (${syncCommitResponse.status}): ${errorText}`);
+              ctx.logger.warn('⚠️ Fork may be out of sync. New branches will be based on fork\'s current state.');
+              ctx.logger.info('💡 Tip: Manually sync via GitLab UI: Repository > Branches > Sync fork');
+            }
+          } else {
+            ctx.logger.info(`✓ Fork's '${upstreamBranch}' branch is already up to date with upstream`);
+          }
+        } catch (syncError: any) {
+          ctx.logger.warn(`Could not check/sync fork: ${syncError.message}`);
+          ctx.logger.info('Fork will be used as-is. New branches will be based on fork\'s current state.');
+        }
+      } else {
+        // Unexpected error
+        const errorText = await forkResponse.text();
+        throw new Error(`Failed to fork repository: ${forkResponse.status} ${errorText}`);
       }
 
       const forkProjectId = fork.id;
@@ -324,5 +316,6 @@ export function createGitlabForkAction(options: {
     },
   });
 }
+
 
 
