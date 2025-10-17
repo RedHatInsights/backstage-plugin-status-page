@@ -1,5 +1,12 @@
 # Changelog
 
+## @compass/backstage-plugin-workstream-automation [1.22.3](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.22.2...@compass/backstage-plugin-workstream-automation@1.22.3) (2025-10-17)
+
+
+### Bug Fixes
+
+* **COMPASS-318:** fix issues in ws dashboard ([b44fc47](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/commit/b44fc4775e6b61196c25ad71c19a68636691faba))
+
 ## @compass/backstage-plugin-workstream-automation [1.22.2](https://gitlab.cee.redhat.com/app-dev-platform/backstage-plugins/compare/@compass/backstage-plugin-workstream-automation@1.22.1...@compass/backstage-plugin-workstream-automation@1.22.2) (2025-10-08)
 
 
