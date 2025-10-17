@@ -1,5 +1,11 @@
-import { TableColumn, Table } from '@backstage/core-components';
-import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import { parseEntityRef } from '@backstage/catalog-model';
+import { Table, TableColumn } from '@backstage/core-components';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import {
+  EntityDisplayName,
+  EntityRefLink,
+  entityRouteRef,
+} from '@backstage/plugin-catalog-react';
 import {
   ArtEntity,
   WorkstreamEntity,
@@ -14,6 +20,7 @@ import {
 import CloseIcon from '@material-ui/icons/CloseOutlined';
 import { JSONPath as jsonPathFn } from 'jsonpath-plus';
 import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -24,6 +31,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+function isEntityRef(value: string): boolean {
+  return /^[a-zA-Z0-9]+:[a-zA-Z0-9-_/]+$/.test(value);
+}
+
 export const CardDetails = (props: {
   title: string;
   entities: (WorkstreamEntity | ArtEntity)[];
@@ -33,6 +44,7 @@ export const CardDetails = (props: {
 }) => {
   const { entities, filteredEntities, title, toggleDrawer, jsonPath } = props;
   const classes = useStyles();
+  const entityRoute = useRouteRef(entityRouteRef);
 
   const rev = useMemo(
     () =>
@@ -56,9 +68,31 @@ export const CardDetails = (props: {
 
         return (
           <Box display="flex" flexWrap="wrap">
-            {result.map(r => (
-              <Chip label={r} key={r} />
-            ))}
+            {result.map(value =>
+              isEntityRef(value) ? (
+                <Chip
+                  key={value}
+                  size="small"
+                  style={{ marginBlock: 4 }}
+                  clickable
+                  component={Link}
+                  to={entityRoute(parseEntityRef(value))}
+                  label={
+                    <EntityDisplayName
+                      entityRef={parseEntityRef(value)}
+                      hideIcon
+                    />
+                  }
+                />
+              ) : (
+                <Chip
+                  key={value}
+                  label={value}
+                  size="small"
+                  style={{ marginBlock: 4 }}
+                />
+              ),
+            )}
           </Box>
         );
       },
@@ -73,11 +107,15 @@ export const CardDetails = (props: {
         </IconButton>
       </Box>
       <Box>
+        <Typography variant="h2">More Details</Typography>
+      </Box>
+      <Box>
         <Typography
           variant="body1"
           style={{ fontSize: '18px', marginBlock: '8px' }}
         >
-          Workstreams that <b>don't</b> have <b>{title}</b> ({rev.length})
+          {entities.length > 0 ? `${entities[0].kind}s` : 'Workstreams'} that{' '}
+          <b>don't</b> have <b>{title}</b> ({rev.length})
         </Typography>
         <Table
           data={rev}
@@ -87,6 +125,7 @@ export const CardDetails = (props: {
             toolbar: false,
             paging: false,
             draggable: false,
+            padding: 'dense',
           }}
         />
       </Box>
@@ -95,7 +134,8 @@ export const CardDetails = (props: {
           variant="body1"
           style={{ fontSize: '18px', marginTop: '32px', marginBottom: '8px' }}
         >
-          Workstreams that <b>has {title}</b> ({filteredEntities.length})
+          {entities.length > 0 ? `${entities[0].kind}s` : 'Workstreams'} that{' '}
+          <b>has {title}</b> ({filteredEntities.length})
         </Typography>
         <Table
           data={filteredEntities}
@@ -105,6 +145,7 @@ export const CardDetails = (props: {
             toolbar: false,
             paging: false,
             draggable: false,
+            padding: 'dense',
           }}
         />
       </Box>

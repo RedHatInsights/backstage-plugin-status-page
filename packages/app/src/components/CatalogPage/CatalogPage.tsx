@@ -1,71 +1,116 @@
 import {
-  PageWithHeader,
   Content,
   ContentHeader,
-  SupportButton,
   CreateButton,
+  LinkButton,
+  PageWithHeader,
+  SupportButton,
 } from '@backstage/core-components';
-import { useApi, configApiRef, useRouteRef } from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogTable, catalogPlugin } from '@backstage/plugin-catalog';
 
+import { FeatureFlagged } from '@backstage/core-app-api';
 import {
-  EntityListProvider,
   CatalogFilterLayout,
   EntityKindPicker,
   EntityLifecyclePicker,
-  EntityTagPicker,
-  UserListPicker,
-  EntityTypePicker,
+  EntityListProvider,
   EntityNamespacePicker,
   EntityOwnerPicker,
+  EntityTagPicker,
+  EntityTypePicker,
+  UserListPicker,
   useEntityList,
 } from '@backstage/plugin-catalog-react';
+import { usePermission } from '@backstage/plugin-permission-react';
 import {
+  CreateArtModal,
   CreateWorkstreamModal,
   UserWorkstreamPicker,
   WorkstreamLeadPicker,
   WorkstreamPillarPicker,
   WorkstreamPortfolioPicker,
   WorkstreamTechLeadPicker,
-  CreateArtModal,
 } from '@compass/backstage-plugin-workstream-automation';
-import { usePermission } from '@backstage/plugin-permission-react';
-import { workstreamCreatePermission } from '@compass/backstage-plugin-workstream-automation-common';
-import { createTableColumnsFunc } from './createCatalogTableFunc';
+import {
+  artCreatePermission,
+  workstreamCreatePermission,
+} from '@compass/backstage-plugin-workstream-automation-common';
 import {
   ExportCsv as exportCsv,
   ExportPdf as exportPdf,
 } from '@material-table/exporters';
+import { Box } from '@material-ui/core';
+import { createTableColumnsFunc } from './createCatalogTableFunc';
 
 const HeaderButtons = () => {
   const createComponentLink = useRouteRef(
     catalogPlugin.externalRoutes.createComponent,
   );
 
-  const { allowed: isAllowed } = usePermission({
+  const { allowed: workstreamAllowed } = usePermission({
     permission: workstreamCreatePermission,
+  });
+  const { allowed: artAllowed } = usePermission({
+    permission: artCreatePermission,
   });
 
   const {
-    filters: { kind },
+    queryParameters: { kind },
+    filters: { kind: filterKind },
   } = useEntityList();
 
-  if (kind?.value === 'workstream' || kind?.value === 'art')
+  const kindValue = (filterKind?.value ?? kind)?.toString().toLocaleLowerCase();
+  const CustomCreateButton = () => {
+    if (kindValue === 'art' && artAllowed) {
+      return (
+        <Box display="flex" alignItems="center">
+          <CreateArtModal />
+          <FeatureFlagged with="workstream-automation-dashboard">
+            <Box ml={1}>
+              <LinkButton
+                variant="outlined"
+                color="primary"
+                to="/workstream/dashboard"
+              >
+                Dashboard
+              </LinkButton>
+            </Box>
+          </FeatureFlagged>
+        </Box>
+      );
+    }
+    if (kindValue === 'workstream' && workstreamAllowed) {
+      return (
+        <Box display="flex" alignItems="center">
+          <CreateWorkstreamModal />
+          <FeatureFlagged with="workstream-automation-dashboard">
+            <Box ml={1}>
+              <LinkButton
+                variant="outlined"
+                color="primary"
+                to="/workstream/dashboard"
+              >
+                Dashboard
+              </LinkButton>
+            </Box>
+          </FeatureFlagged>
+        </Box>
+      );
+    }
     return (
-      <>
-        {isAllowed && <CreateWorkstreamModal />}
-        {isAllowed && <CreateArtModal />}
-      </>
-    );
-
-  return (
-    <>
       <CreateButton
         title="Create"
         to={createComponentLink && createComponentLink()}
       />
+    );
+  };
+
+  return (
+    <Box display="flex">
+      <CustomCreateButton />
       <SupportButton>All your software catalog entities</SupportButton>
-    </>
+    </Box>
   );
 };
 

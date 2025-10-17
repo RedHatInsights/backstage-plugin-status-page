@@ -1,4 +1,5 @@
 import { stringifyEntityRef } from '@backstage/catalog-model';
+import { EmptyState } from '@backstage/core-components';
 import { EntityDisplayName } from '@backstage/plugin-catalog-react';
 import {
   ArtEntity,
@@ -16,10 +17,9 @@ import {
   makeStyles,
   Paper,
 } from '@material-ui/core';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ContributorDetails } from './ContributorDetails';
 import { Contributor } from './types';
-import { EmptyState } from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -136,10 +136,13 @@ function convertWorkstreamsToMemberMapping(
   }
 
   // Convert the map to the desired array format
-  return Array.from(memberMap.entries()).map(([userRef, commonWs]) => ({
-    userRef,
-    commonWs,
-  }));
+  return Array.from(memberMap.entries())
+    .map(([userRef, commonWs]) => ({
+      userRef,
+      commonWs,
+    }))
+    .filter(data => data.commonWs.length > 1)
+    .sort((a, b) => b.commonWs.length - a.commonWs.length);
 }
 
 export const ContributorsList = ({
@@ -147,21 +150,40 @@ export const ContributorsList = ({
   arts,
 }: ContributorsListProps) => {
   const classes = useStyles();
-  const [listItems, setListItems] = useState<Contributor[]>(
-    convertWorkstreamsToMemberMapping([...arts, ...workstreams]),
-  );
   const [selectedContributor, setSelectedContributor] = useState<Contributor>();
+
+  const artContributors = convertWorkstreamsToMemberMapping(arts);
+  const wsContributors = convertWorkstreamsToMemberMapping(workstreams);
+  const hasBoth = convertWorkstreamsToMemberMapping([
+    ...arts,
+    ...workstreams,
+  ]).filter(contributor => {
+    const hasWorkstream = contributor.commonWs.some(ws =>
+      ws.workstreamRef.startsWith('workstream:'),
+    );
+    const hasArt = contributor.commonWs.some(ws =>
+      ws.workstreamRef.startsWith('art:'),
+    );
+    return hasWorkstream && hasArt;
+  });
+
+  const [listItems, setListItems] = useState<Contributor[]>(wsContributors);
+
+  useEffect(() => {
+    if (listItems.length > 0) setSelectedContributor(listItems[0]);
+  }, [listItems]);
+
   const [filterChips, setFilterChips] = useState([
     {
-      label: 'Both',
+      label: 'Workstreams',
       selected: true,
     },
     {
-      label: 'Workstreams',
+      label: 'ARTs',
       selected: false,
     },
     {
-      label: 'ARTs',
+      label: 'Both',
       selected: false,
     },
   ]);
@@ -173,7 +195,6 @@ export const ContributorsList = ({
   return (
     <Paper className={classes.root}>
       <Box className={classes.leftPanel}>
-        {/* <TextField variant="outlined" fullWidth placeholder="Find by name" /> */}
         <Grid>
           {filterChips.map(chip => (
             <Chip
@@ -184,54 +205,46 @@ export const ContributorsList = ({
               size="small"
               variant={chip.selected ? 'default' : 'outlined'}
               onClick={() => {
-                setFilterChips(prev =>
-                  prev.map(c => ({
-                    ...c,
-                    selected: c.label === chip.label,
-                  })),
-                );
-                if (chip.label.startsWith('Workstreams'))
-                  setListItems(convertWorkstreamsToMemberMapping(workstreams));
-                else if (chip.label.startsWith('ARTs'))
-                  setListItems(convertWorkstreamsToMemberMapping(arts));
-                else if (chip.label.startsWith('Both'))
-                  setListItems(
-                    convertWorkstreamsToMemberMapping([
-                      ...arts,
-                      ...workstreams,
-                    ]),
+                if (!chip.selected) {
+                  setFilterChips(prev =>
+                    prev.map(c => ({
+                      ...c,
+                      selected: c.label === chip.label,
+                    })),
                   );
-                setSelectedContributor(undefined);
+                  if (chip.label.startsWith('Workstreams'))
+                    setListItems(wsContributors);
+                  else if (chip.label.startsWith('ARTs'))
+                    setListItems(artContributors);
+                  else if (chip.label.startsWith('Both')) setListItems(hasBoth);
+                }
               }}
             />
           ))}
         </Grid>
 
         <List className={classes.listContainer}>
-          {listItems
-            .filter(data => data.commonWs.length > 1)
-            .sort((a, b) => b.commonWs.length - a.commonWs.length)
-            .map(data => (
-              <ListItem
-                button
-                TouchRippleProps={{
-                  color: 'blue',
-                }}
-                classes={{ selected: classes.selected, root: classes.list }}
-                selected={selectedContributor?.userRef === data.userRef}
-                onClick={() => handleClick(data)}
-              >
-                <ListItemText classes={{ primary: classes.listText }}>
-                  <EntityDisplayName hideIcon entityRef={data.userRef} />
-                </ListItemText>
-                <ListItemSecondaryAction>
-                  <Chip
-                    style={{ marginBottom: 0 }}
-                    label={data.commonWs.length}
-                  />
-                </ListItemSecondaryAction>
-              </ListItem>
-            ))}
+          {listItems.map(data => (
+            <ListItem
+              button
+              TouchRippleProps={{
+                color: 'blue',
+              }}
+              classes={{ selected: classes.selected, root: classes.list }}
+              selected={selectedContributor?.userRef === data.userRef}
+              onClick={() => handleClick(data)}
+            >
+              <ListItemText classes={{ primary: classes.listText }}>
+                <EntityDisplayName hideIcon entityRef={data.userRef} />
+              </ListItemText>
+              <ListItemSecondaryAction>
+                <Chip
+                  style={{ marginBottom: 0 }}
+                  label={data.commonWs.length}
+                />
+              </ListItemSecondaryAction>
+            </ListItem>
+          ))}
         </List>
       </Box>
       <Divider orientation="vertical" flexItem />
