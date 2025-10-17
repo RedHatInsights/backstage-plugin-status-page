@@ -1,4 +1,8 @@
-import { InfoCard, useQueryParamState } from '@backstage/core-components';
+import { InfoCard } from '@backstage/core-components';
+import {
+  ArtEntity,
+  WorkstreamEntity,
+} from '@compass/backstage-plugin-workstream-automation-common';
 import {
   Box,
   Button,
@@ -11,14 +15,12 @@ import {
   Typography,
   withStyles,
 } from '@material-ui/core';
-import {
-  ArtEntity,
-  WorkstreamEntity,
-} from '@compass/backstage-plugin-workstream-automation-common';
-import { useMemo, useState } from 'react';
-import { CardDetails } from './CardDetails';
-import { JSONPath as jsonPathFn } from 'jsonpath-plus';
 import { Skeleton } from '@material-ui/lab';
+import { JSONPath as jsonPathFn } from 'jsonpath-plus';
+import { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useUpdateQueryStringValueWithoutNavigation } from '../hooks/misc';
+import { CardDetails } from './CardDetails';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -81,14 +83,24 @@ export const GridCard = ({
       }),
     [jsonPath, workstreams],
   );
-
-  const [query, setQuery] = useQueryParamState<string | undefined>('path');
+  const [searchParams] = useSearchParams();
+  const [queryValue, setQuery] = useState<string>(() => {
+    return searchParams.get('path') ?? '';
+  });
 
   const percent = (filtered.length / workstreams.length) * 100;
-  const [isOpen, toggleDrawer] = useState(query === jsonPath);
+  const [isOpen, toggleDrawer] = useState(queryValue === jsonPath);
+
+  const query = queryValue.trim();
+  useUpdateQueryStringValueWithoutNavigation('path', query);
+
+  function onOpenClick() {
+    setQuery(jsonPath);
+    toggleDrawer(true);
+  }
 
   function onClose() {
-    setQuery(undefined);
+    setQuery('');
     toggleDrawer(false);
   }
 
@@ -106,10 +118,7 @@ export const GridCard = ({
               variant="outlined"
               color="default"
               children="See Details"
-              onClick={() => {
-                setQuery(jsonPath);
-                toggleDrawer(true);
-              }}
+              onClick={onOpenClick}
             />
           ),
           classes: {

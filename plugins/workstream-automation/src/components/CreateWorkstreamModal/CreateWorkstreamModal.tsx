@@ -447,7 +447,7 @@ export const CreateWorkstreamModal = () => {
   const {
     filters: { kind },
   } = useEntityList();
-  if (kind?.value !== 'workstream') {
+  if (kind?.value.toLocaleLowerCase() !== 'workstream') {
     return <></>;
   }
 

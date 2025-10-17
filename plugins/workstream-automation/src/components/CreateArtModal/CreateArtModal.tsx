@@ -443,7 +443,7 @@ export const CreateArtModal = () => {
   const {
     filters: { kind },
   } = useEntityList();
-  if (kind?.value !== 'art') {
+  if (kind?.value.toLocaleLowerCase() !== 'art') {
     return <></>;
   }
 
