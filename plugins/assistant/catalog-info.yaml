@@ -1,0 +1,33 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: assistant
+  title: Compass Assistant Frontend
+  description: The Frontend plugin for Compass Assistant
+  namespace: compass
+  tags:
+    - backstage
+    - idp
+    - developers
+    - assistant
+    - ai
+    - agent
+    - compass-assistant
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40compass%2Fbackstage-plugin-assistant
+      title: Assistant Frontend Plugin NPM Package
+
+  annotations:
+    # npm/package: '@compass/backstage-plugin-assistant'
+    # npm/registry: compass
+    xeaixway/initiative: XEAIXWAY-95
+    nexus-repository-manager/repository: compass
+    nexus-repository-manager/name: backstage-plugin-assistant
+
+spec:
+  type: backstage-frontend-plugin
+  lifecycle: alpha
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-frontend
