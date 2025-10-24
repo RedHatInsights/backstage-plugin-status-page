@@ -31,3 +31,5 @@ spec:
   owner: group:redhat/xe-compass-devs
   system: compass/compass-platform
   subcomponentOf: compass/compass-frontend
+  dependsOn:
+    - component:compass/assistant-backend
