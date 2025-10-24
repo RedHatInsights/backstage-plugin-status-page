@@ -21,8 +21,10 @@ metadata:
   annotations:
     # npm/package: '@compass/backstage-plugin-assistant-backend'
     # npm/registry: compass
+    xeaixway/initiative: XEAIXWAY-95
     nexus-repository-manager/repository: compass
     nexus-repository-manager/name: backstage-plugin-assistant-backend
+
 spec:
   type: backstage-backend-plugin
   lifecycle: alpha
