@@ -12,22 +12,27 @@ If you have a use case for a new plugin, please create [a new issue](/issues/new
 
 - Copy `.env.example` to `.env`.
 
-- Fill up **VAULT_*** variables in env, use values shown here.
+- Fill up **VAULT\_\*** variables in env, use values shown here.
+
   - `VAULT_ENDPOINT`: Set it to `https://vault.corp.redhat.com:8200`
   - `VAULT_ROLE_ID`: Set it to `xe-compass-vault`
   - `VAULT_SECRET_ID`: Generate your own `secret_id` for **xe-compass-vault** approle, [Follow this instructions](https://source.redhat.com/departments/it/identityaccessmanagement/it_iam_vault/vault_reset_an_approle_password#generate-a-new-secret-id-).
   - `VAULT_SECRET_NAME`: Set it to `plugins-dev`
 
 - Install dependencies
+
   ```sh
   yarn install
   ```
 
 - Run following command to auto-generate ✨ `.env` for local development.
+
   ```sh
   yarn vault:sync
   ```
+
   The above command will populate all secrets from vault in your local `.env` file
+
   ```sh
   # Start of vault secrets
   #########################################################
@@ -60,7 +65,6 @@ yarn new
 
 Backstage's support for standalone plugin development is very limited (especially for backend plugins), therefore we include a minimal test instance within this repository.
 
-
 ### Developing a frontend plugin
 
 In case your plugin supports standalone mode, you can use `yarn start` command in your plugin directory directly and you don't have to install the plugin as mentioned above.
@@ -90,21 +94,24 @@ To make your package eligible for release automation and publicly available in N
 
 ### Requirements
 
-We use [semantic-release](https://semantic-release.gitbook.io/semantic-release/) (together with [multi-semantic-release](https://github.com/dhoulb/multi-semantic-release)).
+1. Run `yarn install` to install all dependencies.
 
-Please read [following guidelines](https://semantic-release.gitbook.io/semantic-release/#commit-message-format) to learn, how to format your commit messages:
+### Prepare plugins
 
-| Commit message                                                                                                                                                                                        | Release type                                                                                                      |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| <pre>fix(pencil): stop graphite breaking when too much pressure applied</pre>                                                                                                                         | Fix Release (`vX.Y.⬆️` )                                                                                          |
-| <pre>feat(pencil): add 'graphiteWidth' option</pre>                                                                                                                                                   | Feature Release (`vX.⬆️.0`)                                                                                       |
-| <pre>perf(pencil): remove graphiteWidth option<br><br>BREAKING CHANGE: The graphiteWidth option has been removed.<br>The default graphite width of 10mm is always used for performance reasons.</pre> | Breaking Release (`v⬆️.0.0`) <br>(Note that the `BREAKING CHANGE:` token must be **in the footer** of the commit) |
+We use [changesets](https://changesets-docs.vercel.app/readme.html) to release our plugins.
 
-Commit messages are used to populate a `CHANGELOG.md` file for each individual package (if the commit is relevant for that particular package folder).
+Changesets allows you to follow semantic versioning and puts you in control of when to cut a release. When you're ready, it'll publish your package(s), update a changelog file.
+
+Steps: 
+- Run `yarn changeset` to trigger the tool.
+- It will ask for type of version and packages that you want to release.
+- After that it will ask to write a changeset message.
+
+Changeset messages are used to populate a `CHANGELOG.md` file for each individual package (you can edit it in `.changeset/<random-name>.md` before release).
 
 # Running e2e Tests in playwright
 
-UI tests for Red Hat Experience Platform Plugin using Playwright
+UI tests for Compass Plugins using Playwright
 
 ## Pre-requisites
 
@@ -141,4 +148,3 @@ npx playwright codegen
 `Report Portal has been configured`
 
 - https://reportportal-hydra.apps.ocp-c1.prod.psi.redhat.com/ui/#backstage_plugins_tests/dashboard/72
-
