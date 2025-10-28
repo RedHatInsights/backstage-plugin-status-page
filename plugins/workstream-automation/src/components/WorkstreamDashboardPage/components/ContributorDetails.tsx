@@ -19,7 +19,7 @@ export const ContributorDetails = ({ contributor }: ContributorProps) => {
       id: 'title',
       field: 'workstreamRef',
       defaultSort: 'asc',
-      title: 'Workstream Name',
+      title: 'Name',
       render: data => <EntityRefLink entityRef={data.workstreamRef} />,
     },
     {
