@@ -109,6 +109,7 @@ import {
   featureFlags as assistantFeatureFlags,
 } from '@compass/backstage-plugin-assistant';
 import { EntityValidationPage } from '@backstage-community/plugin-entity-validation';
+import { DoraMetricsPage } from '@appdev/backstage-plugin-dora-metrics';
 
 const app = createApp({
   apis,
@@ -261,6 +262,7 @@ const routes = (
       element={<PermissionManagementPage />}
     />
     <Route path="/compliance" element={<CompliancePage />} />
+
     <Route path="/compliance/ess" element={<EssPage />} />
     <Route
       path="/compliance/ess/platform/:name"
@@ -272,6 +274,7 @@ const routes = (
       element={<Navigate to="/catalog?filter[kind]=Workstream" />}
     />
     <Route path="/entity-validator" element={<EntityValidationPage  hideFileLocationField />} />
+    <Route path="/dora-metrics" element={<DoraMetricsPage />} />
   </FlatRoutes>
 );
 

@@ -154,6 +154,7 @@ proxy:
       credentials: dangerously-allow-unauthenticated
       changeOrigin: true
       allowedMethods: ['GET']
+
     '/gitlab-ess':
       target: ${ESS_GITLAB_BASE_URL}
       changeOrigin: true
@@ -164,6 +165,13 @@ proxy:
       allowedMethods: ['GET']
       headers:
         'Private-Token': ${ESS_GITLAB_TOKEN}
+    '/gitlab':
+      target: ${GITLAB_BASE_URL}
+      credentials: dangerously-allow-unauthenticated
+      changeOrigin: true
+      allowedMethods: ['GET']
+      headers:
+        PRIVATE-TOKEN: ${GITLAB_CEE_TOKEN}
     # '/mcp':
     #   target: ${MCP_SERVER_BASE_URL}
     #   headers:
