@@ -164,6 +164,12 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
                   to="entity-validator"
                   text="Entity Validator"
                 />
+
+                <SidebarItem
+                  icon={DataUsageIcon as IconComponent}
+                  to="dora-metrics"
+                  text="Dora Metrics"
+                />
               </SidebarScrollWrapper>
             </SidebarGroup>
             <SidebarSpace />
