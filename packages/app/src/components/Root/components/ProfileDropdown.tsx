@@ -80,7 +80,11 @@ export const ProfileDropdown = ({
   return !loading && user ? (
     <Box sx={{ display: 'flex', alignItems: 'center', ...layout }}>
       <Button
-        sx={{ py: '8px', px: '15px' }}
+        sx={{
+          py: '8px',
+          px: '15px',
+          borderRadius: theme => theme.shape.borderRadius,
+        }}
         size="small"
         variant="text"
         color={color}

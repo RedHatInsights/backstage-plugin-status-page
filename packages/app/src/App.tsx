@@ -33,14 +33,17 @@ import {
   AuditSummary,
   ComplianceManagerPageNew,
 } from '@appdev/backstage-plugin-audit-compliance';
+import { CompliancePage } from '@appdev/backstage-plugin-compliance';
 import {
   AppDevDashboardPage,
   DataLayerDashboardPage,
   PulseDashboardPage,
 } from '@appdev/backstage-plugin-devex-dashboard';
 import { DocsBotPage } from '@appdev/backstage-plugin-docsbot';
+import { DoraMetricsPage } from '@appdev/backstage-plugin-dora-metrics';
+import { EssPage, PlatformDetailPage } from '@appdev/backstage-plugin-ess';
+import { GdprPage } from '@appdev/backstage-plugin-gdpr';
 import { HydraSupportDashboardPage } from '@appdev/backstage-plugin-hydra-support-dashboard';
-import { SignalsDisplay } from '@backstage/plugin-signals';
 import {
   CreateIncident,
   OutageTemplatePage,
@@ -49,6 +52,12 @@ import {
 import { PermissionManagementPage } from '@appdev/backstage-plugin-permission-management';
 import { ProxyManagerPage } from '@appdev/backstage-plugin-proxy-manager';
 import { SpashipGlobalPage } from '@appdev/backstage-plugin-spaship';
+import { EntityValidationPage } from '@backstage-community/plugin-entity-validation';
+import {
+  GlobalFeedbackComponent,
+  GlobalFeedbackPage,
+  feedbackPlugin,
+} from '@backstage-community/plugin-feedback';
 import { ReportPortalGlobalPage } from '@backstage-community/plugin-report-portal';
 import { createApp } from '@backstage/app-defaults';
 import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
@@ -66,6 +75,11 @@ import {
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { RequirePermission } from '@backstage/plugin-permission-react';
+import { SignalsDisplay } from '@backstage/plugin-signals';
+import {
+  AssistantProvider,
+  featureFlags as assistantFeatureFlags,
+} from '@compass/backstage-plugin-assistant';
 import {
   DockerIcon,
   MCPServerIcon,
@@ -84,32 +98,19 @@ import {
 } from '@compass/backstage-plugin-workstream-automation';
 import { WORKSTREAM_RELATION_PAIR } from '@compass/backstage-plugin-workstream-automation-common';
 import { MockPluginPage } from '@compass/plugin-mock-plugin';
-import {
-  GlobalFeedbackPage,
-  GlobalFeedbackComponent,
-  feedbackPlugin,
-} from '@backstage-community/plugin-feedback';
 import AdbIcon from '@material-ui/icons/Adb';
+import CategoryOutlinedIcon from '@material-ui/icons/CategoryOutlined';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
 import WebLinkIcon from '@material-ui/icons/Language';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import CreateComponentIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+import Logout from '@mui/icons-material/LogoutOutlined';
+import ManageAccounts from '@mui/icons-material/ManageAccountsOutlined';
+import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
 import { getThemes } from '@red-hat-developer-hub/backstage-plugin-theme';
 import { SoundcheckRoutingPage } from '@spotify/backstage-plugin-soundcheck';
 import { CatalogPage } from './components/CatalogPage/CatalogPage';
-import { GdprPage } from '@appdev/backstage-plugin-gdpr';
-import { CompliancePage } from '@appdev/backstage-plugin-compliance';
-import { EssPage, PlatformDetailPage } from '@appdev/backstage-plugin-ess';
-import ManageAccounts from '@mui/icons-material/ManageAccountsOutlined';
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
-import Logout from '@mui/icons-material/LogoutOutlined';
-import CategoryOutlinedIcon from '@material-ui/icons/CategoryOutlined';
-import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
-import CreateComponentIcon from '@mui/icons-material/AddCircleOutlineOutlined';
-import {
-  AssistantProvider,
-  featureFlags as assistantFeatureFlags,
-} from '@compass/backstage-plugin-assistant';
-import { EntityValidationPage } from '@backstage-community/plugin-entity-validation';
-import { DoraMetricsPage } from '@appdev/backstage-plugin-dora-metrics';
+import { SoundcheckPaginationStylesFix } from './components/Root/components/SoundcheckPaginationFix';
 
 const app = createApp({
   apis,
@@ -238,7 +239,14 @@ const routes = (
       element={<UpdateIncident />}
     />
     <Route path="/compliance/gdpr" element={<GdprPage />} />
-    <Route path="/soundcheck" element={<SoundcheckRoutingPage />} />
+    <Route
+      path="/soundcheck"
+      element={
+        <>
+          <SoundcheckPaginationStylesFix /> <SoundcheckRoutingPage />
+        </>
+      }
+    />
     <Route path="/devtools" element={<DevToolsPage />} />
     <Route path="/audit-access-manager" element={<AuditCompliancePage />} />
     <Route

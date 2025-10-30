@@ -3,7 +3,11 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { OverflowTooltip, TableColumn } from '@backstage/core-components';
+import {
+  AppIcon,
+  OverflowTooltip,
+  TableColumn,
+} from '@backstage/core-components';
 import { useApp } from '@backstage/core-plugin-api';
 import { CatalogTableRow } from '@backstage/plugin-catalog';
 import {
@@ -16,8 +20,6 @@ import { JsonArray } from '@backstage/types';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import BookmarkBorderTwoTone from '@material-ui/icons/BookmarkBorderTwoTone';
-import BookmarkTwoTone from '@material-ui/icons/BookmarkTwoTone';
 import { Tags } from './components/Tags';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -37,12 +39,12 @@ const ActionIcon = (props: { entity: Entity }) => {
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const isStarred = isStarredEntity(entity);
   return (
-    <IconButton size="small" onClick={() => toggleStarredEntity(entity)}>
-      {isStarred ? (
-        <BookmarkTwoTone color="primary" />
-      ) : (
-        <BookmarkBorderTwoTone />
-      )}
+    <IconButton
+      size="small"
+      style={isStarred ? { color: '#F3BA37' } : {}}
+      onClick={() => toggleStarredEntity(entity)}
+    >
+      {isStarred ? <AppIcon id="star" /> : <AppIcon id="unstarred" />}
     </IconButton>
   );
 };
@@ -76,8 +78,8 @@ export const columnFactories = Object.freeze({
       field: 'entity.metadata.title',
       hidden: options?.hidden,
       searchable: true,
-      hiddenByColumnsButton:true,
-      export:true
+      hiddenByColumnsButton: true,
+      export: true,
     };
   },
 
