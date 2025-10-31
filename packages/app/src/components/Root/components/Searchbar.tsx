@@ -129,7 +129,7 @@ const SearchBar = () => {
                 background: 'rgba(0,0,0,0.04)',
               }}
             >
-              Enter ⏎
+              Space + Enter
             </kbd>{' '}
             to{' '}
             <Link
@@ -181,7 +181,7 @@ const SearchBar = () => {
               paddingBlock: '12px',
             },
           }}
-          InputProps={{ 
+          InputProps={{
             ref: params.InputProps.ref,
             classes: { root: classes.root },
             startAdornment: (
