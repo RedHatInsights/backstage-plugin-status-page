@@ -306,7 +306,7 @@ export const UpdateIncident = () => {
                       onChange={e => {
                         const newStatus = e.target.value as string;
                         setStatus(newStatus);
-                        if(newStatus === 'resolved') {
+                        if(['resolved', 'completed'].includes(newStatus)) {
                           const newComponentStatus: ComponentStatusMap = {};
                           selectedComponents.forEach(componentId => {
                             newComponentStatus[componentId] = 'operational';
