@@ -11,6 +11,18 @@
   flex-grow: 1;
 }
 
+/* Fix for soundcheck page as main element is nested under div */
+#rhdh-sidebar-layout > div.MuiBox-root > div.MuiBox-root > main {
+  /* clip-path clips the scrollbar properly in Chrome compared to
+  border-radius. 1rem is the hardcoded border-radius of the page content. */
+  clip-path: rect(0 100% 100% 0 round 1rem);
+
+  /* Emulate the PatternFly 6 page inset using a margin */
+  margin: 0 1.5rem 1.5rem 0;
+  /* Prevent overflow in the main container due to the margin */
+  max-height: calc(100vh - 3.65 * 1.5rem);
+}
+
 /* This will patch width of content when docsbot panel is expanded */
 body.assistant-open #rhdh-sidebar-layout main {
   width: calc(100% - var(--assistant-panel-width, 0) - 2rem);
