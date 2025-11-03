@@ -3,6 +3,10 @@ import {
   entityKindSchemaValidator,
   KindValidator,
 } from '@backstage/catalog-model';
+import {
+  Datasource,
+  DatasourceEntity,
+} from '@compass/backstage-plugin-datasource-common';
 
 export function ajvCompiledJsonSchemaValidator(schema: unknown): KindValidator {
   let validator: undefined | ((data: unknown) => any);
@@ -21,3 +25,36 @@ export const isAiDatasourceEntity = (entity: Entity) =>
   entity.apiVersion === 'resource/v1alpha1' &&
   entity.metadata.annotations &&
   entity.metadata.annotations['compass.redhat.com/ai-related'] === 'true';
+
+export const mapDatasourceToResourceEntity = (
+  data: Datasource,
+): DatasourceEntity => {
+  return {
+    apiVersion: 'resource/v1alpha1',
+    kind: 'Resource',
+    metadata: {
+      name: data.name,
+      title: data.title,
+      description: data.description,
+      namespace: data.namespace,
+      annotations: {
+        'compass.redhat.com/ai-related': data.aiRelated,
+      },
+      datasourceId: data.id,
+    },
+    spec: {
+      classification: data.classification,
+      existsIn: data.existsIn.map(e => ({
+        ...e,
+      })),
+      location: data.location,
+      owner: data.owner,
+      steward: data.steward,
+      type: data.type,
+      usage: data.usage,
+      dependencyOf: data.dependencyOf,
+      dependsOn: data.dependsOn,
+      ...(data.system ? { system: data.system } : {}),
+    },
+  };
+};

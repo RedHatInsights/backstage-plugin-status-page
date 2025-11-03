@@ -1,0 +1,295 @@
+openapi: 3.0.3
+info:
+  title: datasource
+  version: 1.0.0
+  description: API for managing datasources with classification and metadata
+
+servers:
+  - url: http://localhost:7007/api/datasource/
+    description: Local Server
+
+# security:
+#   - BearerAuth: []s
+
+paths:
+  /:
+    get:
+      summary: List all datasources
+      operationId: listDatasources
+      responses:
+        200:
+          description: A list of datasources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Datasource'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReqError'
+
+    post:
+      summary: Create a new datasource
+      operationId: addDatasource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDatasource'
+      responses:
+        201:
+          description: Datasource created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Datasource'
+        400:
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReqError'
+        500:
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReqError'
+
+  /{namespace}/{name}:
+    get:
+      summary: Get a datasource by ID
+      operationId: getDatasource
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Datasource found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Datasource'
+        '404':
+          description: Datasource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReqError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReqError'
+
+    put:
+      summary: Update an existing datasource
+      operationId: updateDatasource
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDatasource'
+      responses:
+        '200':
+          description: Datasource updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Datasource'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReqError'
+        '404':
+          description: Datasource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReqError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReqError'
+
+    delete:
+      summary: Delete a datasource
+      operationId: deleteDatasource
+      parameters:
+        - name: namespace
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Datasource deleted successfully
+        '404':
+          description: Datasource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReqError'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReqError'
+
+components:
+  # securitySchemes:
+  #   BearerAuth:
+  #     type: http
+  #     scheme: bearer
+
+  schemas:
+    RhDataClassifications:
+      type: string
+      enum:
+        - RH-Public
+        - RH-Internal
+        - RH-Restricted
+        - RH-Restricted(+PII)
+
+    DataStoreNames:
+      type: string
+      enum:
+        - GraphQL
+        - XE S3 Bucket
+        - Starburst
+        - Dataverse
+        - Data Warehouse
+
+    ExistsIn:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          $ref: '#/components/schemas/DataStoreNames'
+        description:
+          type: string
+
+    CreateDatasource:
+      type: object
+      required:
+        - name
+        - title
+        - namespace
+        - aiRelated
+        - owner
+        - steward
+        - usage
+        - location
+        - classification
+        - existsIn
+        - type
+      properties:
+        name:
+          type: string
+        title:
+          type: string
+        namespace:
+          type: string
+        description:
+          type: string
+        aiRelated:
+          type: string
+          enum:
+            - 'true'
+            - 'false'
+        owner:
+          type: string
+        steward:
+          type: string
+        type:
+          type: string
+        usage:
+          type: string
+        location:
+          type: string
+        classification:
+          $ref: '#/components/schemas/RhDataClassifications'
+        existsIn:
+          type: 'array'
+          items:
+            type: string
+            $ref: '#/components/schemas/ExistsIn'
+        system:
+          type: string
+        dependencyOf:
+          type: array
+          items:
+            type: string
+        dependsOn:
+          type: array
+          items:
+            type: string
+
+    Datasource:
+      allOf:
+        - $ref: '#/components/schemas/CreateDatasource'
+        - type: object
+          required:
+            - id
+            - createdAt
+            - createdBy
+            - updatedAt
+            - updatedBy
+          properties:
+            id:
+              type: string
+            createdAt:
+              type: string
+            createdBy:
+              type: string
+            updatedAt:
+              type: string
+            updatedBy:
+              type: string
+
+    ReqError:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+        stack:
+          type: string

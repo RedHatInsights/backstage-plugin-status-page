@@ -165,7 +165,15 @@ backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@compass/backstage-plugin-assistant-backend'));
 
 /* GitLab custom scaffolder actions Backend */
-backend.add(import('@compass/backstage-plugin-scaffolder-backend-module-gitlab'));
+backend.add(
+  import('@compass/backstage-plugin-scaffolder-backend-module-gitlab'),
+);
 
+/** Datasoure backend plugin */
+backend.add(import('@compass/backstage-plugin-datasource-backend'));
 
+/** Datasource scaffolder module with custom actions */
+backend.add(
+  import('@compass/backstage-plugin-scaffolder-backend-module-datasource'),
+);
 backend.start();

@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
-import { styled, Theme } from '@mui/material/styles';
-import { ThemeConfig } from '@red-hat-developer-hub/backstage-plugin-theme';
+import { styled } from '@mui/material/styles';
 
 /** This component is copy pasted from RHDH and should be kept in sync. */
 export const SidebarLayout = styled(Box, {
@@ -10,10 +9,9 @@ export const SidebarLayout = styled(Box, {
     prop !== 'aboveSidebarHeaderHeight' &&
     prop !== 'aboveMainContentHeaderHeight',
 })<{
-  theme?: Theme & ThemeConfig;
   aboveSidebarHeaderHeight?: number;
   aboveMainContentHeaderHeight?: number;
-}>(({ theme, aboveSidebarHeaderHeight, aboveMainContentHeaderHeight }) => ({
+}>(({ aboveSidebarHeaderHeight, aboveMainContentHeaderHeight }) => ({
   // We remove Backstage's 100vh on the content, and instead rely on flexbox
   // to take up the whole viewport.
   display: 'flex',
@@ -33,22 +31,6 @@ export const SidebarLayout = styled(Box, {
         height: 'unset',
         flexGrow: 1,
       },
-    },
-
-    // Fix for soundcheck page as main element is nested under div
-    '& > div.MuiBox-root > main': {
-      
-      // clip-path clips the scrollbar properly in Chrome compared to
-      // border-radius. 1rem is the hardcoded border-radius of the page content.
-      clipPath: 'rect(0 100% 100% 0 round 1rem)',
-
-      // Emulate the PatternFly 6 page inset using a margin
-      margin: theme.palette.rhdh?.general.pageInset,
-      marginLeft: '0 !important',
-      marginTop: '0 !important',
-
-      // Prevent overflow in the main container due to the margin
-      maxHeight: `calc(100vh - 3.65 * ${theme.palette.rhdh?.general.pageInset})`,
     },
   },
 

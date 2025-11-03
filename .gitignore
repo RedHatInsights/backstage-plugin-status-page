@@ -66,6 +66,7 @@ site
 
 # Local sqlite db files
 *.sqlite
+*.sqlite3
  
 # Cache
 .cache/

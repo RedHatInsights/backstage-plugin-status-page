@@ -345,7 +345,7 @@ catalog:
     - type: file
       target: ../../examples/test-data/redirects-plugin.yaml
 
-    # Local example redirection target component
+    # Local example permission target component
     - type: file
       target: ../../examples/test-data/permission-plugin.yaml
       rules:
@@ -356,6 +356,12 @@ catalog:
       target: ../../examples/test-data/datasource-plugin.yaml
       rules:
         - allow: [Resource]
+
+    # Local example datasource target component
+    - type: file
+      target: ../../examples/test-data/datasource-template.yaml
+      rules:
+        - allow: [Template]
 
     ## Uncomment these lines to add more example data
     # - type: url
