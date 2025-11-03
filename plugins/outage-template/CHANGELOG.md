@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.13.0
+
+### Minor Changes
+
+- 713ce6b: Resolving maintainince too changes the component status to operational.
+
 ## 1.12.0
 
 ### Minor Changes
