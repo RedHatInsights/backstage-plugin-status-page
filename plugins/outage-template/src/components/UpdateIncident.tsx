@@ -303,7 +303,17 @@ export const UpdateIncident = () => {
                     </InputLabel>
                     <Select
                       value={status}
-                      onChange={e => setStatus(e.target.value as string)}
+                      onChange={e => {
+                        const newStatus = e.target.value as string;
+                        setStatus(newStatus);
+                        if(newStatus === 'resolved') {
+                          const newComponentStatus: ComponentStatusMap = {};
+                          selectedComponents.forEach(componentId => {
+                            newComponentStatus[componentId] = 'operational';
+                            });
+                            setComponentStatus(newComponentStatus);
+                          }
+                        }}
                     >
                       {scheduledFor
                         ? [
