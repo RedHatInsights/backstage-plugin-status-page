@@ -195,7 +195,7 @@ export class StatuspageApi {
     }
   }
 
-  async updateIncident(incidentId: string, updatedData: UpdateIncidentProps) {
+  async updateIncident(incidentId: string, updatedData: StatusPageIncident) {
     try {
       const baseUrl = await this.getBaseUrl();
       const response = await this.fetchApi.fetch(
