@@ -1,10 +1,12 @@
 import {
   coreServices,
-  createBackendModule
+  createBackendModule,
 } from '@backstage/backend-plugin-api';
 import {
-  catalogProcessingExtensionPoint
+  catalogLocationsExtensionPoint,
+  catalogProcessingExtensionPoint,
 } from '@backstage/plugin-catalog-node/alpha';
+import { DatasourceApiClient } from '@compass/backstage-plugin-datasource-common';
 import { DatasourceEntityProcessor } from './DatasourceEntityProcessor';
 
 export const catalogModuleDatasource = createBackendModule({
@@ -13,12 +15,27 @@ export const catalogModuleDatasource = createBackendModule({
   register(reg) {
     reg.registerInit({
       deps: {
+        discoveryApi: coreServices.discovery,
+        auth: coreServices.auth,
         logger: coreServices.logger,
         catalogProcessor: catalogProcessingExtensionPoint,
+        locationProcessor: catalogLocationsExtensionPoint,
       },
-      async init({ logger, catalogProcessor }) {
+      async init({
+        discoveryApi,
+        auth,
+        logger,
+        catalogProcessor,
+        locationProcessor,
+      }) {
         logger.info('Datasource entity processor module is loaded');
-        catalogProcessor.addProcessor(new DatasourceEntityProcessor(logger));
+
+        const datasourceClient = new DatasourceApiClient({ discoveryApi });
+
+        locationProcessor.setAllowedLocationTypes(['datasource']);
+        catalogProcessor.addProcessor(
+          new DatasourceEntityProcessor(logger, datasourceClient, auth),
+        );
       },
     });
   },

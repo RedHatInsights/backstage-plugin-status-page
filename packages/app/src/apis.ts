@@ -1,23 +1,23 @@
-import {
-  ScmIntegrationsApi,
-  scmIntegrationsApiRef,
-  ScmAuth,
-} from '@backstage/integration-react';
+import { MatomoAnalytics } from '@backstage-community/plugin-analytics-module-matomo';
 import {
   analyticsApiRef,
   AnyApiFactory,
   configApiRef,
   createApiFactory,
 } from '@backstage/core-plugin-api';
-import { MatomoAnalytics } from '@backstage-community/plugin-analytics-module-matomo';
+import {
+  ScmAuth,
+  ScmIntegrationsApi,
+  scmIntegrationsApiRef,
+} from '@backstage/integration-react';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import {
-  entityPresentationApiRef,
   catalogApiRef,
+  entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
-import GroupWorkIcon from '@material-ui/icons/GroupWork';
-import AdbIcon from '@material-ui/icons/Adb';
 import { signalsPlugin } from '@backstage/plugin-signals';
+import AdbIcon from '@material-ui/icons/Adb';
+import GroupWorkIcon from '@material-ui/icons/GroupWork';
 
 export const apis: AnyApiFactory[] = [
   createApiFactory({
@@ -42,5 +42,5 @@ export const apis: AnyApiFactory[] = [
       });
     },
   }),
-  ...signalsPlugin.getApis()
+  ...signalsPlugin.getApis(),
 ];

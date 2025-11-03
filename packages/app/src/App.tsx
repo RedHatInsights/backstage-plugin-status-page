@@ -75,11 +75,16 @@ import {
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { RequirePermission } from '@backstage/plugin-permission-react';
+import { ScaffolderFieldExtensions } from '@backstage/plugin-scaffolder-react';
 import { SignalsDisplay } from '@backstage/plugin-signals';
 import {
   AssistantProvider,
   featureFlags as assistantFeatureFlags,
 } from '@compass/backstage-plugin-assistant';
+import {
+  EntityFacetPickerFieldExtension,
+  datasourcePlugin,
+} from '@compass/backstage-plugin-datasource';
 import {
   DockerIcon,
   MCPServerIcon,
@@ -160,6 +165,7 @@ const app = createApp({
     create: CreateComponentIcon,
   },
   themes: getThemes(),
+  plugins: [datasourcePlugin],
 });
 
 const routes = (
@@ -183,7 +189,11 @@ const routes = (
         <ReportIssue />
       </TechDocsAddons>
     </Route>
-    <Route path="/create" element={<ScaffolderPage />} />
+    <Route path="/create" element={<ScaffolderPage />}>
+      <ScaffolderFieldExtensions>
+        <EntityFacetPickerFieldExtension />
+      </ScaffolderFieldExtensions>
+    </Route>
     <Route path="/api-docs" element={<ApiExplorerPage />} />
     <Route
       path="/tech-radar"
@@ -281,7 +291,10 @@ const routes = (
       path="/workstream"
       element={<Navigate to="/catalog?filter[kind]=Workstream" />}
     />
-    <Route path="/entity-validator" element={<EntityValidationPage  hideFileLocationField />} />
+    <Route
+      path="/entity-validator"
+      element={<EntityValidationPage hideFileLocationField />}
+    />
     <Route path="/dora-metrics" element={<DoraMetricsPage />} />
   </FlatRoutes>
 );

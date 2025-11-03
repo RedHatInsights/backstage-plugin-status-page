@@ -1,0 +1,219 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: datasource-template
+  title: Create a Datasource Entity
+  description: >
+    Create a new Resource entity with data classification and location details.
+  tags:
+    - resource
+    - data
+spec:
+  owner: user:default/admin
+  type: service
+
+  parameters:
+    - title: Basic Information
+      description: |
+        ## Catalog Metadata
+
+        Standard metadata fields required for catalog
+
+      required:
+        - title
+        - description
+        - namespace
+      errorMessage:
+        properties:
+          name: 'Lower case alphanumeric tokens (first starts with letter) delimited by - (hyphen)'
+      ui:order:
+        - title
+        - inferName
+        - name
+        - description
+        - namespace
+        - aiRelated
+        - system
+        - dependencyOf
+      dependencies:
+        inferName:
+          allOf:
+            - if:
+                properties:
+                  inferName:
+                    const: false
+              then:
+                properties:
+                  name:
+                    type: string
+                    title: Datasource ID
+                    description: 'Optional: Unique common name for your MCP server (Leave blank to auto-generate from the title)'
+                    pattern: '^([a-z][a-z0-9]*)(-[a-z0-9]+)*$'
+                    minLength: 3
+      properties:
+        title:
+          type: string
+          title: Title
+          description: Human-friendly title of the datasource
+          minLength: 3
+        inferName:
+          title: Auto-generate an ID from title
+          type: boolean
+          ui:field: checkbox
+          default: true
+        description:
+          title: Description
+          type: string
+          ui:widget: textarea
+          ui:options:
+            rows: 4
+          ui:description: 'Hint: What does it contains'
+          minLength: 3
+        namespace:
+          title: Namespace
+          type: string
+          ui:field: EntityFacetPicker
+          description: 'Hint: Select from list or write your own'
+          ui:options:
+            facet: metadata.namespace
+        aiRelated:
+          title: Is AI Related?
+          type: boolean
+          default: false
+          ui:description: Ai annotation
+        system:
+          title: System
+          type: string
+          ui:field: EntityPicker
+          ui:options:
+            catalogFilter:
+              kind: system
+        dependencyOf:
+          title: Dependency Of
+          type: array
+          items:
+            type: string
+          ui:field: MultiEntityPicker
+          ui:options:
+            catalogFilter:
+              kind: component
+
+    - title: Resource Information
+      required:
+        - steward
+        - usage
+        - location
+        - classification
+        - owner
+        - type
+      properties:
+        owner:
+          title: Owner
+          type: string
+          description: Owner of the data
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: [User]
+        steward:
+          title: Steward
+          type: string
+          description: Person or team responsible for this resource
+          ui:field: OwnerPicker
+          ui:options:
+            catalogFilter:
+              kind: [User]
+        type:
+          title: Type
+          type: string
+          ui:field: EntityFacetPicker
+          description: 'Hint: Select from list or write your own'
+          ui:options:
+            facet: spec.type
+            kinds:
+              - Resource
+        usage:
+          title: Usage
+          type: string
+          description: What is this resource used for?
+        location:
+          title: Location
+          type: string
+          description: Location of this resource (e.g., AWS region, data center)
+        classification:
+          title: Data Classification
+          type: string
+          enum:
+            - RH-Public
+            - RH-Internal
+            - RH-Restricted
+            - RH-Restricted(+PII)
+          description: Select the data classification level
+
+    - title: Where this resource exists
+      description: Add one or more systems/platforms where this resource exists.
+      properties:
+        existsIn:
+          title: Exists In
+          type: array
+          items:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                title: System Name
+                type: string
+                enum:
+                  - GraphQL
+                  - XE S3 Bucket
+                  - Starburst
+                  - Dataverse
+                  - Data Warehouse
+                description: Name of the system/platform
+              description:
+                title: Description
+                type: string
+                description: Brief description
+          ui:options:
+            addable: true
+            orderable: true
+            removable: true
+  steps:
+    - id: validate
+      name: Validate Inputs
+      action: datasource:validate
+      input:
+        name: ${{ parameters.name if parameters.name else parameters.title | kebabCase }}
+        title: ${{ parameters.title }}
+        namespace: ${{ parameters.namespace | kebabCase }}
+
+    - id: create
+      name: Create & Register Datasource
+      if: ${{ steps['validate'].output.valid }}
+      action: datasource:create
+      input:
+        name: ${{ parameters.name if parameters.name else parameters.title | kebabCase }}
+        title: ${{ parameters.title }}
+        namespace: ${{ parameters.namespace | kebabCase }}
+        description: ${{ parameters.description }}
+        aiRelated: ${{ "true" if parameters.aiRelated else "false" }}
+        owner: ${{ parameters.owner }}
+        steward: ${{ parameters.steward }}
+        type: ${{ parameters.type | kebabCase }}
+        usage: ${{ parameters.usage }}
+        location: ${{ parameters.location }}
+        classification: ${{ parameters.classification }}
+        existsIn: ${{ parameters.existsIn }}
+        system: ${{ parameters.system }}
+        dependencyOf: ${{ parameters.dependencyOf }}
+        dependsOn: []
+  output:
+    links:
+      - title: Open in catalog
+        icon: catalog
+        entityRef: ${{ steps['create'].output.entityRef }} # link to the entity that has been ingested to the catalog
+    text:
+      - title: More information
+        content: |
+          **Message:** ${{ steps['create'].output.message }}

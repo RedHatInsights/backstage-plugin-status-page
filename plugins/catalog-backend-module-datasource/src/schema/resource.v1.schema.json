@@ -15,10 +15,7 @@
         "annotations": {
           "compass.redhat.com/ai-related": "true"
         },
-        "tags": [
-          "data-source",
-          "analytics"
-        ]
+        "tags": ["data-source", "analytics"]
       },
       "spec": {
         "type": "s3-bucket",
@@ -55,24 +52,15 @@
     },
     {
       "type": "object",
-      "required": [
-        "kind",
-        "apiVersion",
-        "metadata",
-        "spec"
-      ],
+      "required": ["kind", "apiVersion", "metadata", "spec"],
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "Resource"
-          ]
+          "enum": ["Resource"]
         },
         "apiVersion": {
           "type": "string",
-          "enum": [
-            "resource/v1alpha1"
-          ]
+          "enum": ["resource/v1alpha1"]
         },
         "metadata": {
           "allOf": [
@@ -84,17 +72,18 @@
               "properties": {
                 "description": {
                   "type": "string",
-                  "description": "mapped from DataContent: What fields/columns does the data contain (e.g., name, email, sales_amount)? What's the volume or format (e.g., JSON, CSV, relational table)? (ex. Fields: name, email, orders; 100K rows in CSV format)"
+                  "description": "What fields/columns does the data contain (e.g., name, email, sales_amount)? What's the volume or format (e.g., JSON, CSV, relational table)? (ex. Fields: name, email, orders; 100K rows in CSV format)"
+                },
+                "datasourceId": {
+                  "type": "string",
+                  "description": "Unique id for datasource entity"
                 },
                 "annotations": {
                   "type": "object",
                   "properties": {
                     "compass.redhat.com/ai-related": {
                       "type": "string",
-                      "enum": [
-                        "true",
-                        "false"
-                      ],
+                      "enum": ["true", "false"],
                       "description": "Whether this datasource is AI related"
                     }
                   }
@@ -106,40 +95,35 @@
         "spec": {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "type",
-            "owner"
-          ],
+          "required": ["type", "owner"],
           "properties": {
             "type": {
               "type": "string",
               "description": "The type of resource.",
-              "examples": [
-                "database",
-                "s3-bucket",
-                "cluster"
-              ],
+              "examples": ["database", "s3-bucket", "cluster"],
               "minLength": 1
             },
             "owner": {
               "type": "string",
               "description": "An entity reference to the owner of the resource.",
-              "examples": [
-                "artist-relations-team",
-                "user:john.johnson"
-              ],
+              "examples": ["artist-relations-team", "user:john.johnson"],
               "minLength": 1
             },
             "steward": {
               "type": "string",
               "description": "An entity reference to the owner of the resource.",
-              "examples": [
-                "artist-relations-team",
-                "user:john.johnson"
-              ],
+              "examples": ["artist-relations-team", "user:john.johnson"],
               "minLength": 1
             },
             "dependencyOf": {
+              "type": "array",
+              "description": "An array of references to other entities which depends on the resource.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "dependsOn": {
               "type": "array",
               "description": "An array of references to other entities that the resource depends on to function.",
               "items": {
@@ -176,9 +160,7 @@
               "type": "array",
               "items": {
                 "type": "object",
-                "required": [
-                  "name"
-                ],
+                "required": ["name"],
                 "properties": {
                   "name": {
                     "type": "string",
