@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1
+
+### Patch Changes
+
+- 5b5e498: fix: re-release with yarn
+
 ## 1.1.0
 
 ### Minor Changes

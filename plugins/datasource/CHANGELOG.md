@@ -1,5 +1,11 @@
 # @compass/backstage-plugin-datasource
 
+## 1.0.1
+
+### Patch Changes
+
+- 5b5e498: fix: re-release with yarn
+
 ## 1.0.0
 
 ### Major Changes

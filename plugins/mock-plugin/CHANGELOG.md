@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.1
+
+### Patch Changes
+
+- 5b5e498: chore: add a workspace dependency and test release with yarn npm publish
+
 ## 1.6.0
 
 ### Minor Changes

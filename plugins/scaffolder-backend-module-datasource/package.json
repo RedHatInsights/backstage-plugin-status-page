@@ -1,6 +1,6 @@
 {
   "name": "@compass/backstage-plugin-scaffolder-backend-module-datasource",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "Apache-2.0",
   "description": "The datasource module for @backstage/plugin-scaffolder-backend",
   "main": "src/index.ts",
