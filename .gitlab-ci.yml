@@ -112,7 +112,7 @@ publish_plugins:
     - git config --global --add safe.directory /builds/app-dev-platform/backstage-plugins
     - git config --global user.name "compass-release-automation"
     - git config --global user.email "xe-compass-devs@redhat.com"
-    - git remote set-url origin https://release-bot:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}
+    - git remote set-url origin https://release-bot:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
     - git checkout $CI_DEFAULT_BRANCH
     - npm i -g corepack
     - corepack enable
