@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.22.5
+
+### Patch Changes
+
+- 7c3aad9: add workspace ranges for dependencies
+
 ## 1.22.4
 
 ### Patch Changes
