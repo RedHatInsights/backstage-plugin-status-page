@@ -118,7 +118,7 @@ publish_plugins:
     - corepack enable
     - corepack prepare yarn@4.6.0 --activate
   script:
-    - node ./scripts/publish-with-yarn.js || exit 1
+    - node ./scripts/publish-with-yarn.cjs || exit 1
     - git push origin $CI_DEFAULT_BRANCH --follow-tags
 
 .mpp_build:

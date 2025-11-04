@@ -1,7 +1,7 @@
 #!/usr/bin/node
 
-import { execSync } from 'node:child_process';
-import fs from 'fs';
+const { execSync } = require('node:child_process');
+const fs = require('fs');
 
 function run(cmd) {
   return execSync(cmd, { encoding: 'utf8' }).trim();
@@ -20,7 +20,8 @@ if (!releases.length) {
 
 console.log('📦 Packages to publish:');
 for (const r of releases) {
-  console.log(` - ${r.name}@${r.newVersion}`);
+  if (r.oldVersion !== r.newVersion)
+    console.log(` - ${r.name}@${r.newVersion}`);
 }
 
 console.log('🧩 Running changeset version...');
@@ -40,6 +41,7 @@ for (const r of releases) {
       console.log(`🏷️ Created tag ${tag}`);
     } catch (err) {
       console.error(`❌ Failed to publish ${r.name}:`, err.message);
+      process.exit(1);
     }
   }
 }
