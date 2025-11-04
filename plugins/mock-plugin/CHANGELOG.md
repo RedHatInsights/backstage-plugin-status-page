@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.6.2
+
+### Patch Changes
+
+- 0a9bc14: test release with updated yarnrc
+
 ## 1.6.1
 
 ### Patch Changes
