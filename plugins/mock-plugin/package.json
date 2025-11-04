@@ -31,6 +31,7 @@
     "@backstage/core-components": "^0.17.5",
     "@backstage/core-plugin-api": "^1.10.9",
     "@backstage/theme": "^0.6.8",
+    "@compass/backstage-plugin-datasource-common": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",

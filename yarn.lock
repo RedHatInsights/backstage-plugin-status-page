@@ -461,7 +461,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@appdev/backstage-plugin-audit-compliance-backend@npm:*, @appdev/backstage-plugin-audit-compliance-backend@workspace:plugins/audit-compliance-backend":
+"@appdev/backstage-plugin-audit-compliance-backend@workspace:^, @appdev/backstage-plugin-audit-compliance-backend@workspace:plugins/audit-compliance-backend":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-audit-compliance-backend@workspace:plugins/audit-compliance-backend"
   dependencies:
@@ -492,7 +492,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev/backstage-plugin-audit-compliance@npm:*, @appdev/backstage-plugin-audit-compliance@workspace:plugins/audit-compliance":
+"@appdev/backstage-plugin-audit-compliance@workspace:^, @appdev/backstage-plugin-audit-compliance@workspace:plugins/audit-compliance":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-audit-compliance@workspace:plugins/audit-compliance"
   dependencies:
@@ -527,7 +527,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev/backstage-plugin-compliance@npm:*, @appdev/backstage-plugin-compliance@workspace:plugins/compliance":
+"@appdev/backstage-plugin-compliance@workspace:^, @appdev/backstage-plugin-compliance@workspace:plugins/compliance":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-compliance@workspace:plugins/compliance"
   dependencies:
@@ -552,7 +552,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev/backstage-plugin-devex-dashboard@npm:*, @appdev/backstage-plugin-devex-dashboard@workspace:plugins/devex-dashboard":
+"@appdev/backstage-plugin-devex-dashboard@workspace:^, @appdev/backstage-plugin-devex-dashboard@workspace:plugins/devex-dashboard":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-devex-dashboard@workspace:plugins/devex-dashboard"
   dependencies:
@@ -578,7 +578,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev/backstage-plugin-devex-data-layer-backend@npm:*, @appdev/backstage-plugin-devex-data-layer-backend@workspace:plugins/devex-data-layer-backend":
+"@appdev/backstage-plugin-devex-data-layer-backend@workspace:^, @appdev/backstage-plugin-devex-data-layer-backend@workspace:plugins/devex-data-layer-backend":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-devex-data-layer-backend@workspace:plugins/devex-data-layer-backend"
   dependencies:
@@ -599,7 +599,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev/backstage-plugin-docsbot@npm:*, @appdev/backstage-plugin-docsbot@workspace:plugins/docsbot":
+"@appdev/backstage-plugin-docsbot@workspace:^, @appdev/backstage-plugin-docsbot@workspace:plugins/docsbot":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-docsbot@workspace:plugins/docsbot"
   dependencies:
@@ -626,7 +626,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev/backstage-plugin-dora-metrics@npm:*, @appdev/backstage-plugin-dora-metrics@workspace:plugins/dora-metrics":
+"@appdev/backstage-plugin-dora-metrics@workspace:^, @appdev/backstage-plugin-dora-metrics@workspace:plugins/dora-metrics":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-dora-metrics@workspace:plugins/dora-metrics"
   dependencies:
@@ -652,7 +652,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev/backstage-plugin-ess@npm:*, @appdev/backstage-plugin-ess@workspace:plugins/ess":
+"@appdev/backstage-plugin-ess@workspace:^, @appdev/backstage-plugin-ess@workspace:plugins/ess":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-ess@workspace:plugins/ess"
   dependencies:
@@ -681,7 +681,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev/backstage-plugin-gdpr-backend@npm:*, @appdev/backstage-plugin-gdpr-backend@workspace:plugins/gdpr-backend":
+"@appdev/backstage-plugin-gdpr-backend@workspace:^, @appdev/backstage-plugin-gdpr-backend@workspace:plugins/gdpr-backend":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-gdpr-backend@workspace:plugins/gdpr-backend"
   dependencies:
@@ -702,7 +702,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev/backstage-plugin-gdpr@npm:*, @appdev/backstage-plugin-gdpr@workspace:plugins/gdpr":
+"@appdev/backstage-plugin-gdpr@workspace:^, @appdev/backstage-plugin-gdpr@workspace:plugins/gdpr":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-gdpr@workspace:plugins/gdpr"
   dependencies:
@@ -731,7 +731,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev/backstage-plugin-hydra-support-dashboard@npm:*, @appdev/backstage-plugin-hydra-support-dashboard@workspace:plugins/hydra-support-dashboard":
+"@appdev/backstage-plugin-hydra-support-dashboard@workspace:^, @appdev/backstage-plugin-hydra-support-dashboard@workspace:plugins/hydra-support-dashboard":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-hydra-support-dashboard@workspace:plugins/hydra-support-dashboard"
   dependencies:
@@ -760,7 +760,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev/backstage-plugin-outage-template-backend@npm:*, @appdev/backstage-plugin-outage-template-backend@workspace:plugins/outage-template-backend":
+"@appdev/backstage-plugin-outage-template-backend@workspace:^, @appdev/backstage-plugin-outage-template-backend@workspace:plugins/outage-template-backend":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-outage-template-backend@workspace:plugins/outage-template-backend"
   dependencies:
@@ -782,7 +782,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev/backstage-plugin-outages@npm:*, @appdev/backstage-plugin-outages@workspace:plugins/outage-template":
+"@appdev/backstage-plugin-outages@workspace:^, @appdev/backstage-plugin-outages@workspace:plugins/outage-template":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-outages@workspace:plugins/outage-template"
   dependencies:
@@ -808,7 +808,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev/backstage-plugin-permission-management-backend@npm:*, @appdev/backstage-plugin-permission-management-backend@workspace:plugins/permission-management-backend":
+"@appdev/backstage-plugin-permission-management-backend@workspace:^, @appdev/backstage-plugin-permission-management-backend@workspace:plugins/permission-management-backend":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-permission-management-backend@workspace:plugins/permission-management-backend"
   dependencies:
@@ -832,7 +832,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev/backstage-plugin-permission-management@npm:*, @appdev/backstage-plugin-permission-management@workspace:plugins/permission-management":
+"@appdev/backstage-plugin-permission-management@workspace:^, @appdev/backstage-plugin-permission-management@workspace:plugins/permission-management":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-permission-management@workspace:plugins/permission-management"
   dependencies:
@@ -859,7 +859,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev/backstage-plugin-proxy-manager@npm:*, @appdev/backstage-plugin-proxy-manager@workspace:plugins/proxy-manager":
+"@appdev/backstage-plugin-proxy-manager@workspace:^, @appdev/backstage-plugin-proxy-manager@workspace:plugins/proxy-manager":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-proxy-manager@workspace:plugins/proxy-manager"
   dependencies:
@@ -889,7 +889,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@appdev/backstage-plugin-spaship@npm:*, @appdev/backstage-plugin-spaship@workspace:plugins/spaship":
+"@appdev/backstage-plugin-spaship@workspace:^, @appdev/backstage-plugin-spaship@workspace:plugins/spaship":
   version: 0.0.0-use.local
   resolution: "@appdev/backstage-plugin-spaship@workspace:plugins/spaship"
   dependencies:
@@ -7849,7 +7849,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@compass/backstage-plugin-ai-expressway@npm:*, @compass/backstage-plugin-ai-expressway@workspace:plugins/ai-expressway":
+"@compass/backstage-plugin-ai-expressway@workspace:^, @compass/backstage-plugin-ai-expressway@workspace:plugins/ai-expressway":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-ai-expressway@workspace:plugins/ai-expressway"
   dependencies:
@@ -7876,7 +7876,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-assistant-backend@npm:^0.1.0-alpha.2, @compass/backstage-plugin-assistant-backend@workspace:plugins/assistant-backend":
+"@compass/backstage-plugin-assistant-backend@workspace:^, @compass/backstage-plugin-assistant-backend@workspace:plugins/assistant-backend":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-assistant-backend@workspace:plugins/assistant-backend"
   dependencies:
@@ -7908,7 +7908,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-assistant@npm:^0.1.0-alpha, @compass/backstage-plugin-assistant@workspace:plugins/assistant":
+"@compass/backstage-plugin-assistant@workspace:^, @compass/backstage-plugin-assistant@workspace:plugins/assistant":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-assistant@workspace:plugins/assistant"
   dependencies:
@@ -7950,7 +7950,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-catalog-backend-module-cmdb@npm:*, @compass/backstage-plugin-catalog-backend-module-cmdb@workspace:plugins/catalog-backend-module-cmdb":
+"@compass/backstage-plugin-catalog-backend-module-cmdb@workspace:^, @compass/backstage-plugin-catalog-backend-module-cmdb@workspace:plugins/catalog-backend-module-cmdb":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-catalog-backend-module-cmdb@workspace:plugins/catalog-backend-module-cmdb"
   dependencies:
@@ -7973,7 +7973,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-catalog-backend-module-datasource@npm:*, @compass/backstage-plugin-catalog-backend-module-datasource@workspace:plugins/catalog-backend-module-datasource":
+"@compass/backstage-plugin-catalog-backend-module-datasource@workspace:^, @compass/backstage-plugin-catalog-backend-module-datasource@workspace:plugins/catalog-backend-module-datasource":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-catalog-backend-module-datasource@workspace:plugins/catalog-backend-module-datasource"
   dependencies:
@@ -7987,7 +7987,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-catalog-backend-module-enrichment@npm:*, @compass/backstage-plugin-catalog-backend-module-enrichment@workspace:plugins/catalog-backend-module-enrichment":
+"@compass/backstage-plugin-catalog-backend-module-enrichment@workspace:^, @compass/backstage-plugin-catalog-backend-module-enrichment@workspace:plugins/catalog-backend-module-enrichment":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-catalog-backend-module-enrichment@workspace:plugins/catalog-backend-module-enrichment"
   dependencies:
@@ -8002,7 +8002,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-catalog-backend-module-mcp@npm:*, @compass/backstage-plugin-catalog-backend-module-mcp@workspace:plugins/catalog-backend-module-mcp":
+"@compass/backstage-plugin-catalog-backend-module-mcp@workspace:^, @compass/backstage-plugin-catalog-backend-module-mcp@workspace:plugins/catalog-backend-module-mcp":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-catalog-backend-module-mcp@workspace:plugins/catalog-backend-module-mcp"
   dependencies:
@@ -8021,7 +8021,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-catalog-backend-module-spaship@npm:*, @compass/backstage-plugin-catalog-backend-module-spaship@workspace:plugins/catalog-backend-module-spaship":
+"@compass/backstage-plugin-catalog-backend-module-spaship@workspace:^, @compass/backstage-plugin-catalog-backend-module-spaship@workspace:plugins/catalog-backend-module-spaship":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-catalog-backend-module-spaship@workspace:plugins/catalog-backend-module-spaship"
   dependencies:
@@ -8041,7 +8041,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-catalog-index@npm:*, @compass/backstage-plugin-catalog-index@workspace:plugins/catalog-index":
+"@compass/backstage-plugin-catalog-index@workspace:^, @compass/backstage-plugin-catalog-index@workspace:plugins/catalog-index":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-catalog-index@workspace:plugins/catalog-index"
   dependencies:
@@ -8075,7 +8075,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-cmdb@npm:*, @compass/backstage-plugin-cmdb@workspace:plugins/cmdb":
+"@compass/backstage-plugin-cmdb@workspace:^, @compass/backstage-plugin-cmdb@workspace:plugins/cmdb":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-cmdb@workspace:plugins/cmdb"
   dependencies:
@@ -8104,7 +8104,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-contact-details@npm:*, @compass/backstage-plugin-contact-details@workspace:plugins/contact-details":
+"@compass/backstage-plugin-contact-details@workspace:^, @compass/backstage-plugin-contact-details@workspace:plugins/contact-details":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-contact-details@workspace:plugins/contact-details"
   dependencies:
@@ -8132,7 +8132,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-datasource-backend@npm:*, @compass/backstage-plugin-datasource-backend@workspace:plugins/datasource-backend":
+"@compass/backstage-plugin-datasource-backend@workspace:^, @compass/backstage-plugin-datasource-backend@workspace:plugins/datasource-backend":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-datasource-backend@workspace:plugins/datasource-backend"
   dependencies:
@@ -8164,7 +8164,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-datasource-common@npm:*, @compass/backstage-plugin-datasource-common@workspace:^, @compass/backstage-plugin-datasource-common@workspace:plugins/datasource-common":
+"@compass/backstage-plugin-datasource-common@workspace:^, @compass/backstage-plugin-datasource-common@workspace:plugins/datasource-common":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-datasource-common@workspace:plugins/datasource-common"
   dependencies:
@@ -8206,7 +8206,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-lighthouse@npm:*, @compass/backstage-plugin-lighthouse@workspace:plugins/lighthouse":
+"@compass/backstage-plugin-lighthouse@workspace:^, @compass/backstage-plugin-lighthouse@workspace:plugins/lighthouse":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-lighthouse@workspace:plugins/lighthouse"
   dependencies:
@@ -8237,7 +8237,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-mcp-actions-example-backend@npm:*, @compass/backstage-plugin-mcp-actions-example-backend@workspace:plugins/mcp-actions-example-backend":
+"@compass/backstage-plugin-mcp-actions-example-backend@workspace:^, @compass/backstage-plugin-mcp-actions-example-backend@workspace:plugins/mcp-actions-example-backend":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-mcp-actions-example-backend@workspace:plugins/mcp-actions-example-backend"
   dependencies:
@@ -8255,7 +8255,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-mcp@npm:*, @compass/backstage-plugin-mcp@workspace:plugins/mcp":
+"@compass/backstage-plugin-mcp@workspace:^, @compass/backstage-plugin-mcp@workspace:plugins/mcp":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-mcp@workspace:plugins/mcp"
   dependencies:
@@ -8285,7 +8285,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-redirects@npm:*, @compass/backstage-plugin-redirects@workspace:plugins/redirects":
+"@compass/backstage-plugin-redirects@workspace:^, @compass/backstage-plugin-redirects@workspace:plugins/redirects":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-redirects@workspace:plugins/redirects"
   dependencies:
@@ -8316,7 +8316,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-scaffolder-backend-module-custom-filters@npm:*, @compass/backstage-plugin-scaffolder-backend-module-custom-filters@workspace:plugins/scaffolder-backend-module-custom-filters":
+"@compass/backstage-plugin-scaffolder-backend-module-custom-filters@workspace:^, @compass/backstage-plugin-scaffolder-backend-module-custom-filters@workspace:plugins/scaffolder-backend-module-custom-filters":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-scaffolder-backend-module-custom-filters@workspace:plugins/scaffolder-backend-module-custom-filters"
   dependencies:
@@ -8347,7 +8347,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-scaffolder-backend-module-gitlab@npm:*, @compass/backstage-plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab":
+"@compass/backstage-plugin-scaffolder-backend-module-gitlab@workspace:^, @compass/backstage-plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-scaffolder-backend-module-gitlab@workspace:plugins/scaffolder-backend-module-gitlab"
   dependencies:
@@ -8360,7 +8360,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-service-now-common@npm:^1.7.0, @compass/backstage-plugin-service-now-common@workspace:plugins/service-now-common":
+"@compass/backstage-plugin-service-now-common@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "@compass/backstage-plugin-service-now-common@npm:1.7.0"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.4.2"
+    "@backstage/backend-tasks": "npm:^0.6.1"
+    "@backstage/catalog-model": "npm:^1.7.5"
+    "@backstage/config": "npm:^1.3.3"
+    "@backstage/types": "npm:^1.2.1"
+  checksum: 10/2af9ee5c2522f26c1faee0ecbc5fb5eb2c64d289c8ac2daf823402d55f811d30fcb73d813410abba47bbe31769d78dc5c8674ce596d9db9cbc73083af2320f9a
+  languageName: node
+  linkType: hard
+
+"@compass/backstage-plugin-service-now-common@workspace:plugins/service-now-common":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-service-now-common@workspace:plugins/service-now-common"
   dependencies:
@@ -8373,7 +8386,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-soundcheck-backend-module-droperator@npm:*, @compass/backstage-plugin-soundcheck-backend-module-droperator@workspace:plugins/soundcheck-backend-module-droperator":
+"@compass/backstage-plugin-soundcheck-backend-module-droperator@workspace:^, @compass/backstage-plugin-soundcheck-backend-module-droperator@workspace:plugins/soundcheck-backend-module-droperator":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-soundcheck-backend-module-droperator@workspace:plugins/soundcheck-backend-module-droperator"
   dependencies:
@@ -8390,7 +8403,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets@npm:*, @compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets@workspace:plugins/soundcheck-backend-module-google-spreadsheets":
+"@compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets@workspace:^, @compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets@workspace:plugins/soundcheck-backend-module-google-spreadsheets":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets@workspace:plugins/soundcheck-backend-module-google-spreadsheets"
   dependencies:
@@ -8411,7 +8424,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-soundcheck-backend-module-red-hat-core@npm:*, @compass/backstage-plugin-soundcheck-backend-module-red-hat-core@workspace:plugins/soundcheck-backend-module-red-hat-core":
+"@compass/backstage-plugin-soundcheck-backend-module-red-hat-core@workspace:^, @compass/backstage-plugin-soundcheck-backend-module-red-hat-core@workspace:plugins/soundcheck-backend-module-red-hat-core":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-soundcheck-backend-module-red-hat-core@workspace:plugins/soundcheck-backend-module-red-hat-core"
   dependencies:
@@ -8430,7 +8443,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@npm:*, @compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@workspace:plugins/soundcheck-backend-module-red-hat-gitlab":
+"@compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@workspace:^, @compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@workspace:plugins/soundcheck-backend-module-red-hat-gitlab":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab@workspace:plugins/soundcheck-backend-module-red-hat-gitlab"
   dependencies:
@@ -8450,7 +8463,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@npm:*, @compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@workspace:plugins/soundcheck-backend-module-red-hat-servicenow":
+"@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@workspace:^, @compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@workspace:plugins/soundcheck-backend-module-red-hat-servicenow":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow@workspace:plugins/soundcheck-backend-module-red-hat-servicenow"
   dependencies:
@@ -8466,7 +8479,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet@npm:*, @compass/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet@workspace:plugins/soundcheck-backend-module-red-hat-smartsheet":
+"@compass/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet@workspace:^, @compass/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet@workspace:plugins/soundcheck-backend-module-red-hat-smartsheet":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet@workspace:plugins/soundcheck-backend-module-red-hat-smartsheet"
   dependencies:
@@ -8482,7 +8495,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-workstream-automation-backend@npm:*, @compass/backstage-plugin-workstream-automation-backend@workspace:plugins/workstream-automation-backend":
+"@compass/backstage-plugin-workstream-automation-backend@workspace:^, @compass/backstage-plugin-workstream-automation-backend@workspace:plugins/workstream-automation-backend":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-workstream-automation-backend@workspace:plugins/workstream-automation-backend"
   dependencies:
@@ -8519,7 +8532,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-workstream-automation-common@npm:*, @compass/backstage-plugin-workstream-automation-common@workspace:plugins/workstream-automation-common":
+"@compass/backstage-plugin-workstream-automation-common@npm:*":
+  version: 1.7.0
+  resolution: "@compass/backstage-plugin-workstream-automation-common@npm:1.7.0"
+  dependencies:
+    "@backstage/catalog-model": "npm:^1.7.5"
+    "@backstage/plugin-permission-common": "npm:^0.9.1"
+    zod: "npm:^3.25.76"
+  checksum: 10/eea6fb788b2a384daeb2659d206130878f2c41e9c0d32e27cb0bd4f117108799f76da6ed967eb3d59689b351a5b1f45135f3034d8d1c74f15b58f9da2a6d14f0
+  languageName: node
+  linkType: hard
+
+"@compass/backstage-plugin-workstream-automation-common@workspace:^, @compass/backstage-plugin-workstream-automation-common@workspace:plugins/workstream-automation-common":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-workstream-automation-common@workspace:plugins/workstream-automation-common"
   dependencies:
@@ -8530,7 +8554,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/backstage-plugin-workstream-automation@npm:*, @compass/backstage-plugin-workstream-automation@workspace:plugins/workstream-automation":
+"@compass/backstage-plugin-workstream-automation@workspace:^, @compass/backstage-plugin-workstream-automation@workspace:plugins/workstream-automation":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-workstream-automation@workspace:plugins/workstream-automation"
   dependencies:
@@ -8572,7 +8596,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@compass/plugin-mock-plugin@npm:*, @compass/plugin-mock-plugin@workspace:plugins/mock-plugin":
+"@compass/plugin-mock-plugin@workspace:^, @compass/plugin-mock-plugin@workspace:plugins/mock-plugin":
   version: 0.0.0-use.local
   resolution: "@compass/plugin-mock-plugin@workspace:plugins/mock-plugin"
   dependencies:
@@ -8583,6 +8607,7 @@ __metadata:
     "@backstage/dev-utils": "npm:^1.1.13"
     "@backstage/test-utils": "npm:^1.7.11"
     "@backstage/theme": "npm:^0.6.8"
+    "@compass/backstage-plugin-datasource-common": "workspace:^"
     "@material-ui/core": "npm:^4.12.2"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:4.0.0-alpha.61"
@@ -11683,6 +11708,15 @@ __metadata:
     "@module-federation/runtime": "npm:0.9.1"
     "@module-federation/sdk": "npm:0.9.1"
   checksum: 10/430cac0a770b3c46bc195088eb4c1892e1e29a69238dbe72423d64b2b67050afeca2b5026b1a30659b4fe8d9faa038ff97cceba7e2ddf6193b93763f270d9df6
+  languageName: node
+  linkType: hard
+
+"@mongodb-js/saslprep@npm:^1.3.0":
+  version: 1.3.2
+  resolution: "@mongodb-js/saslprep@npm:1.3.2"
+  dependencies:
+    sparse-bitfield: "npm:^3.0.3"
+  checksum: 10/c26e35ed9927e4e2fe33c19bdb410de7f7da3057040291e85a33846bc5c907c6a132cf438f8589b522f374ed5184459f8de1278ad5443941d08d75d70e5fe33f
   languageName: node
   linkType: hard
 
@@ -21915,10 +21949,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/webidl-conversions@npm:*":
+  version: 7.0.3
+  resolution: "@types/webidl-conversions@npm:7.0.3"
+  checksum: 10/535ead9de4d3d6c8e4f4fa14e9db780d2a31e8020debc062f337e1420a41c3265e223e4f4b628f97a11ecf3b96390962cd88a9ffe34f44e159dec583ff49aa34
+  languageName: node
+  linkType: hard
+
 "@types/webpack-env@npm:^1.15.2":
   version: 1.18.8
   resolution: "@types/webpack-env@npm:1.18.8"
   checksum: 10/f3932f3d6c2530f644cfc898eda1ab8182d6ae57f555c2f0179d813549b639078671b71e4041831fc306c5ebe61f5cdac794fe4ceae281fce8bf67e23661a488
+  languageName: node
+  linkType: hard
+
+"@types/whatwg-url@npm:^11.0.2":
+  version: 11.0.5
+  resolution: "@types/whatwg-url@npm:11.0.5"
+  dependencies:
+    "@types/webidl-conversions": "npm:*"
+  checksum: 10/23a0c45aff51817807b473a6adb181d6e3bb0d27dde54e84883d5d5bc93358e95204d2188e7ff7fdc2cdaf157e97e1188ef0a22ec79228da300fc30d4a05b56a
   languageName: node
   linkType: hard
 
@@ -23368,6 +23418,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"app-client@npm:x":
+  version: 0.1.0
+  resolution: "app-client@npm:0.1.0"
+  dependencies:
+    connect: "npm:x"
+    cornerstone: "npm:x"
+    modulator: "npm:x"
+    optimist: "npm:x"
+  checksum: 10/5c793bf5766221a26d85c2835638ed81650bbc552c3d30915b96ad4be3bfc16c125cc7d913d48027a6d9e2faf62d9de81a6b984dcde14a2f6226c0199a83e428
+  languageName: node
+  linkType: hard
+
 "app-root-path@npm:^3.1.0":
   version: 3.1.0
   resolution: "app-root-path@npm:3.1.0"
@@ -23375,22 +23437,37 @@ __metadata:
   languageName: node
   linkType: hard
 
-"app@npm:*, app@workspace:packages/app":
+"app@npm:*":
+  version: 0.1.0
+  resolution: "app@npm:0.1.0"
+  dependencies:
+    app-client: "npm:x"
+    connect: "npm:x"
+    cornerstone: "npm:x"
+    mime: "npm:x"
+    mongoose: "npm:x"
+    optimist: "npm:x"
+    uglify-js: "npm:x"
+  checksum: 10/8b72ef72d4fd284809df508dd0b66ec1dc684eb9bc17f7da33e53e514aff62e5c6c97116961f35bb8ed3c504da9b4a1bb84401ecb43fe66b820a5ac8a7c4f7d7
+  languageName: node
+  linkType: hard
+
+"app@workspace:packages/app":
   version: 0.0.0-use.local
   resolution: "app@workspace:packages/app"
   dependencies:
-    "@appdev/backstage-plugin-audit-compliance": "npm:*"
-    "@appdev/backstage-plugin-compliance": "npm:*"
-    "@appdev/backstage-plugin-devex-dashboard": "npm:*"
-    "@appdev/backstage-plugin-docsbot": "npm:*"
-    "@appdev/backstage-plugin-dora-metrics": "npm:*"
-    "@appdev/backstage-plugin-ess": "npm:*"
-    "@appdev/backstage-plugin-gdpr": "npm:*"
-    "@appdev/backstage-plugin-hydra-support-dashboard": "npm:*"
-    "@appdev/backstage-plugin-outages": "npm:*"
-    "@appdev/backstage-plugin-permission-management": "npm:*"
-    "@appdev/backstage-plugin-proxy-manager": "npm:*"
-    "@appdev/backstage-plugin-spaship": "npm:*"
+    "@appdev/backstage-plugin-audit-compliance": "workspace:^"
+    "@appdev/backstage-plugin-compliance": "workspace:^"
+    "@appdev/backstage-plugin-devex-dashboard": "workspace:^"
+    "@appdev/backstage-plugin-docsbot": "workspace:^"
+    "@appdev/backstage-plugin-dora-metrics": "workspace:^"
+    "@appdev/backstage-plugin-ess": "workspace:^"
+    "@appdev/backstage-plugin-gdpr": "workspace:^"
+    "@appdev/backstage-plugin-hydra-support-dashboard": "workspace:^"
+    "@appdev/backstage-plugin-outages": "workspace:^"
+    "@appdev/backstage-plugin-permission-management": "workspace:^"
+    "@appdev/backstage-plugin-proxy-manager": "workspace:^"
+    "@appdev/backstage-plugin-spaship": "workspace:^"
     "@backstage-community/plugin-analytics-module-matomo": "npm:^1.18.1"
     "@backstage-community/plugin-entity-validation": "npm:^0.12.1"
     "@backstage-community/plugin-feedback": "npm:^1.8.2"
@@ -23429,19 +23506,19 @@ __metadata:
     "@backstage/test-utils": "npm:^1.7.11"
     "@backstage/types": "npm:^1.2.1"
     "@backstage/ui": "npm:^0.7.0"
-    "@compass/backstage-plugin-ai-expressway": "npm:*"
-    "@compass/backstage-plugin-assistant": "npm:^0.1.0-alpha"
-    "@compass/backstage-plugin-catalog-index": "npm:*"
-    "@compass/backstage-plugin-cmdb": "npm:*"
-    "@compass/backstage-plugin-contact-details": "npm:*"
+    "@compass/backstage-plugin-ai-expressway": "workspace:^"
+    "@compass/backstage-plugin-assistant": "workspace:^"
+    "@compass/backstage-plugin-catalog-index": "workspace:^"
+    "@compass/backstage-plugin-cmdb": "workspace:^"
+    "@compass/backstage-plugin-contact-details": "workspace:^"
     "@compass/backstage-plugin-datasource": "workspace:^"
-    "@compass/backstage-plugin-datasource-common": "npm:*"
-    "@compass/backstage-plugin-lighthouse": "npm:*"
-    "@compass/backstage-plugin-mcp": "npm:*"
-    "@compass/backstage-plugin-redirects": "npm:*"
-    "@compass/backstage-plugin-workstream-automation": "npm:*"
-    "@compass/backstage-plugin-workstream-automation-common": "npm:*"
-    "@compass/plugin-mock-plugin": "npm:*"
+    "@compass/backstage-plugin-datasource-common": "workspace:^"
+    "@compass/backstage-plugin-lighthouse": "workspace:^"
+    "@compass/backstage-plugin-mcp": "workspace:^"
+    "@compass/backstage-plugin-redirects": "workspace:^"
+    "@compass/backstage-plugin-workstream-automation": "workspace:^"
+    "@compass/backstage-plugin-workstream-automation-common": "workspace:^"
+    "@compass/plugin-mock-plugin": "workspace:^"
     "@material-table/exporters": "npm:^1.2.19"
     "@material-ui/core": "npm:^4.12.4"
     "@material-ui/icons": "npm:^4.9.1"
@@ -24273,11 +24350,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "backend@workspace:packages/backend"
   dependencies:
-    "@appdev/backstage-plugin-audit-compliance-backend": "npm:*"
-    "@appdev/backstage-plugin-devex-data-layer-backend": "npm:*"
-    "@appdev/backstage-plugin-gdpr-backend": "npm:*"
-    "@appdev/backstage-plugin-outage-template-backend": "npm:*"
-    "@appdev/backstage-plugin-permission-management-backend": "npm:*"
+    "@appdev/backstage-plugin-audit-compliance-backend": "workspace:^"
+    "@appdev/backstage-plugin-devex-data-layer-backend": "workspace:^"
+    "@appdev/backstage-plugin-gdpr-backend": "workspace:^"
+    "@appdev/backstage-plugin-outage-template-backend": "workspace:^"
+    "@appdev/backstage-plugin-permission-management-backend": "workspace:^"
     "@backstage-community/plugin-feedback-backend": "npm:^2.1.2"
     "@backstage-community/plugin-matomo-backend": "npm:^1.13.0"
     "@backstage-community/plugin-report-portal-backend": "npm:^1.0.5"
@@ -24315,25 +24392,25 @@ __metadata:
     "@backstage/plugin-search-backend-node": "npm:^1.3.14"
     "@backstage/plugin-signals-backend": "npm:^0.3.7"
     "@backstage/plugin-techdocs-backend": "npm:^2.0.5"
-    "@compass/backstage-plugin-assistant-backend": "npm:^0.1.0-alpha.2"
-    "@compass/backstage-plugin-catalog-backend-module-cmdb": "npm:*"
-    "@compass/backstage-plugin-catalog-backend-module-datasource": "npm:*"
-    "@compass/backstage-plugin-catalog-backend-module-enrichment": "npm:*"
-    "@compass/backstage-plugin-catalog-backend-module-mcp": "npm:*"
-    "@compass/backstage-plugin-catalog-backend-module-spaship": "npm:*"
-    "@compass/backstage-plugin-datasource-backend": "npm:*"
-    "@compass/backstage-plugin-mcp-actions-example-backend": "npm:*"
-    "@compass/backstage-plugin-scaffolder-backend-module-custom-filters": "npm:*"
+    "@compass/backstage-plugin-assistant-backend": "workspace:^"
+    "@compass/backstage-plugin-catalog-backend-module-cmdb": "workspace:^"
+    "@compass/backstage-plugin-catalog-backend-module-datasource": "workspace:^"
+    "@compass/backstage-plugin-catalog-backend-module-enrichment": "workspace:^"
+    "@compass/backstage-plugin-catalog-backend-module-mcp": "workspace:^"
+    "@compass/backstage-plugin-catalog-backend-module-spaship": "workspace:^"
+    "@compass/backstage-plugin-datasource-backend": "workspace:^"
+    "@compass/backstage-plugin-mcp-actions-example-backend": "workspace:^"
+    "@compass/backstage-plugin-scaffolder-backend-module-custom-filters": "workspace:^"
     "@compass/backstage-plugin-scaffolder-backend-module-datasource": "workspace:^"
-    "@compass/backstage-plugin-scaffolder-backend-module-gitlab": "npm:*"
-    "@compass/backstage-plugin-soundcheck-backend-module-droperator": "npm:*"
-    "@compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets": "npm:*"
-    "@compass/backstage-plugin-soundcheck-backend-module-red-hat-core": "npm:*"
-    "@compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab": "npm:*"
-    "@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow": "npm:*"
-    "@compass/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet": "npm:*"
-    "@compass/backstage-plugin-workstream-automation-backend": "npm:*"
-    "@compass/backstage-plugin-workstream-automation-common": "npm:*"
+    "@compass/backstage-plugin-scaffolder-backend-module-gitlab": "workspace:^"
+    "@compass/backstage-plugin-soundcheck-backend-module-droperator": "workspace:^"
+    "@compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets": "workspace:^"
+    "@compass/backstage-plugin-soundcheck-backend-module-red-hat-core": "workspace:^"
+    "@compass/backstage-plugin-soundcheck-backend-module-red-hat-gitlab": "workspace:^"
+    "@compass/backstage-plugin-soundcheck-backend-module-red-hat-servicenow": "workspace:^"
+    "@compass/backstage-plugin-soundcheck-backend-module-red-hat-smartsheet": "workspace:^"
+    "@compass/backstage-plugin-workstream-automation-backend": "workspace:^"
+    "@compass/backstage-plugin-workstream-automation-common": "workspace:^"
     "@janus-idp/backstage-plugin-rbac-backend": "npm:^4.2.1"
     "@spotify/backstage-plugin-soundcheck-backend": "npm:^0.22.2"
     app: "npm:*"
@@ -24969,6 +25046,13 @@ __metadata:
   dependencies:
     node-int64: "npm:^0.4.0"
   checksum: 10/edba1b65bae682450be4117b695997972bd9a3c4dfee029cab5bcb72ae5393a79a8f909b8bc77957eb0deec1c7168670f18f4d5c556f46cdd3bca5f3b3a8d020
+  languageName: node
+  linkType: hard
+
+"bson@npm:^6.10.4":
+  version: 6.10.4
+  resolution: "bson@npm:6.10.4"
+  checksum: 10/8a79a452219a13898358a5abc93e32bc3805236334f962661da121ce15bd5cade27718ba3310ee2a143ff508489b08467eed172ecb2a658cb8d2e94fdb76b215
   languageName: node
   linkType: hard
 
@@ -26319,7 +26403,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"connect@npm:^3.7.0":
+"connect@npm:^3.7.0, connect@npm:x":
   version: 3.7.0
   resolution: "connect@npm:3.7.0"
   dependencies:
@@ -26574,6 +26658,13 @@ __metadata:
   version: 1.0.3
   resolution: "core-util-is@npm:1.0.3"
   checksum: 10/9de8597363a8e9b9952491ebe18167e3b36e7707569eed0ebf14f8bba773611376466ae34575bca8cfe3c767890c859c74056084738f09d4e4a6f902b2ad7d99
+  languageName: node
+  linkType: hard
+
+"cornerstone@npm:x":
+  version: 0.1.1
+  resolution: "cornerstone@npm:0.1.1"
+  checksum: 10/17df8fbabc28c44710941a1de738b153a2bfceb350467166981008d3730578eb6bc55e8e39bd40aa4574d670648380d3c444c525711a35831453211e860abbea
   languageName: node
   linkType: hard
 
@@ -27770,7 +27861,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4, debug@npm:^4.3.5, debug@npm:^4.3.6, debug@npm:^4.4.0, debug@npm:^4.4.1":
+"debug@npm:4, debug@npm:4.x, debug@npm:^4.0.0, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.3, debug@npm:^4.3.4, debug@npm:^4.3.5, debug@npm:^4.3.6, debug@npm:^4.4.0, debug@npm:^4.4.1":
   version: 4.4.3
   resolution: "debug@npm:4.4.3"
   dependencies:
@@ -35884,6 +35975,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"kareem@npm:2.6.3":
+  version: 2.6.3
+  resolution: "kareem@npm:2.6.3"
+  checksum: 10/8c2a2795b9b8537ad592d30e6a607e7db737c7401d4c178fa4f2984e7bb7444d0f185570ae0132633aeef8b3eb27d1b5fded07921661738a5723681eb6d246b4
+  languageName: node
+  linkType: hard
+
 "keygrip@npm:~1.1.0":
   version: 1.1.0
   resolution: "keygrip@npm:1.1.0"
@@ -37621,6 +37719,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"memory-pager@npm:^1.0.2":
+  version: 1.5.0
+  resolution: "memory-pager@npm:1.5.0"
+  checksum: 10/ffe3461b6aa4e400138d1d9c59890b1cbeae3256592a0dfae49577f4bec93952de65f31f682f0b15451d2a7cf018be775ed1e1411705e45514b14fb70883a66b
+  languageName: node
+  linkType: hard
+
 "mensch@npm:^0.3.4":
   version: 0.3.4
   resolution: "mensch@npm:0.3.4"
@@ -38435,6 +38540,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mime@npm:x":
+  version: 4.1.0
+  resolution: "mime@npm:4.1.0"
+  bin:
+    mime: bin/cli.js
+  checksum: 10/154c06eeaf803c4a87f44b3dbd3fafc50afed7154f9ea2d2dde4ae464be33a7c6943de6981d636abd5da3523d2bd66ee1ad2adb2e4c2e7a2fe5e0075bcde62d5
+  languageName: node
+  linkType: hard
+
 "mimic-fn@npm:^2.1.0":
   version: 2.1.0
   resolution: "mimic-fn@npm:2.1.0"
@@ -38558,6 +38672,13 @@ __metadata:
   version: 1.2.8
   resolution: "minimist@npm:1.2.8"
   checksum: 10/908491b6cc15a6c440ba5b22780a0ba89b9810e1aea684e253e43c4e3b8d56ec1dcdd7ea96dde119c29df59c936cde16062159eae4225c691e19c70b432b6e6f
+  languageName: node
+  linkType: hard
+
+"minimist@npm:~0.0.1":
+  version: 0.0.10
+  resolution: "minimist@npm:0.0.10"
+  checksum: 10/eb87d49c637be2a17c39f29331d6fb0d1a394077b320a994b7c42e9459a55720e66474e0a375ab8ddcbfb2b154e57dfb5133b8baac66e8b0f31fd9bdef91f5c7
   languageName: node
   linkType: hard
 
@@ -38798,10 +38919,78 @@ __metadata:
   languageName: node
   linkType: hard
 
+"modulator@npm:x":
+  version: 0.1.0
+  resolution: "modulator@npm:0.1.0"
+  dependencies:
+    uglify-js: "npm:x"
+  checksum: 10/21ec694e7fbf8be76667502c65121ff6b745f77b61535eea73ac2833c3cd35eb965c147fc9faea51424f22c1fecdfba059cd0e0dc0a306b0cc92cc4ce02235fb
+  languageName: node
+  linkType: hard
+
 "module-details-from-path@npm:^1.0.3":
   version: 1.0.4
   resolution: "module-details-from-path@npm:1.0.4"
   checksum: 10/2ebfada5358492f6ab496b70f70a1042f2ee7a4c79d29467f59ed6704f741fb4461d7cecb5082144ed39a05fec4d19e9ff38b731c76228151be97227240a05b2
+  languageName: node
+  linkType: hard
+
+"mongodb-connection-string-url@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "mongodb-connection-string-url@npm:3.0.2"
+  dependencies:
+    "@types/whatwg-url": "npm:^11.0.2"
+    whatwg-url: "npm:^14.1.0 || ^13.0.0"
+  checksum: 10/99ac939a67cc963b90cfe70a8e45250a8386c531be7d22ffa5d1f3e5dd2406b149fb823b91ac161e4a4a29dfac754b49bca8f6dd786cfc66ae0ca80db5f5f23d
+  languageName: node
+  linkType: hard
+
+"mongodb@npm:~6.20.0":
+  version: 6.20.0
+  resolution: "mongodb@npm:6.20.0"
+  dependencies:
+    "@mongodb-js/saslprep": "npm:^1.3.0"
+    bson: "npm:^6.10.4"
+    mongodb-connection-string-url: "npm:^3.0.2"
+  peerDependencies:
+    "@aws-sdk/credential-providers": ^3.188.0
+    "@mongodb-js/zstd": ^1.1.0 || ^2.0.0
+    gcp-metadata: ^5.2.0
+    kerberos: ^2.0.1
+    mongodb-client-encryption: ">=6.0.0 <7"
+    snappy: ^7.3.2
+    socks: ^2.7.1
+  peerDependenciesMeta:
+    "@aws-sdk/credential-providers":
+      optional: true
+    "@mongodb-js/zstd":
+      optional: true
+    gcp-metadata:
+      optional: true
+    kerberos:
+      optional: true
+    mongodb-client-encryption:
+      optional: true
+    snappy:
+      optional: true
+    socks:
+      optional: true
+  checksum: 10/2718cdd4433bc3847f01a2ffae3a7e7ea8499035be4fccaf76278cbe3f915f2dd6c53135be0e3cc2cdd8e27a0b957da49e337d9b96b53e6287ec8971cea96b4b
+  languageName: node
+  linkType: hard
+
+"mongoose@npm:x":
+  version: 8.19.2
+  resolution: "mongoose@npm:8.19.2"
+  dependencies:
+    bson: "npm:^6.10.4"
+    kareem: "npm:2.6.3"
+    mongodb: "npm:~6.20.0"
+    mpath: "npm:0.9.0"
+    mquery: "npm:5.0.0"
+    ms: "npm:2.1.3"
+    sift: "npm:17.1.3"
+  checksum: 10/4d4b278f80adb8f369e5d68371bda78b9fd603919e07ae8efa1ba5e2c9aaf4f49f5ca1230d6c3c9390ebe2538e91618696be6fd8d72112cc59965fd01b9d813d
   languageName: node
   linkType: hard
 
@@ -38822,6 +39011,22 @@ __metadata:
     on-finished: "npm:~2.3.0"
     on-headers: "npm:~1.1.0"
   checksum: 10/f6a611bdcb9bebe8283381c49efedee81f50b75f6cbc52430cda1743ec35443c92d5e5d4384ce38b102d8c102162c92da563471def3cf840b4980160f278f8ba
+  languageName: node
+  linkType: hard
+
+"mpath@npm:0.9.0":
+  version: 0.9.0
+  resolution: "mpath@npm:0.9.0"
+  checksum: 10/ca5d21adbfa83494c718a4d4df0dd593920131925a2589e29b67aa8891ddc1cd517eab7d8f8ccd512ad15f125a630711d7f123ce9ef675473365881965aa7bfb
+  languageName: node
+  linkType: hard
+
+"mquery@npm:5.0.0":
+  version: 5.0.0
+  resolution: "mquery@npm:5.0.0"
+  dependencies:
+    debug: "npm:4.x"
+  checksum: 10/36a792b2dc3fae92be0a7460151807fbbefe1299f8f286acd74968482e0dc042321c78ad76d6f975f0638370ff88df6e81db5efe17df5d53d2fb289cedbb0c23
   languageName: node
   linkType: hard
 
@@ -40076,6 +40281,16 @@ __metadata:
     "@wry/trie": "npm:^0.5.0"
     tslib: "npm:^2.3.0"
   checksum: 10/d805f5995d61a417d4fd49a923749db1aa310d1ae8de084ec3a5f589f8b185d9a41b7b4422d33ee75ce43115c264e14bca086f8be2bb182c76448ad08997213a
+  languageName: node
+  linkType: hard
+
+"optimist@npm:x":
+  version: 0.6.1
+  resolution: "optimist@npm:0.6.1"
+  dependencies:
+    minimist: "npm:~0.0.1"
+    wordwrap: "npm:~0.0.2"
+  checksum: 10/0f8ef98caedd634088542a771e855a7b6c89eda0bfcade8bf3bc6e8a8955e4435a078e915cec507b3778c3567e4d6524ffc1b230eea0c6a89988247d76a7863d
   languageName: node
   linkType: hard
 
@@ -45127,7 +45342,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sift@npm:^17.1.3":
+"sift@npm:17.1.3, sift@npm:^17.1.3":
   version: 17.1.3
   resolution: "sift@npm:17.1.3"
   checksum: 10/278a0308cb4c7a48620caeb25339072fcef50d9a1296bc78c9710b1bb974ef5b3e375acf6646fe0a698e0f3ea19af81c11a348980dc28ff80c979e050f7f8585
@@ -45487,6 +45702,15 @@ __metadata:
   version: 2.0.2
   resolution: "space-separated-tokens@npm:2.0.2"
   checksum: 10/202e97d7ca1ba0758a0aa4fe226ff98142073bcceeff2da3aad037968878552c3bbce3b3231970025375bbba5aee00c5b8206eda408da837ab2dc9c0f26be990
+  languageName: node
+  linkType: hard
+
+"sparse-bitfield@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "sparse-bitfield@npm:3.0.3"
+  dependencies:
+    memory-pager: "npm:^1.0.2"
+  checksum: 10/174da88dbbcc783d5dbd26921931cc83830280b8055fb05333786ebe6fc015b9601b24972b3d55920dd2d9f5fb120576fbfa2469b08e5222c9cadf3f05210aab
   languageName: node
   linkType: hard
 
@@ -47173,6 +47397,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tr46@npm:^5.1.0":
+  version: 5.1.1
+  resolution: "tr46@npm:5.1.1"
+  dependencies:
+    punycode: "npm:^2.3.1"
+  checksum: 10/833a0e1044574da5790148fd17866d4ddaea89e022de50279967bcd6b28b4ce0d30d59eb3acf9702b60918975b3bad481400337e3a2e6326cffa5c77b874753d
+  languageName: node
+  linkType: hard
+
 "tr46@npm:^6.0.0":
   version: 6.0.0
   resolution: "tr46@npm:6.0.0"
@@ -47915,7 +48148,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uglify-js@npm:^3.1.4":
+"uglify-js@npm:^3.1.4, uglify-js@npm:x":
   version: 3.19.3
   resolution: "uglify-js@npm:3.19.3"
   bin:
@@ -49358,6 +49591,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"whatwg-url@npm:^14.1.0 || ^13.0.0":
+  version: 14.2.0
+  resolution: "whatwg-url@npm:14.2.0"
+  dependencies:
+    tr46: "npm:^5.1.0"
+    webidl-conversions: "npm:^7.0.0"
+  checksum: 10/f0a95b0601c64f417c471536a2d828b4c16fe37c13662483a32f02f183ed0f441616609b0663fb791e524e8cd56d9a86dd7366b1fc5356048ccb09b576495e7c
+  languageName: node
+  linkType: hard
+
 "whatwg-url@npm:^15.0.0":
   version: 15.1.0
   resolution: "whatwg-url@npm:15.1.0"
@@ -49577,6 +49820,13 @@ __metadata:
   version: 1.0.0
   resolution: "wordwrap@npm:1.0.0"
   checksum: 10/497d40beb2bdb08e6d38754faa17ce20b0bf1306327f80cb777927edb23f461ee1f6bc659b3c3c93f26b08e1cf4b46acc5bae8fda1f0be3b5ab9a1a0211034cd
+  languageName: node
+  linkType: hard
+
+"wordwrap@npm:~0.0.2":
+  version: 0.0.3
+  resolution: "wordwrap@npm:0.0.3"
+  checksum: 10/73d2f1136868a952af5b6b7ef1bc841453bfdb2424946a72502dd207a2cb40335da77366d3e8822aa538dc205e0ad0b391da03828227926df273f78bb08a4395
   languageName: node
   linkType: hard
 

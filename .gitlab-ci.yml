@@ -112,14 +112,13 @@ publish_plugins:
     - git config --global --add safe.directory /builds/app-dev-platform/backstage-plugins
     - git config --global user.name "compass-release-automation"
     - git config --global user.email "xe-compass-devs@redhat.com"
-    - git remote set-url origin https://oneportal:${GITLAB_TOKEN}@gitlab.cee.redhat.com/app-dev-platform/backstage-plugins.git
+    - git remote set-url origin https://release-bot:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}
     - git checkout $CI_DEFAULT_BRANCH
     - npm i -g corepack
     - corepack enable
     - corepack prepare yarn@4.6.0 --activate
   script:
-    - yarn changeset version
-    - yarn changeset publish
+    - node ./scripts/publish-with-yarn.js || exit 1
     - git push origin $CI_DEFAULT_BRANCH --follow-tags
 
 .mpp_build:
