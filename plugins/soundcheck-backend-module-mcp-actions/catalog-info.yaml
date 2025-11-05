@@ -1,0 +1,33 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: soundcheck-backend-module-mcp-actions
+  title: Soundcheck Backend Module - MCP Actions
+  description: Backend module providing MCP actions for Soundcheck, enabling AI assistants to interact with Soundcheck checks, results, and aggregations
+  namespace: compass
+  tags:
+    - backstage
+    - idp
+    - soundcheck
+    - mcp
+    - mcp-actions
+    - ai
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40compass%2Fbackstage-plugin-soundcheck-backend-module-mcp-actions
+      title: NPM Package
+      type: package
+  annotations:
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-soundcheck-backend-module-mcp-actions
+    npm/registry: compass
+    npm/package: '@compass/backstage-plugin-soundcheck-backend-module-mcp-actions'
+spec:
+  type: backstage-backend-plugin-module
+  lifecycle: production
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-backend
+  dependsOn:
+    - resource:compass/soundcheck
+
