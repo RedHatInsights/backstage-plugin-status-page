@@ -142,6 +142,7 @@ backend.add(import('@compass/backstage-plugin-catalog-backend-module-mcp'));
 
 backend.add(import('@appdev/backstage-plugin-devex-data-layer-backend'));
 backend.add(import('@appdev/backstage-plugin-audit-compliance-backend'));
+backend.add(import('@appdev/backstage-plugin-system-audit-backend'));
 
 backend.add(
   import('@compass/backstage-plugin-scaffolder-backend-module-custom-filters'),

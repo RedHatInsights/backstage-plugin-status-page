@@ -130,6 +130,7 @@ import {
   GroupSoundcheckContent,
 } from '@spotify/backstage-plugin-soundcheck';
 import { useNavigate } from 'react-router';
+import { EntitySystemAuditCard } from '@appdev/backstage-plugin-system-audit';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -223,8 +224,12 @@ const overviewContent = (
       <EntityAboutCard variant="gridItem" />
     </Grid>
     <Grid item md={6}>
+      <EntitySystemAuditCard />
+    </Grid>
+    <Grid item md={6} xs={12}>
       <EntityWorkstreamCard />
     </Grid>
+
     <EntitySwitch>
       <EntitySwitch.Case if={isAppCodeAvailable}>
         <Grid item lg={4} md={6} xs={12}>
@@ -261,6 +266,7 @@ const overviewContent = (
     <Grid item md={8} xs={12}>
       <EntityHasSubcomponentsCard variant="gridItem" />
     </Grid>
+
     <Grid item xs={12}>
       <EntitySoundcheckCard />
     </Grid>
