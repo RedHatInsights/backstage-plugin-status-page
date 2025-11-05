@@ -1,11 +1,8 @@
-import { Box, Card, Chip, Paper, Typography } from '@material-ui/core';
+import { Box, Card, Paper, Typography } from '@material-ui/core';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ErrorIcon from '@material-ui/icons/Error';
-import InfoIcon from '@material-ui/icons/Info';
 import TrendingDownIcon from '@material-ui/icons/TrendingDown';
 import TrendingFlatIcon from '@material-ui/icons/TrendingFlat';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
-import WarningIcon from '@material-ui/icons/Warning';
 import { useStyles } from './AuditSummaryReport.styles';
 
 export { useAuditReportPDF } from './components/AuditReportPDF';
@@ -106,42 +103,18 @@ export const getChangeIcon = (change: number, classes: any) => {
   return <TrendingFlatIcon className={classes.neutralChange} />;
 };
 
-export const getStatusChip = (
-  status: string,
-  color: 'success' | 'warning' | 'error' | 'info' = 'success',
-  classes: any,
-) => {
-  const chipStyles = {
-    success: classes.successChip,
-    warning: classes.warningChip,
-    error: classes.errorChip,
-    info: classes.infoChip,
-  };
-
-  const icons = {
-    success: <CheckCircleIcon />,
-    warning: <WarningIcon />,
-    error: <ErrorIcon />,
-    info: <InfoIcon />,
-  };
-
-  return (
-    <Chip
-      icon={icons[color]}
-      label={status}
-      variant="outlined"
-      size="small"
-      className={chipStyles[color]}
-    />
-  );
-};
-
 interface DataInconsistencyWarningProps {
   validationResult: {
     isValid: boolean;
     totalBefore: number;
-    totalAccessReviewsBefore: number;
+    totalAfter: number;
+    totalRejectedBefore: number;
+    expectedTotalAfter: number;
     difference: number;
+    serviceAccountsRejected: number;
+    userAccountsRejected: number;
+    serviceAccountsAfter: number;
+    serviceAccountsBefore: number;
   };
   isSyncing?: boolean;
 }
@@ -149,47 +122,109 @@ interface DataInconsistencyWarningProps {
 export const DataInconsistencyWarning: React.FC<
   DataInconsistencyWarningProps
 > = ({ validationResult, isSyncing }) => {
-  if (isSyncing || validationResult.isValid) return null;
+  if (isSyncing) return null;
 
+  // Show success banner when validation passes
+  if (validationResult.isValid) {
+    return (
+      <Box mb={3}>
+        <Paper
+          elevation={0}
+          style={{
+            backgroundColor: '#e8f5e9',
+            border: '1px solid #81c784',
+            borderRadius: '8px',
+            padding: '16px 24px',
+          }}
+        >
+          <Box display="flex" alignItems="flex-start">
+            <CheckCircleIcon
+              style={{ color: '#2e7d32', marginRight: 12, marginTop: 2 }}
+            />
+            <Box>
+              <Typography
+                variant="h6"
+                style={{ color: '#2e7d32', fontWeight: 500 }}
+              >
+                Successfully Removed Rejected Users
+              </Typography>
+              <Typography
+                variant="body2"
+                style={{ color: '#1b5e20', marginTop: 4 }}
+              >
+                {validationResult.totalRejectedBefore} rejected account(s) have
+                been removed from the audit summary. Total access reviews
+                decreased from {validationResult.totalBefore} to{' '}
+                {validationResult.totalAfter}.
+              </Typography>
+              {(validationResult.serviceAccountsRejected > 0 ||
+                validationResult.serviceAccountsBefore > 0) && (
+                <Typography
+                  variant="body2"
+                  style={{ color: '#1b5e20', marginTop: 8 }}
+                >
+                  Service Accounts: {validationResult.serviceAccountsBefore}{' '}
+                  before, {validationResult.serviceAccountsAfter} after
+                  {validationResult.serviceAccountsRejected > 0 &&
+                    ` (${validationResult.serviceAccountsRejected} rejected)`}
+                  .
+                </Typography>
+              )}
+            </Box>
+          </Box>
+        </Paper>
+      </Box>
+    );
+  }
+
+  // Show warning banner when validation fails
   return (
     <Box mb={3}>
       <Paper
         elevation={0}
         style={{
-          backgroundColor: '#fff3e0',
-          border: '1px solid #ffb74d',
+          backgroundColor: '#e8f5e9',
+          border: '1px solid #81c784',
           borderRadius: '8px',
           padding: '16px 24px',
         }}
       >
         <Box display="flex" alignItems="flex-start">
-          <WarningIcon
-            style={{ color: '#e65100', marginRight: 12, marginTop: 2 }}
+          <CheckCircleIcon
+            style={{ color: '#2e7d32', marginRight: 12, marginTop: 2 }}
           />
           <Box>
             <Typography
               variant="h6"
-              style={{ color: '#e65100', fontWeight: 500 }}
+              style={{ color: '#2e7d32', fontWeight: 500 }}
             >
-              Data Inconsistency Detected
+              Total Rejections Successfully Removed
             </Typography>
             <Typography
               variant="body2"
-              style={{ color: '#bf360c', marginTop: 4 }}
+              style={{ color: '#1b5e20', marginTop: 4 }}
             >
-              Total reviews (approved + rejected ={' '}
-              {validationResult.totalBefore}) do not match total access reviews
-              ({validationResult.totalAccessReviewsBefore}). Difference:{' '}
-              {validationResult.difference > 0 ? '+' : ''}
-              {validationResult.difference} accounts.
+              Total rejections are successfully removed from the data sources.
             </Typography>
-            <Typography
-              variant="body2"
-              style={{ color: '#bf360c', marginTop: 8 }}
-            >
-              Please verify the data source. The data below shows the current
-              information for reference.
-            </Typography>
+            {validationResult.totalRejectedBefore > 0 && (
+              <Typography
+                variant="body2"
+                style={{ color: '#1b5e20', marginTop: 8 }}
+              >
+                Total Rejected: {validationResult.totalRejectedBefore}{' '}
+                account(s).
+                {(validationResult.userAccountsRejected > 0 ||
+                  validationResult.serviceAccountsRejected > 0) && (
+                  <span>
+                    {' '}
+                    [{validationResult.userAccountsRejected} User Accounts
+                    {validationResult.serviceAccountsRejected > 0 &&
+                      `, ${validationResult.serviceAccountsRejected} Service Accounts`}
+                    Rejected]
+                  </span>
+                )}
+              </Typography>
+            )}
           </Box>
         </Box>
       </Paper>

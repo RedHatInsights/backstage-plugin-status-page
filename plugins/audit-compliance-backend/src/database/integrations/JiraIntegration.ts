@@ -35,14 +35,15 @@ export async function checkAndUpdateJiraStatuses(
 
   try {
     // Fetch all tickets that are not completed or closed from both tables
+    const completedTicketStatuses = ['Completed', 'Closed', 'Done', 'Resolved'];
     const [groupAccessRows, serviceAccountRows] = await Promise.all([
       db('group_access_reports')
         .select('ticket_reference', 'ticket_status')
-        .whereNotIn('ticket_status', ['Completed', 'Closed'])
+        .whereNotIn('ticket_status', completedTicketStatuses)
         .whereNotNull('ticket_reference'),
       db('service_account_access_review')
         .select('ticket_reference', 'ticket_status')
-        .whereNotIn('ticket_status', ['Completed', 'Closed'])
+        .whereNotIn('ticket_status', completedTicketStatuses)
         .whereNotNull('ticket_reference'),
     ]);
 

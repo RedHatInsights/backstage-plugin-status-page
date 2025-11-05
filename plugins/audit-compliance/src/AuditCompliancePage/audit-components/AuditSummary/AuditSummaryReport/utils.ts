@@ -10,6 +10,17 @@ export const formatChange = (change: number): string => {
   return `${sign}${change.toFixed(1)}%`;
 };
 
+// Helper function to sum a numeric property across sources
+const sumProperty = (
+  sources: Array<{ [key: string]: any }>,
+  property: string,
+): number => {
+  return sources.reduce(
+    (total, source) => total + (Number(source[property]) || 0),
+    0,
+  );
+};
+
 export const calculateTotals = (statistics: StatisticsData) => {
   const rover = statistics.group_access.rover;
   const gitlab = statistics.group_access.gitlab;
@@ -34,42 +45,32 @@ export const calculateTotals = (statistics: StatisticsData) => {
     changes: { added: 0, removed: 0, modified: 0 },
   };
 
-  // Total user accounts (before) - group access from all sources
-  const totalUserAccountsBefore =
-    rover.fresh + gitlab.fresh + ldap.fresh + manual.fresh;
-  // Total service accounts (before) - service accounts from all sources
-  const totalServiceAccountsBefore =
-    roverServiceAccounts.fresh +
-    gitlabServiceAccounts.fresh +
-    ldapServiceAccounts.fresh +
-    manualServiceAccounts.fresh;
-  // Total access reviews (before) = user accounts + service accounts
+  // Group sources for easier iteration
+  const userAccountSources = [rover, gitlab, ldap, manual];
+  const serviceAccountSources = [
+    roverServiceAccounts,
+    gitlabServiceAccounts,
+    ldapServiceAccounts,
+    manualServiceAccounts,
+  ];
+
+  // Calculate totals using helper function
+  // totalBefore = from regular tables (group_access_reports + service_account_access_review)
+  // totalAfter = from fresh tables (group_access_reports_fresh + service_account_access_review_fresh)
+  const totalUserAccountsBefore = sumProperty(userAccountSources, 'total');
+  const totalUserAccountsAfter = sumProperty(userAccountSources, 'fresh');
+  const totalServiceAccountsBefore = sumProperty(
+    serviceAccountSources,
+    'total',
+  );
+  const totalServiceAccountsAfter = sumProperty(serviceAccountSources, 'fresh');
+
   const totalAccessReviewsBefore =
     totalUserAccountsBefore + totalServiceAccountsBefore;
-
-  // Total user accounts (after) - group access from all sources
-  const totalUserAccountsAfter =
-    rover.total + gitlab.total + ldap.total + manual.total;
-  // Total service accounts (after) - service accounts from all sources
-  const totalServiceAccountsAfter =
-    roverServiceAccounts.total +
-    gitlabServiceAccounts.total +
-    ldapServiceAccounts.total +
-    manualServiceAccounts.total;
-  // Total access reviews (after)
   const totalAccessReviewsAfter =
     totalUserAccountsAfter + totalServiceAccountsAfter;
 
-  // Calculate approved and rejected totals
-  const totalApprovedBefore =
-    rover.approved +
-    gitlab.approved +
-    ldap.approved +
-    manual.approved +
-    roverServiceAccounts.approved +
-    gitlabServiceAccounts.approved +
-    ldapServiceAccounts.approved +
-    manualServiceAccounts.approved;
+  // Calculate rejected totals
   const totalRejectedBefore =
     rover.rejected +
     gitlab.rejected +
@@ -79,14 +80,33 @@ export const calculateTotals = (statistics: StatisticsData) => {
     gitlabServiceAccounts.rejected +
     ldapServiceAccounts.rejected +
     manualServiceAccounts.rejected;
-  const totalBefore = totalApprovedBefore + totalRejectedBefore;
 
   // Validate data consistency
+  // Logic: total (before/fresh) - rejections should equal total (after refresh summary)
+  const expectedTotalAfter = totalAccessReviewsBefore - totalRejectedBefore;
+
+  // Calculate service account rejected details
+  const serviceAccountsRejected =
+    roverServiceAccounts.rejected +
+    gitlabServiceAccounts.rejected +
+    ldapServiceAccounts.rejected +
+    manualServiceAccounts.rejected;
+
+  // Calculate user account rejected details
+  const userAccountsRejected =
+    rover.rejected + gitlab.rejected + ldap.rejected + manual.rejected;
+
   const validationResult = {
-    isValid: totalBefore === totalAccessReviewsBefore,
-    totalBefore,
-    totalAccessReviewsBefore,
-    difference: totalBefore - totalAccessReviewsBefore,
+    isValid: expectedTotalAfter === totalAccessReviewsAfter,
+    totalBefore: totalAccessReviewsBefore,
+    totalAfter: totalAccessReviewsAfter,
+    totalRejectedBefore,
+    expectedTotalAfter,
+    difference: totalAccessReviewsAfter - expectedTotalAfter,
+    serviceAccountsRejected,
+    userAccountsRejected,
+    serviceAccountsAfter: totalServiceAccountsAfter,
+    serviceAccountsBefore: totalServiceAccountsBefore,
   };
 
   return {
@@ -112,42 +132,34 @@ export const calculateTotals = (statistics: StatisticsData) => {
       ),
     },
     rover: {
-      before: rover.fresh,
-      after: rover.total,
+      before: rover.total,
+      after: rover.fresh,
       approved: rover.approved,
       rejected: rover.rejected,
     },
     gitlab: {
-      before: gitlab.fresh,
-      after: gitlab.total,
+      before: gitlab.total,
+      after: gitlab.fresh,
       approved: gitlab.approved,
       rejected: gitlab.rejected,
     },
     ldap: {
-      before: ldap.fresh,
-      after: ldap.total,
+      before: ldap.total,
+      after: ldap.fresh,
       approved: ldap.approved,
       rejected: ldap.rejected,
     },
     manual: {
-      before: manual.fresh + manualServiceAccounts.fresh,
-      after: manual.total + manualServiceAccounts.total,
+      before: manual.total + manualServiceAccounts.total,
+      after: manual.fresh + manualServiceAccounts.fresh,
       approved: manual.approved + manualServiceAccounts.approved,
       rejected: manual.rejected + manualServiceAccounts.rejected,
     },
     serviceAccounts: {
       before: totalServiceAccountsBefore,
       after: totalServiceAccountsAfter,
-      approved:
-        roverServiceAccounts.approved +
-        gitlabServiceAccounts.approved +
-        ldapServiceAccounts.approved +
-        manualServiceAccounts.approved,
-      rejected:
-        roverServiceAccounts.rejected +
-        gitlabServiceAccounts.rejected +
-        ldapServiceAccounts.rejected +
-        manualServiceAccounts.rejected,
+      approved: sumProperty(serviceAccountSources, 'approved'),
+      rejected: serviceAccountsRejected,
     },
     validationResult,
   };

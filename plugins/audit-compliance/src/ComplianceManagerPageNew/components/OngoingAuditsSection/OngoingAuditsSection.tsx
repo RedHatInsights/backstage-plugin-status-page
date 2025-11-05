@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -48,6 +49,7 @@ export const OngoingAuditsSection = ({
   onStatusFilterChange,
 }: OngoingAuditsSectionProps) => {
   const classes = useStyles();
+  const navigate = useNavigate();
   const [auditData, setAuditData] = useState<Record<string, AuditInfo[]>>({});
   const [expandedApps, setExpandedApps] = useState<Set<string>>(new Set());
   const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
@@ -512,10 +514,15 @@ export const OngoingAuditsSection = ({
                                         variant="outlined"
                                         size="small"
                                         onClick={() => {
-                                          const url = `/audit-access-manager/${encodeURIComponent(
-                                            row.app_name,
-                                          )}`;
-                                          window.open(url, '_blank');
+                                          navigate(
+                                            `/audit-access-manager/${encodeURIComponent(
+                                              row.app_name,
+                                            )}/${encodeURIComponent(
+                                              row.frequency || '',
+                                            )}/${encodeURIComponent(
+                                              row.period || '',
+                                            )}/details`,
+                                          );
                                         }}
                                       >
                                         View Details
