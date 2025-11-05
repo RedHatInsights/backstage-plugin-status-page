@@ -21,6 +21,7 @@
     "@appdev/backstage-plugin-gdpr-backend": "workspace:^",
     "@appdev/backstage-plugin-outage-template-backend": "workspace:^",
     "@appdev/backstage-plugin-permission-management-backend": "workspace:^",
+    "@appdev/backstage-plugin-system-audit-backend": "workspace:^",
     "@backstage-community/plugin-feedback-backend": "^2.1.2",
     "@backstage-community/plugin-matomo-backend": "^1.13.0",
     "@backstage-community/plugin-report-portal-backend": "^1.0.5",

@@ -30,6 +30,7 @@
     "@appdev/backstage-plugin-permission-management": "workspace:^",
     "@appdev/backstage-plugin-proxy-manager": "workspace:^",
     "@appdev/backstage-plugin-spaship": "workspace:^",
+    "@appdev/backstage-plugin-system-audit": "workspace:^",
     "@backstage-community/plugin-analytics-module-matomo": "^1.18.1",
     "@backstage-community/plugin-entity-validation": "^0.12.1",
     "@backstage-community/plugin-feedback": "^1.8.2",

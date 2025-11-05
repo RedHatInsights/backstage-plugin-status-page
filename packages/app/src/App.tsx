@@ -103,6 +103,7 @@ import {
 } from '@compass/backstage-plugin-workstream-automation';
 import { WORKSTREAM_RELATION_PAIR } from '@compass/backstage-plugin-workstream-automation-common';
 import { MockPluginPage } from '@compass/plugin-mock-plugin';
+import { SystemAuditPage } from '@appdev/backstage-plugin-system-audit';
 import AdbIcon from '@material-ui/icons/Adb';
 import CategoryOutlinedIcon from '@material-ui/icons/CategoryOutlined';
 import GroupWorkIcon from '@material-ui/icons/GroupWork';
@@ -280,7 +281,7 @@ const routes = (
       element={<PermissionManagementPage />}
     />
     <Route path="/compliance" element={<CompliancePage />} />
-
+    <Route path="/compliance/system-audit" element={<SystemAuditPage />} />
     <Route path="/compliance/ess" element={<EssPage />} />
     <Route
       path="/compliance/ess/platform/:name"
