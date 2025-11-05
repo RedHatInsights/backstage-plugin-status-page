@@ -125,6 +125,13 @@ const tools: ComplianceTool[] = [
     tags: ['Audit', 'Registry', 'Compliance'],
   },
   {
+    name: 'AAM - Compliance Manager view',
+    description:
+      'Access the Compliance Manager view to manage and monitor ongoing audits, track audit progress, and view comprehensive audit details.',
+    path: '/audit-access-manager/compliance-manager',
+    tags: ['Compliance', 'Audit Management', 'Monitoring'],
+  },
+  {
     name: 'ESS',
     description:
       'A centralized compliance view would reduce overhead, eliminate duplication, and provide clearer ownership and lifecycle tracking across platforms and applications.',

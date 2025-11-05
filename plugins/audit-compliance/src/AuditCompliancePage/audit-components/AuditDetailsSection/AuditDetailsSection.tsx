@@ -263,12 +263,18 @@ export const AuditDetailsSection = () => {
       };
 
       // Check for incomplete tickets in rejected access reviews
+      const completedTicketStatuses = [
+        'Resolved',
+        'Closed',
+        'Done',
+        'Completed',
+      ];
       const incompleteUserTickets = userData.filter(
         (d: any) =>
           d.sign_off_status === 'rejected' &&
           d.ticket_reference &&
           d.ticket_reference.trim() !== '' &&
-          !['Resolved', 'Closed'].includes(d.ticket_status),
+          !completedTicketStatuses.includes(d.ticket_status),
       );
 
       const incompleteServiceTickets = serviceData.filter(
@@ -276,7 +282,7 @@ export const AuditDetailsSection = () => {
           d.sign_off_status === 'rejected' &&
           d.ticket_reference &&
           d.ticket_reference.trim() !== '' &&
-          !['Resolved', 'Closed'].includes(d.ticket_status),
+          !completedTicketStatuses.includes(d.ticket_status),
       );
 
       const totalIncompleteTickets =
