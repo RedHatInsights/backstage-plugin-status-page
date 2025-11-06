@@ -48,6 +48,7 @@ interface SystemAuditFormDialogProps {
   onSave: (entry: Omit<AuditEntry, 'id'>) => void;
   cmdbAppId?: string;
   existingEntry?: AuditEntry;
+  cmdbAppIdEditable?: boolean;
 }
 
 const ROVER_BASE_URL = 'https://rover.redhat.com/groups/group';
@@ -69,6 +70,7 @@ export const SystemAuditFormDialog = ({
   onSave,
   cmdbAppId: initialCmdbAppId = '',
   existingEntry,
+  cmdbAppIdEditable = false,
 }: SystemAuditFormDialogProps) => {
   const catalogApi = useApi(catalogApiRef);
   const fetchApi = useApi(fetchApiRef);
@@ -397,7 +399,7 @@ export const SystemAuditFormDialog = ({
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle>System Audit Entry</DialogTitle>
       <DialogContent>
-        {!cmdbAppId && (
+        {cmdbAppIdEditable ? (
           <Box mb={2}>
             <TextField
               label="CMDB App ID"
@@ -409,13 +411,29 @@ export const SystemAuditFormDialog = ({
               helperText="Enter the CMDB Application ID"
             />
           </Box>
-        )}
-        {cmdbAppId && (
-          <Box mb={2}>
-            <Typography variant="body2" color="textSecondary">
-              CMDB App ID: <strong>{cmdbAppId}</strong>
-            </Typography>
-          </Box>
+        ) : (
+          <>
+            {!cmdbAppId && (
+              <Box mb={2}>
+                <TextField
+                  label="CMDB App ID"
+                  value={cmdbAppId}
+                  onChange={e => setCmdbAppId(e.target.value)}
+                  fullWidth
+                  variant="outlined"
+                  required
+                  helperText="Enter the CMDB Application ID"
+                />
+              </Box>
+            )}
+            {cmdbAppId && (
+              <Box mb={2}>
+                <Typography variant="body2" color="textSecondary">
+                  CMDB App ID: <strong>{cmdbAppId}</strong>
+                </Typography>
+              </Box>
+            )}
+          </>
         )}
 
         {entries.map((entry, index) => (

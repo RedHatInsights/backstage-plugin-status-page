@@ -514,6 +514,7 @@ export const SystemAuditDataTable = () => {
         }}
         onSave={handleSave}
         cmdbAppId={cmdbAppId}
+        cmdbAppIdEditable={true}
       />
     </>
   );
