@@ -22,11 +22,7 @@ import {
   alertApiRef,
 } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import {
-  UserEntity,
-  stringifyEntityRef,
-  parseEntityRef,
-} from '@backstage/catalog-model';
+import { UserEntity, stringifyEntityRef } from '@backstage/catalog-model';
 import Typography from '@material-ui/core/Typography';
 
 export interface AuditEntry {
@@ -54,6 +50,7 @@ interface SystemAuditFormDialogProps {
 const ROVER_BASE_URL = 'https://rover.redhat.com/groups/group';
 
 interface EntryForm {
+  cmdbAppId?: string;
   ldapCommonName: string;
   roverLink: string;
   responsibleParty: string;
@@ -91,8 +88,10 @@ export const SystemAuditFormDialog = ({
     },
   ]);
 
-  const [userOptions, setUserOptions] = useState<UserEntity[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [userOptions, setUserOptions] = useState<UserEntity[][]>([]);
+  const [userLoading, setUserLoading] = useState<boolean[]>([]);
+  const [userSearchValues, setUserSearchValues] = useState<string[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<(UserEntity | null)[]>([]);
   const [ldapGroupOptions, setLdapGroupOptions] = useState<string[][]>([]);
   const [ldapGroupLoading, setLdapGroupLoading] = useState<boolean[]>([]);
   const debounceTimers = useRef<(NodeJS.Timeout | null)[]>([]);
@@ -128,10 +127,22 @@ export const SystemAuditFormDialog = ({
   useEffect(() => {
     if (open) {
       setCmdbAppId(initialCmdbAppId);
+      // Reset user-related state
+      setUserOptions([]);
+      setUserLoading([]);
+      setUserSearchValues([]);
+      setSelectedUsers([]);
+      // Reset LDAP group options
+      setLdapGroupOptions([]);
+      setLdapGroupLoading([]);
+
       // Reset entries when dialog opens with existing entry
       if (existingEntry) {
         setEntries([
           {
+            cmdbAppId: cmdbAppIdEditable
+              ? existingEntry.cmdbAppId || ''
+              : undefined,
             ldapCommonName: existingEntry.ldapCommonName || '',
             roverLink: existingEntry.roverLink || '',
             responsibleParty: existingEntry.responsibleParty || '',
@@ -146,6 +157,7 @@ export const SystemAuditFormDialog = ({
         // Reset to empty form when creating new entry
         setEntries([
           {
+            cmdbAppId: cmdbAppIdEditable ? initialCmdbAppId : undefined,
             ldapCommonName: '',
             roverLink: '',
             responsibleParty: '',
@@ -157,56 +169,199 @@ export const SystemAuditFormDialog = ({
           },
         ]);
       }
+    } else {
+      // Reset all state when dialog closes
+      setUserOptions([]);
+      setUserLoading([]);
+      setUserSearchValues([]);
+      setSelectedUsers([]);
+      setLdapGroupOptions([]);
+      setLdapGroupLoading([]);
     }
-  }, [open, initialCmdbAppId, existingEntry]);
+  }, [open, initialCmdbAppId, existingEntry, cmdbAppIdEditable]);
 
-  // Load users from catalog
+  // Initialize user options arrays when entries change
   useEffect(() => {
-    if (open) {
-      setLoading(true);
-      catalogApi
-        .getEntities({
-          filter: { kind: 'User' },
-        })
-        .then(result => {
-          setUserOptions(result.items as UserEntity[]);
-          setLoading(false);
-        })
-        .catch(() => setLoading(false));
-    }
-  }, [open, catalogApi]);
+    setUserOptions(prev => {
+      if (prev.length !== entries.length) {
+        return entries.map(() => []);
+      }
+      return prev;
+    });
+    setUserLoading(prev => {
+      if (prev.length !== entries.length) {
+        return entries.map(() => false);
+      }
+      return prev;
+    });
+    setUserSearchValues(prev => {
+      if (prev.length !== entries.length) {
+        return entries.map(() => '');
+      }
+      return prev;
+    });
+    setSelectedUsers(prev => {
+      if (prev.length !== entries.length) {
+        return entries.map(() => null);
+      }
+      return prev;
+    });
+  }, [entries]);
 
-  // Load LDAP group options for existing entries when dialog opens
+  // Initialize selected user from existing entry
   useEffect(() => {
-    if (open && existingEntry && existingEntry.ldapCommonName) {
-      const loadLdapOptions = async () => {
+    if (
+      open &&
+      existingEntry &&
+      existingEntry.responsibleParty &&
+      entries.length > 0
+    ) {
+      const initializeUser = async () => {
         try {
-          const baseUrl = await discoveryApi.getBaseUrl('audit-compliance');
-          const resp = await fetchApi.fetch(
-            `${baseUrl}/search/groups?q=${encodeURIComponent(
-              existingEntry.ldapCommonName,
-            )}`,
-          );
-          if (resp.ok) {
-            const groups = await resp.json();
-            setLdapGroupOptions(prev => {
+          // Try to parse as entity ref first
+          let user: UserEntity | null = null;
+          if (existingEntry.responsibleParty.includes(':')) {
+            try {
+              const entity = await catalogApi.getEntityByRef(
+                existingEntry.responsibleParty,
+              );
+              user =
+                entity && entity.kind === 'User'
+                  ? (entity as UserEntity)
+                  : null;
+            } catch {
+              // If entity ref fails, try search
+            }
+          }
+
+          if (!user) {
+            const userResponse = await catalogApi.queryEntities({
+              filter: [{ kind: 'User' }],
+              fullTextFilter: {
+                term: existingEntry.responsibleParty,
+                fields: [
+                  'metadata.name',
+                  'metadata.title',
+                  'spec.profile.displayName',
+                  'spec.profile.email',
+                ],
+              },
+            });
+
+            user =
+              (userResponse.items.find(
+                (item: any) =>
+                  item.metadata.name === existingEntry.responsibleParty,
+              ) as UserEntity) ||
+              (userResponse.items.find(
+                (item: any) =>
+                  item.spec.profile?.displayName?.toLowerCase() ===
+                  existingEntry.responsibleParty.toLowerCase(),
+              ) as UserEntity) ||
+              (userResponse.items.find(
+                (item: any) =>
+                  item.spec.profile?.email?.toLowerCase() ===
+                  existingEntry.responsibleParty.toLowerCase(),
+              ) as UserEntity);
+          }
+
+          if (user) {
+            setSelectedUsers(prev => {
               const arr = [...prev];
-              if (arr.length > 0) {
-                arr[0] = groups;
-              } else {
-                arr.push(groups);
-              }
+              arr[0] = user;
+              return arr;
+            });
+            setUserOptions(prev => {
+              const arr = [...prev];
+              arr[0] = [user!];
+              return arr;
+            });
+            setUserSearchValues(prev => {
+              const arr = [...prev];
+              arr[0] = user!.spec.profile?.displayName || user!.metadata.name;
               return arr;
             });
           }
-        } catch (error) {
+        } catch (err) {
           // eslint-disable-next-line no-console
-          console.error('Failed to load LDAP groups:', error);
+          console.error('Error fetching user entity:', err);
         }
       };
-      loadLdapOptions();
+      initializeUser();
     }
-  }, [open, existingEntry, discoveryApi, fetchApi]);
+  }, [open, existingEntry, catalogApi, entries.length]);
+
+  // Search for users when search value changes
+  useEffect(() => {
+    userSearchValues.forEach((searchValue, index) => {
+      const selectedUser = selectedUsers[index];
+      if (
+        searchValue.length >= 3 &&
+        searchValue !== selectedUser?.spec.profile?.displayName &&
+        searchValue !== selectedUser?.metadata.name
+      ) {
+        setUserLoading(prev => {
+          const arr = [...prev];
+          arr[index] = true;
+          return arr;
+        });
+        catalogApi
+          .queryEntities({
+            filter: [{ kind: 'User' }],
+            fullTextFilter: {
+              term: searchValue,
+              fields: [
+                'spec.profile.displayName',
+                'metadata.name',
+                'spec.profile.email',
+              ],
+            },
+          })
+          .then((res: any) => {
+            const searchResults = res.items as UserEntity[];
+            const allOptions =
+              selectedUser &&
+              !searchResults.find(
+                u => u.metadata.name === selectedUser.metadata.name,
+              )
+                ? [selectedUser, ...searchResults]
+                : searchResults;
+            setUserOptions(prev => {
+              const arr = [...prev];
+              arr[index] = allOptions;
+              return arr;
+            });
+          })
+          .catch(() => {
+            alertApi.post({
+              message: 'Failed to search users',
+              severity: 'error',
+            });
+          })
+          .finally(() => {
+            setUserLoading(prev => {
+              const arr = [...prev];
+              arr[index] = false;
+              return arr;
+            });
+          });
+      } else if (searchValue.length === 0) {
+        if (selectedUser) {
+          setUserOptions(prev => {
+            const arr = [...prev];
+            arr[index] = [selectedUser];
+            return arr;
+          });
+        } else {
+          setUserOptions(prev => {
+            const arr = [...prev];
+            arr[index] = [];
+            return arr;
+          });
+        }
+      }
+    });
+  }, [userSearchValues, catalogApi, alertApi, selectedUsers]);
 
   // Initialize LDAP group options arrays when entries change
   useEffect(() => {
@@ -231,36 +386,32 @@ export const SystemAuditFormDialog = ({
     setEntries(newEntries);
   };
 
-  // Helper function to find user entity from responsibleParty value
-  const findUserEntity = (responsibleParty: string): UserEntity | null => {
-    if (!responsibleParty || userOptions.length === 0) {
-      return null;
-    }
+  // Helper functions for user display
+  const getUserDisplayName = (user: UserEntity) => {
+    return user.spec.profile?.displayName || user.metadata.name;
+  };
 
-    // If responsibleParty is an entity ref, parse and compare
-    if (responsibleParty.includes(':')) {
-      try {
-        const ref = parseEntityRef(responsibleParty);
-        return (
-          userOptions.find(
-            u =>
-              ref.kind.toLowerCase() === u.kind.toLowerCase() &&
-              ref.namespace === u.metadata.namespace &&
-              ref.name === u.metadata.name,
-          ) || null
-        );
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Error parsing entity ref:', error);
-        // Fallback to name comparison if parsing fails
-        // Extract name from entity ref (e.g., "user:redhat/nmore" -> "nmore")
-        const nameMatch = responsibleParty.match(/\/([^/]+)$/);
-        const nameToMatch = nameMatch ? nameMatch[1] : responsibleParty;
-        return userOptions.find(u => u.metadata.name === nameToMatch) || null;
-      }
+  const getUserOptionLabel = (user: UserEntity) => {
+    const displayName = getUserDisplayName(user);
+    const email = user.spec.profile?.email;
+    return email ? `${displayName} (${email})` : displayName;
+  };
+
+  // Handle responsible party change
+  const handleResponsiblePartyChange = (
+    index: number,
+    selectedUser: UserEntity | null,
+  ) => {
+    setSelectedUsers(prev => {
+      const arr = [...prev];
+      arr[index] = selectedUser;
+      return arr;
+    });
+    if (selectedUser) {
+      updateEntry(index, 'responsibleParty', stringifyEntityRef(selectedUser));
+    } else {
+      updateEntry(index, 'responsibleParty', '');
     }
-    // Otherwise compare by name (backward compatibility)
-    return userOptions.find(u => u.metadata.name === responsibleParty) || null;
   };
 
   // Search for Rover groups when LDAP common name changes
@@ -333,6 +484,7 @@ export const SystemAuditFormDialog = ({
     setEntries([
       ...entries,
       {
+        cmdbAppId: cmdbAppIdEditable ? '' : undefined,
         ldapCommonName: '',
         roverLink: '',
         responsibleParty: '',
@@ -355,11 +507,16 @@ export const SystemAuditFormDialog = ({
     // Validate required fields
     const errors: string[] = [];
 
-    if (!cmdbAppId || cmdbAppId.trim() === '') {
+    if (!cmdbAppIdEditable && (!cmdbAppId || cmdbAppId.trim() === '')) {
       errors.push('CMDB App ID is required');
     }
 
     entries.forEach((entry, index) => {
+      if (cmdbAppIdEditable) {
+        if (!entry.cmdbAppId || entry.cmdbAppId.trim() === '') {
+          errors.push(`Entry ${index + 1}: CMDB App ID is required`);
+        }
+      }
       if (!entry.ldapCommonName || entry.ldapCommonName.trim() === '') {
         errors.push(`Entry ${index + 1}: LDAP Common Name is required`);
       }
@@ -376,7 +533,9 @@ export const SystemAuditFormDialog = ({
 
     entries.forEach(entry => {
       const auditEntry = {
-        cmdbAppId: cmdbAppId.trim(),
+        cmdbAppId: cmdbAppIdEditable
+          ? (entry.cmdbAppId || '').trim()
+          : cmdbAppId.trim(),
         ldapCommonName: entry.ldapCommonName.trim(),
         roverLink: entry.ldapCommonName.trim()
           ? `${ROVER_BASE_URL}/${entry.ldapCommonName.trim()}`
@@ -399,19 +558,7 @@ export const SystemAuditFormDialog = ({
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle>System Audit Entry</DialogTitle>
       <DialogContent>
-        {cmdbAppIdEditable ? (
-          <Box mb={2}>
-            <TextField
-              label="CMDB App ID"
-              value={cmdbAppId}
-              onChange={e => setCmdbAppId(e.target.value)}
-              fullWidth
-              variant="outlined"
-              required
-              helperText="Enter the CMDB Application ID"
-            />
-          </Box>
-        ) : (
+        {!cmdbAppIdEditable && (
           <>
             {!cmdbAppId && (
               <Box mb={2}>
@@ -461,6 +608,21 @@ export const SystemAuditFormDialog = ({
             </Box>
 
             <Grid container spacing={2}>
+              {cmdbAppIdEditable && (
+                <Grid item xs={12} sm={4}>
+                  <TextField
+                    label="CMDB App ID"
+                    value={entry.cmdbAppId || ''}
+                    onChange={e =>
+                      updateEntry(index, 'cmdbAppId', e.target.value)
+                    }
+                    fullWidth
+                    variant="outlined"
+                    required
+                    helperText="Enter the CMDB Application ID"
+                  />
+                </Grid>
+              )}
               <Grid item xs={12} sm={4}>
                 <Autocomplete
                   options={ldapGroupOptions[index] || []}
@@ -483,6 +645,7 @@ export const SystemAuditFormDialog = ({
                       label="LDAP Common Name"
                       variant="outlined"
                       placeholder="Search for group..."
+                      helperText="Enter at least 3 characters to search"
                       required
                     />
                   )}
@@ -490,40 +653,37 @@ export const SystemAuditFormDialog = ({
               </Grid>
               <Grid item xs={12} sm={4}>
                 <Autocomplete
-                  options={userOptions}
-                  getOptionLabel={(option: UserEntity) =>
-                    option.spec?.profile?.displayName ||
-                    option.metadata.title ||
-                    option.metadata.name ||
-                    ''
+                  options={userOptions[index] || []}
+                  getOptionLabel={getUserOptionLabel}
+                  value={selectedUsers[index] || null}
+                  onChange={(_event, newValue) =>
+                    handleResponsiblePartyChange(index, newValue)
                   }
-                  value={findUserEntity(entry.responsibleParty)}
-                  onChange={(_event: any, newValue: UserEntity | null) => {
-                    // Save the full entity ref (e.g., "user:redhat/nmore")
-                    updateEntry(
-                      index,
-                      'responsibleParty',
-                      newValue ? stringifyEntityRef(newValue) : '',
-                    );
+                  onInputChange={(_event, newInputValue) => {
+                    setUserSearchValues(prev => {
+                      const arr = [...prev];
+                      arr[index] = newInputValue;
+                      return arr;
+                    });
+                    if (!newInputValue && !selectedUsers[index]) {
+                      setUserOptions(prev => {
+                        const arr = [...prev];
+                        arr[index] = [];
+                        return arr;
+                      });
+                    }
                   }}
-                  loading={loading}
-                  renderInput={(params: any) => (
+                  loading={userLoading[index] || false}
+                  renderInput={params => (
                     <TextField
                       {...params}
                       label="Responsible Party"
                       variant="outlined"
-                      placeholder="Search for user..."
+                      helperText="Enter at least 3 characters to search"
                     />
                   )}
-                  renderOption={(option: UserEntity) => (
-                    <Box>
-                      <Typography variant="body2">
-                        {option.spec?.profile?.displayName ||
-                          option.metadata.title ||
-                          option.metadata.name ||
-                          ''}
-                      </Typography>
-                    </Box>
+                  renderOption={(option: UserEntity, state) => (
+                    <li {...state}>{getUserOptionLabel(option)}</li>
                   )}
                 />
               </Grid>
@@ -540,34 +700,6 @@ export const SystemAuditFormDialog = ({
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={entry.stillRequired}
-                      onChange={e =>
-                        updateEntry(index, 'stillRequired', e.target.checked)
-                      }
-                      color="primary"
-                    />
-                  }
-                  label="Still Required?"
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={entry.auditCompleted}
-                      onChange={e =>
-                        updateEntry(index, 'auditCompleted', e.target.checked)
-                      }
-                      color="primary"
-                    />
-                  }
-                  label="Audit/Cleanup Completed"
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
                 <TextField
                   label="Review Date"
                   type="date"
@@ -581,6 +713,34 @@ export const SystemAuditFormDialog = ({
                     shrink: true,
                   }}
                 />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Box display="flex" flexDirection="row" style={{ gap: 16 }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={entry.stillRequired}
+                        onChange={e =>
+                          updateEntry(index, 'stillRequired', e.target.checked)
+                        }
+                        color="primary"
+                      />
+                    }
+                    label="Still Required?"
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={entry.auditCompleted}
+                        onChange={e =>
+                          updateEntry(index, 'auditCompleted', e.target.checked)
+                        }
+                        color="primary"
+                      />
+                    }
+                    label="Audit/Cleanup Completed"
+                  />
+                </Box>
               </Grid>
               <Grid item xs={12}>
                 <TextField

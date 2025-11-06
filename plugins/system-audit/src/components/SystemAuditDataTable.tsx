@@ -352,6 +352,39 @@ export const SystemAuditDataTable = () => {
   ];
 
   const renderContent = () => {
+    // Empty state
+    if (entries.length === 0) {
+      return (
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          p={6}
+          style={{ minHeight: 300 }}
+        >
+          <Typography variant="h6" color="textSecondary" gutterBottom>
+            No audit entries found
+          </Typography>
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            style={{ marginBottom: 16 }}
+          >
+            Get started by adding your first audit entry
+          </Typography>
+          <Button
+            startIcon={<AddIcon />}
+            onClick={handleAdd}
+            variant="contained"
+            color="primary"
+          >
+            Add Entry
+          </Button>
+        </Box>
+      );
+    }
+
     // Non-grouped view - shows all columns
     if (!grouped) {
       return (
@@ -514,7 +547,7 @@ export const SystemAuditDataTable = () => {
         }}
         onSave={handleSave}
         cmdbAppId={cmdbAppId}
-        cmdbAppIdEditable={true}
+        cmdbAppIdEditable
       />
     </>
   );
