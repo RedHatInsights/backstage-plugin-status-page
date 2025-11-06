@@ -5,6 +5,7 @@ variables:
   TEMP_DIR: '$CI_PROJECT_DIR/tmp'
 
 stages:
+  - verify
   - install
   - build
   - lint
@@ -25,6 +26,7 @@ default:
 yarn_install:
   stage: install
   image: registry.access.redhat.com/ubi10/nodejs-22:latest
+  needs: []
   tags:
     - shared-podman
   rules:
@@ -96,6 +98,35 @@ yarn_lint:
   script:
     - yarn lint:all
 
+verify-changeset:
+  stage: verify
+  image: registry.access.redhat.com/ubi10/nodejs-22:latest
+  tags:
+    - shared-podman
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  before_script:
+    - git config --global http.sslVerify "false"
+    - git config --global --add safe.directory /builds/app-dev-platform/backstage-plugins
+    - git config --global user.name "compass-release-automation"
+    - git config --global user.email "xe-compass-devs@redhat.com"
+    - git remote set-url origin https://release-bot:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
+    - git fetch origin $CI_DEFAULT_BRANCH --depth=2
+    - git checkout -B $CI_DEFAULT_BRANCH
+  script:
+    - npm i -g corepack
+    - corepack enable
+    - corepack prepare yarn@4.6.0 --activate
+
+    # Generate Changeset status without a full yarn install
+    - yarn dlx @changesets/cli status --output .changeset/status.json
+
+    # Generate formatted feedback comment (Markdown table)
+    - node $GITLAB_SCRIPTS_DIR/generate-changeset-comment.js
+
+    # Post or update MR comment with feedback
+    - $GITLAB_SCRIPTS_DIR/post-comment.sh
+
 publish_plugins:
   stage: publish
   image: registry.access.redhat.com/ubi10/nodejs-22:latest
@@ -118,7 +149,7 @@ publish_plugins:
     - corepack enable
     - corepack prepare yarn@4.6.0 --activate
   script:
-    - node ./scripts/publish-with-yarn.cjs || exit 1
+    - node $GITLAB_SCRIPTS_DIR/publish-with-yarn.js || exit 1
     - git push origin $CI_DEFAULT_BRANCH --follow-tags
 
 .mpp_build:
