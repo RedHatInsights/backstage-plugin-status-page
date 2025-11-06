@@ -1,0 +1,31 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: search-backend-module-mcp-actions
+  title: Search Backend Module - MCP Actions
+  description: Backend module providing MCP action for Backstage Search, enabling AI assistants to perform full-text search across entities and documentation
+  namespace: compass
+  tags:
+    - backstage
+    - idp
+    - search
+    - mcp
+    - mcp-actions
+    - ai
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40compass%2Fbackstage-plugin-search-backend-module-mcp-actions
+      title: NPM Package
+      type: package
+  annotations:
+    nexus-repository-manager/repository: appdev-platform
+    nexus-repository-manager/name: backstage-plugin-search-backend-module-mcp-actions
+    npm/registry: compass
+    npm/package: '@compass/backstage-plugin-search-backend-module-mcp-actions'
+spec:
+  type: backstage-backend-plugin-module
+  lifecycle: production
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-backend
+
