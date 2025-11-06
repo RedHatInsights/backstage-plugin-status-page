@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react';
-import { InfoCard, Link, Table, TableColumn } from '@backstage/core-components';
+import {
+  InfoCard,
+  Link,
+  Table,
+  TableColumn,
+  EmptyState,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   fetchApiRef,
@@ -352,6 +358,27 @@ export const SystemAuditDataTable = () => {
   ];
 
   const renderContent = () => {
+    // Empty state
+    if (entries.length === 0) {
+      return (
+        <EmptyState
+          title="No audit entries found"
+          missing="content"
+          description="Get started by adding your first audit entry"
+          action={
+            <Button
+              startIcon={<AddIcon />}
+              onClick={handleAdd}
+              variant="contained"
+              color="primary"
+            >
+              Add Entry
+            </Button>
+          }
+        />
+      );
+    }
+
     // Non-grouped view - shows all columns
     if (!grouped) {
       return (
@@ -514,6 +541,7 @@ export const SystemAuditDataTable = () => {
         }}
         onSave={handleSave}
         cmdbAppId={cmdbAppId}
+        cmdbAppIdEditable
       />
     </>
   );
