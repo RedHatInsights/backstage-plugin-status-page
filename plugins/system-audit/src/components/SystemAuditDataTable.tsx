@@ -1,5 +1,11 @@
 import { useState, useEffect } from 'react';
-import { InfoCard, Link, Table, TableColumn } from '@backstage/core-components';
+import {
+  InfoCard,
+  Link,
+  Table,
+  TableColumn,
+  EmptyState,
+} from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   fetchApiRef,
@@ -355,33 +361,21 @@ export const SystemAuditDataTable = () => {
     // Empty state
     if (entries.length === 0) {
       return (
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          p={6}
-          style={{ minHeight: 300 }}
-        >
-          <Typography variant="h6" color="textSecondary" gutterBottom>
-            No audit entries found
-          </Typography>
-          <Typography
-            variant="body2"
-            color="textSecondary"
-            style={{ marginBottom: 16 }}
-          >
-            Get started by adding your first audit entry
-          </Typography>
-          <Button
-            startIcon={<AddIcon />}
-            onClick={handleAdd}
-            variant="contained"
-            color="primary"
-          >
-            Add Entry
-          </Button>
-        </Box>
+        <EmptyState
+          title="No audit entries found"
+          missing="content"
+          description="Get started by adding your first audit entry"
+          action={
+            <Button
+              startIcon={<AddIcon />}
+              onClick={handleAdd}
+              variant="contained"
+              color="primary"
+            >
+              Add Entry
+            </Button>
+          }
+        />
       );
     }
 
