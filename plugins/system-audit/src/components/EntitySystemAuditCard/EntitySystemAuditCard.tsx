@@ -220,7 +220,7 @@ export const EntitySystemAuditCard = () => {
             alignItems="center"
           >
             <Typography variant="h6">
-              Groups/Accounts Exposed to External Services{' '}
+              XE System Audit{' '}
               {filteredEntries.length > 0 && `(${filteredEntries.length})`}
             </Typography>
             <Button
@@ -376,25 +376,25 @@ export const EntitySystemAuditCard = () => {
                                 </StyledGrid>
                               </Grid>
                             )}
-                          {entry.reviewDate && entry.reviewDate !== 'NA' && (
-                            <Grid item xs={12} sm={4}>
-                              <StyledGrid xs={12}>
-                                <Typography
-                                  variant="h2"
-                                  className={classes.label}
-                                >
-                                  Review Date
-                                </Typography>
-                              </StyledGrid>
-                              <StyledGrid xs={12}>
-                                <Typography variant="body2">
-                                  {new Date(
-                                    entry.reviewDate,
-                                  ).toLocaleDateString()}
-                                </Typography>
-                              </StyledGrid>
-                            </Grid>
-                          )}
+                          <Grid item xs={12} sm={4}>
+                            <StyledGrid xs={12}>
+                              <Typography
+                                variant="h2"
+                                className={classes.label}
+                              >
+                                Review Date
+                              </Typography>
+                            </StyledGrid>
+                            <StyledGrid xs={12}>
+                              <Typography variant="body2">
+                                {entry.reviewDate && entry.reviewDate !== 'NA'
+                                  ? new Date(
+                                      entry.reviewDate,
+                                    ).toLocaleDateString()
+                                  : 'NA'}
+                              </Typography>
+                            </StyledGrid>
+                          </Grid>
                         </Grid>
                       </Box>
                     </AccordionSummary>

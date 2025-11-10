@@ -72,8 +72,10 @@ export class SystemAuditOperations {
         app_name: data.app_name || null,
         application_owner: data.application_owner || null,
         review_date:
-          data.review_date === '' || !data.review_date
-            ? 'NA'
+          data.review_date === '' ||
+          !data.review_date ||
+          data.review_date === 'NA'
+            ? null
             : data.review_date,
         created_at: this.knex.fn.now(),
         updated_at: this.knex.fn.now(),
@@ -130,10 +132,12 @@ export class SystemAuditOperations {
       if (data.application_owner !== undefined)
         updateData.application_owner = data.application_owner;
       if (data.review_date !== undefined) {
-        // Convert empty string to 'NA' for date fields
+        // Convert empty string or 'NA' to null for date fields
         updateData.review_date =
-          data.review_date === '' || data.review_date === null
-            ? 'NA'
+          data.review_date === '' ||
+          data.review_date === null ||
+          data.review_date === 'NA'
+            ? null
             : data.review_date;
       }
 

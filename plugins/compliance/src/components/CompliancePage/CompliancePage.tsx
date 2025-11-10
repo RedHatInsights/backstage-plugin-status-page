@@ -118,7 +118,7 @@ const tools: ComplianceTool[] = [
     tags: ['Access Control', 'Audit', 'Security'],
   },
   {
-    name: 'System Audit - Exposed Services',
+    name: 'XE System Audit',
     description:
       'View and manage system audit data for all registered applications, including audit review status, responsible parties, and compliance tracking.',
     path: '/compliance/system-audit',
