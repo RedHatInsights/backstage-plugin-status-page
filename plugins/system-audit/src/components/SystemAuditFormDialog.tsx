@@ -184,25 +184,29 @@ export const SystemAuditFormDialog = ({
   useEffect(() => {
     setUserOptions(prev => {
       if (prev.length !== entries.length) {
-        return entries.map(() => []);
+        // Preserve existing values or use empty array for new entries
+        return entries.map((_, i) => prev[i] ?? []);
       }
       return prev;
     });
     setUserLoading(prev => {
       if (prev.length !== entries.length) {
-        return entries.map(() => false);
+        // Preserve existing values or use false for new entries
+        return entries.map((_, i) => prev[i] ?? false);
       }
       return prev;
     });
     setUserSearchValues(prev => {
       if (prev.length !== entries.length) {
-        return entries.map(() => '');
+        // Preserve existing values or use empty string for new entries
+        return entries.map((_, i) => prev[i] ?? '');
       }
       return prev;
     });
     setSelectedUsers(prev => {
       if (prev.length !== entries.length) {
-        return entries.map(() => null);
+        // Preserve existing values or use null for new entries
+        return entries.map((_, i) => prev[i] ?? null);
       }
       return prev;
     });
@@ -367,13 +371,15 @@ export const SystemAuditFormDialog = ({
   useEffect(() => {
     setLdapGroupOptions(prev => {
       if (prev.length !== entries.length) {
-        return entries.map(() => []);
+        // Preserve existing values or use empty array for new entries
+        return entries.map((_, i) => prev[i] ?? []);
       }
       return prev;
     });
     setLdapGroupLoading(prev => {
       if (prev.length !== entries.length) {
-        return entries.map(() => false);
+        // Preserve existing values or use false for new entries
+        return entries.map((_, i) => prev[i] ?? false);
       }
       return prev;
     });

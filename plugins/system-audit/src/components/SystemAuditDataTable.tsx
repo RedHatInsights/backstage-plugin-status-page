@@ -26,9 +26,16 @@ import {
   Grid,
   CircularProgress,
   Button,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { SystemAuditApi } from '../services/SystemAuditApi';
 
 interface EnrichedAuditEntry extends AuditEntry {
@@ -45,6 +52,13 @@ export const SystemAuditDataTable = () => {
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [cmdbAppId, setCmdbAppId] = useState('');
+  const [editingEntry, setEditingEntry] = useState<EnrichedAuditEntry | null>(
+    null,
+  );
+  const [entryToDelete, setEntryToDelete] = useState<EnrichedAuditEntry | null>(
+    null,
+  );
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const catalogApi = useApi(catalogApiRef);
   const discoveryApi = useApi(discoveryApiRef);
   const fetchApi = useApi(fetchApiRef);
@@ -114,15 +128,75 @@ export const SystemAuditDataTable = () => {
 
   const handleAdd = () => {
     setCmdbAppId('');
+    setEditingEntry(null);
     setIsDialogOpen(true);
+  };
+
+  const handleEdit = (entry: EnrichedAuditEntry) => {
+    setEditingEntry(entry);
+    setCmdbAppId(entry.cmdbAppId);
+    setIsDialogOpen(true);
+  };
+
+  const handleDelete = (entry: EnrichedAuditEntry) => {
+    setEntryToDelete(entry);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!entryToDelete || !entryToDelete.id) {
+      return;
+    }
+
+    try {
+      const api = new SystemAuditApi(discoveryApi, fetchApi);
+      await api.deleteEntry(Number(entryToDelete.id));
+      setDeleteDialogOpen(false);
+      setEntryToDelete(null);
+      alertApi.post({
+        message: 'Entry deleted successfully',
+        severity: 'success',
+        display: 'transient',
+      });
+      // Reload entries after delete
+      await loadEntries();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to delete entry:', error);
+      alertApi.post({
+        message:
+          error instanceof Error
+            ? error.message
+            : 'Failed to delete entry. Please try again.',
+        severity: 'error',
+        display: 'transient',
+      });
+    }
   };
 
   const handleSave = async (entryData: Omit<AuditEntry, 'id'>) => {
     try {
       const api = new SystemAuditApi(discoveryApi, fetchApi);
-      await api.createEntry(entryData);
+      if (editingEntry && editingEntry.id) {
+        // Update existing entry
+        await api.updateEntry(Number(editingEntry.id), entryData);
+        alertApi.post({
+          message: 'Entry updated successfully',
+          severity: 'success',
+          display: 'transient',
+        });
+      } else {
+        // Create new entry
+        await api.createEntry(entryData);
+        alertApi.post({
+          message: 'Entry created successfully',
+          severity: 'success',
+          display: 'transient',
+        });
+      }
       setIsDialogOpen(false);
       setCmdbAppId('');
+      setEditingEntry(null);
       // Reload entries after save
       await loadEntries();
     } catch (error) {
@@ -237,6 +311,31 @@ export const SystemAuditDataTable = () => {
               entry.updatedAt,
             ).toLocaleTimeString()}`
           : 'N/A',
+    },
+    {
+      title: 'Actions',
+      field: 'actions',
+      sorting: false,
+      render: (entry: EnrichedAuditEntry) => (
+        <Box display="flex" style={{ gap: 8 }}>
+          <IconButton
+            onClick={() => handleEdit(entry)}
+            color="primary"
+            size="small"
+            title="Edit entry"
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            onClick={() => handleDelete(entry)}
+            color="secondary"
+            size="small"
+            title="Delete entry"
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Box>
+      ),
     },
   ];
 
@@ -354,6 +453,31 @@ export const SystemAuditDataTable = () => {
               entry.updatedAt,
             ).toLocaleTimeString()}`
           : 'N/A',
+    },
+    {
+      title: 'Actions',
+      field: 'actions',
+      sorting: false,
+      render: (entry: EnrichedAuditEntry) => (
+        <Box display="flex" style={{ gap: 8 }}>
+          <IconButton
+            onClick={() => handleEdit(entry)}
+            color="primary"
+            size="small"
+            title="Edit entry"
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+          <IconButton
+            onClick={() => handleDelete(entry)}
+            color="secondary"
+            size="small"
+            title="Delete entry"
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Box>
+      ),
     },
   ];
 
@@ -538,11 +662,56 @@ export const SystemAuditDataTable = () => {
         onClose={() => {
           setIsDialogOpen(false);
           setCmdbAppId('');
+          setEditingEntry(null);
         }}
         onSave={handleSave}
         cmdbAppId={cmdbAppId}
+        existingEntry={editingEntry || undefined}
         cmdbAppIdEditable
       />
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setEntryToDelete(null);
+        }}
+      >
+        <DialogTitle>Delete Entry</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this entry?</Typography>
+          {entryToDelete && (
+            <Box mt={2}>
+              <Typography variant="body2" color="textSecondary">
+                <strong>CMDB App ID:</strong> {entryToDelete.cmdbAppId}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                <strong>LDAP Common Name:</strong>{' '}
+                {entryToDelete.ldapCommonName || 'N/A'}
+              </Typography>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setDeleteDialogOpen(false);
+              setEntryToDelete(null);
+            }}
+            color="primary"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDeleteConfirm}
+            color="secondary"
+            variant="contained"
+          >
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

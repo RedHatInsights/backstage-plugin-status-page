@@ -5,7 +5,7 @@ export const SystemAuditPage = () => {
   return (
     <Page themeId="tool">
       <Header
-        title="Groups/Accounts Exposed to External Services"
+        title="XE System Audit"
         subtitle="View and manage system groups and accounts exposed to external services"
       >
         <HeaderLabel label="Owner" value="Compliance Team" />
