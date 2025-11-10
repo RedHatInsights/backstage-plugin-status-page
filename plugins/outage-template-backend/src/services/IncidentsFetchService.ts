@@ -1,4 +1,4 @@
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { CacheService, LoggerService } from '@backstage/backend-plugin-api';
 import { IncidentServiceType } from './types';
 import {
   createIncident,
@@ -15,15 +15,20 @@ export async function IncidentFetchService({
   logger,
   statusPageUrl,
   statusPageAuthToken,
+  cache,
 }: {
   logger: LoggerService;
   statusPageUrl: string;
   statusPageAuthToken: string;
+  cache: CacheService;
 }): Promise<IncidentServiceType> {
   logger.info('Initializing IncidentFetchService');
   return {
     async getIncidents(cookie: any) {
-      return fetchIncidents(statusPageUrl, statusPageAuthToken, logger, cookie);
+      const incidents = await fetchIncidents(statusPageUrl, statusPageAuthToken, logger, cookie);
+      await cache.set('cached-outages-data', JSON.stringify(incidents), { ttl: 720000 });
+
+      return incidents;
     },
     async getIncidentsById(id: string, cookie: any) {
       return fetchIncident(

@@ -8,6 +8,7 @@ import {
 } from './services';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { IncidentsDatabase } from './database/IncidentsDatabase';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 export async function createRouter({
   incidentFetchService,
@@ -22,6 +23,7 @@ export async function createRouter({
   templateFetchService: TemplateServiceType;
   logger: LoggerService;
   databaseServer: DatabaseService;
+  actionsRegistry: typeof actionsRegistryServiceRef; 
 }): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
