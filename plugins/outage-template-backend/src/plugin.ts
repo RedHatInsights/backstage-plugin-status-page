@@ -9,6 +9,9 @@ import {
   PostmortemFetchService,
   TemplateFetchService,
 } from './services';
+import { createGetOutageDetailsAction } from './actions/getOutageDetailsAction';
+import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { createGetOutagesAction } from './actions/getOutagesAction';
 
 /**
  * outageTemplate backend plugin
@@ -26,8 +29,11 @@ export const outageTemplatePlugin = createBackendPlugin({
         catalog: catalogServiceRef,
         config: coreServices.rootConfig,
         databaseServer: coreServices.database,
+        cache: coreServices.cache,
+        actionsRegistry: actionsRegistryServiceRef,
+        auth: coreServices.auth,
       },
-      async init({ logger, httpAuth, httpRouter, config, databaseServer }) {
+      async init({ logger, httpAuth, httpRouter, config, databaseServer, cache, actionsRegistry, auth }) {
         try {
           const statusPageUrl =
             config.getOptionalString('outageService.statusPageUrl') || '';
@@ -38,6 +44,7 @@ export const outageTemplatePlugin = createBackendPlugin({
             logger,
             statusPageUrl,
             statusPageAuthToken,
+            cache,
           });
           const postmortemFetchService = await PostmortemFetchService({
             logger,
@@ -45,6 +52,21 @@ export const outageTemplatePlugin = createBackendPlugin({
             statusPageAuthToken,
           });
           const templateFetchService = await TemplateFetchService({
+            logger,
+          });
+
+          // Register MCP actions
+          createGetOutagesAction({
+            actionsRegistry,
+            cache,
+            auth,
+            logger,
+          });
+          
+          createGetOutageDetailsAction({
+            actionsRegistry,
+            cache,
+            auth,
             logger,
           });
 
@@ -60,6 +82,7 @@ export const outageTemplatePlugin = createBackendPlugin({
               templateFetchService,
               logger,
               databaseServer,
+              actionsRegistry: actionsRegistryServiceRef,
             }),
           );
         } catch (err) {

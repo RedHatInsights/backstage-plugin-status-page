@@ -28,6 +28,7 @@ backend:
     pluginSources:
       - 'catalog'
       - 'mcp-actions-example'
+      - 'outage-template-backend'
       - 'soundcheck'
       - 'search'
   # Used for enabling authentication, secret is shared by all backend plugins
@@ -89,8 +90,14 @@ backend:
           - plugin: mcp-actions
           - plugin: catalog
           - plugin: mcp-actions-example
+          - plugin: outage-template-backend
           - plugin: soundcheck
           - plugin: search
+
+    experimentalDynamicClientRegistration:
+      enabled: true
+      allowedRedirectUriPatterns:
+        - cursor://*
 
 integrations:
   github:
