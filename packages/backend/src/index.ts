@@ -156,6 +156,8 @@ backend.add(import('@appdev/backstage-plugin-gdpr-backend'));
 /* MCP Actions Backend */
 backend.add(import('@backstage/plugin-mcp-actions-backend'));
 backend.add(import('@compass/backstage-plugin-mcp-actions-example-backend'));
+backend.add(import('@compass/backstage-plugin-soundcheck-backend-module-mcp-actions'));
+backend.add(import('@compass/backstage-plugin-search-backend-module-mcp-actions'));
 
 /* Events backend */
 backend.add(import('@backstage/plugin-events-backend'));
