@@ -14,6 +14,7 @@ import { ChatThreads } from './models/ChatThreads';
 import { ChatThreadModel } from './types';
 import { getMCPClient } from './utils/MCPClient';
 import { getAgent } from './utils/MastraAgent';
+import { nanoid } from 'nanoid';
 
 export async function createRouter({
   auth,
@@ -170,12 +171,19 @@ export async function createRouter({
 
     const selectedTools = body?.tools;
 
-    await model.appendMessagesToThread(threadId, [
-      {
-        role: 'user',
-        content: body.prompt,
-      },
-    ]);
+    const messageHistory: ChatThreadModel['messages'] =
+      typeof thread.messages === 'string'
+        ? JSON.parse(thread.messages)
+        : thread.messages;
+
+    const newMessage = {
+      id: nanoid(),
+      role: 'user' as const,
+      content: body.prompt,
+      createdAt: new Date().toISOString(),
+    };
+
+    await model.appendMessagesToThread(threadId, [newMessage]);
 
     const taskId = Buffer.from(
       `${userRef}::${threadId}@${Date.now()}`,
@@ -195,18 +203,24 @@ export async function createRouter({
 
         logger.info('generating response...');
 
-        const { response } = await agent.generateVNext(
-          [
-            {
-              role: 'user',
-              content: body?.prompt,
-            },
-          ],
+        const filteredHistory = messageHistory.filter(
+          msg =>
+            msg.role === 'assistant' ||
+            msg.role === 'user' ||
+            msg.role === 'system',
+        );
+
+        const { response } = await agent.generate(
+          [newMessage],
           {
+            format: 'aisdk',
             memory: {
               resource: userRef,
               thread: threadId,
             },
+            context: [
+              ...filteredHistory as any[],
+            ],
             savePerStep: true,
             onStepFinish: async ({ stepType, toolCalls, toolResults }) => {
               const message = {
@@ -215,6 +229,7 @@ export async function createRouter({
                 toolResults,
               };
               logger.debug(JSON.stringify(message));
+
               await signals.publish({
                 message,
                 channel: `assistant:${threadId}`,
@@ -226,9 +241,15 @@ export async function createRouter({
           },
         );
 
+        const responseMessages = (response.messages as ChatThreadModel['messages']).map(msg => ({
+          ...msg,
+          id: nanoid(),
+          createdAt: new Date().toISOString(),
+        }));
+
         await model.appendMessagesToThread(
           threadId,
-          response.messages as ChatThreadModel['messages'],
+          responseMessages,
         );
 
         logger.info('Response generated');
@@ -246,7 +267,6 @@ export async function createRouter({
    * Delete a chat thread
    */
   router.delete('/chat/:threadId', async (req, res) => {
-    console.log(req.params);
     const threadId = req.params.threadId;
     let userRef: string;
 

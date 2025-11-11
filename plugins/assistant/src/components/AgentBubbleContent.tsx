@@ -1,4 +1,4 @@
-import { CodeSnippet, MarkdownContent } from '@backstage/core-components';
+import { CodeSnippet } from '@backstage/core-components';
 import { featureFlagsApiRef, useApi } from '@backstage/core-plugin-api';
 import { Box, makeStyles } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
@@ -10,6 +10,28 @@ import {
   ToolAccordionDetails,
   ToolAccordionSummary,
 } from './ToolAccordion';
+import markdownIt from 'markdown-it';
+import mdc from 'markdown-it-container';
+
+const md = markdownIt({
+  breaks: false,
+  linkify: true,
+  xhtmlOut: true,
+});
+md.use(mdc, 'thought', {
+  validate: function (params: any) {
+    return params.trim().match(/^thought\s+(.*)$/);
+  },
+  marker: ':',
+  render: function (tokens: any, idx: any) {
+    const m = tokens[idx].info.trim().match(/^thought\s+(.*)$/);
+
+    if (tokens[idx].nesting === 1) {
+      return `<details><summary>${md.utils.escapeHtml(m[1])}</summary>\n`;
+    }
+    return '</details>\n';
+  }
+});
 
 const useStyles = makeStyles(theme => ({
   outputBox: {
@@ -31,12 +53,10 @@ export const AgentBubbleContent = ({ message }: AgentBubbleContentProps) => {
   if (message.role === 'assistant') {
     return message.content.map(content => {
       if (content.type === 'text') {
+        const text = content.text!.replace('\n\n', '\n').replaceAll('<think>', '::: thought Thinking...').replaceAll('</think>', ':::').trim();
         return (
           <Typography variant="body1" color="textPrimary">
-            <MarkdownContent
-              content={content.text!.trim()}
-              dialect="common-mark"
-            />
+            <div dangerouslySetInnerHTML={{ __html: md.render(text) }} />
           </Typography>
         );
       } else if (
@@ -46,8 +66,9 @@ export const AgentBubbleContent = ({ message }: AgentBubbleContentProps) => {
         return (
           <ToolAccordion
             key={content.toolCallId}
-            TransitionProps={{ unmountOnExit: true }}
+            TransitionProps={{ unmountOnExit: true, }}
             variant="outlined"
+            square
             className={classes.outputBox}
           >
             <ToolAccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -88,6 +109,7 @@ export const AgentBubbleContent = ({ message }: AgentBubbleContentProps) => {
         key={content.toolCallId}
         TransitionProps={{ unmountOnExit: true }}
         variant="outlined"
+        square
         className={classes.outputBox}
       >
         <ToolAccordionSummary expandIcon={<ExpandMoreIcon />}>

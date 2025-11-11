@@ -1,14 +1,19 @@
-import { DiscoveryService, RootConfigService } from '@backstage/backend-plugin-api';
+import {
+  DiscoveryService,
+  RootConfigService,
+} from '@backstage/backend-plugin-api';
 import { getMCPClient } from './MCPClient';
-import { Agent } from '@mastra/core';
+import { Agent } from '@mastra/core/agent';
+import { UnicodeNormalizer } from '@mastra/core/processors';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import _ from 'lodash';
+import { getDefaultAssistantOptions } from './defaultAssistantOptions';
 
 interface AgentConfig {
   authToken?: string;
   discoveryApi: DiscoveryService;
   rootConfig: RootConfigService;
-  selectedTools: {id: string}[];
+  selectedTools: { id: string }[];
 }
 
 export async function getAgent({
@@ -20,7 +25,8 @@ export async function getAgent({
   const assistantConfig = rootConfig.getConfig('assistant');
 
   const baseUrl = await discoveryApi.getBaseUrl('mcp-actions');
-  const mcpVersion = assistantConfig.getOptionalString('mcpActionsVersion') ?? 'v1';
+  const mcpVersion =
+    assistantConfig.getOptionalString('mcpActionsVersion') ?? 'v1';
   const url = new URL(`${baseUrl}/${mcpVersion}`);
 
   const mcpClient = await getMCPClient(url, authToken ?? '');
@@ -30,6 +36,9 @@ export async function getAgent({
   const modelUrl = assistantConfig.getString('llmOptions.url');
   const modelApiKey = assistantConfig.getOptionalString('llmOptions.apiKey');
 
+  const assistantOptions = assistantConfig.getOptionalConfig('assistantOptions');
+  const defaultAssistantOptions = getDefaultAssistantOptions(rootConfig);
+
   const model = createOpenAICompatible({
     baseURL: modelUrl,
     apiKey: modelApiKey,
@@ -38,12 +47,11 @@ export async function getAgent({
   });
 
   const agent = new Agent({
-    name: 'Smart Assistant',
-    instructions:
-      `A smart assistant that can answer questions about any entities from the Backstage Catalog.
-      You should keep the responses short and concise and avoid mentioning any internal tool names to the user.
-      In case of any issues or errors, you should point the users to the slack channel [#forum-xe-compass](https://redhat.enterprise.slack.com/archives/C05DM3PBLRG).`,
-    model: model.chatModel(modelId),
+    name: assistantOptions?.getOptionalString('name') ?? defaultAssistantOptions.name,
+    instructions: assistantOptions?.getOptionalString('instructions') ?? defaultAssistantOptions.instructions,
+  
+    model: model(modelId),
+
     tools:
       selectedTools?.length > 0
         ? _.pick(
@@ -51,6 +59,23 @@ export async function getAgent({
             selectedTools.map(tool => tool.id),
           )
         : tools,
+
+    inputProcessors: [
+      new UnicodeNormalizer({
+        trim: true,
+        collapseWhitespace: true,
+        preserveEmojis: true,
+      }),
+    ],
+
+    defaultStreamOptions: {
+      providerOptions: {
+        openai: {
+          reasoningEffort: 'low',
+        },
+      },
+      topP: 0.4,
+    },
   });
 
   return agent;

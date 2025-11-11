@@ -1,5 +1,6 @@
+import { SxProps, Theme } from "@mui/material/styles";
 import { GlobalHeaderComponentMountPointConfig } from "@red-hat-developer-hub/backstage-plugin-global-header";
-import { ComponentType, ComponentProps, CSSProperties } from "react";
+import { ComponentType, ComponentProps } from "react";
 
 export interface GlobalHeaderComponentMountPoint<
   T extends ComponentType<any> = ComponentType<any>
@@ -7,6 +8,6 @@ export interface GlobalHeaderComponentMountPoint<
   Component: T;
   config?: GlobalHeaderComponentMountPointConfig & {
     props?: Partial<ComponentProps<T>>;
-    layout?: CSSProperties;
+    layout?: SxProps<Theme>;
   };
 }
