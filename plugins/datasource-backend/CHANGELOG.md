@@ -1,5 +1,11 @@
 # @compass/backstage-plugin-datasource-backend
 
+## 1.0.2
+
+### Patch Changes
+
+- fed1b66: fix: get datasource route error
+
 ## 1.0.1
 
 ### Patch Changes
