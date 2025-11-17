@@ -1,6 +1,6 @@
 {
   "name": "@compass/backstage-plugin-scaffolder-backend-module-mcp-actions",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "license": "Apache-2.0",
   "description": "The mcp-actions backend module for the scaffolder plugin.",
   "main": "src/index.ts",
