@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1
+
+### Patch Changes
+
+- 411f844: Changes in the ESS Automation Plugin (rename)
+
 ## 1.2.0
 
 ### Minor Changes
