@@ -8525,6 +8525,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@compass/backstage-plugin-scaffolder-backend-module-mcp-actions@workspace:^, @compass/backstage-plugin-scaffolder-backend-module-mcp-actions@workspace:plugins/scaffolder-backend-module-mcp-actions":
+  version: 0.0.0-use.local
+  resolution: "@compass/backstage-plugin-scaffolder-backend-module-mcp-actions@workspace:plugins/scaffolder-backend-module-mcp-actions"
+  dependencies:
+    "@backstage/backend-plugin-api": "npm:^1.4.3"
+    "@backstage/backend-test-utils": "npm:^1.9.0"
+    "@backstage/cli": "npm:^0.34.1"
+  languageName: unknown
+  linkType: soft
+
 "@compass/backstage-plugin-search-backend-module-mcp-actions@workspace:^, @compass/backstage-plugin-search-backend-module-mcp-actions@workspace:plugins/search-backend-module-mcp-actions":
   version: 0.0.0-use.local
   resolution: "@compass/backstage-plugin-search-backend-module-mcp-actions@workspace:plugins/search-backend-module-mcp-actions"
@@ -24603,6 +24613,7 @@ __metadata:
     "@compass/backstage-plugin-scaffolder-backend-module-custom-filters": "workspace:^"
     "@compass/backstage-plugin-scaffolder-backend-module-datasource": "workspace:^"
     "@compass/backstage-plugin-scaffolder-backend-module-gitlab": "workspace:^"
+    "@compass/backstage-plugin-scaffolder-backend-module-mcp-actions": "workspace:^"
     "@compass/backstage-plugin-search-backend-module-mcp-actions": "workspace:^"
     "@compass/backstage-plugin-soundcheck-backend-module-droperator": "workspace:^"
     "@compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets": "workspace:^"
