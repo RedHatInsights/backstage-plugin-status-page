@@ -19,7 +19,6 @@ export class DatasourceDatabaseStore {
       .select('*')
       .where('name', id)
       .andWhere('namespace', namespace)
-      .orWhere('id', id)
       .first();
     if (!result) return undefined;
     return this.mapDbModelToDatasource(result);
@@ -42,7 +41,6 @@ export class DatasourceDatabaseStore {
       .select('*')
       .where('name', id)
       .andWhere('namespace', namespace)
-      .orWhere('id', id)
       .del();
     return result === 1;
   }
