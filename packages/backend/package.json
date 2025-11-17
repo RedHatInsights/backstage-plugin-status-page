@@ -69,6 +69,7 @@
     "@compass/backstage-plugin-scaffolder-backend-module-custom-filters": "workspace:^",
     "@compass/backstage-plugin-scaffolder-backend-module-datasource": "workspace:^",
     "@compass/backstage-plugin-scaffolder-backend-module-gitlab": "workspace:^",
+    "@compass/backstage-plugin-scaffolder-backend-module-mcp-actions": "workspace:^",
     "@compass/backstage-plugin-search-backend-module-mcp-actions": "workspace:^",
     "@compass/backstage-plugin-soundcheck-backend-module-droperator": "workspace:^",
     "@compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets": "workspace:^",
