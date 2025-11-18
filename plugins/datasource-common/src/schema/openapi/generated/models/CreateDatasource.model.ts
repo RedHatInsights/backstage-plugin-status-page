@@ -25,6 +25,11 @@ export interface CreateDatasource {
   system?: string;
   dependencyOf?: Array<string>;
   dependsOn?: Array<string>;
+  cmdbAppCode?: string;
+  /**
+   * Entity tags for searching and filtering
+   */
+  tags?: Array<string>;
 }
 
 /**

@@ -51,6 +51,7 @@ export class DatasourceDatabaseStore {
       dependencyOf: JSON.parse(data.dependencyOf) as string[],
       dependsOn: JSON.parse(data.dependsOn) as string[],
       existsIn: JSON.parse(data.existsIn),
+      tags: JSON.parse(data.tags) as string[],
     };
   }
   private mapDatasourceToDbModel(data: Datasource): DbDatasourceRow {
@@ -59,6 +60,7 @@ export class DatasourceDatabaseStore {
       dependencyOf: JSON.stringify(data.dependencyOf),
       dependsOn: JSON.stringify(data.dependsOn),
       existsIn: JSON.stringify(data.existsIn),
+      tags: JSON.stringify(data.tags ? data.tags : []),
     };
   }
 }

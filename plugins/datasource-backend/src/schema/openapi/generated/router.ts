@@ -381,6 +381,16 @@ export const spec = {
               type: 'string',
             },
           },
+          cmdbAppCode: {
+            type: 'string',
+          },
+          tags: {
+            type: 'array',
+            description: 'Entity tags for searching and filtering',
+            items: {
+              type: 'string',
+            },
+          },
         },
       },
       Datasource: {

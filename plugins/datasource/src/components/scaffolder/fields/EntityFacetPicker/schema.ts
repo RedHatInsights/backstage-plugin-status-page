@@ -19,7 +19,7 @@ import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
  * @public
  */
 export const EntityFacetPickerFieldSchema = makeFieldSchema({
-  output: z => z.string().or(z.array(z.string())),
+  output: z => z.union([z.string(), z.array(z.string())]),
   uiOptions: z =>
     z.object({
       facet: z

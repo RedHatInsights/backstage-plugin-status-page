@@ -39,8 +39,12 @@ export const mapDatasourceToResourceEntity = (
       namespace: data.namespace,
       annotations: {
         'compass.redhat.com/ai-related': data.aiRelated,
+        ...(data.cmdbAppCode
+          ? { 'servicenow.com/appcode': data.cmdbAppCode }
+          : {}),
       },
       datasourceId: data.id,
+      tags: data.tags,
     },
     spec: {
       classification: data.classification,
