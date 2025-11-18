@@ -53,7 +53,7 @@ export const globalHeaderComponentsMountPoints: GlobalHeaderComponentMountPoint[
           color: 'primary',
         },
         layout: {
-          color: '#0066CC',
+          color: theme => theme.palette.primary.main,
         }
       },
     }),

@@ -27,7 +27,7 @@ import MapIcon from '@material-ui/icons/MyLocation';
 import Report from '@material-ui/icons/Report';
 import SecurityIcon from '@material-ui/icons/Security';
 import { styled } from '@mui/material/styles';
-import { GlobalHeaderComponent } from '@red-hat-developer-hub/backstage-plugin-global-header';
+import { GlobalHeaderComponent, GlobalHeaderComponentMountPoint } from '@red-hat-developer-hub/backstage-plugin-global-header';
 import { PropsWithChildren } from 'react';
 import './Root.css';
 import { SidebarLayout } from './components/SidebarLayout';
@@ -58,7 +58,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => {
     <PageWithoutFixHeight>
       <div id="rhdh-above-sidebar-header-container">
         <GlobalHeaderComponent
-          globalHeaderMountPoints={globalHeaderComponentMountPoints}
+          globalHeaderMountPoints={globalHeaderComponentMountPoints as GlobalHeaderComponentMountPoint[]}
         />
       </div>
       <SidebarLayout

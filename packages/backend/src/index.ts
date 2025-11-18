@@ -102,6 +102,7 @@ backend.add(import('./policy'));
 backend.add(import('@backstage/plugin-search-backend'));
 backend.add(import('@backstage/plugin-search-backend-module-catalog'));
 backend.add(import('@backstage/plugin-search-backend-module-techdocs'));
+backend.add(import('@compass/backstage-plugin-search-backend-module-mcp-actions'));
 
 backend.add(import('@backstage-community/plugin-matomo-backend'));
 backend.add(import('@backstage-community/plugin-feedback-backend'));
@@ -135,6 +136,7 @@ backend.add(
     '@compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets'
   ),
 );
+backend.add(import('@compass/backstage-plugin-soundcheck-backend-module-mcp-actions'));
 // DevTools backend
 backend.add(import('@backstage/plugin-devtools-backend'));
 
