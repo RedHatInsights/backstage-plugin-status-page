@@ -19,6 +19,7 @@ import { clsx } from 'clsx';
 import { useContext } from 'react';
 import pkg from '../../package.json';
 import { AgentContext } from '../contexts/AgentProvider';
+import { useAnalytics } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles<Theme & ThemeConfig>(theme => ({
   header: {
@@ -66,12 +67,28 @@ export const ChatHeader = ({
   togglePin,
 }: ChatHeaderProps) => {
   const classes = useStyles();
+  const analytics = useAnalytics();
   const { loading, reloadChat, clearChat } = useContext(AgentContext);
 
   const lifecycle = (['alpha', 'beta'] as const).find(lc => pkg.version.toLowerCase().includes(lc.toLowerCase()));
 
   const handlePinClick = () => {
     togglePin?.(!isPinned);
+    analytics.captureEvent('click', `assistant panel pinned - ${!isPinned ? 'pinned' : 'unpinned'}`, {
+      attributes: {
+        pinned: !isPinned,
+      }
+    });
+  };
+
+  const handleClearChat = () => {
+    clearChat?.();
+    analytics.captureEvent('click', `assistant chat cleared`);
+  };
+
+  const handleRefresh = () => {
+    reloadChat?.();
+    analytics.captureEvent('click', `assistant chat refreshed`);
   };
 
   return (
@@ -103,7 +120,7 @@ export const ChatHeader = ({
         </Typography>
       </Box>
       <Tooltip title="Clear Chat">
-        <IconButton edge="end" aria-label="pin" onClick={() => clearChat?.()}>
+        <IconButton edge="end" aria-label="pin" onClick={handleClearChat}>
           <ResetIcon />
         </IconButton>
       </Tooltip>
@@ -112,7 +129,7 @@ export const ChatHeader = ({
           edge="end"
           aria-label="pin"
           disabled={loading}
-          onClick={() => reloadChat?.()}
+          onClick={handleRefresh}
         >
           <RefreshIcon />
         </IconButton>

@@ -14,6 +14,7 @@ import DownIcon from '@material-ui/icons/ExpandMoreRounded';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { AgentContext } from '../contexts/AgentProvider';
 import { humanizeToolName } from '../utils/humanizeToolName';
+import { useAnalytics } from '@backstage/core-plugin-api';
 
 export const ToolsOptions = () => {
   const anchorRef = useRef<HTMLButtonElement>(null);
@@ -21,6 +22,7 @@ export const ToolsOptions = () => {
   const [selectedTools, setSelectedTools] = useState<Set<string>>(
     new Set<string>(),
   );
+  const analytics = useAnalytics();
 
   const {
     loadingTools: loading,
@@ -30,6 +32,11 @@ export const ToolsOptions = () => {
 
   const toggleOpen = () => {
     setOpen(!isOpen);
+    analytics.captureEvent('click', `assistant tools menu toggled - ${isOpen ? 'open' : 'closed'}`, {
+      attributes: {
+        open: isOpen,
+      }
+    });
   };
 
   useEffect(() => {
@@ -64,6 +71,12 @@ export const ToolsOptions = () => {
     }
 
     setSelectedTools(newSelectedTools);
+
+    analytics.captureEvent('click', `assistant tool selected`, {
+      attributes: {
+        tool: toolId,
+      }
+    });
   };
 
   const Icon = isOpen ? DownIcon : UpIcon;

@@ -12,6 +12,7 @@ import { ThemeConfig } from '@red-hat-developer-hub/backstage-plugin-theme';
 import { FormEventHandler, useContext, useEffect, useState, KeyboardEventHandler } from 'react';
 import { AgentContext } from '../contexts/AgentProvider';
 import { ToolsOptions } from './ToolsOptions';
+import { useAnalytics } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles<Theme & ThemeConfig>(theme => ({
   inputGroup: {
@@ -65,6 +66,7 @@ export const ChatInput = ({ onChange }: ChatInputProps) => {
   const theme = useTheme();
   const [text, setText] = useState<string>('');
   const { loading, submitQuery } = useContext(AgentContext);
+  const analytics = useAnalytics();
 
   useEffect(() => {
     onChange?.(text);
@@ -74,6 +76,13 @@ export const ChatInput = ({ onChange }: ChatInputProps) => {
     event.preventDefault();
     setText('');
     submitQuery(text);
+
+    analytics.captureEvent('search', `assistant query submitted - ${text}`, {
+      attributes: {
+        query: text,
+        length: text.length,
+      }
+    });
   };
 
   const handleKeyDown: KeyboardEventHandler = async event => {
