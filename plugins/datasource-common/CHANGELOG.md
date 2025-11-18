@@ -1,5 +1,11 @@
 # @compass/backstage-plugin-datasource-common
 
+## 1.1.0
+
+### Minor Changes
+
+- 3ac43ad: feat: add tags and app codes support in datasource schema
+
 ## 1.0.0
 
 ### Major Changes
