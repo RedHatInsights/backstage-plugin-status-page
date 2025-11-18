@@ -35,6 +35,7 @@ spec:
         - aiRelated
         - system
         - dependencyOf
+        - tags
       dependencies:
         inferName:
           allOf:
@@ -97,6 +98,10 @@ spec:
           ui:options:
             catalogFilter:
               kind: component
+        tags:
+          title: Tags
+          type: array
+          ui:field: EntityTagsPicker
 
     - title: Resource Information
       required:
@@ -123,6 +128,14 @@ spec:
           ui:options:
             catalogFilter:
               kind: [User]
+        cmdbAppCode:
+          title: CMDB App Code
+          type: string
+          ui:field: EntityFacetPicker
+          description: 'Hint: Select from list or write your own'
+          ui:options:
+            facet: metadata.annotations.servicenow.com/appcode
+            kinds: []
         type:
           title: Type
           type: string
@@ -208,6 +221,8 @@ spec:
         system: ${{ parameters.system }}
         dependencyOf: ${{ parameters.dependencyOf }}
         dependsOn: []
+        tags: ${{ parameters.tags }}
+        cmdbAppCode: ${{ parameters.cmdbAppCode if parameters.cmdbAppCode else undefined }}
   output:
     links:
       - title: Open in catalog

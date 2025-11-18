@@ -27,6 +27,8 @@ export const createDatasourceExample: TemplateExample[] = [
             system: '${{ parameters.system }}',
             dependencyOf: '${{ parameters.dependencyOf }}',
             dependsOn: '[]',
+            tags: '[]',
+            cmdbAppCode: '${{ parameters.cmdbAppCode }}',
           },
         },
       ],

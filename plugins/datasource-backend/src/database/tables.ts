@@ -24,4 +24,6 @@ export type DbDatasourceRow = {
   createdAt: string;
   updatedBy: string;
   updatedAt: string;
+  tags: string;
+  cmdbAppCode?: string;
 };

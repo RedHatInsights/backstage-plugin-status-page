@@ -42,6 +42,8 @@ export const createDatasourceParser: z.ZodSchema<CreateDatasource> = z.object({
   system: z.string().describe("Associated system reference").optional(),
   dependencyOf: z.array(z.string()).describe("Entities that depend on this datasource").optional(),
   dependsOn: z.array(z.string()).describe("Datasources this entity depends on").optional(),
+  cmdbAppCode: z.string().optional(),
+  tags: z.array(z.string()).default([]),
 });
 
 export const stringifyDatasourceRef = (ref: {
