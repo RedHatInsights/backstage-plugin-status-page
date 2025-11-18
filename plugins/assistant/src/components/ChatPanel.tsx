@@ -14,6 +14,7 @@ import { AgentContext } from '../contexts/AgentProvider';
 import { ChatFooter } from './ChatFooter';
 import { ChatHeader } from './ChatHeader';
 import { ChatLog } from './ChatLog';
+import { useAnalytics } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles<Theme & ThemeConfig>(theme => ({
   panel: {
@@ -44,6 +45,15 @@ export const ChatPanel = ({ open, onClose, onResize }: Props) => {
 
   const smBreakpoint = useMediaQuery('sm');
   const classes = useStyles();
+  const analytics = useAnalytics();
+
+  useEffect(() => {
+    analytics.captureEvent('click', `assistant panel toggled - ${open ? 'open' : 'closed'}`, {
+      attributes: {
+        open: open ?? false,
+      }
+    });
+  }, [open, analytics]);
 
   useEffect(() => {
     /* TODO: Calculate the width of the panel */
@@ -54,8 +64,9 @@ export const ChatPanel = ({ open, onClose, onResize }: Props) => {
     }
   }, [onResize, smBreakpoint, isPinned]);
 
-  const handlePinnedState = (pinnedState: boolean) => {
-    setPinned(pinnedState);
+  const handleClose = () => {
+    onClose?.();
+    analytics.captureEvent('click', `assistant panel closed`);
   };
 
   return (
@@ -63,7 +74,7 @@ export const ChatPanel = ({ open, onClose, onResize }: Props) => {
       variant={open && isPinned ? 'permanent' : 'temporary'}
       anchor="right"
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       PaperProps={{
         className: classes.panel,
       }}
@@ -71,7 +82,7 @@ export const ChatPanel = ({ open, onClose, onResize }: Props) => {
       <ChatHeader
         onClose={onClose}
         isPinned={isPinned}
-        togglePin={handlePinnedState}
+        togglePin={setPinned}
       />
       <ChatLog user={user} />
       {loading && <Progress />}
