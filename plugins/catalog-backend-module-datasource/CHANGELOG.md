@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1
+
+### Patch Changes
+
+- fix: add url and file to allowed location types
+
 ## 1.2.0
 
 ### Minor Changes
