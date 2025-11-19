@@ -1,5 +1,11 @@
 # @compass/backstage-plugin-datasource-backend
 
+## 1.1.1
+
+### Patch Changes
+
+- ee4c46c: fix: add url and file to allowed location types
+
 ## 1.1.0
 
 ### Minor Changes
