@@ -1,6 +1,6 @@
 {
   "name": "@compass/backstage-plugin-catalog-backend-module-datasource",
-  "version": "1.2.0",
+  "version": "1.2.2",
   "license": "Apache-2.0",
   "description": "The datasource backend module for the catalog plugin.",
   "main": "src/index.ts",
