@@ -136,7 +136,6 @@ backend.add(
     '@compass/backstage-plugin-soundcheck-backend-module-google-spreadsheets'
   ),
 );
-backend.add(import('@compass/backstage-plugin-soundcheck-backend-module-mcp-actions'));
 // DevTools backend
 backend.add(import('@backstage/plugin-devtools-backend'));
 
