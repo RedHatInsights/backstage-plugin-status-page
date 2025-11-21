@@ -1,0 +1,27 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: system-audit-plugin
+  title: XE System Audit Plugin Compass
+  description: XE System Audit Plugin 
+  namespace: compass
+  tags:
+    - compass
+    - developers
+    - system-audit
+    - audit
+    - compliance
+  links:
+    - url: https://nexus.corp.redhat.com/#browse/browse:appdev-platform:%40appdev-platform%2Fbackstage-plugin-system-audit
+      title: Backstage System Audit Plugin NPM
+
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    npm/registry: compass
+    npm/package: '@appdev/backstage-plugin-system-audit'
+spec:
+  type: backstage-frontend-plugin
+  lifecycle: production
+  owner: group:redhat/xe-compass-devs
+  system: compass/compass-platform
+  subcomponentOf: compass/compass-frontend
